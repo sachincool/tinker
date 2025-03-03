@@ -1,4 +1,4 @@
-baseURL: https://harshit.cloud/tinker
+baseURL: https://harshit.cloud/
 theme: ['PaperMod']
 title: Infra Magician
 enableRobotsTXT: true
