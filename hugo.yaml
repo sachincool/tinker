@@ -6,11 +6,7 @@ buildDrafts: false
 buildFuture: false
 buildExpired: false
 
-googleAnalytics: ${GOOGLE_ANALYTICS}
-# module:
-#   mounts:
-#     - source: /Users/bluebox/Vault/Blogs
-#       target: content
+googleAnalytics: $GOOGLE_ANALYTICS
 
 minify:
   disableXML: true
@@ -99,15 +95,12 @@ params:
 
   analytics:
     google:
-      SiteVerificationTag: ${GOOGLE_ANALYTICS}
+      SiteVerificationTag: $GOOGLE_ANALYTICS
     bing:
-      SiteVerificationTag: "YOUR_BING_VERIFICATION"
+      SiteVerificationTag: $BING_VERIFICATION
     yandex:
-      SiteVerificationTag: "YOUR_YANDEX_VERIFICATION"
+      SiteVerificationTag: $YANDEX_VERIFICATION
 
-  services:
-    googleAnalytics:
-      ID: ${GOOGLE_ANALYTICS}  # Using GitHub Actions environment variable
 
   cover:
     hidden: false
