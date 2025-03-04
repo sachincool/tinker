@@ -48,6 +48,14 @@ jobs:
         uses: actions/configure-pages@v5
       - name: Install Node.js dependencies
         run: '[[ -f package-lock.json || -f npm-shrinkwrap.json ]] && npm ci || true'
+      - name: Install envsubst
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gettext-base
+      - name: Substitute environment variables in hugo.yaml
+        run: |
+          envsubst < hugo.yaml > hugo.yaml.tmp
+          mv hugo.yaml.tmp hugo.yaml
       - name: Build with Hugo
         env:
           HUGO_CACHEDIR: ${{ runner.temp }}/hugo_cache
