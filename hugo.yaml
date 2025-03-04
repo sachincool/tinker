@@ -19,10 +19,10 @@ minify:
 params:
   env: production # to enable google analytics, opengraph, twitter-cards and schema.
   title: Infra Magician
-  description: "A personal blog about technology, programming, and more"
-  keywords: [Blog, Technology, Programming, PaperMod]
-  author: Sachin
-  images: ["images/site-feature-image.jpg"]
+  description: "Where infrastructure meets weeb culture. Kubernetes-chan noticed you!"
+  keywords: [Blog, Technology, Infrastructure, Cloud, DevOps, Kubernetes, CNCF, Anime, Gaming, Dota2, Memes]
+  author: Harshit Luthra
+  images: ["assets/tinker.svg"]
   DateFormat: "January 2, 2006"
   defaultTheme: auto # dark, light
   disableThemeToggle: false
@@ -44,26 +44,26 @@ params:
   tocopen: false
 
   assets:
-    favicon: "favicon.ico"
-    favicon16x16: "favicon-16x16.png"
-    favicon32x32: "favicon-32x32.png"
-    apple_touch_icon: "apple-touch-icon.png"
-    safari_pinned_tab: "safari-pinned-tab.svg"
+    favicon: "favicon/favicon.ico"
+    favicon16x16: "favicon/favicon-16x16.png"
+    favicon32x32: "favicon/favicon-32x32.png"
+    apple_touch_icon: "favicon/apple-touch-icon.png"
+    safari_pinned_tab: "favicon/safari-pinned-tab.svg"
 
   label:
-    text: "Tinker"
-    icon: apple-touch-icon.png
-    iconHeight: 35
+    text: "gg wp"
+    icon: "/meepo.svg"
+    iconHeight: 40
 
   # profile-mode
   profileMode:
-    enabled: true # Enable profile mode for a more personal touch
-    title: "Tinker"
-    subtitle: "Exploring technology, one post at a time"
-    imageUrl: "images/profile.jpg"
-    imageWidth: 120
-    imageHeight: 120
-    imageTitle: "Profile Image"
+    enabled: true
+    title: "sudo rm -rf /production/*"
+    subtitle: "Level 99 Infrastructure Wizard, Dota2 Scrub, and Professional Chaos Engineer. I make servers cry and Kubernetes clusters CrashLoopBackOff."
+    imageUrl: "/tinker3.svg"
+    imageWidth: 150
+    imageHeight: 150
+    imageTitle: "Tinker (yes, that one from Dota)"
     buttons:
       - name: Posts
         url: posts
@@ -74,20 +74,28 @@ params:
 
   # home-info mode (alternative to profile mode)
   homeInfoParams:
-    Title: "Welcome to Tinker \U0001F44B"
-    Content: "A place where I share my thoughts, experiences, and learnings about technology and programming."
+    Title: "Welcome to Infra Magician's Lair \U0001F9D9"
+    Content: |
+      Greetings, fellow tech weeb! You've stumbled upon my digital sanctuary where:
+      
+      - Infrastructure is treated like waifus (carefully and with respect)
+      - Kubernetes is my favorite anime protagonist
+      - Docker containers multiply faster than Naruto's shadow clones
+      - And yes, I still blame the support when my Terraform plan fails
+      
+      WARNING: May contain traces of sarcasm, dank memes, and extremely bad infrastructure puns.
+      
+      PS: If you're from production, I swear the staging environment was like that when I found it.
 
   socialIcons:
     - name: x
-      url: "https://x.com/"
-    - name: stackoverflow
-      url: "https://stackoverflow.com"
+      url: "https://x.com/exploit_sh"
     - name: github
-      url: "https://github.com/"
+      url: "https://github.com/sachincool"
     - name: linkedin
-      url: "https://linkedin.com/in/"
+      url: "https://linkedin.com/in/harshit-luthra"
     - name: rss
-      url: "index.xml"
+      url: "rss.xml"
 
   analytics:
     google:
@@ -100,8 +108,8 @@ params:
     responsiveImages: true
 
   editPost:
-    URL: "https://github.com/sachincoo/yap/content"
-    Text: "Suggest Changes"
+    URL: "https://github.com/sachincoo/blog/"
+    Text: "git push --force"
     appendFilePath: true
 
   # for search
@@ -125,27 +133,27 @@ outputs:
 menu:
   main:
     - identifier: home
-      name: Home
+      name: /home/otaku
       url: /
       weight: 5
     - identifier: posts
-      name: Posts
+      name: ./blog-posts
       url: /posts/
       weight: 10
     - identifier: categories
-      name: Categories
+      name: grep categories
       url: /categories/
       weight: 20
     - identifier: tags
-      name: Tags
+      name: git tag
       url: /tags/
       weight: 30
     - identifier: about
-      name: About
+      name: whoami
       url: /about/
       weight: 40
     - identifier: search
-      name: Search
+      name: find .
       url: /search/
       weight: 50
 
