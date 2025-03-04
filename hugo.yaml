@@ -99,7 +99,15 @@ params:
 
   analytics:
     google:
-      SiteVerificationTag: "G-1234567890"
+      SiteVerificationTag: "${GOOGLE_ANALYTICS}"
+    bing:
+      SiteVerificationTag: "YOUR_BING_VERIFICATION"
+    yandex:
+      SiteVerificationTag: "YOUR_YANDEX_VERIFICATION"
+
+  services:
+    googleAnalytics:
+      ID: ${GOOGLE_ANALYTICS}  # Using GitHub Actions environment variable
 
   cover:
     hidden: false
@@ -108,7 +116,7 @@ params:
     responsiveImages: true
 
   editPost:
-    URL: "https://github.com/sachincoo/blog/"
+    URL: "https://github.com/sachincoo/blog"
     Text: "git push --force"
     appendFilePath: true
 

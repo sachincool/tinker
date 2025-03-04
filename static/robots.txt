@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://harshit.cloud/sitemap.xml
+
+# Block specific paths if needed
+# Disallow: /private/ 
