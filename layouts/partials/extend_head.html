@@ -1,6 +1,6 @@
 <!-- Google Analytics -->
-{{ if not .Site.IsServer }} {{ template "_internal/google_analytics.html" . }}
-{{ end }}
+{{ if hugo.IsProduction }} {{ template "_internal/google_analytics.html" . }} {{
+end }}
 
 <!-- Umami Analytics (Privacy-focused alternative) -->
 <!-- Uncomment and add your Umami script here

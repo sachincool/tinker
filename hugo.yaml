@@ -6,7 +6,7 @@ buildDrafts: false
 buildFuture: false
 buildExpired: false
 
-googleAnalytics: G-1234567890
+googleAnalytics: ${GOOGLE_ANALYTICS}
 # module:
 #   mounts:
 #     - source: /Users/bluebox/Vault/Blogs
@@ -99,7 +99,7 @@ params:
 
   analytics:
     google:
-      SiteVerificationTag: "${GOOGLE_ANALYTICS}"
+      SiteVerificationTag: ${GOOGLE_ANALYTICS}
     bing:
       SiteVerificationTag: "YOUR_BING_VERIFICATION"
     yandex:
