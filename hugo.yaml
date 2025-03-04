@@ -58,7 +58,7 @@ params:
   # profile-mode
   profileMode:
     enabled: true
-    title: "sudo rm -rf /production/*"
+    title: "Welcome to Infra Magician's Lair \U0001F9D9"
     subtitle: "Level 99 Infrastructure Wizard, Dota2 Scrub, and Professional Chaos Engineer. I make servers cry and Kubernetes clusters CrashLoopBackOff."
     imageUrl: "/tinker3.svg"
     imageWidth: 150
