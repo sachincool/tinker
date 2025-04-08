@@ -1,10 +1,10 @@
 ---
-title: <% tp.file.title %>
-date: <% tp.file.creation_date("YYYY-MM-DDTHH:mm:ssZ") %>
+title: Tekion Writeup
+date: 2025-01-06
 description: 
 tags:
   - blog
-lastmod: 2025-04-07T23:40:29.458Z
+lastmod: 2025-04-08T16:34:13.904Z
 ---
 The post:\
 ![](/images/images/Pasted%20image%2020250404201301.png)
