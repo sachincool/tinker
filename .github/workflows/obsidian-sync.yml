@@ -1,0 +1,162 @@
+name: Sync Obsidian Vault to Blog
+
+on:
+  repository_dispatch:
+    types: [obsidian-sync]
+  workflow_dispatch:
+  schedule:
+    # Run every hour to check for updates
+    - cron: '0 * * * *'
+
+jobs:
+  sync-content:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout blog repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Checkout Obsidian vault
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ secrets.OBSIDIAN_REPO }} # e.g., "username/obsidian-vault"
+          token: ${{ secrets.OBSIDIAN_TOKEN }}
+          path: obsidian-vault
+          
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+          
+      - name: Install dependencies
+        run: bun install
+        
+      - name: Process Obsidian content
+        run: |
+          # Create content processing script
+          cat > process-obsidian.js << 'SCRIPT'
+          const fs = require('fs');
+          const path = require('path');
+          const matter = require('gray-matter');
+          
+          const OBSIDIAN_PATH = './obsidian-vault';
+          const CONTENT_PATH = './public/content';
+          
+          // Ensure content directory exists
+          if (!fs.existsSync(CONTENT_PATH)) {
+            fs.mkdirSync(CONTENT_PATH, { recursive: true });
+          }
+          
+          function processMarkdownFiles(dir, type = 'post') {
+            const files = fs.readdirSync(dir);
+            const processed = [];
+            
+            files.forEach(file => {
+              if (path.extname(file) === '.md') {
+                const filePath = path.join(dir, file);
+                const content = fs.readFileSync(filePath, 'utf8');
+                const { data, content: markdownContent } = matter(content);
+                
+                // Skip if no title or if it's a template
+                if (!data.title || file.startsWith('Template')) return;
+                
+                // Determine type from folder or frontmatter
+                const postType = data.type || type;
+                
+                // Process tags
+                const tags = data.tags || [];
+                
+                // Create processed content
+                const processedContent = {
+                  id: file.replace('.md', '').toLowerCase().replace(/\s+/g, '-'),
+                  title: data.title,
+                  content: markdownContent,
+                  excerpt: data.excerpt || markdownContent.substring(0, 200) + '...',
+                  date: data.date || new Date().toISOString().split('T')[0],
+                  tags: Array.isArray(tags) ? tags : [tags].filter(Boolean),
+                  type: postType,
+                  readTime: Math.ceil(markdownContent.split(' ').length / 200) + ' min read'
+                };
+                
+                processed.push(processedContent);
+              }
+            });
+            
+            return processed;
+          }
+          
+          // Process different content types
+          const posts = [];
+          const tils = [];
+          
+          // Check for different folder structures
+          if (fs.existsSync(path.join(OBSIDIAN_PATH, 'Blog'))) {
+            posts.push(...processMarkdownFiles(path.join(OBSIDIAN_PATH, 'Blog'), 'post'));
+          }
+          
+          if (fs.existsSync(path.join(OBSIDIAN_PATH, 'TIL'))) {
+            tils.push(...processMarkdownFiles(path.join(OBSIDIAN_PATH, 'TIL'), 'til'));
+          }
+          
+          // Process root directory files
+          const rootFiles = processMarkdownFiles(OBSIDIAN_PATH);
+          rootFiles.forEach(file => {
+            if (file.type === 'til' || file.title.toLowerCase().includes('til')) {
+              tils.push(file);
+            } else {
+              posts.push(file);
+            }
+          });
+          
+          // Save processed content
+          fs.writeFileSync(
+            path.join(CONTENT_PATH, 'posts.json'),
+            JSON.stringify(posts, null, 2)
+          );
+          
+          fs.writeFileSync(
+            path.join(CONTENT_PATH, 'tils.json'),
+            JSON.stringify(tils, null, 2)
+          );
+          
+          // Generate tags
+          const allTags = new Set();
+          [...posts, ...tils].forEach(item => {
+            item.tags.forEach(tag => allTags.add(tag));
+          });
+          
+          const tagsData = Array.from(allTags).map(tag => ({
+            name: tag,
+            count: [...posts, ...tils].filter(item => item.tags.includes(tag)).length
+          }));
+          
+          fs.writeFileSync(
+            path.join(CONTENT_PATH, 'tags.json'),
+            JSON.stringify(tagsData, null, 2)
+          );
+          
+          console.log(`Processed ${posts.length} posts, ${tils.length} TILs, ${tagsData.length} tags`);
+          SCRIPT
+          
+          # Run the processing script
+          node process-obsidian.js
+          
+      - name: Commit and push changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add public/content/
+          
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "🔄 Sync content from Obsidian vault"
+            git push
+          fi
+          
+      - name: Trigger Vercel deployment
+        if: success()
+        run: |
+          curl -X POST "${{ secrets.VERCEL_DEPLOY_HOOK }}" || echo "No Vercel hook configured"
