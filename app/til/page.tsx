@@ -1,9 +1,11 @@
+"use client";
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, Calendar, Plus, Lightbulb, ExternalLink } from "lucide-react";
+import { Search, Calendar, Plus, Lightbulb, ExternalLink, Sparkles, Zap } from "lucide-react";
 import Link from "next/link";
 
 export default function TILPage() {
@@ -77,17 +79,26 @@ export default function TILPage() {
   return (
     <div className="space-y-8">
       {/* Header */}
-      <div className="text-center space-y-4">
+      <div className="text-center space-y-4 relative py-8">
+        <div className="absolute inset-0 -z-10 bg-gradient-to-br from-yellow-50 via-orange-50 to-transparent dark:from-yellow-950/20 dark:via-orange-950/20 rounded-3xl"></div>
+        <div className="inline-flex items-center gap-2 px-4 py-2 bg-yellow-500/10 rounded-full text-sm font-medium mb-4">
+          <Sparkles className="h-4 w-4 text-yellow-500" />
+          <span>Daily Knowledge Drops</span>
+        </div>
         <div className="flex items-center justify-center gap-3">
-          <Lightbulb className="h-8 w-8 text-yellow-500" />
-          <h1 className="text-4xl font-bold">Today I Learned</h1>
+          <Lightbulb className="h-10 w-10 text-yellow-500 animate-pulse" />
+          <h1 className="text-4xl md:text-5xl font-bold">
+            <span className="bg-gradient-to-r from-yellow-600 via-orange-600 to-red-600 bg-clip-text text-transparent">
+              Today I Learned
+            </span>
+          </h1>
         </div>
         <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-          Quick insights, code snippets, and "aha!" moments from my daily tinkering.
+          Quick insights, code snippets, and "aha!" moments from my daily tinkering and chaos engineering.
         </p>
-        <Button asChild size="lg">
+        <Button asChild size="lg" className="group">
           <Link href="/til/new">
-            <Plus className="mr-2 h-4 w-4" />
+            <Plus className="mr-2 h-4 w-4 group-hover:rotate-90 transition-transform" />
             Add New TIL
           </Link>
         </Button>
@@ -116,22 +127,25 @@ export default function TILPage() {
 
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card>
-          <CardContent className="pt-6">
-            <div className="text-2xl font-bold">127</div>
-            <p className="text-xs text-muted-foreground">Total TILs</p>
+        <Card className="hover:shadow-lg transition-all duration-300 hover:-translate-y-1 group cursor-default">
+          <CardContent className="pt-6 text-center">
+            <Zap className="h-6 w-6 mx-auto mb-2 text-yellow-500 group-hover:scale-110 transition-transform" />
+            <div className="text-3xl font-bold bg-gradient-to-r from-yellow-500 to-orange-500 bg-clip-text text-transparent">127</div>
+            <p className="text-xs text-muted-foreground mt-1">Total TILs</p>
           </CardContent>
         </Card>
-        <Card>
-          <CardContent className="pt-6">
-            <div className="text-2xl font-bold">12</div>
-            <p className="text-xs text-muted-foreground">This month</p>
+        <Card className="hover:shadow-lg transition-all duration-300 hover:-translate-y-1 group cursor-default">
+          <CardContent className="pt-6 text-center">
+            <Sparkles className="h-6 w-6 mx-auto mb-2 text-orange-500 group-hover:scale-110 transition-transform" />
+            <div className="text-3xl font-bold bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">12</div>
+            <p className="text-xs text-muted-foreground mt-1">This month</p>
           </CardContent>
         </Card>
-        <Card>
-          <CardContent className="pt-6">
-            <div className="text-2xl font-bold">23</div>
-            <p className="text-xs text-muted-foreground">Different topics</p>
+        <Card className="hover:shadow-lg transition-all duration-300 hover:-translate-y-1 group cursor-default">
+          <CardContent className="pt-6 text-center">
+            <Lightbulb className="h-6 w-6 mx-auto mb-2 text-red-500 group-hover:scale-110 transition-transform" />
+            <div className="text-3xl font-bold bg-gradient-to-r from-red-500 to-pink-500 bg-clip-text text-transparent">23</div>
+            <p className="text-xs text-muted-foreground mt-1">Different topics</p>
           </CardContent>
         </Card>
       </div>
@@ -139,12 +153,12 @@ export default function TILPage() {
       {/* TIL Grid */}
       <div className="grid gap-6">
         {tils.map((til) => (
-          <Card key={til.id} className="hover:shadow-md transition-shadow">
+          <Card key={til.id} className="hover:shadow-lg transition-all duration-300 hover:-translate-y-1 group border-l-4 border-l-yellow-500">
             <CardHeader>
               <div className="flex items-start justify-between">
                 <div className="space-y-2 flex-1">
-                  <CardTitle className="text-lg flex items-center gap-2">
-                    <Lightbulb className="h-4 w-4 text-yellow-500" />
+                  <CardTitle className="text-lg flex items-center gap-2 group-hover:text-yellow-600 transition-colors">
+                    <Lightbulb className="h-4 w-4 text-yellow-500 group-hover:animate-pulse" />
                     {til.title}
                   </CardTitle>
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -179,7 +193,7 @@ export default function TILPage() {
               <div className="flex flex-wrap gap-2">
                 {til.tags.map((tag) => (
                   <Link key={tag} href={`/tags/${tag}`}>
-                    <Badge variant="outline" className="hover:bg-blue-100 hover:text-blue-800 transition-colors text-xs">
+                    <Badge variant="outline" className="hover:bg-yellow-100 hover:text-yellow-800 dark:hover:bg-yellow-900 transition-colors text-xs cursor-pointer">
                       {tag}
                     </Badge>
                   </Link>

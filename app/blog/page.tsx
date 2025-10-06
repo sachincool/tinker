@@ -1,9 +1,11 @@
+"use client";
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, Calendar, Clock, ArrowRight } from "lucide-react";
+import { Search, Calendar, Clock, ArrowRight, Sparkles, BookOpen } from "lucide-react";
 import Link from "next/link";
 
 export default function BlogPage() {
@@ -66,10 +68,19 @@ export default function BlogPage() {
   return (
     <div className="space-y-8">
       {/* Header */}
-      <div className="text-center space-y-4">
-        <h1 className="text-4xl font-bold">Blog Posts</h1>
+      <div className="text-center space-y-4 relative py-8">
+        <div className="absolute inset-0 -z-10 bg-gradient-to-br from-blue-50 via-purple-50 to-transparent dark:from-blue-950/20 dark:via-purple-950/20 rounded-3xl"></div>
+        <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-sm font-medium mb-4">
+          <BookOpen className="h-4 w-4" />
+          <span>The Digital Spellbook</span>
+        </div>
+        <h1 className="text-4xl md:text-5xl font-bold">
+          <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+            Blog Posts
+          </span>
+        </h1>
         <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-          Deep dives into web development, anime culture, and the art of tinkering with technology.
+          Deep dives into web development, infrastructure chaos, and the art of tinkering with technology.
         </p>
       </div>
 
@@ -108,12 +119,14 @@ export default function BlogPage() {
       {featuredPosts.length > 0 && (
         <section>
           <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
-            ⭐ Featured Posts
+            <Sparkles className="h-6 w-6 text-yellow-500" />
+            Featured Posts
           </h2>
           <div className="grid gap-6">
             {featuredPosts.map((post) => (
-              <Card key={post.id} className="hover:shadow-lg transition-all duration-300 border-l-4 border-l-blue-500">
-                <CardHeader>
+              <Card key={post.id} className="hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-l-4 border-l-blue-500 relative overflow-hidden group">
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <CardHeader className="relative">
                   <div className="flex items-start justify-between">
                     <div className="space-y-2 flex-1">
                       <CardTitle className="text-2xl hover:text-blue-600 transition-colors">
@@ -149,9 +162,9 @@ export default function BlogPage() {
                       </Link>
                     ))}
                   </div>
-                  <Button asChild className="w-fit">
+                  <Button asChild className="w-fit group/btn">
                     <Link href={`/blog/${post.id}`}>
-                      Read More <ArrowRight className="ml-2 h-4 w-4" />
+                      Read More <ArrowRight className="ml-2 h-4 w-4 group-hover/btn:translate-x-1 transition-transform" />
                     </Link>
                   </Button>
                 </CardHeader>
@@ -166,7 +179,7 @@ export default function BlogPage() {
         <h2 className="text-2xl font-bold mb-6">All Posts</h2>
         <div className="grid gap-6">
           {regularPosts.map((post) => (
-            <Card key={post.id} className="hover:shadow-md transition-shadow">
+            <Card key={post.id} className="hover:shadow-lg transition-all duration-300 hover:-translate-y-1 group">
               <CardHeader>
                 <div className="flex items-start justify-between">
                   <div className="space-y-2 flex-1">
