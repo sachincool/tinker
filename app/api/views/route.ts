@@ -4,16 +4,23 @@ import { promises as fs } from 'fs';
 import path from 'path';
 
 // Initialize Upstash Redis client (uses KV_* env vars from Vercel/Upstash integration)
-const redis = process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN
-  ? new Redis({
+let redis = null;
+try {
+  if (process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN) {
+    redis = new Redis({
       url: process.env.KV_REST_API_URL,
       token: process.env.KV_REST_API_TOKEN,
-    })
-  : null;
+    });
+  }
+} catch (error) {
+  console.error('Redis initialization error:', error);
+}
 
 // Hybrid storage: Upstash Redis in production, file-based for local dev
 const USE_REDIS = !!redis;
-const DATA_FILE = path.join(process.cwd(), 'data', 'views.json');
+// Use /tmp on Vercel (serverless), cwd for local dev
+const DATA_DIR = process.env.VERCEL ? '/tmp' : path.join(process.cwd(), 'data');
+const DATA_FILE = path.join(DATA_DIR, 'views.json');
 
 interface ViewData {
   [slug: string]: {
@@ -24,11 +31,10 @@ interface ViewData {
 
 // Ensure data directory exists
 async function ensureDataDir() {
-  const dataDir = path.join(process.cwd(), 'data');
   try {
-    await fs.access(dataDir);
+    await fs.access(DATA_DIR);
   } catch {
-    await fs.mkdir(dataDir, { recursive: true });
+    await fs.mkdir(DATA_DIR, { recursive: true });
   }
 }
 
@@ -105,34 +111,42 @@ export async function POST(req: NextRequest) {
     const clientFingerprint = getClientFingerprint(req);
 
     if (USE_REDIS && redis) {
-      // Use Upstash Redis (production)
-      const key = `views:${slug}`;
-      const visitorsKey = `views:${slug}:visitors`;
+      try {
+        // Use Upstash Redis (production)
+        const key = `views:${slug}`;
+        const visitorsKey = `views:${slug}:visitors`;
 
-      const isNewVisitor = (await redis.sismember(visitorsKey, clientFingerprint)) === 0;
+        const isNewVisitor = (await redis.sismember(visitorsKey, clientFingerprint)) === 0;
 
-      if (isNewVisitor) {
-        await redis.incr(key);
-        await redis.sadd(visitorsKey, clientFingerprint);
+        if (isNewVisitor) {
+          await redis.incr(key);
+          await redis.sadd(visitorsKey, clientFingerprint);
 
-        // Trim set to prevent unlimited growth (keep last 1000)
-        const setSize = await redis.scard(visitorsKey);
-        if (setSize && setSize > 1000) {
-          // Pop random members to keep size manageable
-          const toRemove = setSize - 1000;
-          for (let i = 0; i < toRemove; i++) {
-            await redis.spop(visitorsKey);
+          // Trim set to prevent unlimited growth (keep last 1000)
+          const setSize = await redis.scard(visitorsKey);
+          if (setSize && setSize > 1000) {
+            // Pop random members to keep size manageable
+            const toRemove = setSize - 1000;
+            for (let i = 0; i < toRemove; i++) {
+              await redis.spop(visitorsKey);
+            }
           }
         }
+
+        const count = (await redis.get<number>(key)) || 0;
+
+        return NextResponse.json({
+          count,
+          isNewView: isNewVisitor
+        });
+      } catch (redisError) {
+        console.error('Redis operation failed, falling back to file storage:', redisError);
+        // Fall through to file-based storage
       }
+    }
 
-      const count = await redis.get<number>(key) || 0;
-
-      return NextResponse.json({
-        count,
-        isNewView: isNewVisitor
-      });
-    } else {
+    // File-based storage (fallback or local dev)
+    {
       // Use file-based storage (local dev)
       const data = await readViews();
 

@@ -4,16 +4,23 @@ import { promises as fs } from 'fs';
 import path from 'path';
 
 // Initialize Upstash Redis client (uses KV_* env vars from Vercel/Upstash integration)
-const redis = process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN
-  ? new Redis({
+let redis = null;
+try {
+  if (process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN) {
+    redis = new Redis({
       url: process.env.KV_REST_API_URL,
       token: process.env.KV_REST_API_TOKEN,
-    })
-  : null;
+    });
+  }
+} catch (error) {
+  console.error('Redis initialization error:', error);
+}
 
 // Hybrid storage: Upstash Redis in production, file-based for local dev
 const USE_REDIS = !!redis;
-const DATA_FILE = path.join(process.cwd(), 'data', 'likes.json');
+// Use /tmp on Vercel (serverless), cwd for local dev
+const DATA_DIR = process.env.VERCEL ? '/tmp' : path.join(process.cwd(), 'data');
+const DATA_FILE = path.join(DATA_DIR, 'likes.json');
 
 interface LikeData {
   [slug: string]: {
@@ -24,11 +31,10 @@ interface LikeData {
 
 // Ensure data directory exists
 async function ensureDataDir() {
-  const dataDir = path.join(process.cwd(), 'data');
   try {
-    await fs.access(dataDir);
+    await fs.access(DATA_DIR);
   } catch {
-    await fs.mkdir(dataDir, { recursive: true });
+    await fs.mkdir(DATA_DIR, { recursive: true });
   }
 }
 
@@ -108,25 +114,33 @@ export async function POST(req: NextRequest) {
     const clientIP = getClientIP(req);
 
     if (USE_REDIS && redis) {
-      // Use Upstash Redis (production)
-      const key = `likes:${slug}`;
-      const ipsKey = `likes:${slug}:ips`;
+      try {
+        // Use Upstash Redis (production)
+        const key = `likes:${slug}`;
+        const ipsKey = `likes:${slug}:ips`;
 
-      const hasLiked = (await redis.sismember(ipsKey, clientIP)) === 1;
+        const hasLiked = (await redis.sismember(ipsKey, clientIP)) === 1;
 
-      if (action === 'like' && !hasLiked) {
-        await redis.incr(key);
-        await redis.sadd(ipsKey, clientIP);
-      } else if (action === 'unlike' && hasLiked) {
-        await redis.decr(key);
-        await redis.srem(ipsKey, clientIP);
+        if (action === 'like' && !hasLiked) {
+          await redis.incr(key);
+          await redis.sadd(ipsKey, clientIP);
+        } else if (action === 'unlike' && hasLiked) {
+          await redis.decr(key);
+          await redis.srem(ipsKey, clientIP);
+        }
+
+        const count = (await redis.get<number>(key)) || 0;
+        const liked = (await redis.sismember(ipsKey, clientIP)) === 1;
+
+        return NextResponse.json({ count, liked });
+      } catch (redisError) {
+        console.error('Redis operation failed, falling back to file storage:', redisError);
+        // Fall through to file-based storage
       }
+    }
 
-      const count = (await redis.get<number>(key)) || 0;
-      const liked = (await redis.sismember(ipsKey, clientIP)) === 1;
-
-      return NextResponse.json({ count, liked });
-    } else {
+    // File-based storage (fallback or local dev)
+    {
       // Use file-based storage (local dev)
       const data = await readLikes();
 
