@@ -1,10 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { kv } from '@vercel/kv';
+import { Redis } from '@upstash/redis';
 import { promises as fs } from 'fs';
 import path from 'path';
 
-// Hybrid storage: Vercel KV in production, file-based for local dev
-const USE_KV = !!(process.env.KV_REST_API_URL || process.env.KV_URL);
+// Initialize Upstash Redis client
+const redis = process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN
+  ? new Redis({
+      url: process.env.UPSTASH_REDIS_REST_URL,
+      token: process.env.UPSTASH_REDIS_REST_TOKEN,
+    })
+  : null;
+
+// Hybrid storage: Upstash Redis in production, file-based for local dev
+const USE_REDIS = !!redis;
 const DATA_FILE = path.join(process.cwd(), 'data', 'views.json');
 
 interface ViewData {
@@ -69,9 +77,9 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'Slug required' }, { status: 400 });
     }
 
-    if (USE_KV) {
-      // Use Vercel KV (production)
-      const count = await kv.get<number>(`views:${slug}`) || 0;
+    if (USE_REDIS && redis) {
+      // Use Upstash Redis (production)
+      const count = await redis.get<number>(`views:${slug}`) || 0;
       return NextResponse.json({ count });
     } else {
       // Use file-based storage (local dev)
@@ -96,29 +104,29 @@ export async function POST(req: NextRequest) {
 
     const clientFingerprint = getClientFingerprint(req);
 
-    if (USE_KV) {
-      // Use Vercel KV (production)
+    if (USE_REDIS && redis) {
+      // Use Upstash Redis (production)
       const key = `views:${slug}`;
       const visitorsKey = `views:${slug}:visitors`;
-      
-      const isNewVisitor = !(await kv.sismember(visitorsKey, clientFingerprint));
+
+      const isNewVisitor = !(await redis.sismember(visitorsKey, clientFingerprint));
 
       if (isNewVisitor) {
-        await kv.incr(key);
-        await kv.sadd(visitorsKey, clientFingerprint);
-        
+        await redis.incr(key);
+        await redis.sadd(visitorsKey, clientFingerprint);
+
         // Trim set to prevent unlimited growth (keep last 1000)
-        const setSize = await kv.scard(visitorsKey);
+        const setSize = await redis.scard(visitorsKey);
         if (setSize && setSize > 1000) {
           // Pop random members to keep size manageable
           const toRemove = setSize - 1000;
           for (let i = 0; i < toRemove; i++) {
-            await kv.spop(visitorsKey);
+            await redis.spop(visitorsKey);
           }
         }
       }
 
-      const count = await kv.get<number>(key) || 0;
+      const count = await redis.get<number>(key) || 0;
 
       return NextResponse.json({
         count,

@@ -1,10 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { kv } from '@vercel/kv';
+import { Redis } from '@upstash/redis';
 import { promises as fs } from 'fs';
 import path from 'path';
 
-// Hybrid storage: Vercel KV in production, file-based for local dev
-const USE_KV = !!(process.env.KV_REST_API_URL || process.env.KV_URL);
+// Initialize Upstash Redis client
+const redis = process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN
+  ? new Redis({
+      url: process.env.UPSTASH_REDIS_REST_URL,
+      token: process.env.UPSTASH_REDIS_REST_TOKEN,
+    })
+  : null;
+
+// Hybrid storage: Upstash Redis in production, file-based for local dev
+const USE_REDIS = !!redis;
 const DATA_FILE = path.join(process.cwd(), 'data', 'likes.json');
 
 interface LikeData {
@@ -69,15 +77,15 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'Slug required' }, { status: 400 });
     }
 
-    if (USE_KV) {
-      // Use Vercel KV (production)
-      const count = await kv.get<number>(`likes:${slug}`) || 0;
+    if (USE_REDIS && redis) {
+      // Use Upstash Redis (production)
+      const count = await redis.get<number>(`likes:${slug}`) || 0;
       return NextResponse.json({ count, liked: false });
     } else {
       // Use file-based storage (local dev)
       const data = await readLikes();
       const postData = data[slug] || { count: 0, ips: [] };
-      return NextResponse.json({ 
+      return NextResponse.json({
         count: postData.count,
         liked: false
       });
@@ -99,23 +107,23 @@ export async function POST(req: NextRequest) {
 
     const clientIP = getClientIP(req);
 
-    if (USE_KV) {
-      // Use Vercel KV (production)
+    if (USE_REDIS && redis) {
+      // Use Upstash Redis (production)
       const key = `likes:${slug}`;
       const ipsKey = `likes:${slug}:ips`;
-      
-      const hasLiked = await kv.sismember(ipsKey, clientIP);
+
+      const hasLiked = await redis.sismember(ipsKey, clientIP);
 
       if (action === 'like' && !hasLiked) {
-        await kv.incr(key);
-        await kv.sadd(ipsKey, clientIP);
+        await redis.incr(key);
+        await redis.sadd(ipsKey, clientIP);
       } else if (action === 'unlike' && hasLiked) {
-        await kv.decr(key);
-        await kv.srem(ipsKey, clientIP);
+        await redis.decr(key);
+        await redis.srem(ipsKey, clientIP);
       }
 
-      const count = await kv.get<number>(key) || 0;
-      const liked = await kv.sismember(ipsKey, clientIP);
+      const count = await redis.get<number>(key) || 0;
+      const liked = await redis.sismember(ipsKey, clientIP);
 
       return NextResponse.json({ count, liked });
     } else {
