@@ -109,7 +109,7 @@ export async function POST(req: NextRequest) {
       const key = `views:${slug}`;
       const visitorsKey = `views:${slug}:visitors`;
 
-      const isNewVisitor = !(await redis.sismember(visitorsKey, clientFingerprint));
+      const isNewVisitor = (await redis.sismember(visitorsKey, clientFingerprint)) === 0;
 
       if (isNewVisitor) {
         await redis.incr(key);
@@ -162,7 +162,12 @@ export async function POST(req: NextRequest) {
     }
   } catch (error) {
     console.error('Error tracking view:', error);
-    return NextResponse.json({ error: 'Failed to track view' }, { status: 500 });
+    console.error('Error details:', error instanceof Error ? error.message : String(error));
+    console.error('Redis available:', !!redis);
+    return NextResponse.json({
+      error: 'Failed to track view',
+      message: error instanceof Error ? error.message : String(error)
+    }, { status: 500 });
   }
 }
 

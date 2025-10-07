@@ -29,6 +29,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <link rel="alternate" type="application/rss+xml" title="RSS Feed" href="/rss.xml" />
+        <link rel="alternate" type="application/json" title="JSON Feed" href="/rss.json" />
+        <link rel="alternate" type="application/atom+xml" title="Atom Feed" href="/atom.xml" />
+      </head>
       <body className={inter.className}>
         <ThemeProvider
           attribute="class"

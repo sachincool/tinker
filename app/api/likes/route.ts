@@ -112,7 +112,7 @@ export async function POST(req: NextRequest) {
       const key = `likes:${slug}`;
       const ipsKey = `likes:${slug}:ips`;
 
-      const hasLiked = await redis.sismember(ipsKey, clientIP);
+      const hasLiked = (await redis.sismember(ipsKey, clientIP)) === 1;
 
       if (action === 'like' && !hasLiked) {
         await redis.incr(key);
@@ -122,8 +122,8 @@ export async function POST(req: NextRequest) {
         await redis.srem(ipsKey, clientIP);
       }
 
-      const count = await redis.get<number>(key) || 0;
-      const liked = await redis.sismember(ipsKey, clientIP);
+      const count = (await redis.get<number>(key)) || 0;
+      const liked = (await redis.sismember(ipsKey, clientIP)) === 1;
 
       return NextResponse.json({ count, liked });
     } else {
@@ -154,7 +154,16 @@ export async function POST(req: NextRequest) {
     }
   } catch (error) {
     console.error('Error updating likes:', error);
-    return NextResponse.json({ error: 'Failed to update likes' }, { status: 500 });
+    console.error('Error details:', error instanceof Error ? error.message : String(error));
+    console.error('Redis available:', !!redis);
+    console.error('Env vars:', {
+      hasUrl: !!process.env.KV_REST_API_URL,
+      hasToken: !!process.env.KV_REST_API_TOKEN
+    });
+    return NextResponse.json({
+      error: 'Failed to update likes',
+      message: error instanceof Error ? error.message : String(error)
+    }, { status: 500 });
   }
 }
 
