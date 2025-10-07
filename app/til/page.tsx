@@ -5,74 +5,74 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, Calendar, Plus, Lightbulb, ExternalLink, Sparkles, Zap } from "lucide-react";
+import { Search, Calendar, Lightbulb, ExternalLink, Sparkles, Zap } from "lucide-react";
 import Link from "next/link";
 
 export default function TILPage() {
   const tils = [
     {
-      id: "css-grid-auto-fit",
-      title: "CSS Grid auto-fit vs auto-fill",
-      content: "The difference is subtle but important for responsive layouts. `auto-fit` collapses empty tracks, while `auto-fill` keeps them. Use `auto-fit` when you want columns to expand to fill available space.",
-      date: "2025-09-10",
-      tags: ["css", "responsive", "grid"],
-      codeExample: "grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));"
+      id: "kubectl-neat-trick",
+      title: "kubectl neat - Remove Kubernetes YAML Clutter",
+      content: "Use kubectl neat plugin to remove all the noise from Kubernetes YAML output. No more creationTimestamp and managedFields garbage!",
+      date: "2024-12-10",
+      tags: ["kubernetes", "kubectl", "productivity"],
+      codeExample: "kubectl get pod my-pod -o yaml | kubectl neat"
     },
     {
-      id: "typescript-satisfies",
-      title: "TypeScript satisfies operator",
-      content: "A better way to ensure type safety without losing inference. Instead of type assertions, use `satisfies` to validate that an object matches a type while preserving its literal types.",
-      date: "2025-09-09",
-      tags: ["typescript", "types", "inference"],
-      codeExample: "const config = { theme: 'dark', port: 3000 } satisfies Config;"
+      id: "docker-build-cache-trick",
+      title: "Docker Build Cache: The .dockerignore Gotcha",
+      content: "Editor swap files and temp files can invalidate your Docker build cache. A proper .dockerignore saved me from 5-minute builds.",
+      date: "2024-12-05",
+      tags: ["docker", "devops", "optimization"],
+      codeExample: "# .dockerignore\n*.swp\n.DS_Store\nnode_modules"
     },
     {
-      id: "react-use-callback-deps",
-      title: "useCallback dependency gotcha",
-      content: "Don't forget to include all dependencies in useCallback! Missing deps can cause stale closures. Use ESLint plugin react-hooks to catch these automatically.",
-      date: "2025-09-08",
-      tags: ["react", "hooks", "performance"],
-      codeExample: "useCallback(() => { doSomething(value); }, [value]); // Include value!"
+      id: "k8s-ephemeral-containers",
+      title: "Kubernetes Ephemeral Debug Containers",
+      content: "Debug running pods without rebuilding images. Just attach a debug container with all your tools!",
+      date: "2024-12-01",
+      tags: ["kubernetes", "debugging", "devops"],
+      codeExample: "kubectl debug -it my-pod --image=nicolaka/netshoot"
+    },
+    {
+      id: "terraform-fmt-check",
+      title: "Terraform fmt in CI/CD",
+      content: "Use `terraform fmt -check -recursive` in CI to catch formatting issues before merge. Keeps the team sane.",
+      date: "2024-11-25",
+      tags: ["terraform", "cicd", "devops"],
+      codeExample: "terraform fmt -check -recursive"
+    },
+    {
+      id: "aws-cli-output-table",
+      title: "AWS CLI Table Output for Humans",
+      content: "Switch from JSON to table output for better readability. Your eyes will thank you.",
+      date: "2024-11-20",
+      tags: ["aws", "cli", "productivity"],
+      codeExample: "aws ec2 describe-instances --output table"
     },
     {
       id: "git-interactive-rebase",
       title: "Git interactive rebase for clean history",
-      content: "Use `git rebase -i HEAD~n` to clean up your commit history before merging. You can squash, reword, or reorder commits to tell a better story.",
-      date: "2025-09-07",
+      content: "Use `git rebase -i HEAD~n` to clean up your commit history before merging. Squash those 'fix typo' commits!",
+      date: "2024-11-15",
       tags: ["git", "workflow", "productivity"],
       codeExample: "git rebase -i HEAD~3"
     },
     {
-      id: "css-logical-properties",
-      title: "CSS Logical Properties for i18n",
-      content: "Use logical properties like `margin-inline-start` instead of `margin-left` for better internationalization support. They automatically adapt to writing direction.",
-      date: "2025-09-06",
-      tags: ["css", "i18n", "accessibility"],
-      codeExample: "margin-inline-start: 1rem; /* Better than margin-left */"
+      id: "bash-set-options",
+      title: "Bash set -euxo pipefail for Safer Scripts",
+      content: "Stop silent failures in bash scripts. These flags make your scripts fail fast and show what they're doing.",
+      date: "2024-11-10",
+      tags: ["bash", "scripting", "debugging"],
+      codeExample: "set -euxo pipefail  # Exit on error, undefined vars, pipe fails"
     },
     {
-      id: "js-optional-chaining-nullish",
-      title: "Optional chaining with nullish coalescing",
-      content: "Combine `?.` and `??` for robust property access. Optional chaining returns undefined for missing properties, nullish coalescing provides fallbacks only for null/undefined.",
-      date: "2025-09-05",
-      tags: ["javascript", "es2020", "safety"],
-      codeExample: "const name = user?.profile?.name ?? 'Anonymous';"
-    },
-    {
-      id: "next-dynamic-imports",
-      title: "Next.js dynamic imports for code splitting",
-      content: "Use dynamic imports to reduce bundle size. Perfect for components that aren't needed on initial load, like modals or heavy libraries.",
-      date: "2025-09-04",
-      tags: ["nextjs", "performance", "optimization"],
-      codeExample: "const Modal = dynamic(() => import('./Modal'), { ssr: false });"
-    },
-    {
-      id: "vscode-multi-cursor",
-      title: "VS Code multi-cursor magic",
-      content: "Hold Alt and click to place multiple cursors, or use Ctrl+Shift+L to select all occurrences of current selection. Game changer for bulk edits!",
-      date: "2025-09-03",
-      tags: ["vscode", "productivity", "shortcuts"],
-      codeExample: "Alt + Click = Multiple cursors"
+      id: "k8s-events-debugging",
+      title: "kubectl get events for Quick Debugging",
+      content: "Before diving into logs, check events. They often tell you exactly what went wrong with scheduling or startup.",
+      date: "2024-11-05",
+      tags: ["kubernetes", "debugging", "kubectl"],
+      codeExample: "kubectl get events --field-selector involvedObject.name=my-pod"
     }
   ];
 
@@ -96,12 +96,6 @@ export default function TILPage() {
         <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
           Quick insights, code snippets, and "aha!" moments from my daily tinkering and chaos engineering.
         </p>
-        <Button asChild size="lg" className="group">
-          <Link href="/til/new">
-            <Plus className="mr-2 h-4 w-4 group-hover:rotate-90 transition-transform" />
-            Add New TIL
-          </Link>
-        </Button>
       </div>
 
       {/* Search and Filter */}
@@ -116,11 +110,11 @@ export default function TILPage() {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Tags</SelectItem>
-            <SelectItem value="css">CSS</SelectItem>
-            <SelectItem value="javascript">JavaScript</SelectItem>
-            <SelectItem value="typescript">TypeScript</SelectItem>
-            <SelectItem value="react">React</SelectItem>
-            <SelectItem value="nextjs">Next.js</SelectItem>
+            <SelectItem value="kubernetes">Kubernetes</SelectItem>
+            <SelectItem value="docker">Docker</SelectItem>
+            <SelectItem value="terraform">Terraform</SelectItem>
+            <SelectItem value="aws">AWS</SelectItem>
+            <SelectItem value="bash">Bash</SelectItem>
           </SelectContent>
         </Select>
       </div>

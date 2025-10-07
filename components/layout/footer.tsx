@@ -91,22 +91,22 @@ export function Footer() {
             <h3 className="font-semibold mb-4">Connect</h3>
             <div className="flex flex-wrap gap-2 mb-4">
               <Button variant="outline" size="icon" asChild>
-                <Link href="https://github.com/harshit" target="_blank" rel="noopener noreferrer">
+                <Link href="https://github.com/sachincool" target="_blank" rel="noopener noreferrer">
                   <Github className="h-4 w-4" />
                 </Link>
               </Button>
               <Button variant="outline" size="icon" asChild>
-                <Link href="https://twitter.com/harshit" target="_blank" rel="noopener noreferrer">
+                <Link href="https://twitter.com/exploit_sh" target="_blank" rel="noopener noreferrer">
                   <Twitter className="h-4 w-4" />
                 </Link>
               </Button>
               <Button variant="outline" size="icon" asChild>
-                <Link href="https://linkedin.com/in/harshit" target="_blank" rel="noopener noreferrer">
+                <Link href="https://linkedin.com/in/harshit-luthra/" target="_blank" rel="noopener noreferrer">
                   <Linkedin className="h-4 w-4" />
                 </Link>
               </Button>
               <Button variant="outline" size="icon" asChild>
-                <Link href="mailto:hello@harshit.cloud">
+                <Link href="mailto:contact@sachin.cool">
                   <Mail className="h-4 w-4" />
                 </Link>
               </Button>
@@ -119,6 +119,24 @@ export function Footer() {
             <p className="text-xs text-muted-foreground">
               Always happy to chat about infra, K8s, or Dota 2 strategies!
             </p>
+            <div className="mt-3 p-2 rounded border border-dashed border-muted-foreground/30 hover:border-yellow-500/50 transition-colors group cursor-help" title="Try the Konami Code on your keyboard!">
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-muted-foreground/60 group-hover:text-yellow-500 transition-colors">🎮</span>
+                <div className="flex items-center gap-1">
+                  <kbd className="px-1 text-[10px] border rounded bg-muted font-mono group-hover:border-yellow-500/50 transition-colors">↑</kbd>
+                  <kbd className="px-1 text-[10px] border rounded bg-muted font-mono group-hover:border-yellow-500/50 transition-colors">↑</kbd>
+                  <kbd className="px-1 text-[10px] border rounded bg-muted font-mono group-hover:border-yellow-500/50 transition-colors">↓</kbd>
+                  <kbd className="px-1 text-[10px] border rounded bg-muted font-mono group-hover:border-yellow-500/50 transition-colors">↓</kbd>
+                  <kbd className="px-1 text-[10px] border rounded bg-muted font-mono group-hover:border-yellow-500/50 transition-colors">←</kbd>
+                  <kbd className="px-1 text-[10px] border rounded bg-muted font-mono group-hover:border-yellow-500/50 transition-colors">→</kbd>
+                  <kbd className="px-1 text-[10px] border rounded bg-muted font-mono group-hover:border-yellow-500/50 transition-colors">←</kbd>
+                  <kbd className="px-1 text-[10px] border rounded bg-muted font-mono group-hover:border-yellow-500/50 transition-colors">→</kbd>
+                  <kbd className="px-1 text-[10px] border rounded bg-muted font-mono group-hover:border-yellow-500/50 transition-colors">B</kbd>
+                  <kbd className="px-1 text-[10px] border rounded bg-muted font-mono group-hover:border-yellow-500/50 transition-colors">A</kbd>
+                </div>
+                <span className="text-xs text-muted-foreground/60 italic group-hover:text-yellow-500 transition-colors">Try it!</span>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -126,19 +144,30 @@ export function Footer() {
         <div className="pt-8 border-t">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-sm text-muted-foreground">
-              © {new Date().getFullYear()} Harshit. Built with{" "}
+              © {new Date().getFullYear()} Harshit Luthra. Built with{" "}
               <Heart className="inline h-3 w-3 text-red-500 fill-current" /> and chaos.
+              <span className="hidden lg:inline ml-2 text-xs">
+                • <span className="font-mono">01000100 01000011 00100000 01010011 01110101 01100011 01101011 01110011</span>
+              </span>
             </p>
             <div className="flex items-center gap-4 text-xs text-muted-foreground">
               <span className="hidden sm:inline">
                 "In production, we trust... our backup plans." 🧙‍♂️
               </span>
-              <Link href="/privacy" className="hover:text-foreground transition-colors">
-                Privacy
+              <Link href="/resume" className="hover:text-foreground transition-colors">
+                Resume
               </Link>
-              <Link href="/terms" className="hover:text-foreground transition-colors">
-                Terms
-              </Link>
+              <button 
+                onClick={() => {
+                  console.log("%c🧙‍♂️ Hey there, fellow code wizard!", "font-size: 20px; color: #6366f1; font-weight: bold;");
+                  console.log("%cYou found the secret developer console message!", "font-size: 14px; color: #8b5cf6;");
+                  console.log("%cWant to see something cool? Try typing: document.body.style.transform = 'rotate(180deg)'", "font-size: 12px; color: #ec4899;");
+                  console.log("%c(Just kidding, don't do that... unless? 😏)", "font-size: 10px; color: #64748b;");
+                }}
+                className="hover:text-foreground transition-colors"
+              >
+                Secret
+              </button>
             </div>
           </div>
         </div>

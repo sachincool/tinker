@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Tils on Infra Magician</title>
+    <link>http://localhost:1313/til/</link>
+    <description>Recent content in Tils on Infra Magician</description>
+    <image>
+      <title>Infra Magician</title>
+      <url>http://localhost:1313/assets/tinker.svg</url>
+      <link>http://localhost:1313/assets/tinker.svg</link>
+    </image>
+    <generator>Hugo -- 0.151.0</generator>
+    <language>en</language>
+    <lastBuildDate>Sun, 05 Oct 2025 14:30:00 +0530</lastBuildDate>
+    <atom:link href="http://localhost:1313/til/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>kubectl Field Selector Magic</title>
+      <link>http://localhost:1313/til/kubectl-field-selector/</link>
+      <pubDate>Sun, 05 Oct 2025 14:30:00 +0530</pubDate>
+      <guid>http://localhost:1313/til/kubectl-field-selector/</guid>
+      <description>Quick way to find failed pods without grep gymnastics</description>
+    </item>
+    <item>
+      <title>CSS Grid: auto-fit vs auto-fill</title>
+      <link>http://localhost:1313/til/css-grid-auto-fit-vs-auto-fill/</link>
+      <pubDate>Sat, 04 Oct 2025 10:15:00 +0530</pubDate>
+      <guid>http://localhost:1313/til/css-grid-auto-fit-vs-auto-fill/</guid>
+      <description>The subtle but important difference for responsive layouts</description>
+    </item>
+    <item>
+      <title>TypeScript&#39;s satisfies Operator</title>
+      <link>http://localhost:1313/til/typescript-satisfies-operator/</link>
+      <pubDate>Fri, 03 Oct 2025 16:45:00 +0530</pubDate>
+      <guid>http://localhost:1313/til/typescript-satisfies-operator/</guid>
+      <description>Type checking without losing specific literal types</description>
+    </item>
+    <item>
+      <title>Docker Multi-Stage Build Layer Caching Trick</title>
+      <link>http://localhost:1313/til/docker-multi-stage-build-caching/</link>
+      <pubDate>Thu, 02 Oct 2025 09:20:00 +0530</pubDate>
+      <guid>http://localhost:1313/til/docker-multi-stage-build-caching/</guid>
+      <description>Speed up your Docker builds by 10x with this one weird trick</description>
+    </item>
+    <item>
+      <title>Bash Parameter Expansion: Stop Using sed and awk</title>
+      <link>http://localhost:1313/til/bash-parameter-expansion-tricks/</link>
+      <pubDate>Wed, 01 Oct 2025 11:30:00 +0530</pubDate>
+      <guid>http://localhost:1313/til/bash-parameter-expansion-tricks/</guid>
+      <description>Built-in bash magic that makes sed/awk overkill for simple tasks</description>
+    </item>
+  </channel>
+</rss>

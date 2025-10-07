@@ -5,6 +5,8 @@ import { ThemeProvider } from '@/components/theme-provider'
 import { Header } from '@/components/blog/header'
 import { Footer } from '@/components/layout/footer'
 import { Toaster } from '@/components/ui/sonner'
+import { KonamiCode } from '@/components/easter-eggs/konami-code'
+import { ConsoleMessage } from '@/components/easter-eggs/console-message'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -41,6 +43,8 @@ export default function RootLayout({
             </main>
             <Footer />
           </div>
+          <KonamiCode />
+          <ConsoleMessage />
           <Toaster />
         </ThemeProvider>
       </body>

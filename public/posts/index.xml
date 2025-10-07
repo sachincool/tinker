@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Posts on Infra Magician</title>
+    <link>http://localhost:1313/posts/</link>
+    <description>Recent content in Posts on Infra Magician</description>
+    <image>
+      <title>Infra Magician</title>
+      <url>http://localhost:1313/assets/tinker.svg</url>
+      <link>http://localhost:1313/assets/tinker.svg</link>
+    </image>
+    <generator>Hugo -- 0.151.0</generator>
+    <language>en</language>
+    <lastBuildDate>Fri, 11 Apr 2025 19:41:04 +0000</lastBuildDate>
+    <atom:link href="http://localhost:1313/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Untitled 1</title>
+      <link>http://localhost:1313/posts/hello-world/</link>
+      <pubDate>Sat, 12 Apr 2025 01:10:31 +0530</pubDate>
+      <guid>http://localhost:1313/posts/hello-world/</guid>
+      <description>&lt;p&gt;Hello Testting 123&lt;br&gt;
+&lt;a href=&#34;https://openrouter.ai/api/v1&#34;&gt;https://openrouter.ai/api/v1&lt;/a&gt;&lt;br&gt;
+&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/images/posts/images/Pasted%20image%2020250412011058.png&#34;&gt;:w&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Untitled</title>
+      <link>http://localhost:1313/posts/untitled/</link>
+      <pubDate>Tue, 08 Apr 2025 22:16:15 +0530</pubDate>
+      <guid>http://localhost:1313/posts/untitled/</guid>
+      <description></description>
+    </item>
+  </channel>
+</rss>

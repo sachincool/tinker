@@ -11,53 +11,53 @@ import Link from "next/link";
 export default function BlogPage() {
   const posts = [
     {
-      id: "modern-react-patterns",
-      title: "Modern React Patterns That Will Make You a Better Developer",
-      excerpt: "Exploring advanced React patterns including compound components, render props, and custom hooks that every developer should know.",
-      content: "# Modern React Patterns\n\nReact has evolved significantly...",
-      date: "2025-09-08",
+      id: "kubernetes-debugging-tips",
+      title: "5 Kubernetes Debugging Tricks That Saved My Production",
+      excerpt: "Hard-learned lessons from debugging Kubernetes issues at 3 AM. These tricks will save you hours of frustration.",
+      content: "# 5 Kubernetes Debugging Tricks\n\nAfter countless nights debugging...",
+      date: "2024-12-15",
       readTime: "8 min read",
-      tags: ["react", "javascript", "patterns", "web-dev"],
+      tags: ["kubernetes", "devops", "debugging", "production"],
       featured: true
     },
     {
-      id: "anime-programming-lessons",
-      title: "What Anime Taught Me About Programming",
-      excerpt: "Surprisingly, anime contains valuable lessons about debugging, persistence, and the developer mindset.",
-      content: "# Anime and Programming\n\nAs a developer who loves anime...",
-      date: "2025-09-05",
-      readTime: "6 min read",
-      tags: ["anime", "philosophy", "career", "mindset"],
-      featured: false
-    },
-    {
-      id: "obsidian-blog-setup",
-      title: "Building a Blog Connected to Your Obsidian Vault",
-      excerpt: "How I created a seamless workflow from my digital garden to a public blog using modern web technologies.",
-      content: "# Obsidian to Blog\n\nObsidian is an amazing tool...",
-      date: "2025-09-02",
+      id: "infrastructure-as-code-mistakes",
+      title: "Infrastructure as Code: Mistakes I Made So You Don't Have To",
+      excerpt: "Learning Terraform the hard way. Here are the mistakes that cost me sleep, money, and a bit of my sanity.",
+      content: "# Infrastructure as Code Mistakes\n\nAfter managing infrastructure...",
+      date: "2024-11-28",
       readTime: "12 min read",
-      tags: ["obsidian", "nextjs", "automation", "productivity"],
+      tags: ["terraform", "iac", "devops", "infrastructure"],
       featured: true
     },
     {
-      id: "css-grid-mastery",
-      title: "CSS Grid: From Zero to Hero",
-      excerpt: "A comprehensive guide to mastering CSS Grid with practical examples and real-world use cases.",
-      content: "# CSS Grid Mastery\n\nCSS Grid is one of the most powerful...",
-      date: "2025-08-28",
+      id: "docker-optimization-guide",
+      title: "Docker Image Optimization: From 2GB to 50MB",
+      excerpt: "How I reduced my Docker images by 97% using multi-stage builds and Alpine Linux.",
+      content: "# Docker Optimization\n\nDocker images getting too big?",
+      date: "2024-11-15",
       readTime: "10 min read",
-      tags: ["css", "web-dev", "layout", "responsive"],
+      tags: ["docker", "optimization", "devops"],
       featured: false
     },
     {
-      id: "typescript-advanced-types",
-      title: "Advanced TypeScript Types You Should Know",
-      excerpt: "Diving deep into conditional types, mapped types, and template literal types to write better TypeScript.",
-      content: "# Advanced TypeScript\n\nTypeScript's type system...",
-      date: "2025-08-25",
+      id: "kubernetes-networking-deep-dive",
+      title: "Kubernetes Networking Deep Dive",
+      excerpt: "Understanding how pods communicate, what CNI plugins do, and why network policies matter.",
+      content: "# K8s Networking\n\nKubernetes networking is complex...",
+      date: "2024-10-28",
       readTime: "15 min read",
-      tags: ["typescript", "types", "advanced", "web-dev"],
+      tags: ["kubernetes", "networking", "infrastructure"],
+      featured: false
+    },
+    {
+      id: "cicd-best-practices",
+      title: "CI/CD Best Practices I Learned the Hard Way",
+      excerpt: "Building reliable CI/CD pipelines isn't just about automation - it's about building trust.",
+      content: "# CI/CD Best Practices\n\nAfter breaking production with bad deploys...",
+      date: "2024-10-10",
+      readTime: "9 min read",
+      tags: ["cicd", "devops", "automation", "bestpractices"],
       featured: false
     }
   ];
@@ -96,11 +96,11 @@ export default function BlogPage() {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Tags</SelectItem>
-            <SelectItem value="react">React</SelectItem>
-            <SelectItem value="typescript">TypeScript</SelectItem>
-            <SelectItem value="css">CSS</SelectItem>
-            <SelectItem value="anime">Anime</SelectItem>
-            <SelectItem value="web-dev">Web Dev</SelectItem>
+            <SelectItem value="kubernetes">Kubernetes</SelectItem>
+            <SelectItem value="devops">DevOps</SelectItem>
+            <SelectItem value="terraform">Terraform</SelectItem>
+            <SelectItem value="docker">Docker</SelectItem>
+            <SelectItem value="cicd">CI/CD</SelectItem>
           </SelectContent>
         </Select>
         <Select>

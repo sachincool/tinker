@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Infra Magician</title>
+    <link>http://localhost:1313/</link>
+    <description>Recent content on Infra Magician</description>
+    <image>
+      <title>Infra Magician</title>
+      <url>http://localhost:1313/assets/tinker.svg</url>
+      <link>http://localhost:1313/assets/tinker.svg</link>
+    </image>
+    <generator>Hugo -- 0.151.0</generator>
+    <language>en</language>
+    <lastBuildDate>Sun, 05 Oct 2025 14:30:00 +0530</lastBuildDate>
+    <atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>kubectl Field Selector Magic</title>
+      <link>http://localhost:1313/til/kubectl-field-selector/</link>
+      <pubDate>Sun, 05 Oct 2025 14:30:00 +0530</pubDate>
+      <guid>http://localhost:1313/til/kubectl-field-selector/</guid>
+      <description>Quick way to find failed pods without grep gymnastics</description>
+    </item>
+    <item>
+      <title>CSS Grid: auto-fit vs auto-fill</title>
+      <link>http://localhost:1313/til/css-grid-auto-fit-vs-auto-fill/</link>
+      <pubDate>Sat, 04 Oct 2025 10:15:00 +0530</pubDate>
+      <guid>http://localhost:1313/til/css-grid-auto-fit-vs-auto-fill/</guid>
+      <description>The subtle but important difference for responsive layouts</description>
+    </item>
+    <item>
+      <title>TypeScript&#39;s satisfies Operator</title>
+      <link>http://localhost:1313/til/typescript-satisfies-operator/</link>
+      <pubDate>Fri, 03 Oct 2025 16:45:00 +0530</pubDate>
+      <guid>http://localhost:1313/til/typescript-satisfies-operator/</guid>
+      <description>Type checking without losing specific literal types</description>
+    </item>
+    <item>
+      <title>Docker Multi-Stage Build Layer Caching Trick</title>
+      <link>http://localhost:1313/til/docker-multi-stage-build-caching/</link>
+      <pubDate>Thu, 02 Oct 2025 09:20:00 +0530</pubDate>
+      <guid>http://localhost:1313/til/docker-multi-stage-build-caching/</guid>
+      <description>Speed up your Docker builds by 10x with this one weird trick</description>
+    </item>
+    <item>
+      <title>Bash Parameter Expansion: Stop Using sed and awk</title>
+      <link>http://localhost:1313/til/bash-parameter-expansion-tricks/</link>
+      <pubDate>Wed, 01 Oct 2025 11:30:00 +0530</pubDate>
+      <guid>http://localhost:1313/til/bash-parameter-expansion-tricks/</guid>
+      <description>Built-in bash magic that makes sed/awk overkill for simple tasks</description>
+    </item>
+    <item>
+      <title>Untitled 1</title>
+      <link>http://localhost:1313/posts/hello-world/</link>
+      <pubDate>Sat, 12 Apr 2025 01:10:31 +0530</pubDate>
+      <guid>http://localhost:1313/posts/hello-world/</guid>
+      <description>&lt;p&gt;Hello Testting 123&lt;br&gt;
+&lt;a href=&#34;https://openrouter.ai/api/v1&#34;&gt;https://openrouter.ai/api/v1&lt;/a&gt;&lt;br&gt;
+&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/images/posts/images/Pasted%20image%2020250412011058.png&#34;&gt;:w&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Untitled</title>
+      <link>http://localhost:1313/posts/untitled/</link>
+      <pubDate>Tue, 08 Apr 2025 22:16:15 +0530</pubDate>
+      <guid>http://localhost:1313/posts/untitled/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>About Me</title>
+      <link>http://localhost:1313/about/</link>
+      <pubDate>Tue, 04 Mar 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/about/</guid>
+      <description>&lt;h1 id=&#34;-hello-world&#34;&gt;👋 Hello World&lt;/h1&gt;
+&lt;p&gt;I&amp;rsquo;m a Level 99 Infrastructure Wizard specializing in the arcane arts of Cloud Native technologies. By day, I craft robust infrastructure solutions; by night, I&amp;rsquo;m probably debugging that one Kubernetes pod that refuses to play nice.&lt;/p&gt;
+&lt;h2 id=&#34;-tech-stack&#34;&gt;🛠 Tech Stack&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Infrastructure&lt;/strong&gt;: Kubernetes, Docker, Terraform&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Cloud Platforms&lt;/strong&gt;: AWS, GCP, Azure&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;CI/CD&lt;/strong&gt;: GitLab, GitHub Actions, ArgoCD&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Monitoring&lt;/strong&gt;: Prometheus, Grafana, ELK Stack&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Languages&lt;/strong&gt;: Go, Python, Bash (and occasionally YAML as a programming language 😉)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;-when-not-breaking-production&#34;&gt;🎮 When Not Breaking Production&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;🎮 Playing Dota 2 (and still blaming supports)&lt;/li&gt;
+&lt;li&gt;📺 Watching anime and relating every infrastructure problem to an anime plot&lt;/li&gt;
+&lt;li&gt;🤔 Thinking about how to containerize literally everything&lt;/li&gt;
+&lt;li&gt;🔧 Contributing to open-source projects&lt;/li&gt;
+&lt;li&gt;📝 Writing about my adventures in tech&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;-lets-connect&#34;&gt;💬 Let&amp;rsquo;s Connect&lt;/h2&gt;
+&lt;p&gt;Feel free to reach out if you want to:&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

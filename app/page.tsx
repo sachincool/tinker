@@ -27,18 +27,18 @@ export default function HomePage() {
 
   const latestPosts = [
     {
-      id: "modern-react-patterns",
-      title: "Modern React Patterns That Will Make You a Better Developer",
-      excerpt: "Exploring advanced React patterns including compound components and custom hooks.",
-      tags: ["react", "javascript", "patterns"],
-      date: "2025-09-08",
+      id: "kubernetes-debugging-tips",
+      title: "5 Kubernetes Debugging Tricks That Saved My Production",
+      excerpt: "Hard-learned lessons from debugging Kubernetes issues at 3 AM. These tricks will save you hours.",
+      tags: ["kubernetes", "devops", "debugging"],
+      date: "2024-12-15",
     },
     {
-      id: "obsidian-blog-setup",
-      title: "Building a Blog Connected to Your Obsidian Vault",
-      excerpt: "How I created a seamless workflow from my digital garden to a public blog.",
-      tags: ["obsidian", "nextjs", "automation"],
-      date: "2025-09-02",
+      id: "infrastructure-as-code-mistakes",
+      title: "Infrastructure as Code: Mistakes I Made So You Don't Have To",
+      excerpt: "Learning Terraform the hard way. Mistakes that cost me sleep, money, and sanity.",
+      tags: ["terraform", "iac", "devops"],
+      date: "2024-11-28",
     }
   ];
 
@@ -120,9 +120,9 @@ export default function HomePage() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[
             { label: "Servers Crashed", value: "∞", color: "from-red-500 to-orange-500", icon: Zap },
-            { label: "TILs Shared", value: "127", color: "from-green-500 to-emerald-500", icon: Lightbulb },
+            { label: "TILs Written", value: "42+", color: "from-green-500 to-emerald-500", icon: Lightbulb },
             { label: "Dota MMR", value: "2.3k", color: "from-purple-500 to-pink-500", icon: TrendingUp },
-            { label: "Coffees", value: "9001", color: "from-orange-500 to-yellow-500", icon: Coffee },
+            { label: "Coffee Mugs", value: "9001", color: "from-orange-500 to-yellow-500", icon: Coffee },
           ].map((stat, index) => (
             <Card 
               key={index} 
