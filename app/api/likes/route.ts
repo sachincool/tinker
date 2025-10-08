@@ -78,24 +78,36 @@ function getClientIP(req: NextRequest): string {
 export async function GET(req: NextRequest) {
   try {
     const slug = req.nextUrl.searchParams.get('slug');
-    
+
     if (!slug) {
       return NextResponse.json({ error: 'Slug required' }, { status: 400 });
     }
 
+    const clientIP = getClientIP(req);
+
     if (USE_REDIS && redis) {
-      // Use Upstash Redis (production)
-      const count = await redis.get<number>(`likes:${slug}`) || 0;
-      return NextResponse.json({ count, liked: false });
-    } else {
-      // Use file-based storage (local dev)
-      const data = await readLikes();
-      const postData = data[slug] || { count: 0, ips: [] };
-      return NextResponse.json({
-        count: postData.count,
-        liked: false
-      });
+      try {
+        // Use Upstash Redis (production)
+        const key = `likes:${slug}`;
+        const ipsKey = `likes:${slug}:ips`;
+
+        const count = (await redis.get<number>(key)) || 0;
+        const liked = (await redis.sismember(ipsKey, clientIP)) === 1;
+
+        return NextResponse.json({ count, liked });
+      } catch (redisError) {
+        console.error('Redis GET failed, falling back to file storage:', redisError);
+        // Fall through to file-based storage
+      }
     }
+
+    // File-based storage (fallback or local dev)
+    const data = await readLikes();
+    const postData = data[slug] || { count: 0, ips: [] };
+    return NextResponse.json({
+      count: postData.count,
+      liked: postData.ips.includes(clientIP)
+    });
   } catch (error) {
     console.error('Error reading likes:', error);
     return NextResponse.json({ error: 'Failed to read likes' }, { status: 500 });
