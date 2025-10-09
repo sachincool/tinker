@@ -3,6 +3,7 @@
 ## 🔍 Recent Audit & Fixes (Latest Update)
 
 ### ✅ Fixed Issues
+
 1. **Code Block Copy Feature** - Now properly integrated using the `CodeBlock` component with copy-to-clipboard functionality
 2. **Real Content Loading** - Blog and TIL pages now load actual markdown files from `/content` directory instead of using hardcoded data
 3. **Markdown Renderer** - Created unified `MarkdownContent` component that properly renders markdown with syntax highlighting and copy buttons
@@ -10,10 +11,12 @@
 5. **Reading Time** - Calculated dynamically from actual content using `reading-time` library
 
 ### 🔧 Known Issues
+
 1. **Resume PDF** - Links to `/Harshit_Resume.pdf` which needs to exist in `/public` directory
    - **Recommendation**: Add the actual resume PDF file to `/public` directory
 
 ### 📊 Implementation Status Legend
+
 - ✅ **Fully Implemented & Working** - Feature is complete and accessible to users
 - 🔧 **Partially Implemented** - Code exists but not integrated or has limitations
 - ⚠️ **Needs Configuration** - Feature works but requires external setup (e.g., Giscus repo)
@@ -22,6 +25,7 @@
 ## ✨ Current Features
 
 ### 🎯 Core Functionality
+
 - ✅ **Reading Progress Bar** - Visual indicator at top of page (blog posts only)
 - ✅ **View Counter** - Tracks unique views per post with hybrid Redis/file storage
 - ✅ **Like System** - One-click appreciation with animation, persists server-side
@@ -35,6 +39,7 @@
 - ✅ **Dynamic Content** - Homepage and tag pages load real posts from filesystem
 
 ### 🎨 Design Features
+
 - ✅ **Smooth Animations** - Floating elements, gradients, micro-interactions
 - ✅ **Typography** - Optimized for readability
 - ✅ **Custom Scrollbar** - Themed to match design
@@ -43,6 +48,7 @@
 - ✅ **Focus States** - Keyboard navigation friendly
 
 ### 🎮 Easter Eggs
+
 - ✅ **Konami Code** (↑↑↓↓←→←→BA) - Achievement popup
 - ✅ **Console Messages** - Beautiful styled logs for developers
 - ✅ **Binary Code** - Hidden message in footer
@@ -50,6 +56,7 @@
 - ✅ **Hint in Footer** - "Gamers know the code" clue
 
 ### 📊 Analytics & Social
+
 - ✅ **View Tracking** - Per-post view counts with Redis/file hybrid storage
 - ✅ **Like Tracking** - Persistent likes with server-side storage
 - ✅ **Session Tracking** - Prevents duplicate counts using fingerprints
@@ -60,21 +67,27 @@
 ## 🚀 What Makes This Blog Special
 
 ### Minimalistic Yet Powerful
+
 ✨ **No Bloat** - Every feature serves a purpose
+
 - No heavy frameworks beyond Next.js
 - No unnecessary animations
 - Clean, focused design
 - Fast page loads
 
 ### Cool to Surf
+
 🎯 **Delightful UX**
+
 - Smooth page transitions
 - Instant feedback on interactions
 - Keyboard shortcuts ready
 - Progressive enhancement
 
 ### Modern Stack
+
 ⚡ **Technology**
+
 - Next.js 15 with App Router
 - Turbopack for fast builds
 - Tailwind CSS for styling
@@ -84,6 +97,7 @@
 ## 📝 How View Counter & Likes Work
 
 ### Current Implementation (Local Storage)
+
 ```typescript
 // View Counter
 - Checks localStorage for previous views
@@ -101,6 +115,7 @@
 ### Production Implementation
 
 #### Option 1: Lightweight (Recommended)
+
 **Use Supabase (Free tier)**
 
 ```typescript
@@ -153,6 +168,7 @@ const { data } = await fetch('/api/views', {
 ```
 
 #### Option 2: Edge Function (Ultra Fast)
+
 **Use Vercel KV or Upstash Redis**
 
 ```typescript
@@ -167,7 +183,9 @@ export async function POST(request: Request) {
 ```
 
 #### Option 3: Analytics Service
+
 **Use existing analytics (easiest)**
+
 - Plausible Analytics - Privacy-focused
 - Umami - Self-hosted
 - GoatCounter - Minimalist
@@ -178,6 +196,7 @@ These already track page views, no extra code needed!
 ## 🎯 Enhancement Opportunities
 
 ### Priority: High Impact
+
 - [ ] **Full-Text Search** - Replace simple filter with proper search (e.g., Fuse.js)
 - [ ] **Image Optimization** - Add next/image for automatic optimization
 - [ ] **Open Graph Images** - Generate dynamic social share cards
@@ -185,6 +204,7 @@ These already track page views, no extra code needed!
 - [ ] **Related Posts Algorithm** - Smarter related posts based on content similarity
 
 ### Priority: Medium
+
 - [ ] **Newsletter Signup** - Email subscriptions
 - [ ] **Series Support** - Multi-part posts with navigation
 - [ ] **Keyboard Shortcuts** - Fast navigation (j/k for posts)
@@ -193,6 +213,7 @@ These already track page views, no extra code needed!
 - [ ] **Math Equations** - KaTeX support
 
 ### Priority: Nice to Have
+
 - [ ] **Drafts System** - Preview unpublished posts
 - [ ] **Scheduled Publishing** - Time-based publishing
 - [ ] **Print Styles** - Clean printouts
@@ -205,6 +226,7 @@ These already track page views, no extra code needed!
 ## 🎨 Design Philosophy
 
 ### What We Kept
+
 ✅ Clean typography
 ✅ Generous whitespace
 ✅ Subtle animations
@@ -212,6 +234,7 @@ These already track page views, no extra code needed!
 ✅ Accessibility-first
 
 ### What We Avoided
+
 ❌ Heavy animations
 ❌ Auto-playing videos
 ❌ Popups/Modals
@@ -223,11 +246,13 @@ These already track page views, no extra code needed!
 ## 💡 Recommended Next Steps
 
 ### Priority 1: Make It Yours
+
 1. Connect to your Obsidian vault (see IMPLEMENTATION_NOTES.md)
 2. Add real content from your notes
 3. Customize color scheme if desired
 
 ### Priority 2: Production Ready
+
 1. Set up Supabase for views/likes
 2. Add Giscus for comments (optional)
 3. Configure sitemap.xml
@@ -235,11 +260,13 @@ These already track page views, no extra code needed!
 5. Set up RSS feed
 
 ### Priority 3: Analytics
+
 1. Add Plausible/Umami analytics
 2. Set up real view counting
 3. Monitor performance
 
 ### Priority 4: Polish
+
 1. Add full-text search
 2. Implement command palette
 3. Add keyboard shortcuts
@@ -248,6 +275,7 @@ These already track page views, no extra code needed!
 ## 🔧 Configuration
 
 ### Environment Variables Needed
+
 ```env
 # For production
 NEXT_PUBLIC_SUPABASE_URL=your-project-url
@@ -258,6 +286,7 @@ NEXT_PUBLIC_ANALYTICS_ID=your-analytics-id
 ```
 
 ### Recommended Services
+
 - **Hosting**: Vercel (free)
 - **Database**: Supabase (free tier)
 - **Analytics**: Plausible (affordable) or Umami (free/self-hosted)
@@ -267,12 +296,14 @@ NEXT_PUBLIC_ANALYTICS_ID=your-analytics-id
 ## 📚 Resources
 
 ### Documentation
+
 - [Next.js Docs](https://nextjs.org/docs)
 - [Tailwind CSS](https://tailwindcss.com/docs)
 - [shadcn/ui](https://ui.shadcn.com/)
 - [Supabase](https://supabase.com/docs)
 
 ### Inspiration
+
 - [Lee Robinson's Blog](https://leerobinson.com)
 - [Josh Comeau's Blog](https://www.joshwcomeau.com/)
 - [Maggie Appleton's Garden](https://maggieappleton.com/)
@@ -280,6 +311,7 @@ NEXT_PUBLIC_ANALYTICS_ID=your-analytics-id
 ## 🎯 Performance Targets
 
 Current Performance:
+
 - ✅ First Contentful Paint: < 1s
 - ✅ Time to Interactive: < 2s
 - ✅ Lighthouse Score: 95+
@@ -290,6 +322,7 @@ Keep it fast! 🚀
 ## 📝 Implementation Notes
 
 ### Files Modified During Latest Audit
+
 1. **Created**: `components/blog/markdown-content.tsx` - Unified markdown renderer with CodeBlock integration
 2. **Updated**: `app/blog/[slug]/page.tsx` - Now uses MarkdownContent component
 3. **Updated**: `app/til/[id]/page.tsx` - Now uses MarkdownContent component
@@ -298,6 +331,7 @@ Keep it fast! 🚀
 6. **Updated**: `BLOG_FEATURES.md` - Accurate status of all features
 
 ### Key Components
+
 - **MarkdownContent** (`components/blog/markdown-content.tsx`) - Renders markdown with proper heading IDs, code blocks with copy functionality
 - **CodeBlock** (`components/blog/code-block.tsx`) - Copy-to-clipboard for code snippets
 - **Posts Library** (`lib/posts.ts`) - Loads markdown files from `/content` directory
@@ -305,6 +339,7 @@ Keep it fast! 🚀
 - **View/Like APIs** (`app/api/views/route.ts`, `app/api/likes/route.ts`) - Hybrid Redis/file storage
 
 ### Content Structure
+
 ```
 content/
 ├── blog/ (6 posts)
@@ -325,6 +360,7 @@ content/
 ```
 
 Each markdown file should have frontmatter:
+
 ```yaml
 ---
 title: "Your Post Title"
@@ -336,4 +372,3 @@ featured: true  # Optional, for blog posts
 
 Your content here...
 ```
-
