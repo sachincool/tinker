@@ -10,11 +10,8 @@
 5. **Reading Time** - Calculated dynamically from actual content using `reading-time` library
 
 ### 🔧 Known Issues
-1. **Graph View** - Component exists (`/components/blog/graph-view.tsx`) but is not accessible from any page
-   - **Recommendation**: Either create `/app/graph/page.tsx` to display it, or remove the component
-2. **Syntax Highlighting** - Code blocks show language labels but don't have syntax coloring yet
-   - **Recommendation**: Add Prism.js or Shiki for proper syntax highlighting
-3. **Resume Page** - Links to `/Harshit_Resume.pdf` which needs to exist in `/public` directory
+1. **Resume PDF** - Links to `/Harshit_Resume.pdf` which needs to exist in `/public` directory
+   - **Recommendation**: Add the actual resume PDF file to `/public` directory
 
 ### 📊 Implementation Status Legend
 - ✅ **Fully Implemented & Working** - Feature is complete and accessible to users
@@ -29,12 +26,13 @@
 - ✅ **View Counter** - Tracks unique views per post with hybrid Redis/file storage
 - ✅ **Like System** - One-click appreciation with animation, persists server-side
 - ✅ **Table of Contents** - Auto-generated from H2/H3 headings with active tracking (desktop, blog posts)
-- ✅ **Code Blocks with Copy** - Hover to reveal copy button (fully integrated via CodeBlock component)
+- ✅ **Code Blocks with Syntax Highlighting** - Beautiful syntax highlighting with copy button using highlight.js
 - ✅ **Responsive Design** - Mobile-first, works everywhere
 - ✅ **Dark Mode** - Automatic system preference detection via next-themes
-- 🔧 **Graph View** - Component built but not integrated (needs dedicated page)
+- ✅ **Graph View** - Interactive D3.js visualization of posts, TILs, and tags relationships
 - ✅ **Search & Filter** - Find posts by tags and keywords with debounced search
 - ✅ **Markdown Rendering** - Real content loaded from markdown files in /content directory
+- ✅ **Dynamic Content** - Homepage and tag pages load real posts from filesystem
 
 ### 🎨 Design Features
 - ✅ **Smooth Animations** - Floating elements, gradients, micro-interactions
@@ -180,11 +178,11 @@ These already track page views, no extra code needed!
 ## 🎯 Enhancement Opportunities
 
 ### Priority: High Impact
-- [ ] **Syntax Highlighting** - Add Prism.js or Shiki for colorized code
-- [ ] **Graph View Page** - Make the existing graph component accessible
 - [ ] **Full-Text Search** - Replace simple filter with proper search (e.g., Fuse.js)
 - [ ] **Image Optimization** - Add next/image for automatic optimization
 - [ ] **Open Graph Images** - Generate dynamic social share cards
+- [ ] **MDX Support** - Add MDX for interactive components in markdown
+- [ ] **Related Posts Algorithm** - Smarter related posts based on content similarity
 
 ### Priority: Medium
 - [ ] **Newsletter Signup** - Email subscriptions
@@ -309,12 +307,21 @@ Keep it fast! 🚀
 ### Content Structure
 ```
 content/
-├── blog/
+├── blog/ (6 posts)
 │   ├── infrastructure-as-code-mistakes.md
-│   └── kubernetes-debugging-tips.md
-└── til/
+│   ├── kubernetes-debugging-tips.md
+│   ├── github-actions-gitlab-ci-comparison.md
+│   ├── prometheus-grafana-monitoring-guide.md
+│   ├── docker-security-hardening.md
+│   └── aws-cost-optimization-tricks.md
+└── til/ (7 TILs)
     ├── docker-build-cache-trick.md
-    └── kubectl-neat-trick.md
+    ├── kubectl-neat-trick.md
+    ├── git-interactive-rebase-magic.md
+    ├── bash-parameter-expansion.md
+    ├── docker-volume-inspect-trick.md
+    ├── kubectl-jsonpath-queries.md
+    └── jq-for-json-parsing.md
 ```
 
 Each markdown file should have frontmatter:

@@ -1,46 +1,24 @@
-"use client";
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Hash, BookOpen, Lightbulb } from "lucide-react";
 import Link from "next/link";
-import { use } from "react";
+import { getPostsByTag, getAllTags } from "@/lib/posts";
 
-export default function TagPage({ params }: { params: Promise<{ tag: string }> }) {
-  const { tag: tagParam } = use(params);
+export default async function TagPage({ params }: { params: Promise<{ tag: string }> }) {
+  const { tag: tagParam } = await params;
   const tag = decodeURIComponent(tagParam);
 
-  // In a real app, fetch posts/TILs by this tag from API
-  const posts = [
-    {
-      id: "kubernetes-debugging-tips",
-      title: "5 Kubernetes Debugging Tricks That Saved My Production",
-      excerpt: "Hard-learned lessons from debugging Kubernetes issues at 3 AM.",
-      type: "blog",
-      date: "2024-12-15",
-      tags: ["kubernetes", "devops", "debugging"],
-    },
-    {
-      id: "kubectl-neat-trick",
-      title: "kubectl neat - Remove Kubernetes YAML Clutter",
-      excerpt: "Use kubectl neat plugin to remove all the noise from Kubernetes YAML output.",
-      type: "til",
-      date: "2024-12-10",
-      tags: ["kubernetes", "kubectl", "productivity"],
-    },
-    {
-      id: "k8s-ephemeral-containers",
-      title: "Kubernetes Ephemeral Debug Containers",
-      excerpt: "Debug running pods without rebuilding images.",
-      type: "til",
-      date: "2024-12-01",
-      tags: ["kubernetes", "debugging", "devops"],
-    },
-  ].filter(post => post.tags.includes(tag.toLowerCase()));
-
+  // Fetch real posts by tag
+  const posts = getPostsByTag(tag);
+  
+  // Separate blog posts and TILs
   const blogPosts = posts.filter(p => p.type === "blog");
   const tilPosts = posts.filter(p => p.type === "til");
+  
+  // Get all tags for related tags section
+  const allTags = getAllTags();
+  const relatedTags = allTags.filter(t => t !== tag).slice(0, 5);
 
   return (
     <div className="space-y-8">
@@ -108,10 +86,10 @@ export default function TagPage({ params }: { params: Promise<{ tag: string }> }
           </h2>
           <div className="grid gap-6">
             {blogPosts.map((post) => (
-              <Card key={post.id} className="hover:shadow-lg transition-all duration-300 hover:-translate-y-1 group border-l-4 border-l-blue-500">
+              <Card key={post.slug} className="hover:shadow-lg transition-all duration-300 hover:-translate-y-1 group border-l-4 border-l-blue-500">
                 <CardHeader>
                   <CardTitle className="text-xl group-hover:text-blue-600 transition-colors">
-                    <Link href={`/blog/${post.id}`}>
+                    <Link href={`/blog/${post.slug}`}>
                       {post.title}
                     </Link>
                   </CardTitle>
@@ -144,11 +122,11 @@ export default function TagPage({ params }: { params: Promise<{ tag: string }> }
           </h2>
           <div className="grid gap-6">
             {tilPosts.map((post) => (
-              <Card key={post.id} className="hover:shadow-lg transition-all duration-300 hover:-translate-y-1 group border-l-4 border-l-yellow-500">
+              <Card key={post.slug} className="hover:shadow-lg transition-all duration-300 hover:-translate-y-1 group border-l-4 border-l-yellow-500">
                 <CardHeader>
                   <CardTitle className="text-lg group-hover:text-yellow-600 transition-colors flex items-center gap-2">
                     <Lightbulb className="h-4 w-4" />
-                    <Link href={`/til/${post.id}`}>
+                    <Link href={`/til/${post.slug}`}>
                       {post.title}
                     </Link>
                   </CardTitle>
@@ -193,18 +171,20 @@ export default function TagPage({ params }: { params: Promise<{ tag: string }> }
       )}
 
       {/* Related Tags */}
-      <section>
-        <h3 className="text-lg font-semibold mb-4">Related Tags</h3>
-        <div className="flex flex-wrap gap-2">
-          {["devops", "kubernetes", "debugging", "productivity", "kubectl"].map((relatedTag) => (
-            <Link key={relatedTag} href={`/tags/${relatedTag}`}>
-              <Badge variant="outline" className="hover:bg-blue-100 dark:hover:bg-blue-900 transition-colors">
-                #{relatedTag}
-              </Badge>
-            </Link>
-          ))}
-        </div>
-      </section>
+      {relatedTags.length > 0 && (
+        <section>
+          <h3 className="text-lg font-semibold mb-4">Related Tags</h3>
+          <div className="flex flex-wrap gap-2">
+            {relatedTags.map((relatedTag) => (
+              <Link key={relatedTag} href={`/tags/${relatedTag}`}>
+                <Badge variant="outline" className="hover:bg-blue-100 dark:hover:bg-blue-900 transition-colors">
+                  #{relatedTag}
+                </Badge>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   );
 }

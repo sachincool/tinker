@@ -18,7 +18,8 @@ import {
   Github,
   Twitter,
   Server,
-  Zap
+  Zap,
+  Network
 } from "lucide-react";
 
 export function Header() {
@@ -29,6 +30,7 @@ export function Header() {
     { name: "Blog", href: "/blog", icon: BookOpen },
     { name: "TIL", href: "/til", icon: Lightbulb },
     { name: "Tags", href: "/tags", icon: Tags },
+    { name: "Graph", href: "/graph", icon: Network },
   ];
 
   return (

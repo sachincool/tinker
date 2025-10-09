@@ -17,30 +17,18 @@ import {
   Code2,
   TrendingUp
 } from "lucide-react";
+import { type Post } from "@/lib/posts";
 
-export default function HomePageContent() {
+interface HomePageContentProps {
+  latestPosts: Post[];
+}
+
+export default function HomePageContent({ latestPosts }: HomePageContentProps) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
   }, []);
-
-  const latestPosts = [
-    {
-      id: "kubernetes-debugging-tips",
-      title: "5 Kubernetes Debugging Tricks That Saved My Production",
-      excerpt: "Hard-learned lessons from debugging Kubernetes issues at 3 AM. These tricks will save you hours.",
-      tags: ["kubernetes", "devops", "debugging"],
-      date: "2024-12-15",
-    },
-    {
-      id: "infrastructure-as-code-mistakes",
-      title: "Infrastructure as Code: Mistakes I Made So You Don't Have To",
-      excerpt: "Learning Terraform the hard way. Mistakes that cost me sleep, money, and sanity.",
-      tags: ["terraform", "iac", "devops"],
-      date: "2024-11-28",
-    }
-  ];
 
   const techStack = [
     { name: "Kubernetes", icon: "☸️", color: "text-blue-500" },
@@ -162,12 +150,12 @@ export default function HomePageContent() {
         <div className="grid md:grid-cols-2 gap-6">
           {latestPosts.map((post, index) => (
             <Card 
-              key={post.id} 
+              key={post.slug} 
               className="group hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-l-4 border-l-blue-500"
             >
               <CardHeader>
                 <CardTitle className="text-xl group-hover:text-blue-600 transition-colors">
-                  <Link href={`/blog/${post.id}`}>
+                  <Link href={`/blog/${post.slug}`}>
                     {post.title}
                   </Link>
                 </CardTitle>
@@ -182,7 +170,7 @@ export default function HomePageContent() {
                   ))}
                 </div>
                 <Button asChild variant="ghost" size="sm" className="group/btn">
-                  <Link href={`/blog/${post.id}`}>
+                  <Link href={`/blog/${post.slug}`}>
                     Read More
                     <ArrowRight className="ml-2 h-4 w-4 group-hover/btn:translate-x-1 transition-transform" />
                   </Link>

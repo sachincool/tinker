@@ -2,12 +2,14 @@
 
 import { useEffect, useRef } from "react";
 import * as d3 from "d3";
+import { getAllPosts, getAllTags } from "@/lib/posts";
 
 interface Node {
   id: string;
   name: string;
   type: "post" | "til" | "tag";
   size: number;
+  slug?: string;
 }
 
 interface Link {
@@ -21,42 +23,90 @@ export function GraphView() {
   useEffect(() => {
     if (!svgRef.current) return;
 
-    // Sample data - in real app, this would come from your content
-    const nodes: Node[] = [
-      { id: "react", name: "React", type: "tag", size: 15 },
-      { id: "typescript", name: "TypeScript", type: "tag", size: 12 },
-      { id: "nextjs", name: "Next.js", type: "tag", size: 10 },
-      { id: "css", name: "CSS", type: "tag", size: 8 },
-      { id: "anime", name: "Anime", type: "tag", size: 6 },
-      { id: "post1", name: "Modern React Patterns", type: "post", size: 5 },
-      { id: "post2", name: "TypeScript Tips", type: "post", size: 4 },
-      { id: "til1", name: "CSS Grid Trick", type: "til", size: 3 },
-      { id: "til2", name: "React Hook", type: "til", size: 3 },
-    ];
+    // Get real data from posts
+    const blogPosts = getAllPosts('blog');
+    const tilPosts = getAllPosts('til');
+    const allTags = getAllTags();
 
-    const links: Link[] = [
-      { source: "react", target: "post1" },
-      { source: "typescript", target: "post1" },
-      { source: "typescript", target: "post2" },
-      { source: "css", target: "til1" },
-      { source: "react", target: "til2" },
-      { source: "nextjs", target: "react" },
-      { source: "typescript", target: "react" },
-    ];
+    // Build nodes from real data
+    const nodes: Node[] = [];
+    const links: Link[] = [];
+    const tagCounts = new Map<string, number>();
+
+    // Count tag usage
+    [...blogPosts, ...tilPosts].forEach(post => {
+      post.tags.forEach(tag => {
+        tagCounts.set(tag, (tagCounts.get(tag) || 0) + 1);
+      });
+    });
+
+    // Create tag nodes
+    allTags.forEach(tag => {
+      const count = tagCounts.get(tag) || 1;
+      nodes.push({
+        id: `tag-${tag}`,
+        name: tag,
+        type: "tag",
+        size: 10 + count * 2, // Size based on usage
+        slug: tag
+      });
+    });
+
+    // Create blog post nodes and links
+    blogPosts.slice(0, 10).forEach((post, idx) => { // Limit to 10 for readability
+      const nodeId = `post-${post.slug}`;
+      nodes.push({
+        id: nodeId,
+        name: post.title.length > 30 ? post.title.substring(0, 30) + '...' : post.title,
+        type: "post",
+        size: 6,
+        slug: post.slug
+      });
+
+      // Link to tags
+      post.tags.forEach(tag => {
+        links.push({
+          source: `tag-${tag}`,
+          target: nodeId
+        });
+      });
+    });
+
+    // Create TIL nodes and links
+    tilPosts.slice(0, 10).forEach((til, idx) => { // Limit to 10 for readability
+      const nodeId = `til-${til.slug}`;
+      nodes.push({
+        id: nodeId,
+        name: til.title.length > 25 ? til.title.substring(0, 25) + '...' : til.title,
+        type: "til",
+        size: 5,
+        slug: til.slug
+      });
+
+      // Link to tags
+      til.tags.forEach(tag => {
+        links.push({
+          source: `tag-${tag}`,
+          target: nodeId
+        });
+      });
+    });
 
     const svg = d3.select(svgRef.current);
     svg.selectAll("*").remove();
 
-    const width = 300;
-    const height = 200;
+    const container = svgRef.current.parentElement;
+    const width = container?.clientWidth || 800;
+    const height = 600;
 
-    svg.attr("width", width).attr("height", height);
+    svg.attr("width", width).attr("height", height).attr("viewBox", `0 0 ${width} ${height}`);
 
     const simulation = d3
       .forceSimulation(nodes as any)
-      .force("link", d3.forceLink(links).id((d: any) => d.id).distance(30))
-      .force("charge", d3.forceManyBody().strength(-100))
-      .force("center", d3.forceCenter(width / 2, height / 2));
+      .force("link", d3.forceLink(links).id((d: any) => d.id).distance(80))
+      .force("charge", d3.forceManyBody().strength(-300))
+      .force("center", d3.forceCenter(width / 2, height / 2))
+      .force("collision", d3.forceCollide().radius((d: any) => Math.sqrt(d.size) * 3));
 
     // Create links
     const link = svg
@@ -76,7 +126,7 @@ export function GraphView() {
       .data(nodes)
       .enter()
       .append("circle")
-      .attr("r", (d) => Math.sqrt(d.size) * 2)
+      .attr("r", (d) => Math.sqrt(d.size) * 3)
       .attr("fill", (d) => {
         switch (d.type) {
           case "post": return "#3b82f6";
@@ -86,23 +136,37 @@ export function GraphView() {
         }
       })
       .attr("stroke", "#fff")
-      .attr("stroke-width", 1.5)
-      .style("cursor", "pointer");
+      .attr("stroke-width", 2)
+      .style("cursor", "pointer")
+      .on("click", (event, d) => {
+        // Navigate to post/til/tag on click
+        if (d.type === "post") {
+          window.location.href = `/blog/${d.slug}`;
+        } else if (d.type === "til") {
+          window.location.href = `/til/${d.slug}`;
+        } else if (d.type === "tag") {
+          window.location.href = `/tags/${d.slug}`;
+        }
+      })
+      .append("title")
+      .text((d) => d.name);
 
-    // Add labels
+    // Add labels (only for tags, too crowded otherwise)
     const labels = svg
       .append("g")
       .selectAll("text")
-      .data(nodes)
+      .data(nodes.filter(d => d.type === "tag"))
       .enter()
       .append("text")
       .text((d) => d.name)
-      .attr("font-size", "10px")
+      .attr("font-size", "12px")
       .attr("font-family", "Inter, sans-serif")
-      .attr("fill", "#374151")
+      .attr("font-weight", "600")
+      .attr("fill", "currentColor")
       .attr("text-anchor", "middle")
-      .attr("dy", "0.3em")
-      .style("pointer-events", "none");
+      .attr("dy", "-0.7em")
+      .style("pointer-events", "none")
+      .style("user-select", "none");
 
     // Add drag behavior
     const drag = d3
@@ -148,21 +212,24 @@ export function GraphView() {
 
   return (
     <div className="w-full">
-      <svg ref={svgRef} className="w-full h-48 border rounded-lg bg-gray-50 dark:bg-gray-900"></svg>
-      <div className="flex gap-4 mt-2 text-xs text-muted-foreground">
-        <div className="flex items-center gap-1">
-          <div className="w-2 h-2 rounded-full bg-blue-500"></div>
-          <span>Posts</span>
+      <svg ref={svgRef} className="w-full h-[600px] border rounded-lg bg-background"></svg>
+      <div className="flex gap-6 mt-4 text-sm text-muted-foreground justify-center">
+        <div className="flex items-center gap-2">
+          <div className="w-3 h-3 rounded-full bg-blue-500"></div>
+          <span>Blog Posts</span>
         </div>
-        <div className="flex items-center gap-1">
-          <div className="w-2 h-2 rounded-full bg-green-500"></div>
+        <div className="flex items-center gap-2">
+          <div className="w-3 h-3 rounded-full bg-green-500"></div>
           <span>TILs</span>
         </div>
-        <div className="flex items-center gap-1">
-          <div className="w-2 h-2 rounded-full bg-purple-500"></div>
+        <div className="flex items-center gap-2">
+          <div className="w-3 h-3 rounded-full bg-purple-500"></div>
           <span>Tags</span>
         </div>
       </div>
+      <p className="text-center text-xs text-muted-foreground mt-4">
+        Click and drag nodes to rearrange • Click nodes to navigate to content
+      </p>
     </div>
   );
 }

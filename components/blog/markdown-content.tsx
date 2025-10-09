@@ -1,12 +1,41 @@
 "use client";
 
+import { useEffect } from "react";
+import hljs from "highlight.js/lib/core";
+import javascript from "highlight.js/lib/languages/javascript";
+import typescript from "highlight.js/lib/languages/typescript";
+import python from "highlight.js/lib/languages/python";
+import bash from "highlight.js/lib/languages/bash";
+import yaml from "highlight.js/lib/languages/yaml";
+import json from "highlight.js/lib/languages/json";
+import dockerfile from "highlight.js/lib/languages/dockerfile";
+import hcl from "highlight.js/lib/languages/hcl";
 import { CodeBlock } from "./code-block";
+
+// Register languages
+hljs.registerLanguage("javascript", javascript);
+hljs.registerLanguage("typescript", typescript);
+hljs.registerLanguage("python", python);
+hljs.registerLanguage("bash", bash);
+hljs.registerLanguage("sh", bash);
+hljs.registerLanguage("shell", bash);
+hljs.registerLanguage("yaml", yaml);
+hljs.registerLanguage("yml", yaml);
+hljs.registerLanguage("json", json);
+hljs.registerLanguage("dockerfile", dockerfile);
+hljs.registerLanguage("hcl", hcl);
+hljs.registerLanguage("terraform", hcl);
 
 interface MarkdownContentProps {
   content: string;
 }
 
 export function MarkdownContent({ content }: MarkdownContentProps) {
+  useEffect(() => {
+    // Highlight all code blocks after render
+    hljs.highlightAll();
+  }, []);
+
   const renderMarkdown = () => {
     const elements: JSX.Element[] = [];
     const paragraphs = content.split('\n\n');
@@ -48,17 +77,47 @@ export function MarkdownContent({ content }: MarkdownContentProps) {
         return;
       }
 
-      // Code blocks (multi-line code) - USE CodeBlock component
+      // Code blocks (multi-line code) - USE CodeBlock component with syntax highlighting
       if (paragraph.includes('```')) {
         const lines = paragraph.split('\n');
-        const language = lines[0]?.replace('```', '').trim() || '';
+        const language = lines[0]?.replace('```', '').trim() || 'plaintext';
         const codeLines = lines.slice(1);
         const lastLineIndex = codeLines.findIndex(line => line.includes('```'));
         const code = codeLines.slice(0, lastLineIndex >= 0 ? lastLineIndex : undefined).join('\n');
 
+        // Highlight the code
+        let highlightedCode = code;
+        try {
+          if (language && language !== 'plaintext' && hljs.getLanguage(language)) {
+            highlightedCode = hljs.highlight(code, { language }).value;
+          }
+        } catch (e) {
+          console.warn(`Failed to highlight ${language}:`, e);
+        }
+
         elements.push(
-          <div key={index} className="my-6">
-            <CodeBlock code={code} language={language || 'text'} />
+          <div key={index} className="my-6 relative group">
+            {language && (
+              <div className="flex items-center justify-between px-4 py-2 bg-muted/50 border-b border-border rounded-t-lg">
+                <span className="text-xs font-mono text-muted-foreground uppercase">{language}</span>
+              </div>
+            )}
+            <div className="relative">
+              <pre className={`bg-muted/30 p-4 overflow-x-auto ${!language && 'rounded-lg'} ${language && 'rounded-b-lg'}`}>
+                <code 
+                  className={`text-sm font-mono ${language ? `language-${language}` : ''}`}
+                  dangerouslySetInnerHTML={{ __html: highlightedCode }}
+                />
+              </pre>
+              <button
+                onClick={() => {
+                  navigator.clipboard.writeText(code);
+                }}
+                className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity px-3 py-1 bg-primary text-primary-foreground rounded text-sm hover:bg-primary/90"
+              >
+                Copy
+              </button>
+            </div>
           </div>
         );
         return;
