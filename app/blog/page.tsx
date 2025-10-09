@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -9,67 +9,30 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Search, Calendar, Clock, ArrowRight, Sparkles, BookOpen } from "lucide-react";
 import Link from "next/link";
 import { useDebounce } from "@/hooks/use-debounce";
+import { getAllPosts, type Post } from "@/lib/posts";
+import readingTime from "reading-time";
 
 export default function BlogPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTag, setSelectedTag] = useState("all");
   const [sortBy, setSortBy] = useState("newest");
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [loading, setLoading] = useState(true);
 
   // Debounce search query for better performance
   const debouncedSearchQuery = useDebounce(searchQuery, 300);
 
-  const posts = [
-    {
-      id: "kubernetes-debugging-tips",
-      title: "5 Kubernetes Debugging Tricks That Saved My Production",
-      excerpt: "Hard-learned lessons from debugging Kubernetes issues at 3 AM. These tricks will save you hours of frustration.",
-      content: "# 5 Kubernetes Debugging Tricks\n\nAfter countless nights debugging...",
-      date: "2024-12-15",
-      readTime: "8 min read",
-      tags: ["kubernetes", "devops", "debugging", "production"],
-      featured: true
-    },
-    {
-      id: "infrastructure-as-code-mistakes",
-      title: "Infrastructure as Code: Mistakes I Made So You Don't Have To",
-      excerpt: "Learning Terraform the hard way. Here are the mistakes that cost me sleep, money, and a bit of my sanity.",
-      content: "# Infrastructure as Code Mistakes\n\nAfter managing infrastructure...",
-      date: "2024-11-28",
-      readTime: "12 min read",
-      tags: ["terraform", "iac", "devops", "infrastructure"],
-      featured: true
-    },
-    {
-      id: "docker-optimization-guide",
-      title: "Docker Image Optimization: From 2GB to 50MB",
-      excerpt: "How I reduced my Docker images by 97% using multi-stage builds and Alpine Linux.",
-      content: "# Docker Optimization\n\nDocker images getting too big?",
-      date: "2024-11-15",
-      readTime: "10 min read",
-      tags: ["docker", "optimization", "devops"],
-      featured: false
-    },
-    {
-      id: "kubernetes-networking-deep-dive",
-      title: "Kubernetes Networking Deep Dive",
-      excerpt: "Understanding how pods communicate, what CNI plugins do, and why network policies matter.",
-      content: "# K8s Networking\n\nKubernetes networking is complex...",
-      date: "2024-10-28",
-      readTime: "15 min read",
-      tags: ["kubernetes", "networking", "infrastructure"],
-      featured: false
-    },
-    {
-      id: "cicd-best-practices",
-      title: "CI/CD Best Practices I Learned the Hard Way",
-      excerpt: "Building reliable CI/CD pipelines isn't just about automation - it's about building trust.",
-      content: "# CI/CD Best Practices\n\nAfter breaking production with bad deploys...",
-      date: "2024-10-10",
-      readTime: "9 min read",
-      tags: ["cicd", "devops", "automation", "bestpractices"],
-      featured: false
+  // Load posts on mount
+  useEffect(() => {
+    try {
+      const allPosts = getAllPosts('blog');
+      setPosts(allPosts);
+    } catch (error) {
+      console.error('Error loading posts:', error);
+    } finally {
+      setLoading(false);
     }
-  ];
+  }, []);
 
   // Filter and sort posts
   const filteredAndSortedPosts = useMemo(() => {
@@ -109,6 +72,24 @@ export default function BlogPage() {
   const featuredPosts = filteredAndSortedPosts.filter(post => post.featured);
   const regularPosts = filteredAndSortedPosts.filter(post => !post.featured);
 
+  // Get all unique tags for the dropdown
+  const allTags = useMemo(() => {
+    const tagsSet = new Set<string>();
+    posts.forEach(post => post.tags.forEach(tag => tagsSet.add(tag)));
+    return Array.from(tagsSet).sort();
+  }, [posts]);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center space-y-4">
+          <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full mx-auto"></div>
+          <p className="text-muted-foreground">Loading posts...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-8">
       {/* Header */}
@@ -145,11 +126,9 @@ export default function BlogPage() {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Tags</SelectItem>
-            <SelectItem value="kubernetes">Kubernetes</SelectItem>
-            <SelectItem value="devops">DevOps</SelectItem>
-            <SelectItem value="terraform">Terraform</SelectItem>
-            <SelectItem value="docker">Docker</SelectItem>
-            <SelectItem value="cicd">CI/CD</SelectItem>
+            {allTags.map(tag => (
+              <SelectItem key={tag} value={tag}>{tag}</SelectItem>
+            ))}
           </SelectContent>
         </Select>
         <Select value={sortBy} onValueChange={setSortBy}>
@@ -181,53 +160,56 @@ export default function BlogPage() {
             Featured Posts
           </h2>
           <div className="grid gap-6">
-            {featuredPosts.map((post) => (
-              <Card key={post.id} className="hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-l-4 border-l-blue-500 relative overflow-hidden group">
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                <CardHeader className="relative">
-                  <div className="flex items-start justify-between">
-                    <div className="space-y-2 flex-1">
-                      <CardTitle className="text-2xl hover:text-blue-600 transition-colors">
-                        <Link href={`/blog/${post.id}`}>
-                          {post.title}
+            {featuredPosts.map((post) => {
+              const stats = readingTime(post.content);
+              return (
+                <Card key={post.slug} className="hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-l-4 border-l-blue-500 relative overflow-hidden group">
+                  <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                  <CardHeader className="relative">
+                    <div className="flex items-start justify-between">
+                      <div className="space-y-2 flex-1">
+                        <CardTitle className="text-2xl hover:text-blue-600 transition-colors">
+                          <Link href={`/blog/${post.slug}`}>
+                            {post.title}
+                          </Link>
+                        </CardTitle>
+                        <CardDescription className="text-base leading-relaxed">
+                          {post.excerpt}
+                        </CardDescription>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                      <div className="flex items-center gap-1">
+                        <Calendar className="h-4 w-4" />
+                        <span>{new Date(post.date).toLocaleDateString('en-US', { 
+                          year: 'numeric', 
+                          month: 'long', 
+                          day: 'numeric' 
+                        })}</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Clock className="h-4 w-4" />
+                        <span>{stats.text}</span>
+                      </div>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {post.tags.map((tag) => (
+                        <Link key={tag} href={`/tags/${tag}`}>
+                          <Badge variant="secondary" className="hover:bg-blue-100 hover:text-blue-800 transition-colors">
+                            {tag}
+                          </Badge>
                         </Link>
-                      </CardTitle>
-                      <CardDescription className="text-base leading-relaxed">
-                        {post.excerpt}
-                      </CardDescription>
+                      ))}
                     </div>
-                  </div>
-                  <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                    <div className="flex items-center gap-1">
-                      <Calendar className="h-4 w-4" />
-                      <span>{new Date(post.date).toLocaleDateString('en-US', { 
-                        year: 'numeric', 
-                        month: 'long', 
-                        day: 'numeric' 
-                      })}</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Clock className="h-4 w-4" />
-                      <span>{post.readTime}</span>
-                    </div>
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    {post.tags.map((tag) => (
-                      <Link key={tag} href={`/tags/${tag}`}>
-                        <Badge variant="secondary" className="hover:bg-blue-100 hover:text-blue-800 transition-colors">
-                          {tag}
-                        </Badge>
+                    <Button asChild className="w-fit group/btn">
+                      <Link href={`/blog/${post.slug}`}>
+                        Read More <ArrowRight className="ml-2 h-4 w-4 group-hover/btn:translate-x-1 transition-transform" />
                       </Link>
-                    ))}
-                  </div>
-                  <Button asChild className="w-fit group/btn">
-                    <Link href={`/blog/${post.id}`}>
-                      Read More <ArrowRight className="ml-2 h-4 w-4 group-hover/btn:translate-x-1 transition-transform" />
-                    </Link>
-                  </Button>
-                </CardHeader>
-              </Card>
-            ))}
+                    </Button>
+                  </CardHeader>
+                </Card>
+              );
+            })}
           </div>
         </section>
       )}
@@ -237,45 +219,48 @@ export default function BlogPage() {
         <h2 className="text-2xl font-bold mb-6">All Posts</h2>
         {regularPosts.length > 0 ? (
           <div className="grid gap-6">
-            {regularPosts.map((post) => (
-            <Card key={post.id} className="hover:shadow-lg transition-all duration-300 hover:-translate-y-1 group">
-              <CardHeader>
-                <div className="flex items-start justify-between">
-                  <div className="space-y-2 flex-1">
-                    <CardTitle className="text-xl hover:text-blue-600 transition-colors">
-                      <Link href={`/blog/${post.id}`}>
-                        {post.title}
-                      </Link>
-                    </CardTitle>
-                    <CardDescription>{post.excerpt}</CardDescription>
-                  </div>
-                </div>
-                <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                  <div className="flex items-center gap-1">
-                    <Calendar className="h-4 w-4" />
-                    <span>{new Date(post.date).toLocaleDateString('en-US', { 
-                      year: 'numeric', 
-                      month: 'long', 
-                      day: 'numeric' 
-                    })}</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Clock className="h-4 w-4" />
-                    <span>{post.readTime}</span>
-                  </div>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {post.tags.map((tag) => (
-                    <Link key={tag} href={`/tags/${tag}`}>
-                      <Badge variant="secondary" className="hover:bg-blue-100 hover:text-blue-800 transition-colors">
-                        {tag}
-                      </Badge>
-                    </Link>
-                  ))}
-                </div>
-              </CardHeader>
-            </Card>
-            ))}
+            {regularPosts.map((post) => {
+              const stats = readingTime(post.content);
+              return (
+                <Card key={post.slug} className="hover:shadow-lg transition-all duration-300 hover:-translate-y-1 group">
+                  <CardHeader>
+                    <div className="flex items-start justify-between">
+                      <div className="space-y-2 flex-1">
+                        <CardTitle className="text-xl hover:text-blue-600 transition-colors">
+                          <Link href={`/blog/${post.slug}`}>
+                            {post.title}
+                          </Link>
+                        </CardTitle>
+                        <CardDescription>{post.excerpt}</CardDescription>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                      <div className="flex items-center gap-1">
+                        <Calendar className="h-4 w-4" />
+                        <span>{new Date(post.date).toLocaleDateString('en-US', { 
+                          year: 'numeric', 
+                          month: 'long', 
+                          day: 'numeric' 
+                        })}</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Clock className="h-4 w-4" />
+                        <span>{stats.text}</span>
+                      </div>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {post.tags.map((tag) => (
+                        <Link key={tag} href={`/tags/${tag}`}>
+                          <Badge variant="secondary" className="hover:bg-blue-100 hover:text-blue-800 transition-colors">
+                            {tag}
+                          </Badge>
+                        </Link>
+                      ))}
+                    </div>
+                  </CardHeader>
+                </Card>
+              );
+            })}
           </div>
         ) : (
           <Card className="p-12 text-center">

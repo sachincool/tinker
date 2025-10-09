@@ -1,17 +1,40 @@
 # Blog Features & Implementation Guide
 
+## 🔍 Recent Audit & Fixes (Latest Update)
+
+### ✅ Fixed Issues
+1. **Code Block Copy Feature** - Now properly integrated using the `CodeBlock` component with copy-to-clipboard functionality
+2. **Real Content Loading** - Blog and TIL pages now load actual markdown files from `/content` directory instead of using hardcoded data
+3. **Markdown Renderer** - Created unified `MarkdownContent` component that properly renders markdown with syntax highlighting and copy buttons
+4. **Dynamic Tags** - Tag filters now dynamically populate based on actual post tags
+5. **Reading Time** - Calculated dynamically from actual content using `reading-time` library
+
+### 🔧 Known Issues
+1. **Graph View** - Component exists (`/components/blog/graph-view.tsx`) but is not accessible from any page
+   - **Recommendation**: Either create `/app/graph/page.tsx` to display it, or remove the component
+2. **Syntax Highlighting** - Code blocks show language labels but don't have syntax coloring yet
+   - **Recommendation**: Add Prism.js or Shiki for proper syntax highlighting
+3. **Resume Page** - Links to `/Harshit_Resume.pdf` which needs to exist in `/public` directory
+
+### 📊 Implementation Status Legend
+- ✅ **Fully Implemented & Working** - Feature is complete and accessible to users
+- 🔧 **Partially Implemented** - Code exists but not integrated or has limitations
+- ⚠️ **Needs Configuration** - Feature works but requires external setup (e.g., Giscus repo)
+- ❌ **Not Implemented** - Listed as "nice to have" but not built yet
+
 ## ✨ Current Features
 
 ### 🎯 Core Functionality
-- ✅ **Reading Progress Bar** - Visual indicator at top of page
-- ✅ **View Counter** - Tracks unique views per post
-- ✅ **Like System** - One-click appreciation with animation
-- ✅ **Table of Contents** - Auto-generated from H2/H3 headings (desktop)
-- ✅ **Code Blocks with Copy** - Hover to reveal copy button
+- ✅ **Reading Progress Bar** - Visual indicator at top of page (blog posts only)
+- ✅ **View Counter** - Tracks unique views per post with hybrid Redis/file storage
+- ✅ **Like System** - One-click appreciation with animation, persists server-side
+- ✅ **Table of Contents** - Auto-generated from H2/H3 headings with active tracking (desktop, blog posts)
+- ✅ **Code Blocks with Copy** - Hover to reveal copy button (fully integrated via CodeBlock component)
 - ✅ **Responsive Design** - Mobile-first, works everywhere
-- ✅ **Dark Mode** - Automatic system preference detection
-- ✅ **Graph View** - Visual knowledge graph of connections
-- ✅ **Search & Filter** - Find posts by tags and keywords
+- ✅ **Dark Mode** - Automatic system preference detection via next-themes
+- 🔧 **Graph View** - Component built but not integrated (needs dedicated page)
+- ✅ **Search & Filter** - Find posts by tags and keywords with debounced search
+- ✅ **Markdown Rendering** - Real content loaded from markdown files in /content directory
 
 ### 🎨 Design Features
 - ✅ **Smooth Animations** - Floating elements, gradients, micro-interactions
@@ -28,10 +51,13 @@
 - ✅ **Secret Button** - Console surprise in footer
 - ✅ **Hint in Footer** - "Gamers know the code" clue
 
-### 📊 Analytics (Local Storage for now)
-- ✅ **View Tracking** - Per-post view counts
-- ✅ **Like Tracking** - Persistent likes
-- ✅ **Session Tracking** - Prevents duplicate counts
+### 📊 Analytics & Social
+- ✅ **View Tracking** - Per-post view counts with Redis/file hybrid storage
+- ✅ **Like Tracking** - Persistent likes with server-side storage
+- ✅ **Session Tracking** - Prevents duplicate counts using fingerprints
+- ⚠️ **Comments** - Giscus integration ready (needs repo configuration)
+- ✅ **Share Button** - Web Share API with clipboard fallback
+- ✅ **RSS Feeds** - Multiple feeds: main, blog-only, TIL-only, and per-tag
 
 ## 🚀 What Makes This Blog Special
 
@@ -151,42 +177,32 @@ export async function POST(request: Request) {
 
 These already track page views, no extra code needed!
 
-## 🎯 Missing Features (Nice to Have)
+## 🎯 Enhancement Opportunities
 
-### Content Features
-- [ ] **RSS Feed** - For RSS readers
+### Priority: High Impact
+- [ ] **Syntax Highlighting** - Add Prism.js or Shiki for colorized code
+- [ ] **Graph View Page** - Make the existing graph component accessible
+- [ ] **Full-Text Search** - Replace simple filter with proper search (e.g., Fuse.js)
+- [ ] **Image Optimization** - Add next/image for automatic optimization
+- [ ] **Open Graph Images** - Generate dynamic social share cards
+
+### Priority: Medium
 - [ ] **Newsletter Signup** - Email subscriptions
-- [ ] **Series Support** - Multi-part posts
-- [ ] **Drafts System** - Preview unpublished posts
-- [ ] **Scheduled Publishing** - Time-based publishing
-
-### Technical Features
-- [ ] **Full-Text Search** - Better than filter
-- [ ] **Syntax Highlighting** - Prettier code blocks
-- [ ] **Image Optimization** - Automatic lazy loading
+- [ ] **Series Support** - Multi-part posts with navigation
+- [ ] **Keyboard Shortcuts** - Fast navigation (j/k for posts)
+- [ ] **Command Palette** - Quick actions (⌘K)
 - [ ] **Mermaid Diagrams** - Visual diagrams in markdown
 - [ ] **Math Equations** - KaTeX support
-- [ ] **Video Embeds** - YouTube, etc.
 
-### Social Features
-- [ ] **Comments** - Giscus/Utterances integration
-- [ ] **Social Share Cards** - Rich Open Graph tags
-- [ ] **Twitter/X Cards** - Better social previews
-- [ ] **Webmentions** - Track external links
-
-### UX Enhancements
-- [ ] **Keyboard Shortcuts** - Fast navigation
-- [ ] **Command Palette** - Quick actions (⌘K)
+### Priority: Nice to Have
+- [ ] **Drafts System** - Preview unpublished posts
+- [ ] **Scheduled Publishing** - Time-based publishing
 - [ ] **Print Styles** - Clean printouts
-- [ ] **Offline Support** - Service worker
-- [ ] **Reading Time** - Per section
-- [ ] **Estimated Completion** - % through article
-
-### Developer Features
-- [ ] **API Documentation** - Public API
-- [ ] **Webhooks** - Build triggers
-- [ ] **GitHub Integration** - Direct publishing
-- [ ] **Analytics Dashboard** - Internal stats
+- [ ] **Offline Support** - Service worker/PWA
+- [ ] **Reading Time Per Section** - More granular estimates
+- [ ] **Video Embeds** - YouTube, etc.
+- [ ] **Webmentions** - Track external links
+- [ ] **Analytics Dashboard** - Internal stats page
 
 ## 🎨 Design Philosophy
 
@@ -272,4 +288,45 @@ Current Performance:
 - ✅ Bundle Size: < 200KB
 
 Keep it fast! 🚀
+
+## 📝 Implementation Notes
+
+### Files Modified During Latest Audit
+1. **Created**: `components/blog/markdown-content.tsx` - Unified markdown renderer with CodeBlock integration
+2. **Updated**: `app/blog/[slug]/page.tsx` - Now uses MarkdownContent component
+3. **Updated**: `app/til/[id]/page.tsx` - Now uses MarkdownContent component
+4. **Updated**: `app/blog/page.tsx` - Loads real posts from filesystem, dynamic tags, calculated reading time
+5. **Updated**: `app/til/page.tsx` - Loads real TILs from filesystem, dynamic tags
+6. **Updated**: `BLOG_FEATURES.md` - Accurate status of all features
+
+### Key Components
+- **MarkdownContent** (`components/blog/markdown-content.tsx`) - Renders markdown with proper heading IDs, code blocks with copy functionality
+- **CodeBlock** (`components/blog/code-block.tsx`) - Copy-to-clipboard for code snippets
+- **Posts Library** (`lib/posts.ts`) - Loads markdown files from `/content` directory
+- **RSS Generator** (`lib/rss.ts`) - Creates multiple RSS feeds
+- **View/Like APIs** (`app/api/views/route.ts`, `app/api/likes/route.ts`) - Hybrid Redis/file storage
+
+### Content Structure
+```
+content/
+├── blog/
+│   ├── infrastructure-as-code-mistakes.md
+│   └── kubernetes-debugging-tips.md
+└── til/
+    ├── docker-build-cache-trick.md
+    └── kubectl-neat-trick.md
+```
+
+Each markdown file should have frontmatter:
+```yaml
+---
+title: "Your Post Title"
+date: "2024-01-01"
+tags: ["tag1", "tag2"]
+excerpt: "Brief description"
+featured: true  # Optional, for blog posts
+---
+
+Your content here...
+```
 

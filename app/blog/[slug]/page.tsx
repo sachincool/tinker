@@ -9,6 +9,7 @@ import { LikeButton } from "@/components/blog/like-button";
 import { TableOfContents } from "@/components/blog/table-of-contents";
 import { Comments } from "@/components/blog/comments";
 import { ShareButton } from "@/components/blog/share-button";
+import { MarkdownContent } from "@/components/blog/markdown-content";
 import { getPostBySlug, getAllPosts } from "@/lib/posts";
 import { notFound } from "next/navigation";
 import readingTime from "reading-time";
@@ -74,90 +75,7 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
             </header>
 
             {/* Article Content */}
-            <article className="prose prose-lg max-w-none dark:prose-invert prose-headings:font-bold prose-headings:tracking-tight prose-p:text-lg prose-p:leading-relaxed prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-a:no-underline hover:prose-a:underline prose-code:text-sm prose-code:bg-muted prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:before:content-[''] prose-code:after:content-[''] prose-pre:bg-muted prose-pre:border prose-pre:border-border prose-strong:text-foreground prose-ul:my-6 prose-ol:my-6 prose-li:my-2">
-              <div className="space-y-6">
-                {post.content.split('\n\n').map((paragraph, index) => {
-                  // H1 - Main heading (already in header, skip if duplicate)
-                  if (paragraph.startsWith('# ') && index > 0) {
-                    const text = paragraph.substring(2);
-                    const id = text.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '');
-                    return <h2 key={index} id={id} className="text-3xl font-bold mt-12 mb-4 scroll-mt-24">{text}</h2>;
-                  }
-
-                  // H2 - Section heading
-                  if (paragraph.startsWith('## ')) {
-                    const text = paragraph.substring(3);
-                    const id = text.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '');
-                    return <h2 key={index} id={id} className="text-2xl font-bold mt-10 mb-4 scroll-mt-24">{text}</h2>;
-                  }
-
-                  // H3 - Sub-section heading
-                  if (paragraph.startsWith('### ')) {
-                    const text = paragraph.substring(4);
-                    const id = text.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '');
-                    return <h3 key={index} id={id} className="text-xl font-semibold mt-8 mb-3 scroll-mt-24">{text}</h3>;
-                  }
-
-                  // Code blocks (multi-line code)
-                  if (paragraph.includes('```')) {
-                    const lines = paragraph.split('\n');
-                    const language = lines[0]?.replace('```', '').trim() || 'CODE';
-                    const codeLines = lines.slice(1);
-                    const lastLineIndex = codeLines.findIndex(line => line.includes('```'));
-                    const code = codeLines.slice(0, lastLineIndex >= 0 ? lastLineIndex : undefined).join('\n');
-
-                    return (
-                      <div key={index} className="not-prose my-6">
-                        <div className="bg-muted/50 border border-border rounded-lg overflow-hidden">
-                          <div className="bg-muted/30 px-4 py-2 border-b border-border">
-                            <span className="text-xs font-mono text-muted-foreground uppercase">{language}</span>
-                          </div>
-                          <pre className="p-4 overflow-x-auto">
-                            <code className="text-sm font-mono text-foreground leading-relaxed">{code}</code>
-                          </pre>
-                        </div>
-                      </div>
-                    );
-                  }
-
-                  // Blockquotes
-                  if (paragraph.startsWith('> ')) {
-                    return (
-                      <blockquote key={index} className="border-l-4 border-blue-500 pl-4 py-2 my-6 italic text-muted-foreground bg-muted/30 rounded-r">
-                        {paragraph.substring(2)}
-                      </blockquote>
-                    );
-                  }
-
-                  // List items
-                  if (paragraph.match(/^[\d]+\./m) || paragraph.match(/^[-*]/m)) {
-                    const items = paragraph.split('\n').filter(line => line.trim());
-                    const isOrdered = items[0]?.match(/^\d+\./);
-                    const ListTag = isOrdered ? 'ol' : 'ul';
-                    return (
-                      <ListTag key={index} className={isOrdered ? "list-decimal list-inside space-y-2 my-6" : "list-disc list-inside space-y-2 my-6"}>
-                        {items.map((item, i) => (
-                          <li key={i} className="text-lg leading-relaxed">
-                            {item.replace(/^[\d]+\.\s*|^[-*]\s*/, '')}
-                          </li>
-                        ))}
-                      </ListTag>
-                    );
-                  }
-
-                  // Regular paragraphs
-                  if (paragraph.trim()) {
-                    return (
-                      <p key={index} className="text-lg leading-relaxed text-foreground/90">
-                        {paragraph}
-                      </p>
-                    );
-                  }
-
-                  return null;
-                })}
-              </div>
-            </article>
+            <MarkdownContent content={post.content} />
 
             {/* Actions Section */}
             <div className="flex items-center justify-between py-6 border-t">

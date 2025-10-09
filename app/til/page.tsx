@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -9,80 +9,28 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Search, Calendar, Lightbulb, ExternalLink, Sparkles, Zap } from "lucide-react";
 import Link from "next/link";
 import { useDebounce } from "@/hooks/use-debounce";
+import { getAllPosts, type Post } from "@/lib/posts";
 
 export default function TILPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTag, setSelectedTag] = useState("all");
+  const [tils, setTils] = useState<Post[]>([]);
+  const [loading, setLoading] = useState(true);
 
   // Debounce search query for better performance
   const debouncedSearchQuery = useDebounce(searchQuery, 300);
 
-  const tils = [
-    {
-      id: "kubectl-neat-trick",
-      title: "kubectl neat - Remove Kubernetes YAML Clutter",
-      content: "Use kubectl neat plugin to remove all the noise from Kubernetes YAML output. No more creationTimestamp and managedFields garbage!",
-      date: "2024-12-10",
-      tags: ["kubernetes", "kubectl", "productivity"],
-      codeExample: "kubectl get pod my-pod -o yaml | kubectl neat"
-    },
-    {
-      id: "docker-build-cache-trick",
-      title: "Docker Build Cache: The .dockerignore Gotcha",
-      content: "Editor swap files and temp files can invalidate your Docker build cache. A proper .dockerignore saved me from 5-minute builds.",
-      date: "2024-12-05",
-      tags: ["docker", "devops", "optimization"],
-      codeExample: "# .dockerignore\n*.swp\n.DS_Store\nnode_modules"
-    },
-    {
-      id: "k8s-ephemeral-containers",
-      title: "Kubernetes Ephemeral Debug Containers",
-      content: "Debug running pods without rebuilding images. Just attach a debug container with all your tools!",
-      date: "2024-12-01",
-      tags: ["kubernetes", "debugging", "devops"],
-      codeExample: "kubectl debug -it my-pod --image=nicolaka/netshoot"
-    },
-    {
-      id: "terraform-fmt-check",
-      title: "Terraform fmt in CI/CD",
-      content: "Use `terraform fmt -check -recursive` in CI to catch formatting issues before merge. Keeps the team sane.",
-      date: "2024-11-25",
-      tags: ["terraform", "cicd", "devops"],
-      codeExample: "terraform fmt -check -recursive"
-    },
-    {
-      id: "aws-cli-output-table",
-      title: "AWS CLI Table Output for Humans",
-      content: "Switch from JSON to table output for better readability. Your eyes will thank you.",
-      date: "2024-11-20",
-      tags: ["aws", "cli", "productivity"],
-      codeExample: "aws ec2 describe-instances --output table"
-    },
-    {
-      id: "git-interactive-rebase",
-      title: "Git interactive rebase for clean history",
-      content: "Use `git rebase -i HEAD~n` to clean up your commit history before merging. Squash those 'fix typo' commits!",
-      date: "2024-11-15",
-      tags: ["git", "workflow", "productivity"],
-      codeExample: "git rebase -i HEAD~3"
-    },
-    {
-      id: "bash-set-options",
-      title: "Bash set -euxo pipefail for Safer Scripts",
-      content: "Stop silent failures in bash scripts. These flags make your scripts fail fast and show what they're doing.",
-      date: "2024-11-10",
-      tags: ["bash", "scripting", "debugging"],
-      codeExample: "set -euxo pipefail  # Exit on error, undefined vars, pipe fails"
-    },
-    {
-      id: "k8s-events-debugging",
-      title: "kubectl get events for Quick Debugging",
-      content: "Before diving into logs, check events. They often tell you exactly what went wrong with scheduling or startup.",
-      date: "2024-11-05",
-      tags: ["kubernetes", "debugging", "kubectl"],
-      codeExample: "kubectl get events --field-selector involvedObject.name=my-pod"
+  // Load TILs on mount
+  useEffect(() => {
+    try {
+      const allTils = getAllPosts('til');
+      setTils(allTils);
+    } catch (error) {
+      console.error('Error loading TILs:', error);
+    } finally {
+      setLoading(false);
     }
-  ];
+  }, []);
 
   // Filter TILs
   const filteredTils = useMemo(() => {
@@ -94,8 +42,8 @@ export default function TILPage() {
       filtered = filtered.filter(til =>
         til.title.toLowerCase().includes(query) ||
         til.content.toLowerCase().includes(query) ||
-        til.tags.some(tag => tag.toLowerCase().includes(query)) ||
-        (til.codeExample && til.codeExample.toLowerCase().includes(query))
+        til.excerpt.toLowerCase().includes(query) ||
+        til.tags.some(tag => tag.toLowerCase().includes(query))
       );
     }
 
@@ -111,6 +59,24 @@ export default function TILPage() {
       new Date(b.date).getTime() - new Date(a.date).getTime()
     );
   }, [tils, debouncedSearchQuery, selectedTag]);
+
+  // Get all unique tags for the dropdown
+  const allTags = useMemo(() => {
+    const tagsSet = new Set<string>();
+    tils.forEach(til => til.tags.forEach(tag => tagsSet.add(tag)));
+    return Array.from(tagsSet).sort();
+  }, [tils]);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center space-y-4">
+          <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full mx-auto"></div>
+          <p className="text-muted-foreground">Loading TILs...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8">
@@ -151,13 +117,9 @@ export default function TILPage() {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Tags</SelectItem>
-            <SelectItem value="kubernetes">Kubernetes</SelectItem>
-            <SelectItem value="docker">Docker</SelectItem>
-            <SelectItem value="terraform">Terraform</SelectItem>
-            <SelectItem value="aws">AWS</SelectItem>
-            <SelectItem value="bash">Bash</SelectItem>
-            <SelectItem value="git">Git</SelectItem>
-            <SelectItem value="devops">DevOps</SelectItem>
+            {allTags.map(tag => (
+              <SelectItem key={tag} value={tag}>{tag}</SelectItem>
+            ))}
           </SelectContent>
         </Select>
       </div>
@@ -200,7 +162,7 @@ export default function TILPage() {
       {filteredTils.length > 0 ? (
         <div className="grid gap-6">
           {filteredTils.map((til) => (
-          <Card key={til.id} className="hover:shadow-lg transition-all duration-300 hover:-translate-y-1 group border-l-4 border-l-yellow-500">
+          <Card key={til.slug} className="hover:shadow-lg transition-all duration-300 hover:-translate-y-1 group border-l-4 border-l-yellow-500">
             <CardHeader>
               <div className="flex items-start justify-between">
                 <div className="space-y-2 flex-1">
@@ -218,7 +180,7 @@ export default function TILPage() {
                   </div>
                 </div>
                 <Button variant="ghost" size="sm" asChild>
-                  <Link href={`/til/${til.id}`}>
+                  <Link href={`/til/${til.slug}`}>
                     <ExternalLink className="h-4 w-4" />
                   </Link>
                 </Button>
@@ -226,16 +188,8 @@ export default function TILPage() {
             </CardHeader>
             <CardContent>
               <p className="text-muted-foreground mb-4 leading-relaxed">
-                {til.content}
+                {til.excerpt || til.content.substring(0, 200) + '...'}
               </p>
-              
-              {til.codeExample && (
-                <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-3 mb-4">
-                  <code className="text-sm font-mono text-gray-800 dark:text-gray-200">
-                    {til.codeExample}
-                  </code>
-                </div>
-              )}
               
               <div className="flex flex-wrap gap-2">
                 {til.tags.map((tag) => (
