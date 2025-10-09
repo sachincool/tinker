@@ -2,7 +2,6 @@
 
 import { useEffect, useRef } from "react";
 import * as d3 from "d3";
-import { getAllPosts, getAllTags } from "@/lib/posts";
 
 interface Node {
   id: string;
@@ -17,16 +16,24 @@ interface Link {
   target: string;
 }
 
-export function GraphView() {
+interface Post {
+  slug: string;
+  title: string;
+  tags: string[];
+  type: "blog" | "til";
+}
+
+interface GraphViewProps {
+  blogPosts: Post[];
+  tilPosts: Post[];
+  allTags: string[];
+}
+
+export function GraphView({ blogPosts, tilPosts, allTags }: GraphViewProps) {
   const svgRef = useRef<SVGSVGElement>(null);
 
   useEffect(() => {
     if (!svgRef.current) return;
-
-    // Get real data from posts
-    const blogPosts = getAllPosts('blog');
-    const tilPosts = getAllPosts('til');
-    const allTags = getAllTags();
 
     // Build nodes from real data
     const nodes: Node[] = [];
@@ -208,7 +215,7 @@ export function GraphView() {
     return () => {
       simulation.stop();
     };
-  }, []);
+  }, [blogPosts, tilPosts, allTags]);
 
   return (
     <div className="w-full">

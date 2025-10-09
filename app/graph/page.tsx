@@ -75,7 +75,11 @@ export default function GraphPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <GraphView />
+          <GraphView 
+            blogPosts={blogPosts} 
+            tilPosts={tilPosts} 
+            allTags={allTags}
+          />
         </CardContent>
       </Card>
 
