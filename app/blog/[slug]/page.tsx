@@ -1,82 +1,32 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
-import { Calendar, Clock, ArrowLeft, Share2 } from "lucide-react";
+import { Calendar, Clock, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { ReadingProgress } from "@/components/blog/reading-progress";
 import { ViewCounter } from "@/components/blog/view-counter";
 import { LikeButton } from "@/components/blog/like-button";
 import { TableOfContents } from "@/components/blog/table-of-contents";
 import { Comments } from "@/components/blog/comments";
+import { ShareButton } from "@/components/blog/share-button";
+import { getPostBySlug, getAllPosts } from "@/lib/posts";
+import { notFound } from "next/navigation";
+import readingTime from "reading-time";
 
-export default function BlogPost({ params }: { params: { slug: string } }) {
-  // In a real app, you'd fetch this data based on the slug
-  const post = {
-    id: "modern-react-patterns",
-    title: "Modern React Patterns That Will Make You a Better Developer",
-    excerpt: "Exploring advanced React patterns including compound components, render props, and custom hooks that every developer should know.",
-    content: `# Modern React Patterns That Will Make You a Better Developer
+export default async function BlogPost({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
 
-React has evolved significantly since its inception, and with it, the patterns we use to build applications have become more sophisticated. Today, I want to share some advanced React patterns that have transformed how I approach component design and state management.
+  // Fetch the actual post data based on the slug
+  const post = getPostBySlug(slug, 'blog');
 
-## 1. Compound Components Pattern
+  // If post doesn't exist, show 404
+  if (!post) {
+    notFound();
+  }
 
-The compound component pattern allows you to create components that work together to form a complete UI element. Think of how HTML's select and option elements work together.
-
-Instead of this monolithic approach:
-<Dropdown options={['Option 1', 'Option 2']} onSelect={handleSelect} />
-
-Use compound components:
-<Dropdown onSelect={handleSelect}>
-  <Dropdown.Trigger>Select an option</Dropdown.Trigger>
-  <Dropdown.Menu>
-    <Dropdown.Item value="1">Option 1</Dropdown.Item>
-    <Dropdown.Item value="2">Option 2</Dropdown.Item>
-  </Dropdown.Menu>
-</Dropdown>
-
-This pattern provides incredible flexibility while maintaining a clean API.
-
-## 2. Custom Hooks for Logic Reuse
-
-Custom hooks are one of React's most powerful features for extracting and reusing stateful logic.
-
-function useLocalStorage(key, initialValue) {
-  const [storedValue, setStoredValue] = useState(() => {
-    try {
-      const item = window.localStorage.getItem(key);
-      return item ? JSON.parse(item) : initialValue;
-    } catch (error) {
-      return initialValue;
-    }
-  });
-
-  const setValue = (value) => {
-    try {
-      setStoredValue(value);
-      window.localStorage.setItem(key, JSON.stringify(value));
-    } catch (error) {
-      console.error('Error saving to localStorage:', error);
-    }
-  };
-
-  return [storedValue, setValue];
-}
-
-## Conclusion
-
-These patterns have made my React code more maintainable, testable, and reusable. The key is knowing when to apply each pattern and not over-engineering simple components.
-
-What patterns do you find most useful in your React applications? I'd love to hear your thoughts!`,
-    date: "2025-09-08",
-    readTime: "8 min read",
-    tags: ["react", "javascript", "patterns", "web-dev"],
-    author: {
-      name: "Harshit",
-      avatar: "/api/placeholder/40/40"
-    }
-  };
+  // Calculate reading time
+  const stats = readingTime(post.content);
+  const readTime = stats.text;
 
   return (
     <>
@@ -84,7 +34,7 @@ What patterns do you find most useful in your React applications? I'd love to he
       <div className="max-w-7xl mx-auto px-4">
         <div className="lg:grid lg:grid-cols-[1fr_280px] lg:gap-16">
           <div className="max-w-3xl space-y-8">
-                  {/* Back button */}
+            {/* Back button */}
             <Button variant="ghost" asChild>
               <Link href="/blog">
                 <ArrowLeft className="mr-2 h-4 w-4" />
@@ -95,21 +45,21 @@ What patterns do you find most useful in your React applications? I'd love to he
             {/* Article Header */}
             <header className="space-y-6 pb-8 border-b">
               <h1 className="text-4xl md:text-5xl font-bold leading-tight tracking-tight">{post.title}</h1>
-              
+
               <div className="flex flex-wrap items-center gap-4 text-muted-foreground text-sm">
                 <div className="flex items-center gap-1">
                   <Calendar className="h-4 w-4" />
-                  <span>{new Date(post.date).toLocaleDateString('en-US', { 
-                    year: 'numeric', 
-                    month: 'long', 
-                    day: 'numeric' 
+                  <span>{new Date(post.date).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
                   })}</span>
                 </div>
                 <div className="flex items-center gap-1">
                   <Clock className="h-4 w-4" />
-                  <span>{post.readTime}</span>
+                  <span>{readTime}</span>
                 </div>
-                <ViewCounter slug={post.id} />
+                <ViewCounter slug={post.slug} />
               </div>
 
               <div className="flex flex-wrap gap-2">
@@ -133,31 +83,34 @@ What patterns do you find most useful in your React applications? I'd love to he
                     const id = text.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '');
                     return <h2 key={index} id={id} className="text-3xl font-bold mt-12 mb-4 scroll-mt-24">{text}</h2>;
                   }
-                  
+
                   // H2 - Section heading
                   if (paragraph.startsWith('## ')) {
                     const text = paragraph.substring(3);
                     const id = text.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '');
                     return <h2 key={index} id={id} className="text-2xl font-bold mt-10 mb-4 scroll-mt-24">{text}</h2>;
                   }
-                  
+
                   // H3 - Sub-section heading
                   if (paragraph.startsWith('### ')) {
                     const text = paragraph.substring(4);
                     const id = text.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '');
                     return <h3 key={index} id={id} className="text-xl font-semibold mt-8 mb-3 scroll-mt-24">{text}</h3>;
                   }
-                  
+
                   // Code blocks (multi-line code)
-                  if (paragraph.includes('function ') || paragraph.includes('const ') || 
-                      paragraph.includes('import ') || paragraph.startsWith('<') || 
-                      paragraph.includes('```')) {
-                    const code = paragraph.replace(/```\w*\n?/g, '').trim();
+                  if (paragraph.includes('```')) {
+                    const lines = paragraph.split('\n');
+                    const language = lines[0]?.replace('```', '').trim() || 'CODE';
+                    const codeLines = lines.slice(1);
+                    const lastLineIndex = codeLines.findIndex(line => line.includes('```'));
+                    const code = codeLines.slice(0, lastLineIndex >= 0 ? lastLineIndex : undefined).join('\n');
+
                     return (
                       <div key={index} className="not-prose my-6">
                         <div className="bg-muted/50 border border-border rounded-lg overflow-hidden">
                           <div className="bg-muted/30 px-4 py-2 border-b border-border">
-                            <span className="text-xs font-mono text-muted-foreground">CODE</span>
+                            <span className="text-xs font-mono text-muted-foreground uppercase">{language}</span>
                           </div>
                           <pre className="p-4 overflow-x-auto">
                             <code className="text-sm font-mono text-foreground leading-relaxed">{code}</code>
@@ -166,7 +119,7 @@ What patterns do you find most useful in your React applications? I'd love to he
                       </div>
                     );
                   }
-                  
+
                   // Blockquotes
                   if (paragraph.startsWith('> ')) {
                     return (
@@ -175,7 +128,7 @@ What patterns do you find most useful in your React applications? I'd love to he
                       </blockquote>
                     );
                   }
-                  
+
                   // List items
                   if (paragraph.match(/^[\d]+\./m) || paragraph.match(/^[-*]/m)) {
                     const items = paragraph.split('\n').filter(line => line.trim());
@@ -191,7 +144,7 @@ What patterns do you find most useful in your React applications? I'd love to he
                       </ListTag>
                     );
                   }
-                  
+
                   // Regular paragraphs
                   if (paragraph.trim()) {
                     return (
@@ -200,7 +153,7 @@ What patterns do you find most useful in your React applications? I'd love to he
                       </p>
                     );
                   }
-                  
+
                   return null;
                 })}
               </div>
@@ -208,48 +161,38 @@ What patterns do you find most useful in your React applications? I'd love to he
 
             {/* Actions Section */}
             <div className="flex items-center justify-between py-6 border-t">
-              <LikeButton slug={post.id} />
-              <Button variant="outline" size="sm">
-                <Share2 className="mr-2 h-4 w-4" />
-                Share
-              </Button>
+              <LikeButton slug={post.slug} />
+              <ShareButton title={post.title} excerpt={post.excerpt} />
             </div>
 
             {/* Related Posts */}
             <section>
               <h2 className="text-2xl font-bold mb-6">Related Posts</h2>
               <div className="grid gap-4">
-                <Card className="hover:shadow-md transition-shadow">
-                  <CardHeader>
-                    <CardTitle className="text-lg">
-                      <Link href="/blog/docker-optimization-guide" className="hover:text-blue-600 transition-colors">
-                        Docker Image Optimization: From 2GB to 50MB
-                      </Link>
-                    </CardTitle>
-                    <div className="flex gap-2">
-                      <Badge variant="secondary">docker</Badge>
-                      <Badge variant="secondary">optimization</Badge>
-                    </div>
-                  </CardHeader>
-                </Card>
-                <Card className="hover:shadow-md transition-shadow">
-                  <CardHeader>
-                    <CardTitle className="text-lg">
-                      <Link href="/blog/kubernetes-networking-deep-dive" className="hover:text-blue-600 transition-colors">
-                        Kubernetes Networking Deep Dive
-                      </Link>
-                    </CardTitle>
-                    <div className="flex gap-2">
-                      <Badge variant="secondary">kubernetes</Badge>
-                      <Badge variant="secondary">networking</Badge>
-                    </div>
-                  </CardHeader>
-                </Card>
+                {getAllPosts('blog')
+                  .filter(p => p.slug !== post.slug && p.tags.some(tag => post.tags.includes(tag)))
+                  .slice(0, 2)
+                  .map((relatedPost) => (
+                    <Card key={relatedPost.slug} className="hover:shadow-md transition-shadow">
+                      <CardHeader>
+                        <CardTitle className="text-lg">
+                          <Link href={`/blog/${relatedPost.slug}`} className="hover:text-blue-600 transition-colors">
+                            {relatedPost.title}
+                          </Link>
+                        </CardTitle>
+                        <div className="flex gap-2">
+                          {relatedPost.tags.slice(0, 3).map((tag) => (
+                            <Badge key={tag} variant="secondary">{tag}</Badge>
+                          ))}
+                        </div>
+                      </CardHeader>
+                    </Card>
+                  ))}
               </div>
             </section>
 
             {/* Comments Section */}
-            <Comments slug={params.slug} />
+            <Comments slug={slug} />
           </div>
 
           {/* Table of Contents Sidebar */}

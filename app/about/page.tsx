@@ -73,7 +73,8 @@ export default function AboutPage() {
 
   const interests = [
     { icon: "📺", label: "Anime", desc: "Serious anime enthusiast" },
-    { icon: "🎮", label: "Dota 2", desc: "Forever 2.3k MMR" },
+    { icon: "🎮", label: "Dota 2", desc: "5k MMR | Meepo, Tinker, Timbersaw" },
+    { icon: "⚔️", label: "MMORPGs", desc: "A3 India veteran player" },
     { icon: "🍕", label: "Pizza", desc: "Vegetarian fuel" },
     { icon: "☕", label: "Coffee", desc: "Over 9000 cups" },
     { icon: "📚", label: "Learning", desc: "Insatiable curiosity" },
@@ -172,9 +173,9 @@ export default function AboutPage() {
             </p>
 
             <p>
-              When I&apos;m not debugging why a pod is in CrashLoopBackOff, you&apos;ll find me watching anime, 
-              playing Dota 2 at a very respectable 2.3k MMR (read: terrible), or contemplating the meaning of life 
-              over pizza and coffee at 3 AM.
+              When I&apos;m not debugging why a pod is in CrashLoopBackOff, you&apos;ll find me watching anime,
+              grinding to 5k MMR in Dota 2 with my favorite heroes (Meepo, Tinker, Timbersaw), reliving the glory
+              days of A3 India MMORPG, or contemplating the meaning of life over pizza and coffee at 3 AM.
             </p>
 
             <div className="bg-muted/50 rounded-lg p-4 mt-6 border-l-4 border-blue-500">

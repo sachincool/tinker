@@ -8,11 +8,15 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Search, Calendar, Clock, ArrowRight, Sparkles, BookOpen } from "lucide-react";
 import Link from "next/link";
+import { useDebounce } from "@/hooks/use-debounce";
 
 export default function BlogPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTag, setSelectedTag] = useState("all");
   const [sortBy, setSortBy] = useState("newest");
+
+  // Debounce search query for better performance
+  const debouncedSearchQuery = useDebounce(searchQuery, 300);
 
   const posts = [
     {
@@ -71,9 +75,9 @@ export default function BlogPage() {
   const filteredAndSortedPosts = useMemo(() => {
     let filtered = posts;
 
-    // Filter by search query
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase();
+    // Filter by search query (using debounced value)
+    if (debouncedSearchQuery) {
+      const query = debouncedSearchQuery.toLowerCase();
       filtered = filtered.filter(post =>
         post.title.toLowerCase().includes(query) ||
         post.excerpt.toLowerCase().includes(query) ||
@@ -100,7 +104,7 @@ export default function BlogPage() {
     });
 
     return sorted;
-  }, [posts, searchQuery, selectedTag, sortBy]);
+  }, [posts, debouncedSearchQuery, selectedTag, sortBy]);
 
   const featuredPosts = filteredAndSortedPosts.filter(post => post.featured);
   const regularPosts = filteredAndSortedPosts.filter(post => !post.featured);
@@ -161,10 +165,10 @@ export default function BlogPage() {
       </div>
 
       {/* Results count */}
-      {(searchQuery || selectedTag !== "all") && (
+      {(debouncedSearchQuery || selectedTag !== "all") && (
         <div className="text-sm text-muted-foreground">
           Found {filteredAndSortedPosts.length} post{filteredAndSortedPosts.length !== 1 ? 's' : ''}
-          {searchQuery && ` matching "${searchQuery}"`}
+          {debouncedSearchQuery && ` matching "${debouncedSearchQuery}"`}
           {selectedTag !== "all" && ` in ${selectedTag}`}
         </div>
       )}
@@ -296,13 +300,6 @@ export default function BlogPage() {
           </Card>
         )}
       </section>
-
-      {/* Load More */}
-      <div className="text-center">
-        <Button variant="outline" size="lg">
-          Load More Posts
-        </Button>
-      </div>
     </div>
   );
 }

@@ -23,7 +23,6 @@ import {
 
 export function Header() {
   const { theme, setTheme } = useTheme();
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   const navigation = [
     { name: "Home", href: "/", icon: Home },
@@ -69,14 +68,16 @@ export function Header() {
 
           {/* Right side actions */}
           <div className="flex items-center space-x-2">
-            {/* Search */}
+            {/* Search - Navigate to blog */}
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => setIsSearchOpen(!isSearchOpen)}
+              asChild
               className="hidden sm:flex"
             >
-              <Search className="h-4 w-4" />
+              <Link href="/blog">
+                <Search className="h-4 w-4" />
+              </Link>
             </Button>
 
             {/* Theme toggle */}
@@ -158,20 +159,6 @@ export function Header() {
             </Sheet>
           </div>
         </div>
-
-        {/* Search bar */}
-        {isSearchOpen && (
-          <div className="pb-4">
-            <div className="relative max-w-md">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Search chaos, TILs, infrastructure spells..."
-                className="pl-10"
-                autoFocus
-              />
-            </div>
-          </div>
-        )}
       </div>
     </header>
   );

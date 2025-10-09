@@ -121,7 +121,7 @@ export default function HomePage() {
           {[
             { label: "Servers Crashed", value: "∞", color: "from-red-500 to-orange-500", icon: Zap },
             { label: "TILs Written", value: "42+", color: "from-green-500 to-emerald-500", icon: Lightbulb },
-            { label: "Dota MMR", value: "2.3k", color: "from-purple-500 to-pink-500", icon: TrendingUp },
+            { label: "Dota MMR", value: "5k", color: "from-purple-500 to-pink-500", icon: TrendingUp },
             { label: "Coffee Mugs", value: "9001", color: "from-orange-500 to-yellow-500", icon: Coffee },
           ].map((stat, index) => (
             <Card 

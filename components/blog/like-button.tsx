@@ -20,20 +20,26 @@ export function LikeButton({ slug, className = "" }: LikeButtonProps) {
     // Fetch real like count from API
     const fetchLikes = async () => {
       try {
-        // Check localStorage for client-side state
-        const likedPosts = JSON.parse(localStorage.getItem('likedPosts') || '{}');
-        const locallyLiked = !!likedPosts[slug];
-        
-        // Fetch server count
+        // Fetch server count AND server-side liked status
         const response = await fetch(`/api/likes?slug=${encodeURIComponent(slug)}`);
         if (response.ok) {
           const data = await response.json();
           setLikes(data.count);
-          setIsLiked(locallyLiked);
+          // TRUST THE SERVER for liked status, not localStorage
+          setIsLiked(data.liked);
+
+          // Sync localStorage with server truth
+          const likedPosts = JSON.parse(localStorage.getItem('likedPosts') || '{}');
+          if (data.liked) {
+            likedPosts[slug] = true;
+          } else {
+            delete likedPosts[slug];
+          }
+          localStorage.setItem('likedPosts', JSON.stringify(likedPosts));
         }
       } catch (error) {
         console.error('Error fetching likes:', error);
-        // Fallback to localStorage only
+        // Fallback to localStorage only if server fails
         const likedPosts = JSON.parse(localStorage.getItem('likedPosts') || '{}');
         setIsLiked(!!likedPosts[slug]);
         setLikes(0);

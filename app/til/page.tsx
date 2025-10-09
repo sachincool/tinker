@@ -8,10 +8,14 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Search, Calendar, Lightbulb, ExternalLink, Sparkles, Zap } from "lucide-react";
 import Link from "next/link";
+import { useDebounce } from "@/hooks/use-debounce";
 
 export default function TILPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTag, setSelectedTag] = useState("all");
+
+  // Debounce search query for better performance
+  const debouncedSearchQuery = useDebounce(searchQuery, 300);
 
   const tils = [
     {
@@ -84,9 +88,9 @@ export default function TILPage() {
   const filteredTils = useMemo(() => {
     let filtered = tils;
 
-    // Filter by search query
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase();
+    // Filter by search query (using debounced value)
+    if (debouncedSearchQuery) {
+      const query = debouncedSearchQuery.toLowerCase();
       filtered = filtered.filter(til =>
         til.title.toLowerCase().includes(query) ||
         til.content.toLowerCase().includes(query) ||
@@ -106,7 +110,7 @@ export default function TILPage() {
     return filtered.sort((a, b) =>
       new Date(b.date).getTime() - new Date(a.date).getTime()
     );
-  }, [tils, searchQuery, selectedTag]);
+  }, [tils, debouncedSearchQuery, selectedTag]);
 
   return (
     <div className="space-y-8">
@@ -159,10 +163,10 @@ export default function TILPage() {
       </div>
 
       {/* Results count */}
-      {(searchQuery || selectedTag !== "all") && (
+      {(debouncedSearchQuery || selectedTag !== "all") && (
         <div className="text-sm text-muted-foreground">
           Found {filteredTils.length} TIL{filteredTils.length !== 1 ? 's' : ''}
-          {searchQuery && ` matching "${searchQuery}"`}
+          {debouncedSearchQuery && ` matching "${debouncedSearchQuery}"`}
           {selectedTag !== "all" && ` in ${selectedTag}`}
         </div>
       )}
@@ -267,15 +271,6 @@ export default function TILPage() {
             </Button>
           </div>
         </Card>
-      )}
-
-      {/* Load More */}
-      {filteredTils.length > 0 && (
-        <div className="text-center">
-          <Button variant="outline" size="lg">
-            Load More TILs
-          </Button>
-        </div>
       )}
     </div>
   );

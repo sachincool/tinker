@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { 
-  Github, 
-  Twitter, 
-  Linkedin, 
-  Mail, 
-  Heart, 
-  Zap, 
+import { toast } from "sonner";
+import {
+  Github,
+  Twitter,
+  Linkedin,
+  Mail,
+  Heart,
+  Zap,
   Coffee,
   Terminal,
   Rss
@@ -157,14 +158,19 @@ export function Footer() {
               <Link href="/resume" className="hover:text-foreground transition-colors">
                 Resume
               </Link>
-              <button 
+              <button
                 onClick={() => {
                   console.log("%c🧙‍♂️ Hey there, fellow code wizard!", "font-size: 20px; color: #6366f1; font-weight: bold;");
                   console.log("%cYou found the secret developer console message!", "font-size: 14px; color: #8b5cf6;");
                   console.log("%cWant to see something cool? Try typing: document.body.style.transform = 'rotate(180deg)'", "font-size: 12px; color: #ec4899;");
                   console.log("%c(Just kidding, don't do that... unless? 😏)", "font-size: 10px; color: #64748b;");
+
+                  toast("🧙‍♂️ Secret Spell Activated!", {
+                    description: "Check the browser console for a special message from the Infra Magician! Also, try the Konami Code for more magic ✨",
+                    duration: 5000,
+                  });
                 }}
-                className="hover:text-foreground transition-colors"
+                className="hover:text-foreground transition-colors cursor-pointer"
               >
                 Secret
               </button>
@@ -189,7 +195,7 @@ export function Footer() {
             </div>
             <div className="group cursor-default">
               <div className="text-2xl font-bold text-purple-500 group-hover:scale-110 transition-transform">
-                2.3k
+                5k
               </div>
               <div className="text-xs text-muted-foreground">Dota MMR</div>
             </div>
