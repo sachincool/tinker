@@ -9,7 +9,6 @@ import bash from "highlight.js/lib/languages/bash";
 import yaml from "highlight.js/lib/languages/yaml";
 import json from "highlight.js/lib/languages/json";
 import dockerfile from "highlight.js/lib/languages/dockerfile";
-import hcl from "highlight.js/lib/languages/hcl";
 import { CodeBlock } from "./code-block";
 
 // Register languages
@@ -23,8 +22,7 @@ hljs.registerLanguage("yaml", yaml);
 hljs.registerLanguage("yml", yaml);
 hljs.registerLanguage("json", json);
 hljs.registerLanguage("dockerfile", dockerfile);
-hljs.registerLanguage("hcl", hcl);
-hljs.registerLanguage("terraform", hcl);
+// Note: HCL/Terraform will fall back to plaintext (highlight.js doesn't have native HCL support)
 
 interface MarkdownContentProps {
   content: string;
