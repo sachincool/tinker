@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Heart } from "lucide-react";
 import { cn } from "@/lib/utils";
+import confetti from "canvas-confetti";
 
 interface LikeButtonProps {
   slug: string;
@@ -15,6 +16,7 @@ export function LikeButton({ slug, className = "" }: LikeButtonProps) {
   const [isLiked, setIsLiked] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const buttonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     // Fetch real like count from API
@@ -62,6 +64,39 @@ export function LikeButton({ slug, className = "" }: LikeButtonProps) {
     const newCount = isLiked ? Math.max(0, likes - 1) : likes + 1;
     setIsLiked(newLiked);
     setLikes(newCount);
+
+    // Celebration effect when liking
+    if (!isLiked && buttonRef.current) {
+      const rect = buttonRef.current.getBoundingClientRect();
+      const x = (rect.left + rect.width / 2) / window.innerWidth;
+      const y = (rect.top + rect.height / 2) / window.innerHeight;
+
+      // Heart burst confetti
+      confetti({
+        particleCount: 30,
+        spread: 60,
+        origin: { x, y },
+        colors: ['#ef4444', '#f87171', '#fca5a5', '#fee2e2'],
+        shapes: ['circle'],
+        scalar: 0.8,
+        gravity: 1.2,
+        ticks: 100,
+      });
+
+      // Check for milestones
+      if (newCount === 10 || newCount === 50 || newCount === 100) {
+        // Extra celebration for milestones
+        setTimeout(() => {
+          confetti({
+            particleCount: 100,
+            spread: 100,
+            origin: { x, y },
+            colors: ['#fbbf24', '#f59e0b', '#d97706'],
+            startVelocity: 45,
+          });
+        }, 150);
+      }
+    }
 
     try {
       // Update server
@@ -115,6 +150,7 @@ export function LikeButton({ slug, className = "" }: LikeButtonProps) {
 
   return (
     <Button
+      ref={buttonRef}
       variant={isLiked ? "default" : "outline"}
       size="sm"
       onClick={handleLike}

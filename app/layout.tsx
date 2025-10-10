@@ -7,8 +7,16 @@ import { Footer } from '@/components/layout/footer'
 import { Toaster } from '@/components/ui/sonner'
 import { KonamiCode } from '@/components/easter-eggs/konami-code'
 import { ConsoleMessage } from '@/components/easter-eggs/console-message'
+import { ScrollToTop } from '@/components/ui/scroll-to-top'
+import { KeyboardShortcuts } from '@/components/keyboard-shortcuts'
+import { Analytics } from '@vercel/analytics/react'
+import { SpeedInsights } from '@vercel/speed-insights/next'
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({ 
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-inter',
+})
 
 export const metadata: Metadata = {
   title: 'Harshit\'s Blog - Infra Magician\'s Digital Garden',
@@ -50,7 +58,11 @@ export default function RootLayout({
           </div>
           <KonamiCode />
           <ConsoleMessage />
+          <ScrollToTop />
+          <KeyboardShortcuts />
           <Toaster />
+          <Analytics />
+          <SpeedInsights />
         </ThemeProvider>
       </body>
     </html>

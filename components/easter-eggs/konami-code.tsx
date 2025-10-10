@@ -44,15 +44,15 @@ export function KonamiCode() {
           </div>
           <CardTitle className="text-2xl">
             <span className="bg-gradient-to-r from-yellow-500 via-orange-500 to-red-500 bg-clip-text text-transparent">
-              🎮 Achievement Unlocked! 🎮
+              Achievement Unlocked
             </span>
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4 text-center">
           <div className="space-y-2">
-            <p className="text-lg font-semibold">Konami Code Master!</p>
+            <p className="text-lg font-semibold">Konami Code</p>
             <p className="text-sm text-muted-foreground">
-              You&apos;ve discovered the legendary Konami Code. A true gamer and developer of culture!
+              You know the code. You are the culture.
             </p>
           </div>
 
@@ -62,13 +62,13 @@ export function KonamiCode() {
             </p>
             <div className="flex items-center justify-center gap-2 text-sm">
               <Sparkles className="h-4 w-4 text-yellow-500" />
-              <span className="font-medium">+30 Developer Points</span>
+              <span className="font-medium">+30 Lives</span>
               <Sparkles className="h-4 w-4 text-yellow-500" />
             </div>
           </div>
 
           <div className="text-xs text-muted-foreground italic">
-            &quot;Some say this code unlocks infinite lives. In reality, it just proves you&apos;re awesome.&quot;
+            &quot;The code remembers.&quot;
           </div>
 
           <Button 

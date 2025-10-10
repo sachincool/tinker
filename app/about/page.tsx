@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
+// Note: This is a client component, so metadata should be in a parent layout or separate metadata export
 export default function AboutPage() {
   const [mounted, setMounted] = useState(false);
   const [glitchText, setGlitchText] = useState("coding");

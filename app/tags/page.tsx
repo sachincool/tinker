@@ -6,6 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Search, Hash, TrendingUp, Sparkles } from "lucide-react";
 import Link from "next/link";
 
+// Note: Metadata should be in a parent server component or separate metadata file
+// For now, this page is client-side only
 export default function TagsPage() {
   const tags = [
     { name: "kubernetes", count: 23, color: "from-blue-500 to-cyan-500" },

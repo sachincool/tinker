@@ -1,9 +1,11 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
+import { Button } from "@/components/ui/button";
+import { ZoomIn, ZoomOut, Maximize2 } from "lucide-react";
 
-interface Node {
+interface Node extends d3.SimulationNodeDatum {
   id: string;
   name: string;
   type: "post" | "til" | "tag";
@@ -11,9 +13,9 @@ interface Node {
   slug?: string;
 }
 
-interface Link {
-  source: string;
-  target: string;
+interface Link extends d3.SimulationLinkDatum<Node> {
+  source: string | Node;
+  target: string | Node;
 }
 
 interface Post {
@@ -31,9 +33,11 @@ interface GraphViewProps {
 
 export function GraphView({ blogPosts, tilPosts, allTags }: GraphViewProps) {
   const svgRef = useRef<SVGSVGElement>(null);
+  const zoomRef = useRef<any>(null);
 
   useEffect(() => {
-    if (!svgRef.current) return;
+    const svgElement = svgRef.current;
+    if (!svgElement) return;
 
     // Build nodes from real data
     const nodes: Node[] = [];
@@ -99,14 +103,29 @@ export function GraphView({ blogPosts, tilPosts, allTags }: GraphViewProps) {
       });
     });
 
-    const svg = d3.select(svgRef.current);
+    const svg = d3.select(svgElement);
     svg.selectAll("*").remove();
 
-    const container = svgRef.current.parentElement;
+    const container = svgElement.parentElement;
     const width = container?.clientWidth || 800;
     const height = 600;
 
     svg.attr("width", width).attr("height", height).attr("viewBox", `0 0 ${width} ${height}`);
+
+    // Create a group for zoom/pan transformations
+    const g = svg.append("g");
+
+    // Add zoom behavior to SVG
+    const zoom = d3.zoom<SVGSVGElement, unknown>()
+      .scaleExtent([0.1, 4]) // Min and max zoom levels
+      .on("zoom", (event) => {
+        g.attr("transform", event.transform.toString());
+      });
+
+    svg.call(zoom as any);
+    
+    // Store zoom instance for controls
+    zoomRef.current = { zoom, svg };
 
     const simulation = d3
       .forceSimulation(nodes as any)
@@ -115,8 +134,8 @@ export function GraphView({ blogPosts, tilPosts, allTags }: GraphViewProps) {
       .force("center", d3.forceCenter(width / 2, height / 2))
       .force("collision", d3.forceCollide().radius((d: any) => Math.sqrt(d.size) * 3));
 
-    // Create links
-    const link = svg
+    // Create links (in the zoomable group)
+    const link = g
       .append("g")
       .selectAll("line")
       .data(links)
@@ -126,8 +145,8 @@ export function GraphView({ blogPosts, tilPosts, allTags }: GraphViewProps) {
       .attr("stroke-opacity", 0.6)
       .attr("stroke-width", 1);
 
-    // Create nodes
-    const node = svg
+    // Create nodes (in the zoomable group)
+    const node = g
       .append("g")
       .selectAll("circle")
       .data(nodes)
@@ -145,8 +164,9 @@ export function GraphView({ blogPosts, tilPosts, allTags }: GraphViewProps) {
       .attr("stroke", "#fff")
       .attr("stroke-width", 2)
       .style("cursor", "pointer")
-      .on("click", (event, d) => {
-        // Navigate to post/til/tag on click
+      .on("dblclick", (event, d) => {
+        // Double-click to navigate (prevents accidental navigation while dragging)
+        event.stopPropagation(); // Prevent zoom reset on double-click
         if (d.type === "post") {
           window.location.href = `/blog/${d.slug}`;
         } else if (d.type === "til") {
@@ -154,12 +174,13 @@ export function GraphView({ blogPosts, tilPosts, allTags }: GraphViewProps) {
         } else if (d.type === "tag") {
           window.location.href = `/tags/${d.slug}`;
         }
-      })
-      .append("title")
-      .text((d) => d.name);
+      });
 
-    // Add labels (only for tags, too crowded otherwise)
-    const labels = svg
+    // Add title tooltips separately
+    node.append("title").text((d) => d.name);
+
+    // Add labels (only for tags, too crowded otherwise) (in the zoomable group)
+    const labels = g
       .append("g")
       .selectAll("text")
       .data(nodes.filter(d => d.type === "tag"))
@@ -198,18 +219,18 @@ export function GraphView({ blogPosts, tilPosts, allTags }: GraphViewProps) {
     // Update positions on tick
     simulation.on("tick", () => {
       link
-        .attr("x1", (d: any) => d.source.x)
-        .attr("y1", (d: any) => d.source.y)
-        .attr("x2", (d: any) => d.target.x)
-        .attr("y2", (d: any) => d.target.y);
+        .attr("x1", (d: any) => (d.source as any).x || 0)
+        .attr("y1", (d: any) => (d.source as any).y || 0)
+        .attr("x2", (d: any) => (d.target as any).x || 0)
+        .attr("y2", (d: any) => (d.target as any).y || 0);
 
       node
-        .attr("cx", (d: any) => d.x)
-        .attr("cy", (d: any) => d.y);
+        .attr("cx", (d: any) => d.x || 0)
+        .attr("cy", (d: any) => d.y || 0);
 
       labels
-        .attr("x", (d: any) => d.x)
-        .attr("y", (d: any) => d.y);
+        .attr("x", (d: any) => d.x || 0)
+        .attr("y", (d: any) => d.y || 0);
     });
 
     return () => {
@@ -217,8 +238,66 @@ export function GraphView({ blogPosts, tilPosts, allTags }: GraphViewProps) {
     };
   }, [blogPosts, tilPosts, allTags]);
 
+  const handleZoomIn = () => {
+    if (zoomRef.current) {
+      const { svg, zoom } = zoomRef.current;
+      svg.transition()
+        .duration(300)
+        .call(zoom.scaleBy, 1.3);
+    }
+  };
+
+  const handleZoomOut = () => {
+    if (zoomRef.current) {
+      const { svg, zoom } = zoomRef.current;
+      svg.transition()
+        .duration(300)
+        .call(zoom.scaleBy, 0.7);
+    }
+  };
+
+  const handleResetView = () => {
+    if (zoomRef.current) {
+      const { svg, zoom } = zoomRef.current;
+      svg.transition()
+        .duration(500)
+        .call(zoom.transform, d3.zoomIdentity);
+    }
+  };
+
   return (
-    <div className="w-full">
+    <div className="w-full relative">
+      {/* Zoom Controls */}
+      <div className="absolute top-4 right-4 z-10 flex flex-col gap-2">
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={handleZoomIn}
+          className="bg-background/95 backdrop-blur shadow-lg"
+          title="Zoom In (Scroll Up)"
+        >
+          <ZoomIn className="h-4 w-4" />
+        </Button>
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={handleZoomOut}
+          className="bg-background/95 backdrop-blur shadow-lg"
+          title="Zoom Out (Scroll Down)"
+        >
+          <ZoomOut className="h-4 w-4" />
+        </Button>
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={handleResetView}
+          className="bg-background/95 backdrop-blur shadow-lg"
+          title="Reset View"
+        >
+          <Maximize2 className="h-4 w-4" />
+        </Button>
+      </div>
+
       <svg ref={svgRef} className="w-full h-[600px] border rounded-lg bg-background"></svg>
       <div className="flex gap-6 mt-4 text-sm text-muted-foreground justify-center">
         <div className="flex items-center gap-2">
@@ -235,7 +314,7 @@ export function GraphView({ blogPosts, tilPosts, allTags }: GraphViewProps) {
         </div>
       </div>
       <p className="text-center text-xs text-muted-foreground mt-4">
-        Click and drag nodes to rearrange • Click nodes to navigate to content
+        Scroll to zoom • Drag to pan • Double-click nodes to navigate
       </p>
     </div>
   );

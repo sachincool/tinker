@@ -9,6 +9,50 @@ import { MarkdownContent } from "@/components/blog/markdown-content";
 import { getPostBySlug, getAllPosts } from "@/lib/posts";
 import { notFound } from "next/navigation";
 import readingTime from "reading-time";
+import type { Metadata } from "next";
+import { siteConfig } from "@/lib/site-config";
+
+export async function generateMetadata({ 
+  params 
+}: { 
+  params: Promise<{ id: string }> 
+}): Promise<Metadata> {
+  const { id } = await params;
+  const til = getPostBySlug(id, 'til');
+  
+  if (!til) {
+    return {
+      title: '404 - TIL Not Found',
+    };
+  }
+
+  const tilUrl = `${siteConfig.siteUrl}/til/${id}`;
+
+  return {
+    title: `TIL: ${til.title} | ${siteConfig.author.name}`,
+    description: til.excerpt || til.title,
+    keywords: til.tags,
+    authors: [{ name: siteConfig.author.name, url: siteConfig.siteUrl }],
+    openGraph: {
+      title: til.title,
+      description: til.excerpt || til.title,
+      type: 'article',
+      publishedTime: til.date,
+      url: tilUrl,
+      siteName: siteConfig.title,
+      locale: 'en_US',
+    },
+    twitter: {
+      card: 'summary',
+      title: til.title,
+      description: til.excerpt || til.title,
+      creator: '@exploit_sh',
+    },
+    alternates: {
+      canonical: tilUrl,
+    },
+  };
+}
 
 export default async function TILPost({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;

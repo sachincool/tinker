@@ -32,8 +32,7 @@ export function Footer() {
               </div>
             </div>
             <p className="text-sm text-muted-foreground">
-              Casting spells in production and making servers cry since 2010. 
-              <span className="inline-block ml-1">🧙‍♂️</span>
+              Breaking production and fixing it before anyone notices since 2010.
             </p>
           </div>
 
@@ -118,7 +117,7 @@ export function Footer() {
               </Button>
             </div>
             <p className="text-xs text-muted-foreground">
-              Always happy to chat about infra, K8s, or Dota 2 strategies!
+              Infra, K8s, Dota 2. Pick your poison.
             </p>
             <div className="mt-3 p-2 rounded border border-dashed border-muted-foreground/30 hover:border-yellow-500/50 transition-colors group cursor-help" title="Try the Konami Code on your keyboard!">
               <div className="flex items-center gap-2">
@@ -148,26 +147,37 @@ export function Footer() {
               © {new Date().getFullYear()} Harshit Luthra. Built with{" "}
               <Heart className="inline h-3 w-3 text-red-500 fill-current" /> and chaos.
               <span className="hidden lg:inline ml-2 text-xs">
-                • <span className="font-mono">01000100 01000011 00100000 01010011 01110101 01100011 01101011 01110011</span>
+                • <span className="font-mono">01001001 01110100 01011111 01001000 01100101 01110010 01110100 01111010 01011111 01010111 01000001 01001110 01011111 01001001 01010000</span>
               </span>
             </p>
             <div className="flex items-center gap-4 text-xs text-muted-foreground">
               <span className="hidden sm:inline">
-                "In production, we trust... our backup plans." 🧙‍♂️
+                "In production, we trust... our backups."
               </span>
               <Link href="/resume" className="hover:text-foreground transition-colors">
                 Resume
               </Link>
               <button
                 onClick={() => {
-                  console.log("%c🧙‍♂️ Hey there, fellow code wizard!", "font-size: 20px; color: #6366f1; font-weight: bold;");
-                  console.log("%cYou found the secret developer console message!", "font-size: 14px; color: #8b5cf6;");
-                  console.log("%cWant to see something cool? Try typing: document.body.style.transform = 'rotate(180deg)'", "font-size: 12px; color: #ec4899;");
-                  console.log("%c(Just kidding, don't do that... unless? 😏)", "font-size: 10px; color: #64748b;");
+                  const event = new KeyboardEvent('keydown', { key: '?' });
+                  window.dispatchEvent(event);
+                }}
+                className="hover:text-foreground transition-colors flex items-center gap-1"
+                title="Show keyboard shortcuts"
+              >
+                <span className="hidden md:inline">Press</span>
+                <kbd className="px-1 py-0.5 text-[10px] border rounded bg-muted font-mono">?</kbd>
+                <span className="hidden md:inline">for shortcuts</span>
+              </button>
+              <button
+                onClick={() => {
+                  console.log("%cYou clicked the thing.", "font-size: 20px; color: #6366f1; font-weight: bold;");
+                  console.log("%cNow you know about the console.", "font-size: 14px; color: #8b5cf6;");
+                  console.log("%cTry the Konami Code. If you know, you know.", "font-size: 12px; color: #ec4899;");
 
-                  toast("🧙‍♂️ Secret Spell Activated!", {
-                    description: "Check the browser console for a special message from the Infra Magician! Also, try the Konami Code for more magic ✨",
-                    duration: 5000,
+                  toast("Secret activated", {
+                    description: "Check the console. Also, the Konami Code might do something interesting.",
+                    duration: 3000,
                   });
                 }}
                 className="hover:text-foreground transition-colors cursor-pointer"

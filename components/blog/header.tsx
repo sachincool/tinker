@@ -95,13 +95,13 @@ export function Header() {
 
             {/* Social Links */}
             <Button variant="ghost" size="sm" asChild className="hidden sm:flex">
-              <Link href="https://github.com/harshit" target="_blank">
+              <Link href="https://github.com/sachincool" target="_blank" rel="noopener noreferrer">
                 <Github className="h-4 w-4" />
               </Link>
             </Button>
 
             <Button variant="ghost" size="sm" asChild className="hidden sm:flex">
-              <Link href="https://twitter.com/harshit" target="_blank">
+              <Link href="https://twitter.com/exploit_sh" target="_blank" rel="noopener noreferrer">
                 <Twitter className="h-4 w-4" />
               </Link>
             </Button>
@@ -143,13 +143,13 @@ export function Header() {
                   <div className="pt-4 border-t">
                     <div className="flex space-x-2">
                       <Button variant="outline" size="sm" asChild>
-                        <Link href="https://github.com/harshit" target="_blank">
+                        <Link href="https://github.com/sachincool" target="_blank" rel="noopener noreferrer">
                           <Github className="h-4 w-4 mr-2" />
                           GitHub
                         </Link>
                       </Button>
                       <Button variant="outline" size="sm" asChild>
-                        <Link href="https://twitter.com/harshit" target="_blank">
+                        <Link href="https://twitter.com/exploit_sh" target="_blank" rel="noopener noreferrer">
                           <Twitter className="h-4 w-4 mr-2" />
                           Twitter
                         </Link>

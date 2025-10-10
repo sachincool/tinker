@@ -92,19 +92,27 @@ export default function GraphPage() {
           <ul className="space-y-2 text-muted-foreground">
             <li className="flex items-start gap-2">
               <span className="text-blue-500">•</span>
-              <span><strong>Click and drag</strong> nodes to rearrange the graph</span>
+              <span>Scroll or use buttons to zoom</span>
             </li>
             <li className="flex items-start gap-2">
               <span className="text-green-500">•</span>
-              <span><strong>Hover</strong> over nodes to see details</span>
+              <span>Drag canvas to pan</span>
             </li>
             <li className="flex items-start gap-2">
               <span className="text-purple-500">•</span>
-              <span><strong>Click</strong> on nodes to navigate to posts or tags</span>
+              <span>Drag nodes to rearrange</span>
             </li>
             <li className="flex items-start gap-2">
               <span className="text-orange-500">•</span>
-              <span>Lines show <strong>connections</strong> between content and tags</span>
+              <span>Double-click to navigate</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="text-pink-500">•</span>
+              <span>Lines show connections</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="text-yellow-500">•</span>
+              <span>Hover for details</span>
             </li>
           </ul>
         </CardContent>

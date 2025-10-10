@@ -13,6 +13,52 @@ import { MarkdownContent } from "@/components/blog/markdown-content";
 import { getPostBySlug, getAllPosts } from "@/lib/posts";
 import { notFound } from "next/navigation";
 import readingTime from "reading-time";
+import type { Metadata } from "next";
+import { siteConfig } from "@/lib/site-config";
+
+export async function generateMetadata({ 
+  params 
+}: { 
+  params: Promise<{ slug: string }> 
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const post = getPostBySlug(slug, 'blog');
+  
+  if (!post) {
+    return {
+      title: '404 - Post Not Found',
+    };
+  }
+
+  const postUrl = `${siteConfig.siteUrl}/blog/${slug}`;
+
+  return {
+    title: `${post.title} | ${siteConfig.author.name}`,
+    description: post.excerpt,
+    keywords: post.tags,
+    authors: [{ name: siteConfig.author.name, url: siteConfig.siteUrl }],
+    openGraph: {
+      title: post.title,
+      description: post.excerpt,
+      type: 'article',
+      publishedTime: post.date,
+      authors: [siteConfig.author.name],
+      tags: post.tags,
+      url: postUrl,
+      siteName: siteConfig.title,
+      locale: 'en_US',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: post.title,
+      description: post.excerpt,
+      creator: '@exploit_sh',
+    },
+    alternates: {
+      canonical: postUrl,
+    },
+  };
+}
 
 export default async function BlogPost({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
