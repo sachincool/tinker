@@ -1,9 +1,12 @@
 import { getAllPosts, getAllTags } from '@/lib/posts';
 import { MetadataRoute } from 'next';
-import { siteConfig } from '@/lib/site-config';
+import { headers } from 'next/headers';
+import { getCurrentDomain } from '@/lib/site-config';
 
-export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = siteConfig.siteUrl;
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const headersList = await headers();
+  const hostname = headersList.get('host') || '';
+  const baseUrl = getCurrentDomain(hostname);
   
   // Get all posts
   const blogPosts = getAllPosts('blog');

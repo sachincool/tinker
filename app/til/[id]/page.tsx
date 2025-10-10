@@ -10,7 +10,8 @@ import { getPostBySlug, getAllPosts } from "@/lib/posts";
 import { notFound } from "next/navigation";
 import readingTime from "reading-time";
 import type { Metadata } from "next";
-import { siteConfig } from "@/lib/site-config";
+import { siteConfig, getCurrentDomain } from "@/lib/site-config";
+import { headers } from "next/headers";
 
 export async function generateMetadata({ 
   params 
@@ -26,13 +27,16 @@ export async function generateMetadata({
     };
   }
 
-  const tilUrl = `${siteConfig.siteUrl}/til/${id}`;
+  const headersList = await headers();
+  const hostname = headersList.get('host') || '';
+  const baseUrl = getCurrentDomain(hostname);
+  const tilUrl = `${baseUrl}/til/${id}`;
 
   return {
     title: `TIL: ${til.title} | ${siteConfig.author.name}`,
     description: til.excerpt || til.title,
     keywords: til.tags,
-    authors: [{ name: siteConfig.author.name, url: siteConfig.siteUrl }],
+    authors: [{ name: siteConfig.author.name, url: baseUrl }],
     openGraph: {
       title: til.title,
       description: til.excerpt || til.title,

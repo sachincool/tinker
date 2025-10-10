@@ -14,7 +14,8 @@ import { getPostBySlug, getAllPosts } from "@/lib/posts";
 import { notFound } from "next/navigation";
 import readingTime from "reading-time";
 import type { Metadata } from "next";
-import { siteConfig } from "@/lib/site-config";
+import { siteConfig, getCurrentDomain } from "@/lib/site-config";
+import { headers } from "next/headers";
 
 export async function generateMetadata({ 
   params 
@@ -30,13 +31,16 @@ export async function generateMetadata({
     };
   }
 
-  const postUrl = `${siteConfig.siteUrl}/blog/${slug}`;
+  const headersList = await headers();
+  const hostname = headersList.get('host') || '';
+  const baseUrl = getCurrentDomain(hostname);
+  const postUrl = `${baseUrl}/blog/${slug}`;
 
   return {
     title: `${post.title} | ${siteConfig.author.name}`,
     description: post.excerpt,
     keywords: post.tags,
-    authors: [{ name: siteConfig.author.name, url: siteConfig.siteUrl }],
+    authors: [{ name: siteConfig.author.name, url: baseUrl }],
     openGraph: {
       title: post.title,
       description: post.excerpt,
