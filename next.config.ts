@@ -30,11 +30,12 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       {
-        source: '/(.*)',
+        // Apply security headers to all pages except API routes, RSS feeds, and analytics
+        source: '/((?!api|rss|atom|_vercel).*)',
         headers: [
           {
             key: 'X-Frame-Options',
-            value: 'DENY',
+            value: 'SAMEORIGIN', // Changed from DENY to allow framing from same origin
           },
           {
             key: 'X-Content-Type-Options',
