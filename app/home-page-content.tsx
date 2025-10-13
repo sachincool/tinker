@@ -5,17 +5,18 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { 
-  ArrowRight, 
-  Sparkles, 
-  Zap, 
-  Terminal, 
+import {
+  ArrowRight,
+  Sparkles,
+  Zap,
+  Terminal,
   Coffee,
   BookOpen,
   Lightbulb,
   Rocket,
   Code2,
-  TrendingUp
+  TrendingUp,
+  Calendar
 } from "lucide-react";
 import { type Post } from "@/lib/posts";
 
@@ -97,6 +98,12 @@ export default function HomePageContent({ latestPosts }: HomePageContentProps) {
                   Browse TILs
                   <Sparkles className="ml-2 h-4 w-4 group-hover:rotate-12 transition-transform" />
                 </Link>
+              </Button>
+              <Button asChild size="lg" variant="secondary" className="group">
+                <a href="https://meet.harshit.cloud" target="_blank" rel="noopener noreferrer">
+                  <Calendar className="mr-2 h-5 w-5" />
+                  Schedule a Meeting
+                </a>
               </Button>
             </div>
           </div>

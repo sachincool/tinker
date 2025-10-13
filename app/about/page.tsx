@@ -5,12 +5,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { 
-  Github, 
-  Twitter, 
-  Linkedin, 
-  Mail, 
-  FileText, 
+import {
+  Github,
+  Twitter,
+  Linkedin,
+  Mail,
+  FileText,
   Coffee,
   Code2,
   Server,
@@ -18,7 +18,8 @@ import {
   Heart,
   Terminal,
   BookOpen,
-  Instagram
+  Instagram,
+  Calendar
 } from "lucide-react";
 import Link from "next/link";
 
@@ -320,6 +321,12 @@ export default function AboutPage() {
                 <a href="mailto:contact@sachin.cool">
                   <Mail className="mr-2 h-5 w-5" />
                   Send me an email
+                </a>
+              </Button>
+              <Button asChild size="lg" variant="outline">
+                <a href="https://meet.harshit.cloud" target="_blank" rel="noopener noreferrer">
+                  <Calendar className="mr-2 h-5 w-5" />
+                  Schedule a meeting
                 </a>
               </Button>
               <Button asChild size="lg" variant="outline">

@@ -1,4 +1,5 @@
 import type { NextConfig } from 'next';
+import million from 'million/compiler';
 
 const nextConfig: NextConfig = {
   // Disable ESLint during build for now
@@ -55,4 +56,6 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
 };
 
-export default nextConfig;
+export default million.next(nextConfig, {
+  auto: { rsc: true }, // Enable automatic optimization for React Server Components
+});
