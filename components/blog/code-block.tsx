@@ -11,6 +11,7 @@ interface CodeBlockProps {
   className?: string;
 }
 
+// million-ignore
 export function CodeBlock({ code, language = "bash", className = "" }: CodeBlockProps) {
   const [copied, setCopied] = useState(false);
 

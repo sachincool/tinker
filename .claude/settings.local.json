@@ -8,7 +8,8 @@
       "WebFetch(domain:blog.cloudflare.com)",
       "mcp__context7__resolve-library-id",
       "WebSearch",
-      "Bash(npx @next/codemod@canary upgrade:*)"
+      "Bash(npx @next/codemod@canary upgrade:*)",
+      "mcp__serena__get_symbols_overview"
     ],
     "deny": [],
     "ask": []

@@ -1,12 +1,12 @@
 import type { NextConfig } from 'next';
-import million from 'million/compiler';
+// import million from 'million/compiler';
 
 const nextConfig: NextConfig = {
   // Disable ESLint during build for now
   eslint: {
     ignoreDuringBuilds: true,
   },
-  
+
   // Disable TypeScript checking during build
   typescript: {
     ignoreBuildErrors: true,
@@ -56,6 +56,8 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
 };
 
-export default million.next(nextConfig, {
-  auto: { rsc: true }, // Enable automatic optimization for React Server Components
-});
+export default nextConfig;
+// Temporarily disabled Million.js
+// export default million.next(nextConfig, {
+//   auto: { rsc: true }, // Enable automatic optimization for React Server Components
+// });
