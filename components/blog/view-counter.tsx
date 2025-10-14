@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { Eye } from "lucide-react";
-import { block } from "million/react";
 
 interface ViewCounterProps {
   slug: string;
@@ -72,6 +71,5 @@ function ViewCounterComponent({ slug, className = "" }: ViewCounterProps) {
   );
 }
 
-// Optimize with Million.js for faster re-renders
-export const ViewCounter = block(ViewCounterComponent);
+export const ViewCounter = ViewCounterComponent;
 
