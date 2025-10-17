@@ -147,7 +147,9 @@ export default function TILPageClient({ initialTils }: TILPageClientProps) {
                 <div className="space-y-2 flex-1">
                   <CardTitle className="text-lg flex items-center gap-2 group-hover:text-yellow-600 transition-colors">
                     <Lightbulb className="h-4 w-4 text-yellow-500 group-hover:animate-pulse" />
-                    {til.title}
+                    <Link href={`/til/${til.slug}`} className="hover:text-yellow-600 transition-colors">
+                      {til.title}
+                    </Link>
                   </CardTitle>
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <Calendar className="h-3 w-3" />

@@ -10,7 +10,8 @@
       "WebSearch",
       "Bash(npx @next/codemod@canary upgrade:*)",
       "mcp__serena__get_symbols_overview",
-      "Bash(npm ls:*)"
+      "Bash(npm ls:*)",
+      "Bash(find:*)"
     ],
     "deny": [],
     "ask": []
