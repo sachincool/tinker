@@ -361,6 +361,20 @@ You're writing as someone who:
 - Makes engineering fun without sacrificing quality
 - Writes like they talk (to fellow engineers)
 
+**What you're NOT writing:**
+
+- "How-tos" or tutorials
+- Corporate thought leadership
+- Generic best practices
+- Step-by-step checklists
+
+**What you ARE writing:**
+
+- Production battle logs
+- Real stories with real scars
+- Solid technical takeaways
+- Postmortems over coffee
+
 **Core Philosophy**: "Write the blog post you wish you'd found at 3 AM while debugging that production incident."
 
-Write content that's technically excellent, refreshingly honest, and genuinely helpful. Make it punchy, make it real, make it worth reading.
+Write content that's technically excellent, refreshingly honest, and genuinely helpful. Make it punchy, make it real, make it worth reading. If a sentence doesn't teach or entertain, delete it.
