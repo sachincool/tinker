@@ -152,32 +152,29 @@ export async function POST(req: NextRequest) {
     }
 
     // File-based storage (fallback or local dev)
-    {
-      // Use file-based storage (local dev)
-      const data = await readLikes();
+    const data = await readLikes();
 
-      if (!data[slug]) {
-        data[slug] = { count: 0, ips: [] };
-      }
-
-      const postData = data[slug];
-      const hasLiked = postData.ips.includes(clientIP);
-
-      if (action === 'like' && !hasLiked) {
-        postData.count += 1;
-        postData.ips.push(clientIP);
-      } else if (action === 'unlike' && hasLiked) {
-        postData.count = Math.max(0, postData.count - 1);
-        postData.ips = postData.ips.filter(ip => ip !== clientIP);
-      }
-
-      await writeLikes(data);
-
-      return NextResponse.json({
-        count: postData.count,
-        liked: postData.ips.includes(clientIP)
-      });
+    if (!data[slug]) {
+      data[slug] = { count: 0, ips: [] };
     }
+
+    const postData = data[slug];
+    const hasLiked = postData.ips.includes(clientIP);
+
+    if (action === 'like' && !hasLiked) {
+      postData.count += 1;
+      postData.ips.push(clientIP);
+    } else if (action === 'unlike' && hasLiked) {
+      postData.count = Math.max(0, postData.count - 1);
+      postData.ips = postData.ips.filter(ip => ip !== clientIP);
+    }
+
+    await writeLikes(data);
+
+    return NextResponse.json({
+      count: postData.count,
+      liked: postData.ips.includes(clientIP)
+    });
   } catch (error) {
     console.error('Error updating likes:', error);
     console.error('Error details:', error instanceof Error ? error.message : String(error));

@@ -15,22 +15,16 @@ function ViewCounterComponent({ slug, className = "" }: ViewCounterProps) {
   useEffect(() => {
     const trackView = async () => {
       try {
-        // Check if already viewed in this session (localStorage for client-side)
+        // Check if already viewed in this session
         const viewedPosts = JSON.parse(sessionStorage.getItem('viewedPosts') || '{}');
-        
-        // Always fetch current count
-        const getResponse = await fetch(`/api/views?slug=${encodeURIComponent(slug)}`);
-        if (getResponse.ok) {
-          const getData = await getResponse.json();
-          setViews(getData.count);
-        }
+        const hasViewedInSession = !!viewedPosts[slug];
 
         // Increment view if not already viewed in this session
-        if (!viewedPosts[slug]) {
+        if (!hasViewedInSession) {
           viewedPosts[slug] = true;
           sessionStorage.setItem('viewedPosts', JSON.stringify(viewedPosts));
           
-          // Track the view on server
+          // Track the view on server (this will increment and return new count)
           const postResponse = await fetch('/api/views', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -40,6 +34,19 @@ function ViewCounterComponent({ slug, className = "" }: ViewCounterProps) {
           if (postResponse.ok) {
             const postData = await postResponse.json();
             setViews(postData.count);
+          } else {
+            console.error('Failed to track view:', await postResponse.text());
+            setViews(0);
+          }
+        } else {
+          // Just fetch current count without incrementing
+          const getResponse = await fetch(`/api/views?slug=${encodeURIComponent(slug)}`);
+          if (getResponse.ok) {
+            const getData = await getResponse.json();
+            setViews(getData.count);
+          } else {
+            console.error('Failed to fetch views:', await getResponse.text());
+            setViews(0);
           }
         }
 

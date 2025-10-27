@@ -84,18 +84,26 @@ export async function GET(req: NextRequest) {
     }
 
     if (USE_REDIS && redis) {
-      // Use Upstash Redis (production)
-      const count = await redis.get<number>(`views:${slug}`) || 0;
-      return NextResponse.json({ count });
-    } else {
-      // Use file-based storage (local dev)
-      const data = await readViews();
-      const postData = data[slug] || { count: 0, uniqueVisitors: [] };
-      return NextResponse.json({ count: postData.count });
+      try {
+        // Use Upstash Redis (production)
+        const count = await redis.get<number>(`views:${slug}`) || 0;
+        return NextResponse.json({ count });
+      } catch (redisError) {
+        console.error('Redis GET failed, falling back to file storage:', redisError);
+        // Fall through to file-based storage
+      }
     }
+    
+    // Use file-based storage (local dev or fallback)
+    const data = await readViews();
+    const postData = data[slug] || { count: 0, uniqueVisitors: [] };
+    return NextResponse.json({ count: postData.count });
   } catch (error) {
     console.error('Error reading views:', error);
-    return NextResponse.json({ error: 'Failed to read views' }, { status: 500 });
+    return NextResponse.json({ 
+      error: 'Failed to read views',
+      message: error instanceof Error ? error.message : String(error)
+    }, { status: 500 });
   }
 }
 
@@ -146,34 +154,31 @@ export async function POST(req: NextRequest) {
     }
 
     // File-based storage (fallback or local dev)
-    {
-      // Use file-based storage (local dev)
-      const data = await readViews();
+    const data = await readViews();
 
-      if (!data[slug]) {
-        data[slug] = { count: 0, uniqueVisitors: [] };
-      }
-
-      const postData = data[slug];
-      const isNewVisitor = !postData.uniqueVisitors.includes(clientFingerprint);
-
-      if (isNewVisitor) {
-        postData.count += 1;
-        postData.uniqueVisitors.push(clientFingerprint);
-        
-        // Keep only last 1000 visitors to prevent file from growing too large
-        if (postData.uniqueVisitors.length > 1000) {
-          postData.uniqueVisitors = postData.uniqueVisitors.slice(-1000);
-        }
-      }
-
-      await writeViews(data);
-
-      return NextResponse.json({
-        count: postData.count,
-        isNewView: isNewVisitor
-      });
+    if (!data[slug]) {
+      data[slug] = { count: 0, uniqueVisitors: [] };
     }
+
+    const postData = data[slug];
+    const isNewVisitor = !postData.uniqueVisitors.includes(clientFingerprint);
+
+    if (isNewVisitor) {
+      postData.count += 1;
+      postData.uniqueVisitors.push(clientFingerprint);
+      
+      // Keep only last 1000 visitors to prevent file from growing too large
+      if (postData.uniqueVisitors.length > 1000) {
+        postData.uniqueVisitors = postData.uniqueVisitors.slice(-1000);
+      }
+    }
+
+    await writeViews(data);
+
+    return NextResponse.json({
+      count: postData.count,
+      isNewView: isNewVisitor
+    });
   } catch (error) {
     console.error('Error tracking view:', error);
     console.error('Error details:', error instanceof Error ? error.message : String(error));
