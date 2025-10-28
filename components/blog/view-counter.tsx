@@ -15,37 +15,27 @@ function ViewCounterComponent({ slug, className = "" }: ViewCounterProps) {
   useEffect(() => {
     const trackView = async () => {
       try {
-        // Check if already viewed in this session
-        const viewedPosts = JSON.parse(sessionStorage.getItem('viewedPosts') || '{}');
-        const hasViewedInSession = !!viewedPosts[slug];
+        // Always try to track the view - let the server decide if it's unique
+        const postResponse = await fetch('/api/views', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ slug })
+        });
 
-        // Increment view if not already viewed in this session
-        if (!hasViewedInSession) {
-          viewedPosts[slug] = true;
-          sessionStorage.setItem('viewedPosts', JSON.stringify(viewedPosts));
-          
-          // Track the view on server (this will increment and return new count)
-          const postResponse = await fetch('/api/views', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ slug })
-          });
-
-          if (postResponse.ok) {
-            const postData = await postResponse.json();
-            setViews(postData.count);
-          } else {
-            console.error('Failed to track view:', await postResponse.text());
-            setViews(0);
-          }
+        if (postResponse.ok) {
+          const postData = await postResponse.json();
+          setViews(postData.count);
+          console.log(`View tracked for ${slug}:`, postData);
         } else {
-          // Just fetch current count without incrementing
+          const errorText = await postResponse.text();
+          console.error('Failed to track view:', errorText);
+          
+          // Fallback: fetch current count
           const getResponse = await fetch(`/api/views?slug=${encodeURIComponent(slug)}`);
           if (getResponse.ok) {
             const getData = await getResponse.json();
             setViews(getData.count);
           } else {
-            console.error('Failed to fetch views:', await getResponse.text());
             setViews(0);
           }
         }

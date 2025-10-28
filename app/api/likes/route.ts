@@ -18,9 +18,19 @@ try {
 
 // Hybrid storage: Upstash Redis in production, file-based for local dev
 const USE_REDIS = !!redis;
-// Use /tmp on Vercel (serverless), cwd for local dev
-const DATA_DIR = process.env.VERCEL ? '/tmp' : path.join(process.cwd(), 'data');
+
+// CRITICAL: On serverless (Vercel), Redis is REQUIRED for persistence
+// The filesystem is read-only, so /tmp won't persist between invocations
+// For local dev, use data/ directory
+const IS_VERCEL = !!process.env.VERCEL;
+const DATA_DIR = IS_VERCEL ? '/tmp' : path.join(process.cwd(), 'data');
 const DATA_FILE = path.join(DATA_DIR, 'likes.json');
+
+// Warn if running on Vercel without Redis
+if (IS_VERCEL && !USE_REDIS) {
+  console.error('⚠️  CRITICAL: Running on Vercel without Redis! Data will NOT persist.');
+  console.error('Set KV_REST_API_URL and KV_REST_API_TOKEN environment variables.');
+}
 
 interface LikeData {
   [slug: string]: {

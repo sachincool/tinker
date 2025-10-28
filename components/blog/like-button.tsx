@@ -57,16 +57,20 @@ export function LikeButton({ slug, className = "" }: LikeButtonProps) {
     if (isAnimating) return;
 
     setIsAnimating(true);
-    const action = isLiked ? 'unlike' : 'like';
+    
+    // Capture current state BEFORE any updates (prevent stale closure)
+    const oldLiked = isLiked;
+    const oldCount = likes;
+    const action = oldLiked ? 'unlike' : 'like';
 
     // Optimistic update
-    const newLiked = !isLiked;
-    const newCount = isLiked ? Math.max(0, likes - 1) : likes + 1;
+    const newLiked = !oldLiked;
+    const newCount = oldLiked ? Math.max(0, oldCount - 1) : oldCount + 1;
     setIsLiked(newLiked);
     setLikes(newCount);
 
     // Celebration effect when liking
-    if (!isLiked && buttonRef.current) {
+    if (!oldLiked && buttonRef.current) {
       const rect = buttonRef.current.getBoundingClientRect();
       const x = (rect.left + rect.width / 2) / window.innerWidth;
       const y = (rect.top + rect.height / 2) / window.innerHeight;
@@ -108,6 +112,7 @@ export function LikeButton({ slug, className = "" }: LikeButtonProps) {
 
       if (response.ok) {
         const data = await response.json();
+        // Trust server response as source of truth
         setLikes(data.count);
         setIsLiked(data.liked);
         
@@ -120,15 +125,16 @@ export function LikeButton({ slug, className = "" }: LikeButtonProps) {
         }
         localStorage.setItem('likedPosts', JSON.stringify(likedPosts));
       } else {
-        // Revert on error
-        setIsLiked(!newLiked);
-        setLikes(likes);
+        console.error('Like API returned error:', await response.text());
+        // Revert to captured old state
+        setIsLiked(oldLiked);
+        setLikes(oldCount);
       }
     } catch (error) {
       console.error('Error updating like:', error);
-      // Revert on error
-      setIsLiked(!newLiked);
-      setLikes(likes);
+      // Revert to captured old state
+      setIsLiked(oldLiked);
+      setLikes(oldCount);
     }
 
     setTimeout(() => setIsAnimating(false), 300);
