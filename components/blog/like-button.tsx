@@ -19,29 +19,22 @@ export function LikeButton({ slug, className = "" }: LikeButtonProps) {
   const buttonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
-    // Fetch real like count from API
+    // Fetch like count from server and liked state from localStorage
     const fetchLikes = async () => {
       try {
-        // Fetch server count AND server-side liked status
+        // Get liked state from localStorage (source of truth)
+        const likedPosts = JSON.parse(localStorage.getItem('likedPosts') || '{}');
+        setIsLiked(!!likedPosts[slug]);
+
+        // Fetch count from server
         const response = await fetch(`/api/likes?slug=${encodeURIComponent(slug)}`);
         if (response.ok) {
           const data = await response.json();
           setLikes(data.count);
-          // TRUST THE SERVER for liked status, not localStorage
-          setIsLiked(data.liked);
-
-          // Sync localStorage with server truth
-          const likedPosts = JSON.parse(localStorage.getItem('likedPosts') || '{}');
-          if (data.liked) {
-            likedPosts[slug] = true;
-          } else {
-            delete likedPosts[slug];
-          }
-          localStorage.setItem('likedPosts', JSON.stringify(likedPosts));
         }
       } catch (error) {
         console.error('Error fetching likes:', error);
-        // Fallback to localStorage only if server fails
+        // Use localStorage state even if server fails
         const likedPosts = JSON.parse(localStorage.getItem('likedPosts') || '{}');
         setIsLiked(!!likedPosts[slug]);
         setLikes(0);
@@ -112,20 +105,26 @@ export function LikeButton({ slug, className = "" }: LikeButtonProps) {
 
       if (response.ok) {
         const data = await response.json();
-        // Trust server response as source of truth
+        // Update count from server
         setLikes(data.count);
-        setIsLiked(data.liked);
         
-        // Update localStorage
+        // Update localStorage (source of truth for liked state)
         const likedPosts = JSON.parse(localStorage.getItem('likedPosts') || '{}');
-        if (data.liked) {
+        if (newLiked) {
           likedPosts[slug] = true;
         } else {
           delete likedPosts[slug];
         }
         localStorage.setItem('likedPosts', JSON.stringify(likedPosts));
       } else {
-        console.error('Like API returned error:', await response.text());
+        const errorData = await response.json();
+        console.error('Like API returned error:', errorData);
+        
+        // Show rate limit message if hit
+        if (response.status === 429) {
+          alert(errorData.error || 'Too many actions. Please try again later.');
+        }
+        
         // Revert to captured old state
         setIsLiked(oldLiked);
         setLikes(oldCount);

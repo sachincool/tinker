@@ -126,36 +126,18 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Slug required' }, { status: 400 });
     }
 
-    const clientFingerprint = getClientFingerprint(req);
-
     if (USE_REDIS && redis) {
       try {
         // Use Upstash Redis (production)
         const key = `views:${slug}`;
-        const visitorsKey = `views:${slug}:visitors`;
 
-        const isNewVisitor = (await redis.sismember(visitorsKey, clientFingerprint)) === 0;
-
-        if (isNewVisitor) {
-          await redis.incr(key);
-          await redis.sadd(visitorsKey, clientFingerprint);
-
-          // Trim set to prevent unlimited growth (keep last 1000)
-          const setSize = await redis.scard(visitorsKey);
-          if (setSize && setSize > 1000) {
-            // Pop random members to keep size manageable
-            const toRemove = setSize - 1000;
-            for (let i = 0; i < toRemove; i++) {
-              await redis.spop(visitorsKey);
-            }
-          }
-        }
-
+        // Always increment - track total page views
+        await redis.incr(key);
         const count = (await redis.get<number>(key)) || 0;
 
         return NextResponse.json({
           count,
-          isNewView: isNewVisitor
+          isNewView: true
         });
       } catch (redisError) {
         console.error('Redis operation failed, falling back to file storage:', redisError);
@@ -171,23 +153,15 @@ export async function POST(req: NextRequest) {
     }
 
     const postData = data[slug];
-    const isNewVisitor = !postData.uniqueVisitors.includes(clientFingerprint);
-
-    if (isNewVisitor) {
-      postData.count += 1;
-      postData.uniqueVisitors.push(clientFingerprint);
-      
-      // Keep only last 1000 visitors to prevent file from growing too large
-      if (postData.uniqueVisitors.length > 1000) {
-        postData.uniqueVisitors = postData.uniqueVisitors.slice(-1000);
-      }
-    }
+    
+    // Always increment - track total page views
+    postData.count += 1;
 
     await writeViews(data);
 
     return NextResponse.json({
       count: postData.count,
-      isNewView: isNewVisitor
+      isNewView: true
     });
   } catch (error) {
     console.error('Error tracking view:', error);

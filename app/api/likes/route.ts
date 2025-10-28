@@ -4,7 +4,7 @@ import { promises as fs } from 'fs';
 import path from 'path';
 
 // Initialize Upstash Redis client (uses KV_* env vars from Vercel/Upstash integration)
-let redis = null;
+let redis: Redis | null = null;
 try {
   if (process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN) {
     redis = new Redis({
@@ -93,18 +93,14 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'Slug required' }, { status: 400 });
     }
 
-    const clientIP = getClientIP(req);
-
     if (USE_REDIS && redis) {
       try {
         // Use Upstash Redis (production)
         const key = `likes:${slug}`;
-        const ipsKey = `likes:${slug}:ips`;
-
         const count = (await redis.get<number>(key)) || 0;
-        const liked = (await redis.sismember(ipsKey, clientIP)) === 1;
 
-        return NextResponse.json({ count, liked });
+        // Don't return liked status - client handles this via localStorage
+        return NextResponse.json({ count });
       } catch (redisError) {
         console.error('Redis GET failed, falling back to file storage:', redisError);
         // Fall through to file-based storage
@@ -115,8 +111,7 @@ export async function GET(req: NextRequest) {
     const data = await readLikes();
     const postData = data[slug] || { count: 0, ips: [] };
     return NextResponse.json({
-      count: postData.count,
-      liked: postData.ips.includes(clientIP)
+      count: postData.count
     });
   } catch (error) {
     console.error('Error reading likes:', error);
@@ -139,22 +134,30 @@ export async function POST(req: NextRequest) {
       try {
         // Use Upstash Redis (production)
         const key = `likes:${slug}`;
-        const ipsKey = `likes:${slug}:ips`;
+        const rateLimitKey = `ratelimit:like:${clientIP}`;
 
-        const hasLiked = (await redis.sismember(ipsKey, clientIP)) === 1;
-
-        if (action === 'like' && !hasLiked) {
-          await redis.incr(key);
-          await redis.sadd(ipsKey, clientIP);
-        } else if (action === 'unlike' && hasLiked) {
-          await redis.decr(key);
-          await redis.srem(ipsKey, clientIP);
+        // Rate limiting: max 10 actions per hour per IP (prevents spam)
+        const recentActions = (await redis.get<number>(rateLimitKey)) || 0;
+        if (recentActions >= 10) {
+          return NextResponse.json({ 
+            error: 'Rate limit exceeded. Please try again later.' 
+          }, { status: 429 });
         }
 
-        const count = (await redis.get<number>(key)) || 0;
-        const liked = (await redis.sismember(ipsKey, clientIP)) === 1;
+        // Update like count (client manages their own state)
+        if (action === 'like') {
+          await redis.incr(key);
+        } else if (action === 'unlike') {
+          await redis.decr(key);
+        }
 
-        return NextResponse.json({ count, liked });
+        // Track rate limit (expires after 1 hour)
+        await redis.incr(rateLimitKey);
+        await redis.expire(rateLimitKey, 3600); // 1 hour
+
+        const count = Math.max(0, (await redis.get<number>(key)) || 0);
+
+        return NextResponse.json({ count, success: true });
       } catch (redisError) {
         console.error('Redis operation failed, falling back to file storage:', redisError);
         // Fall through to file-based storage
@@ -169,21 +172,38 @@ export async function POST(req: NextRequest) {
     }
 
     const postData = data[slug];
-    const hasLiked = postData.ips.includes(clientIP);
 
-    if (action === 'like' && !hasLiked) {
+    // Rate limiting for file-based storage
+    const now = Date.now();
+    const recentIPs = postData.ips.filter(ip => {
+      // Simple rate limit: check if IP appears multiple times
+      return ip === clientIP;
+    });
+    
+    if (recentIPs.length >= 10) {
+      return NextResponse.json({ 
+        error: 'Rate limit exceeded. Please try again later.' 
+      }, { status: 429 });
+    }
+
+    // Update count
+    if (action === 'like') {
       postData.count += 1;
-      postData.ips.push(clientIP);
-    } else if (action === 'unlike' && hasLiked) {
+      postData.ips.push(clientIP); // Track for rate limiting only
+    } else if (action === 'unlike') {
       postData.count = Math.max(0, postData.count - 1);
-      postData.ips = postData.ips.filter(ip => ip !== clientIP);
+    }
+
+    // Keep only last 1000 IPs for rate limiting
+    if (postData.ips.length > 1000) {
+      postData.ips = postData.ips.slice(-1000);
     }
 
     await writeLikes(data);
 
     return NextResponse.json({
       count: postData.count,
-      liked: postData.ips.includes(clientIP)
+      success: true
     });
   } catch (error) {
     console.error('Error updating likes:', error);
