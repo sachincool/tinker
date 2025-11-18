@@ -2,6 +2,7 @@
 
 import React from "react";
 import { CodeBlock } from "./code-block";
+import { ImageLightbox } from "./image-lightbox";
 import { Zap, Info, AlertCircle } from "lucide-react";
 
 interface MarkdownContentProps {
@@ -88,15 +89,116 @@ export function MarkdownContent({ content }: MarkdownContentProps) {
         return;
       }
 
-      // Blockquotes
+      // Blockquotes - Enhanced with special styling for Key Insights
       if (paragraph.startsWith('> ')) {
-        elements.push(
-          <blockquote key={index} className="relative border-l-4 border-blue-500 pl-6 pr-4 py-4 my-8 italic text-lg text-muted-foreground bg-gradient-to-r from-blue-500/10 to-transparent rounded-r-lg shadow-sm">
-            <span className="absolute left-3 top-3 text-blue-500/30 text-4xl font-serif">"</span>
-            <div className="relative z-10">{paragraph.substring(2)}</div>
-          </blockquote>
-        );
+        const content = paragraph.substring(2);
+        const isKeyInsight = content.includes('**Key Insight:**') || content.includes('**Cost Impact:**');
+
+        if (isKeyInsight) {
+          // Special styling for key insights/important callouts
+          const parts = content.split(/(\*\*[^*]+:\*\*)/);
+          elements.push(
+            <blockquote key={index} className="relative border-l-4 border-purple-500 pl-8 pr-6 py-6 my-10 bg-gradient-to-r from-purple-500/15 via-blue-500/10 to-transparent rounded-r-xl shadow-lg hover:shadow-xl transition-all duration-300">
+              <div className="absolute left-2 top-2 text-purple-500/40 text-3xl">💡</div>
+              <div className="relative z-10 text-base md:text-lg leading-relaxed">
+                {parts.map((part, idx) => {
+                  if (part?.match(/^\*\*[^*]+:\*\*$/)) {
+                    return <strong key={idx} className="font-bold text-purple-700 dark:text-purple-300 text-lg block mb-2">{part.slice(2, -2)}</strong>;
+                  }
+                  return <span key={idx} className="text-foreground/90">{part}</span>;
+                })}
+              </div>
+            </blockquote>
+          );
+        } else {
+          // Regular blockquote
+          elements.push(
+            <blockquote key={index} className="relative border-l-4 border-blue-500 pl-6 pr-4 py-4 my-8 italic text-lg text-muted-foreground bg-gradient-to-r from-blue-500/10 to-transparent rounded-r-lg shadow-sm">
+              <span className="absolute left-3 top-3 text-blue-500/30 text-4xl font-serif">"</span>
+              <div className="relative z-10">{content}</div>
+            </blockquote>
+          );
+        }
         return;
+      }
+
+      // Tables (markdown table format)
+      if (paragraph.includes('|') && paragraph.split('\n').length > 1) {
+        const lines = paragraph.split('\n').filter(line => line.trim());
+        // Check if it's a valid table (has separator row)
+        if (lines.length > 1 && lines[1]?.match(/^\|?[\s:-]+\|/)) {
+          const headers = lines[0]!.split('|').map(h => h.trim()).filter(h => h);
+          const rows = lines.slice(2).map(row =>
+            row.split('|').map(cell => cell.trim()).filter(cell => cell)
+          );
+
+          // Detect numeric columns for right alignment
+          const isNumericColumn = headers.map((_, colIndex) => {
+            const samples = rows.slice(0, 3).map(row => row[colIndex] || '');
+            return samples.some(cell =>
+              cell.match(/^\d+(\.\d+)?[%xsX]?$/) ||
+              cell.match(/^\d+/) ||
+              cell.includes('MB') ||
+              cell.includes('GB') ||
+              cell.includes('vCPU') ||
+              cell.includes('faster') ||
+              cell.includes('higher') ||
+              cell.includes('lower') ||
+              cell.includes('reduction') ||
+              cell.includes('smaller')
+            );
+          });
+
+          elements.push(
+            <div key={index} className="my-10 overflow-x-auto rounded-xl border border-border/50 shadow-xl">
+              <table className="w-full border-collapse min-w-full">
+                <thead>
+                  <tr className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 border-b-2 border-blue-500/30">
+                    {headers.map((header, i) => (
+                      <th
+                        key={i}
+                        scope="col"
+                        className={`px-4 md:px-6 py-4 text-sm font-bold text-foreground uppercase tracking-wider ${
+                          isNumericColumn[i] ? 'text-right' : 'text-left'
+                        }`}
+                      >
+                        {header}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border/30 bg-card">
+                  {rows.map((row, i) => (
+                    <tr
+                      key={i}
+                      className="hover:bg-muted/40 transition-colors duration-200"
+                    >
+                      {row.map((cell, j) => (
+                        <td
+                          key={j}
+                          className={`px-4 md:px-6 py-4 text-sm text-foreground/90 ${
+                            j === 0 ? 'font-medium' : ''
+                          } ${isNumericColumn[j] ? 'text-right tabular-nums' : 'text-left'}`}
+                        >
+                          {/* Parse inline formatting in table cells */}
+                          {cell.split(/(\*\*[^*]+\*\*|`[^`]+`)/).map((part, k) => {
+                            if (part?.match(/^\*\*[^*]+\*\*$/)) {
+                              return <strong key={k} className="font-bold text-foreground">{part.slice(2, -2)}</strong>;
+                            } else if (part?.match(/^`[^`]+`$/)) {
+                              return <code key={k} className="bg-muted px-1.5 py-0.5 rounded text-xs font-mono text-blue-600 dark:text-blue-400">{part.slice(1, -1)}</code>;
+                            }
+                            return <span key={k}>{part}</span>;
+                          })}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          );
+          return;
+        }
       }
 
       // Images
@@ -107,17 +209,23 @@ export function MarkdownContent({ content }: MarkdownContentProps) {
           elements.push(
             <figure key={index} className="my-12 group">
               <div className="relative overflow-hidden rounded-xl shadow-xl ring-1 ring-black/5 dark:ring-white/10 transition-all duration-300 hover:shadow-2xl hover:ring-blue-500/50">
-                <img 
-                  src={src} 
-                  alt={alt} 
+                <ImageLightbox
+                  src={src}
+                  alt={alt}
                   className="w-full transition-transform duration-300 group-hover:scale-[1.02]"
-                  loading="lazy"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
               </div>
               {alt && (
-                <figcaption className="text-center text-sm text-muted-foreground mt-4 font-medium">
-                  {alt}
+                <figcaption className="text-center text-sm text-muted-foreground mt-5 italic font-medium border-t border-border/30 pt-3 px-4">
+                  <span className="inline-flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-500 flex-shrink-0">
+                      <rect width="18" height="18" x="3" y="3" rx="2" ry="2"></rect>
+                      <circle cx="9" cy="9" r="2"></circle>
+                      <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path>
+                    </svg>
+                    {alt}
+                  </span>
                 </figcaption>
               )}
             </figure>
@@ -278,12 +386,12 @@ export function MarkdownContent({ content }: MarkdownContentProps) {
           return parts;
         };
 
-        // Check if it's a special "lead" paragraph (starts with bold)
-        const isLeadParagraph = !firstParagraphRendered && paragraph.match(/^\*\*/);
-        if (isLeadParagraph) {
+        // Check if it's a special "lead" paragraph (first substantial paragraph OR starts with bold)
+        const isLeadParagraph = !firstParagraphRendered && (paragraph.length > 100 || paragraph.match(/^\*\*/));
+        if (isLeadParagraph && paragraph.trim()) {
           firstParagraphRendered = true;
           elements.push(
-            <p key={index} className="text-xl leading-relaxed text-foreground font-medium first-letter:text-2xl first-letter:font-bold">
+            <p key={index} className="text-xl md:text-2xl leading-relaxed text-foreground font-semibold first-letter:text-3xl first-letter:font-bold first-letter:text-blue-600 dark:first-letter:text-blue-400 mb-8 pb-6 border-b border-border/30">
               {renderInlineContent(paragraph)}
             </p>
           );

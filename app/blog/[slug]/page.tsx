@@ -79,8 +79,57 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
   const stats = readingTime(post.content);
   const readTime = stats.text;
 
+  // Get base URL for structured data
+  const headersList = await headers();
+  const hostname = headersList.get('host') || '';
+  const baseUrl = getCurrentDomain(hostname);
+  const postUrl = `${baseUrl}/blog/${slug}`;
+
+  // JSON-LD structured data for SEO and LLM discovery
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    headline: post.title,
+    description: post.excerpt,
+    image: post.image || `${baseUrl}/og-image.png`,
+    datePublished: post.date,
+    dateModified: post.date,
+    author: {
+      '@type': 'Person',
+      name: siteConfig.author.name,
+      url: baseUrl,
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: siteConfig.author.name,
+      logo: {
+        '@type': 'ImageObject',
+        url: `${baseUrl}/logo.png`,
+      },
+    },
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': postUrl,
+    },
+    keywords: post.tags.join(', '),
+    articleSection: 'Technology',
+    inLanguage: 'en-US',
+  };
+
   return (
     <>
+      {/* JSON-LD structured data for SEO */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      {/* Skip to main content link for accessibility */}
+      <a
+        href="#article-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-blue-600 focus:text-white focus:rounded-md focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+      >
+        Skip to content
+      </a>
       <ReadingProgress />
       <div className="max-w-7xl mx-auto px-4">
         <div className="lg:grid lg:grid-cols-[1fr_280px] lg:gap-16">
@@ -148,7 +197,9 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
             </header>
 
             {/* Article Content */}
-            <MarkdownContent content={post.content} />
+            <div id="article-content">
+              <MarkdownContent content={post.content} />
+            </div>
 
             {/* Actions Section */}
             <div className="flex items-center justify-between py-8 border-t border-border/50 bg-gradient-to-r from-muted/30 to-transparent rounded-lg px-6 shadow-sm">
