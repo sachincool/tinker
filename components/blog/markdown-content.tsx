@@ -254,7 +254,7 @@ export function MarkdownContent({ content }: MarkdownContentProps) {
                 </code>
               );
             } else {
-              const formatted = segment.split(/(\*\*[^*]+\*\*|\*[^*]+\*|\[([^\]]+)\]\(([^)]+)\))/g);
+              const formatted = segment.split(/(\*\*[^*]+\*\*|\*[^*]+\*|\[(?:[^\]]+)\]\((?:[^)]+)\))/g);
               formatted.forEach((part) => {
                 if (part?.match(/^\*\*[^*]+\*\*$/)) {
                   parts.push(
@@ -342,7 +342,7 @@ export function MarkdownContent({ content }: MarkdownContentProps) {
               );
             } else {
               // Handle bold, italic, links
-              const formatted = segment.split(/(\*\*[^*]+\*\*|\*[^*]+\*|\[([^\]]+)\]\(([^)]+)\))/g);
+              const formatted = segment.split(/(\*\*[^*]+\*\*|\*[^*]+\*|\[(?:[^\]]+)\]\((?:[^)]+)\))/g);
               
               formatted.forEach((part, idx) => {
                 if (part?.match(/^\*\*[^*]+\*\*$/)) {
