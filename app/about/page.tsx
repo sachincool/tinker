@@ -222,7 +222,7 @@ export default function AboutPage() {
 					<div className="pt-4">
 						<Button size="lg" asChild className="group">
 							<a
-								href="https://sachin.cool/Harshit_Resume.pdf"
+								href="/Harshit_Resume.pdf"
 								target="_blank"
 								rel="noopener noreferrer"
 							>
