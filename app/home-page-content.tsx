@@ -19,7 +19,6 @@ import {
   Calendar
 } from "lucide-react";
 import { type Post } from "@/lib/posts";
-import InteractiveCube from "@/components/interactive-cube";
 
 interface HomePageContentProps {
   latestPosts: Post[];
@@ -49,72 +48,63 @@ export default function HomePageContent({ latestPosts }: HomePageContentProps) {
         <div className="absolute inset-0 -z-10 bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-blue-950/20 dark:via-purple-950/20 dark:to-pink-950/20 animate-gradient-xy"></div>
         
         {/* Floating Elements */}
-        <div className="absolute top-20 left-10 opacity-20 animate-float hidden lg:block">
+        <div className="absolute top-20 left-10 opacity-20 animate-float">
           <Terminal className="h-12 w-12 text-blue-500" />
         </div>
-        <div className="absolute top-40 right-20 opacity-20 animate-float-delayed hidden lg:block">
+        <div className="absolute top-40 right-20 opacity-20 animate-float-delayed">
           <Code2 className="h-16 w-16 text-purple-500" />
         </div>
-        <div className="absolute bottom-20 right-40 opacity-20 animate-float hidden lg:block">
+        <div className="absolute bottom-20 right-40 opacity-20 animate-float">
           <Sparkles className="h-10 w-10 text-pink-500" />
         </div>
 
-        <div className="max-w-7xl mx-auto px-4">
-          {/* Grid Layout: Text on Left, Cube on Right */}
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            {/* Left Column: Text Content */}
-            <div className={`space-y-6 transition-all duration-1000 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-sm font-medium">
-                <Sparkles className="h-4 w-4" />
-                <span>Welcome to the chaos</span>
-              </div>
-              
-              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold leading-tight">
-                <span className="inline-block animate-wave">🧙‍♂️</span>
-                {" "}
-                <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent animate-gradient-x">
-                  Infra Magician&apos;s
-                </span>
-                <br />
-                <span className="text-foreground">Digital Spellbook</span>
-              </h1>
-              
-              <p className="text-lg md:text-xl text-muted-foreground leading-relaxed">
-                Level 99 Infrastructure Wizard, Dota2 Scrub, and Professional Chaos Engineer
-              </p>
-              
-              <p className="text-base md:text-lg text-muted-foreground">
-                I make servers cry, Kubernetes pods CrashLoopBackOff, and occasionally something works in production. 
-                Welcome to my digital garden of infrastructure spells, epic fails, and rare victories. ✨
-              </p>
-
-              <div className="flex flex-wrap gap-4 pt-4">
-                <Button asChild size="lg" className="group">
-                  <Link href="/blog">
-                    <BookOpen className="mr-2 h-5 w-5" />
-                    Read My Chaos
-                    <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                  </Link>
-                </Button>
-                <Button asChild size="lg" variant="outline" className="group">
-                  <Link href="/til">
-                    <Lightbulb className="mr-2 h-5 w-5" />
-                    Browse TILs
-                    <Sparkles className="ml-2 h-4 w-4 group-hover:rotate-12 transition-transform" />
-                  </Link>
-                </Button>
-                <Button asChild size="lg" variant="secondary" className="group">
-                  <a href="https://meet.harshit.cloud" target="_blank" rel="noopener noreferrer">
-                    <Calendar className="mr-2 h-5 w-5" />
-                    Schedule a Meeting
-                  </a>
-                </Button>
-              </div>
+        <div className="text-center space-y-8 max-w-4xl mx-auto px-4">
+          <div className={`space-y-6 transition-all duration-1000 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-sm font-medium">
+              <Sparkles className="h-4 w-4" />
+              <span>Welcome to the chaos</span>
             </div>
+            
+            <h1 className="text-5xl md:text-7xl font-bold leading-tight">
+              <span className="inline-block animate-wave">🧙‍♂️</span>
+              {" "}
+              <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent animate-gradient-x">
+                Infra Magician&apos;s
+              </span>
+              <br />
+              <span className="text-foreground">Digital Spellbook</span>
+            </h1>
+            
+            <p className="text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+              Level 99 Infrastructure Wizard, Dota2 Scrub, and Professional Chaos Engineer
+            </p>
+            
+            <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
+              I make servers cry, Kubernetes pods CrashLoopBackOff, and occasionally something works in production. 
+              Welcome to my digital garden of infrastructure spells, epic fails, and rare victories. ✨
+            </p>
 
-            {/* Right Column: Interactive 3D Cube */}
-            <div className={`transition-all duration-1000 delay-300 ${mounted ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-10'}`}>
-              <InteractiveCube />
+            <div className="flex flex-wrap gap-4 justify-center pt-4">
+              <Button asChild size="lg" className="group">
+                <Link href="/blog">
+                  <BookOpen className="mr-2 h-5 w-5" />
+                  Read My Chaos
+                  <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                </Link>
+              </Button>
+              <Button asChild size="lg" variant="outline" className="group">
+                <Link href="/til">
+                  <Lightbulb className="mr-2 h-5 w-5" />
+                  Browse TILs
+                  <Sparkles className="ml-2 h-4 w-4 group-hover:rotate-12 transition-transform" />
+                </Link>
+              </Button>
+              <Button asChild size="lg" variant="secondary" className="group">
+                <a href="https://meet.harshit.cloud" target="_blank" rel="noopener noreferrer">
+                  <Calendar className="mr-2 h-5 w-5" />
+                  Schedule a Meeting
+                </a>
+              </Button>
             </div>
           </div>
         </div>

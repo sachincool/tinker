@@ -117,7 +117,7 @@ export function Footer() {
               </Button>
             </div>
             <p className="text-xs text-muted-foreground">
-              Infra, K8s, Dota 2. Pick your poison.
+              Infra, K8s, Meepo, Tinker. Pick your poison.
             </p>
             <div className="mt-3 p-2 rounded border border-dashed border-muted-foreground/30 hover:border-yellow-500/50 transition-colors group cursor-help" title="Try the Konami Code on your keyboard!">
               <div className="flex items-center gap-2">

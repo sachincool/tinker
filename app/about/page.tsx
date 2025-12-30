@@ -96,7 +96,7 @@ export default function AboutPage() {
 
 	const interests = [
 		{ icon: '📺', label: 'Anime', desc: 'Serious anime enthusiast' },
-		{ icon: '🎮', label: 'Dota 2', desc: '5k MMR | Meepo, Tinker, Timbersaw' },
+		{ icon: '🎮', label: 'Meepo, Tinker', desc: '5k MMR | Meepo, Tinker, Timbersaw' },
 		{ icon: '⚔', label: 'MMORPGs', desc: 'A3 India veteran player' },
 		{ icon: '📻', label: 'SDR', desc: 'Software Defined Radio exploration' },
 		{ icon: '🐧', label: 'Flipper Zero', desc: 'Multi-tool hardware hacking' },
@@ -268,7 +268,7 @@ export default function AboutPage() {
 							When I&apos;m not debugging why a pod is in CrashLoopBackOff,
 							you&apos;ll find me exploring radio frequencies with SDR, hacking
 							hardware with my Flipper Zero, training my Pwnagotchi, watching
-							anime, grinding to 5k MMR in Dota 2 with my favorite heroes
+							anime, grinding to 5k MMR in Meepo, Tinker with my favorite heroes
 							(Meepo, Tinker, Timbersaw), reliving the glory days of A3 India
 							MMORPG, or contemplating the meaning of life over pizza and coffee
 							at 3 AM.
