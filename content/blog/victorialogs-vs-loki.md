@@ -85,11 +85,11 @@ We stress-tested both systems with 120 flog replicas to measure peak ingestion c
 | vCPU Usage | 4 (throttled) | 2 peak | 50% reduction |
 | Memory Usage | ~4 GB | ~1.3 GB | 3× lower |
 
-![Graph showing Loki CPU usage at 4 vCPUs and memory consumption at 4GB during peak ingestion load with 120 flog replicas](/images/victorialogs-loki-cpu-memory-loki.png)
+![Graph showing Loki CPU usage at 4 vCPUs and memory consumption at 4GB during peak ingestion load with 120 flog replicas](/images/victorialogs-vs-loki/victorialogs-loki-cpu-memory-loki.png)
 
-![Performance graph demonstrating Loki resource throttling and CPU saturation during high ingestion rates](/images/victorialogs-loki-throttling-loki.png)
+![Performance graph demonstrating Loki resource throttling and CPU saturation during high ingestion rates](/images/victorialogs-vs-loki/victorialogs-loki-throttling-loki.png)
 
-![VictoriaLogs performance metrics showing 2 peak vCPU usage and 1.3GB memory consumption during the same ingestion load](/images/victorialogs-loki-performance-victoria.png)
+![VictoriaLogs performance metrics showing 2 peak vCPU usage and 1.3GB memory consumption during the same ingestion load](/images/victorialogs-vs-loki/victorialogs-loki-performance-victoria.png)
 
 ## Resource Footprint (7-day retention)
 
@@ -101,9 +101,9 @@ Over the 7-day testing period, we observed significant differences in resource c
 | Memory (steady-state) | 6–7 GB | 0.6–2 GB | ~70% reduction |
 | CPU Peak | 4 vCPU | 1.1 vCPU | 73% lower |
 
-![Resource utilization chart for Loki over 7-day retention period showing 501GB storage, 6-7GB steady-state memory, and 4 vCPU peak usage](/images/victorialogs-loki-footprint-loki.png)
+![Resource utilization chart for Loki over 7-day retention period showing 501GB storage, 6-7GB steady-state memory, and 4 vCPU peak usage](/images/victorialogs-vs-loki/victorialogs-loki-footprint-loki.png)
 
-![Resource utilization chart for VictoriaLogs over 7-day retention period showing 318GB storage (37% smaller), 0.6-2GB memory (70% reduction), and 1.1 vCPU peak (73% lower)](/images/victorialogs-loki-footprint-victoria.png)
+![Resource utilization chart for VictoriaLogs over 7-day retention period showing 318GB storage (37% smaller), 0.6-2GB memory (70% reduction), and 1.1 vCPU peak (73% lower)](/images/victorialogs-vs-loki/victorialogs-loki-footprint-victoria.png)
 
 > **Cost Impact:** The freed ~2 GB RAM per node enables denser workload scheduling and significant infrastructure cost savings.
 
@@ -115,9 +115,9 @@ Using Locust with 10 concurrent users simulating production traffic, VictoriaLog
 - **p99 Latency:** 3.6× faster than Loki under load
 - **Tail Latency:** Consistently lower across all percentiles
 
-![Load test results for VictoriaLogs showing 36% higher RPS handling capacity and 3.6x faster p99 latency with 10 concurrent users at 43 RPS sustained load](/images/victorialogs-loki-loadtest-victoria.png)
+![Load test results for VictoriaLogs showing 36% higher RPS handling capacity and 3.6x faster p99 latency with 10 concurrent users at 43 RPS sustained load](/images/victorialogs-vs-loki/victorialogs-loki-loadtest-victoria.png)
 
-![Load test results for Loki displaying slower response times and lower throughput under the same production traffic simulation conditions](/images/victorialogs-loki-loadtest-loki.png)
+![Load test results for Loki displaying slower response times and lower throughput under the same production traffic simulation conditions](/images/victorialogs-vs-loki/victorialogs-loki-loadtest-loki.png)
 
 ## Key Technical Insights
 

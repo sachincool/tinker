@@ -9,7 +9,7 @@ type: "til"
 
 Most people have minimal security awareness around address disclosure. When someone claims to be delivering a gift from a well-known local business (like a popular bakery with "Diwali hampers" or "festive boxes"), victims willingly provide their exact address or real-time location on WhatsApp. The pretext works because it combines social proof (known business), plausibility (gift delivery), and urgency (driver needs directions now).
 
-![Server Infrastructure Security](/images/server-rack.jpg)
+![Server Infrastructure Security](/images/delivery-social-engineering/server-rack.jpg)
 
 ## Why This Attack Works
 

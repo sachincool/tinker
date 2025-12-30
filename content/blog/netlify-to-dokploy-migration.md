@@ -18,11 +18,11 @@ Five sites down:
 - My personal blog
 - A ex-ceo's landing page
 
-![Netlify suspension email](/images/dokploy_email.png)
+![Netlify suspension email](/images/netlify-to-dokploy-migration/dokploy_email.png)
 
 Netlify moved legacy free tier users to their new 300-credit plan. I burned through it in a week.
 
-![Netlify upgrade notice](/images/dokploy_upgrade_netlify.png)
+![Netlify upgrade notice](/images/netlify-to-dokploy-migration/dokploy_upgrade_netlify.png)
 
 New option: $9/month for 1000 credits, or figure something else out.
 
@@ -32,14 +32,14 @@ I had 15 minutes before my girlfriend woke up. Here's what happened.
 
 Hetzner CX23: 2 vCPUs, 4GB RAM, 40GB SSD. **€2.99/month**.
 
-![Hetzner CX23 pricing](/images/dokploy_hetzner.png)
+![Hetzner CX23 pricing](/images/netlify-to-dokploy-migration/dokploy_hetzner.png)
 
 Math was simple:
 
 - Netlify: $108/year for credit anxiety
 - Dokploy + Hetzner: $42/year for unlimited deploys
 
-![Netlify vs Self-Hosted Comparison](/images/dokploy_netlify.png)
+![Netlify vs Self-Hosted Comparison](/images/netlify-to-dokploy-migration/dokploy_netlify.png)
 
 I'd been [watching this Dokploy video](https://www.youtube.com/watch?v=RoANBROvUeE) the week before. Perfect timing.
 
@@ -57,11 +57,11 @@ One command. Dokploy installed Docker, Traefik, PostgreSQL, everything.
 
 **Minutes 8-12**: Connected Git repos. Dokploy makes this ridiculously easy - paste GitHub URL, select branch, done.
 
-![Dokploy Git integration](/images/dokploy_git.png)
+![Dokploy Git integration](/images/netlify-to-dokploy-migration/dokploy_git.png)
 
 **Minutes 12-15**: Hit deploy on all 5 projects. Watched them come back to life.
 
-![Dokploy migration dashboard](/images/dokploy_migration.png)
+![Dokploy migration dashboard](/images/netlify-to-dokploy-migration/dokploy_migration.png)
 
 The Fiance woke up. dilharia.love was live. Crisis averted.
 
@@ -73,7 +73,7 @@ WWW redirects? One checkbox. Netlify charged extra for this.
 
 Logs and monitoring built-in. No Datadog bill. No "$500/month observability platform."
 
-![Dokploy projects dashboard](/images/dokploy_projects.png)
+![Dokploy projects dashboard](/images/netlify-to-dokploy-migration/dokploy_projects.png)
 
 ## The Catch
 
