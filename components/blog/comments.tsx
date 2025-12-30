@@ -1,30 +1,67 @@
 "use client";
 
 import Giscus from "@giscus/react";
-import { useTheme } from "next-themes";
+import { useEffect, useState } from "react";
 
 interface CommentsProps {
   slug: string;
 }
 
 export function Comments({ slug }: CommentsProps) {
-  const { theme } = useTheme();
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Listen for Giscus errors
+    const handleMessage = (event: MessageEvent) => {
+      if (event.origin !== "https://giscus.app") return;
+      
+      if (event.data?.giscus?.error) {
+        setError(event.data.giscus.error);
+      }
+    };
+
+    window.addEventListener("message", handleMessage);
+    return () => window.removeEventListener("message", handleMessage);
+  }, []);
+
+  // Check if Giscus is configured
+  const giscusRepo = (process.env.NEXT_PUBLIC_GISCUS_REPO || "sachincool/tinker") as `${string}/${string}`;
+  const giscusRepoId = process.env.NEXT_PUBLIC_GISCUS_REPO_ID || "R_kgDOOATA-g";
+  const giscusCategoryId = process.env.NEXT_PUBLIC_GISCUS_CATEGORY_ID || "DIC_kwDOOATA-s4C0aSE";
+
+  if (error) {
+    return (
+      <div className="mt-16 pt-8 border-t">
+        <h3 className="text-2xl font-bold mb-6">Comments</h3>
+        <div className="p-6 bg-muted/50 rounded-lg border border-border/50">
+          <p className="text-muted-foreground mb-4">
+            Comments are temporarily unavailable. 
+            {error && (
+              <span className="block mt-2 text-sm">
+                Error: {error}
+              </span>
+            )}
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="mt-16 pt-8 border-t">
       <h3 className="text-2xl font-bold mb-6">Comments</h3>
       <Giscus
         id="comments"
-        repo="sachincool/blogs" // TODO: Update with your repo
-        repoId="R_kgDONdrLJQ" // TODO: Get from https://giscus.app
-        category="Blog Comments"
-        categoryId="DIC_kwDONdrLJc4ClaWu" // TODO: Get from https://giscus.app
+        repo={giscusRepo}
+        repoId={giscusRepoId}
+        category="Announcements"
+        categoryId={giscusCategoryId}
         mapping="pathname"
         term={slug}
         reactionsEnabled="1"
         emitMetadata="0"
-        inputPosition="top"
-        theme={theme === "dark" ? "dark" : "light"}
+        inputPosition="bottom"
+        theme="preferred_color_scheme"
         lang="en"
         loading="lazy"
       />
