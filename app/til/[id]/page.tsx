@@ -50,7 +50,7 @@ export async function generateMetadata({
       locale: 'en_US',
       images: [
         {
-          url: `/til/${id}/opengraph-image`,
+          url: `${baseUrl}/til/${id}/opengraph-image`,
           width: 1200,
           height: 630,
           alt: til.title,
