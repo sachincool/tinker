@@ -361,6 +361,11 @@ a {
   @apply bg-background/80 backdrop-blur-sm border border-border/50;
 }
 
+/* Perspective for 3D transforms */
+.perspective-1000 {
+  perspective: 1000px;
+}
+
 /* Tinkerer/Anime themed accents */
 .accent-glow {
   box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);

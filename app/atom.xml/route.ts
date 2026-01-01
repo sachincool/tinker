@@ -1,8 +1,14 @@
 import { generateMainFeed } from '@/lib/rss';
+import { headers } from 'next/headers';
+import { getCurrentDomain } from '@/lib/site-config';
 
 export async function GET() {
   try {
-    const feed = generateMainFeed();
+    const headersList = await headers();
+    const hostname = headersList.get('host') || '';
+    const baseUrl = getCurrentDomain(hostname);
+    
+    const feed = generateMainFeed(baseUrl);
     const atom = feed.atom1();
 
     return new Response(atom, {

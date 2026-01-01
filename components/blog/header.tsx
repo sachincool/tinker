@@ -38,16 +38,17 @@ export function Header() {
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="flex items-center space-x-3">
-            <div className="relative">
-              <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-blue-600 via-purple-600 to-blue-800 flex items-center justify-center shadow-lg">
-                <Server className="h-5 w-5 text-white" />
-              </div>
-              <Zap className="absolute -top-1 -right-1 h-4 w-4 text-yellow-500" />
+          <Link href="/" className="flex items-center space-x-3 group">
+            <div className="relative h-12 w-12 rounded-lg overflow-hidden bg-white p-1.5 transition-transform group-hover:scale-105 shadow-sm">
+              <img 
+                src="/logo/infra-magician-logo.png" 
+                alt="Infra Magician Logo"
+                className="h-full w-full object-contain"
+              />
             </div>
             <div className="flex flex-col">
               <span className="font-bold text-lg leading-none">harshit.cloud</span>
-              <span className="text-xs text-muted-foreground leading-none">Infra Magician's Lair</span>
+              <span className="text-xs text-muted-foreground leading-none">Infra Magician&apos;s Lair</span>
             </div>
           </Link>
 

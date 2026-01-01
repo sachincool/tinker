@@ -1,0 +1,22 @@
+{
+  "name": "Infra Magician's Digital Spellbook",
+  "short_name": "Infra Magician",
+  "description": "Level 99 Infrastructure Wizard - SRE/DevOps blog about infrastructure, chaos engineering, and production tales",
+  "icons": [
+    {
+      "src": "/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "theme_color": "#6366f1",
+  "background_color": "#0a0a0a",
+  "display": "standalone",
+  "start_url": "/"
+}
+

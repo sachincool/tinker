@@ -1,8 +1,14 @@
 import { generateTILFeed } from '@/lib/rss';
+import { headers } from 'next/headers';
+import { getCurrentDomain } from '@/lib/site-config';
 
 export async function GET() {
   try {
-    const feed = generateTILFeed();
+    const headersList = await headers();
+    const hostname = headersList.get('host') || '';
+    const baseUrl = getCurrentDomain(hostname);
+    
+    const feed = generateTILFeed(baseUrl);
     const rss = feed.rss2();
 
     return new Response(rss, {

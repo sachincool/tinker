@@ -2,32 +2,32 @@ import { Feed } from 'feed';
 import { siteConfig } from './site-config';
 import { getAllPosts, getPostsByTag, type Post } from './posts';
 
-export function generateRSSFeed(posts: Post[], feedOptions?: { title?: string; description?: string; feedUrl?: string }) {
+export function generateRSSFeed(posts: Post[], baseUrl: string, feedOptions?: { title?: string; description?: string; feedUrl?: string }) {
   const feed = new Feed({
     title: feedOptions?.title || siteConfig.title,
     description: feedOptions?.description || siteConfig.description,
-    id: siteConfig.siteUrl,
-    link: siteConfig.siteUrl,
+    id: baseUrl,
+    link: baseUrl,
     language: 'en',
-    image: `${siteConfig.siteUrl}/assets/tinker.svg`,
-    favicon: `${siteConfig.siteUrl}/favicon.ico`,
+    image: `${baseUrl}/assets/tinker.svg`,
+    favicon: `${baseUrl}/favicon.ico`,
     copyright: `All rights reserved ${new Date().getFullYear()}, ${siteConfig.author.name}`,
     updated: posts.length > 0 ? new Date(posts[0].date) : new Date(),
     generator: 'Next.js using Feed for Node.js',
     feedLinks: {
-      rss2: feedOptions?.feedUrl || `${siteConfig.siteUrl}/rss.xml`,
-      json: feedOptions?.feedUrl?.replace('.xml', '.json') || `${siteConfig.siteUrl}/rss.json`,
-      atom: feedOptions?.feedUrl?.replace('.xml', '.atom') || `${siteConfig.siteUrl}/atom.xml`,
+      rss2: feedOptions?.feedUrl || `${baseUrl}/rss.xml`,
+      json: feedOptions?.feedUrl?.replace('.xml', '.json') || `${baseUrl}/rss.json`,
+      atom: feedOptions?.feedUrl?.replace('.xml', '.atom') || `${baseUrl}/atom.xml`,
     },
     author: {
       name: siteConfig.author.name,
       email: siteConfig.author.email,
-      link: siteConfig.siteUrl,
+      link: baseUrl,
     },
   });
 
   posts.forEach((post) => {
-    const url = `${siteConfig.siteUrl}/${post.type}/${post.slug}`;
+    const url = `${baseUrl}/${post.type}/${post.slug}`;
 
     feed.addItem({
       title: post.title,
@@ -39,7 +39,7 @@ export function generateRSSFeed(posts: Post[], feedOptions?: { title?: string; d
         {
           name: siteConfig.author.name,
           email: siteConfig.author.email,
-          link: siteConfig.siteUrl,
+          link: baseUrl,
         },
       ],
       date: new Date(post.date),
@@ -50,43 +50,43 @@ export function generateRSSFeed(posts: Post[], feedOptions?: { title?: string; d
   return feed;
 }
 
-export function generateMainFeed() {
+export function generateMainFeed(baseUrl: string) {
   const blogPosts = getAllPosts('blog');
   const tilPosts = getAllPosts('til');
   const allPosts = [...blogPosts, ...tilPosts].sort(
     (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
   );
 
-  return generateRSSFeed(allPosts, {
+  return generateRSSFeed(allPosts, baseUrl, {
     title: siteConfig.title,
     description: siteConfig.description,
-    feedUrl: `${siteConfig.siteUrl}/rss.xml`,
+    feedUrl: `${baseUrl}/rss.xml`,
   });
 }
 
-export function generateBlogFeed() {
+export function generateBlogFeed(baseUrl: string) {
   const posts = getAllPosts('blog');
-  return generateRSSFeed(posts, {
+  return generateRSSFeed(posts, baseUrl, {
     title: `${siteConfig.title} - Blog`,
     description: 'Deep dives into web development and infrastructure',
-    feedUrl: `${siteConfig.siteUrl}/blog/rss.xml`,
+    feedUrl: `${baseUrl}/blog/rss.xml`,
   });
 }
 
-export function generateTILFeed() {
+export function generateTILFeed(baseUrl: string) {
   const posts = getAllPosts('til');
-  return generateRSSFeed(posts, {
+  return generateRSSFeed(posts, baseUrl, {
     title: `${siteConfig.title} - Today I Learned`,
     description: 'Quick insights and daily learnings',
-    feedUrl: `${siteConfig.siteUrl}/til/rss.xml`,
+    feedUrl: `${baseUrl}/til/rss.xml`,
   });
 }
 
-export function generateTagFeed(tag: string) {
+export function generateTagFeed(tag: string, baseUrl: string) {
   const posts = getPostsByTag(tag);
-  return generateRSSFeed(posts, {
+  return generateRSSFeed(posts, baseUrl, {
     title: `${siteConfig.title} - ${tag}`,
     description: `Posts tagged with ${tag}`,
-    feedUrl: `${siteConfig.siteUrl}/tags/${tag}/rss.xml`,
+    feedUrl: `${baseUrl}/tags/${tag}/rss.xml`,
   });
 }

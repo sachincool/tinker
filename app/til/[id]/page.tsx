@@ -37,20 +37,33 @@ export async function generateMetadata({
     description: til.excerpt || til.title,
     keywords: til.tags,
     authors: [{ name: siteConfig.author.name, url: baseUrl }],
+    creator: siteConfig.author.name,
+    publisher: siteConfig.author.name,
     openGraph: {
       title: til.title,
       description: til.excerpt || til.title,
       type: 'article',
       publishedTime: til.date,
+      modifiedTime: til.date,
       url: tilUrl,
       siteName: siteConfig.title,
       locale: 'en_US',
+      images: [
+        {
+          url: `/til/${id}/opengraph-image`,
+          width: 1200,
+          height: 630,
+          alt: til.title,
+        },
+      ],
     },
     twitter: {
-      card: 'summary',
+      card: 'summary_large_image',
       title: til.title,
       description: til.excerpt || til.title,
       creator: '@exploit_sh',
+      site: '@exploit_sh',
+      images: [`${baseUrl}/til/${id}/opengraph-image`],
     },
     alternates: {
       canonical: tilUrl,
@@ -73,8 +86,81 @@ export default async function TILPost({ params }: { params: Promise<{ id: string
   const stats = readingTime(til.content);
   const readTime = stats.text;
 
+  // Get base URL for structured data
+  const headersList = await headers();
+  const hostname = headersList.get('host') || '';
+  const baseUrl = getCurrentDomain(hostname);
+  const tilUrl = `${baseUrl}/til/${id}`;
+
+  // JSON-LD structured data
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'TechArticle',
+    headline: til.title,
+    description: til.excerpt || til.title,
+    image: `${baseUrl}/til/${id}/opengraph-image`,
+    datePublished: til.date,
+    dateModified: til.date,
+    author: {
+      '@type': 'Person',
+      name: siteConfig.author.name,
+      url: baseUrl,
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: siteConfig.author.name,
+      logo: {
+        '@type': 'ImageObject',
+        url: `${baseUrl}/logo.png`,
+      },
+    },
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': tilUrl,
+    },
+    keywords: til.tags.join(', '),
+    articleBody: til.excerpt || til.title,
+    wordCount: stats.words,
+    inLanguage: 'en-US',
+  };
+
+  // Breadcrumb structured data
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: baseUrl,
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'TIL',
+        item: `${baseUrl}/til`,
+      },
+      {
+        '@type': 'ListItem',
+        position: 3,
+        name: til.title,
+        item: tilUrl,
+      },
+    ],
+  };
+
   return (
     <>
+      {/* JSON-LD structured data for SEO */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
       <div className="max-w-4xl mx-auto px-4 space-y-8">
         {/* Back button */}
         <Button variant="ghost" asChild>

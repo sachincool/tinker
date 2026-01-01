@@ -1,5 +1,7 @@
 import { generateTagFeed } from '@/lib/rss';
 import { getAllTags } from '@/lib/posts';
+import { headers } from 'next/headers';
+import { getCurrentDomain } from '@/lib/site-config';
 
 export async function GET(
   request: Request,
@@ -14,7 +16,11 @@ export async function GET(
       return new Response('Tag not found', { status: 404 });
     }
 
-    const feed = generateTagFeed(tag);
+    const headersList = await headers();
+    const hostname = headersList.get('host') || '';
+    const baseUrl = getCurrentDomain(hostname);
+
+    const feed = generateTagFeed(tag, baseUrl);
     const rss = feed.rss2();
 
     return new Response(rss, {

@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useTheme } from 'next-themes'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -51,11 +52,25 @@ export function Header() {
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center justify-between">
         {/* Logo */}
-        <Link href="/" className="flex items-center space-x-2">
-          <span className="text-2xl">🧙‍♂️</span>
-          <span className="font-bold text-xl bg-gradient-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent">
-            Infra Magician
-          </span>
+        <Link href="/" className="flex items-center space-x-3 group">
+          <div className="relative w-12 h-12 flex-shrink-0 transition-transform duration-200 group-hover:scale-110 group-hover:rotate-3">
+            <Image
+              src="/logo/infra-magician-logo.png"
+              alt="Infra Magician Logo"
+              width={48}
+              height={48}
+              className="w-full h-full object-contain rounded-lg drop-shadow-md"
+              priority
+            />
+          </div>
+          <div className="flex flex-col">
+            <span className="font-bold text-xl leading-tight bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 dark:from-blue-400 dark:via-purple-400 dark:to-pink-400 bg-clip-text text-transparent">
+              harshit.cloud
+            </span>
+            <span className="text-xs text-muted-foreground leading-tight hidden sm:block">
+              Infra Magician&apos;s Lair
+            </span>
+          </div>
         </Link>
 
         {/* Desktop Navigation */}

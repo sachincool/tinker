@@ -19,6 +19,7 @@ import {
   Calendar
 } from "lucide-react";
 import { type Post } from "@/lib/posts";
+import ResendCube from "@/components/blog/resend-cube";
 
 interface HomePageContentProps {
   latestPosts: Post[];
@@ -41,25 +42,25 @@ export default function HomePageContent({ latestPosts }: HomePageContentProps) {
   ];
 
   return (
-    <div className="space-y-16">
+    <div className="space-y-12 md:space-y-16">
       {/* Hero Section with Animations */}
-      <section className="relative py-20 overflow-hidden">
+      <section className="relative py-12 md:py-16 overflow-hidden">
         {/* Animated Background Gradient */}
         <div className="absolute inset-0 -z-10 bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-blue-950/20 dark:via-purple-950/20 dark:to-pink-950/20 animate-gradient-xy"></div>
         
         {/* Floating Elements */}
-        <div className="absolute top-20 left-10 opacity-20 animate-float">
+        <div className="absolute top-20 left-10 opacity-20 animate-float hidden lg:block">
           <Terminal className="h-12 w-12 text-blue-500" />
         </div>
-        <div className="absolute top-40 right-20 opacity-20 animate-float-delayed">
+        <div className="absolute top-40 right-20 opacity-20 animate-float-delayed hidden lg:block">
           <Code2 className="h-16 w-16 text-purple-500" />
         </div>
-        <div className="absolute bottom-20 right-40 opacity-20 animate-float">
+        <div className="absolute bottom-20 right-40 opacity-20 animate-float hidden lg:block">
           <Sparkles className="h-10 w-10 text-pink-500" />
         </div>
 
-        <div className="text-center space-y-8 max-w-4xl mx-auto px-4">
-          <div className={`space-y-6 transition-all duration-1000 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+        <div className="text-center space-y-6 md:space-y-8 max-w-4xl mx-auto px-4">
+          <div className={`space-y-4 md:space-y-6 transition-all duration-1000 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-sm font-medium">
               <Sparkles className="h-4 w-4" />
               <span>Welcome to the chaos</span>
@@ -106,6 +107,13 @@ export default function HomePageContent({ latestPosts }: HomePageContentProps) {
                 </a>
               </Button>
             </div>
+          </div>
+        </div>
+
+        {/* 3D Cube - Centered below text */}
+        <div className="mt-12 flex justify-center px-4">
+          <div className="w-full max-w-[450px] aspect-square relative">
+            <ResendCube />
           </div>
         </div>
       </section>

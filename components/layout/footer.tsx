@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import {
@@ -22,15 +23,21 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           {/* Brand Section */}
           <div className="space-y-4">
-            <div className="flex items-center gap-2">
-              <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-blue-600 via-purple-600 to-blue-800 flex items-center justify-center">
-                <Terminal className="h-5 w-5 text-white" />
+            <Link href="/" className="flex items-center gap-3 group w-fit">
+              <div className="relative h-12 w-12 rounded-lg overflow-hidden bg-white p-1.5 transition-transform group-hover:scale-105 shadow-sm">
+                <Image 
+                  src="/logo/infra-magician-logo.png" 
+                  alt="Infra Magician Logo"
+                  width={48}
+                  height={48}
+                  className="h-full w-full object-contain"
+                />
               </div>
               <div>
-                <div className="font-bold">harshit.cloud</div>
+                <div className="font-bold group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">harshit.cloud</div>
                 <div className="text-xs text-muted-foreground">Infra Magician</div>
               </div>
-            </div>
+            </Link>
             <p className="text-sm text-muted-foreground">
               Breaking production and fixing it before anyone notices since 2010.
             </p>
