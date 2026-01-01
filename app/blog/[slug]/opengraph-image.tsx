@@ -1,7 +1,7 @@
 import { ImageResponse } from 'next/og';
 import { getPostBySlug } from '@/lib/posts';
 
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 export const alt = 'Blog Post';
 export const size = {
   width: 1200,
