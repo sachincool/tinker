@@ -24,18 +24,19 @@ export function Footer() {
           {/* Brand Section */}
           <div className="space-y-4">
             <Link href="/" className="flex items-center gap-3 group w-fit">
-              <div className="relative h-12 w-12 rounded-lg overflow-hidden bg-white p-1.5 transition-transform group-hover:scale-105 shadow-sm">
+              <div className="relative h-16 w-16 transition-all group-hover:scale-105 border-0">
                 <Image 
-                  src="/logo/infra-magician-logo.png" 
+                  src="/logo/infra-magician-clean.png?v=3" 
                   alt="Infra Magician Logo"
-                  width={48}
-                  height={48}
-                  className="h-full w-full object-contain"
+                  width={64}
+                  height={64}
+                  className="h-full w-full object-contain drop-shadow-[0_0_15px_rgba(139,92,246,0.6)] group-hover:drop-shadow-[0_0_25px_rgba(139,92,246,0.9)] transition-all duration-300 border-0 [border:none!important]"
+                  unoptimized
                 />
               </div>
               <div>
-                <div className="font-bold group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">harshit.cloud</div>
-                <div className="text-xs text-muted-foreground">Infra Magician</div>
+                <div className="font-bold text-lg group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">harshit.cloud</div>
+                <div className="text-sm text-muted-foreground">Infra Magician</div>
               </div>
             </Link>
             <p className="text-sm text-muted-foreground">

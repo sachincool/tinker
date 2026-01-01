@@ -246,8 +246,8 @@ export default function ResendCube({ className = "" }: ResendCubeProps) {
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.25);
     scene.add(ambientLight);
 
-    // Subtle fog for depth perception
-    scene.fog = new THREE.Fog(0x000000, 10, 40);
+    // No fog - transparent background
+    // scene.fog = new THREE.Fog(0x000000, 10, 40);
 
     // Create cube group with separate layers
     const cubeData = makeCubes();
