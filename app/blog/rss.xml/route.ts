@@ -6,7 +6,13 @@ export async function GET() {
   try {
     const headersList = await headers();
     const hostname = headersList.get('host') || '';
+    
+    // Debug logging
+    console.log('[RSS] Host header:', hostname);
+    console.log('[RSS] All headers:', Object.fromEntries(headersList.entries()));
+    
     const baseUrl = getCurrentDomain(hostname);
+    console.log('[RSS] Generated baseUrl:', baseUrl);
     
     const feed = generateBlogFeed(baseUrl);
     const rss = feed.rss2();

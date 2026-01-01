@@ -42,6 +42,16 @@ export function getCurrentDomain(hostname?: string): string {
     return `https://${hostname}`;
   }
   
-  // Fallback to siteConfig
-  return siteConfig.siteUrl;
+  // Fallback: check environment variable first
+  if (process.env.NEXT_PUBLIC_SITE_URL) {
+    return process.env.NEXT_PUBLIC_SITE_URL;
+  }
+  
+  // Last resort: use Vercel URL (but this means headers failed)
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`;
+  }
+  
+  // Development fallback
+  return 'http://localhost:3000';
 }
