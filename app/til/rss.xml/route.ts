@@ -5,7 +5,8 @@ import { getCurrentDomain } from '@/lib/site-config';
 export async function GET() {
   try {
     const headersList = await headers();
-    const hostname = headersList.get('host') || '';
+    // Use x-forwarded-host for custom domains on Vercel, fallback to host
+    const hostname = headersList.get('x-forwarded-host') || headersList.get('host') || '';
     const baseUrl = getCurrentDomain(hostname);
     
     const feed = generateTILFeed(baseUrl);

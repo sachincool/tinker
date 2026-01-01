@@ -5,11 +5,13 @@ import { getCurrentDomain } from '@/lib/site-config';
 export async function GET() {
   try {
     const headersList = await headers();
-    const hostname = headersList.get('host') || '';
+    // Use x-forwarded-host for custom domains on Vercel, fallback to host
+    const hostname = headersList.get('x-forwarded-host') || headersList.get('host') || '';
     
-    // Debug logging
-    console.log('[RSS] Host header:', hostname);
-    console.log('[RSS] All headers:', Object.fromEntries(headersList.entries()));
+    // Debug logging (remove after confirming fix)
+    console.log('[RSS] x-forwarded-host:', headersList.get('x-forwarded-host'));
+    console.log('[RSS] host:', headersList.get('host'));
+    console.log('[RSS] Using hostname:', hostname);
     
     const baseUrl = getCurrentDomain(hostname);
     console.log('[RSS] Generated baseUrl:', baseUrl);

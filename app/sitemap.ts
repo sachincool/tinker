@@ -5,7 +5,8 @@ import { getCurrentDomain } from '@/lib/site-config';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const headersList = await headers();
-  const hostname = headersList.get('host') || '';
+  // Use x-forwarded-host for custom domains on Vercel, fallback to host
+  const hostname = headersList.get('x-forwarded-host') || headersList.get('host') || '';
   const baseUrl = getCurrentDomain(hostname);
   
   // Get all posts
