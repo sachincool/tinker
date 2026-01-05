@@ -1,42 +1,74 @@
 import type { NextConfig } from 'next';
-// import million from 'million/compiler';
 
 const nextConfig: NextConfig = {
-  // Disable ESLint during build for now
   eslint: {
     ignoreDuringBuilds: true,
   },
 
-  // Disable TypeScript checking during build
   typescript: {
     ignoreBuildErrors: true,
   },
 
-  // Enable experimental features for better performance
   experimental: {
     optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
   },
 
-  // Optimize images
   images: {
     formats: ['image/webp', 'image/avif'],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
   },
 
-  // Enable compression
   compress: true,
 
-  // Security headers
+  async redirects() {
+    return [
+      {
+        source: '/posts/:slug',
+        destination: '/blog/:slug',
+        permanent: true,
+      },
+      {
+        source: '/articles/:slug',
+        destination: '/blog/:slug',
+        permanent: true,
+      },
+      {
+        source: '/post/:slug',
+        destination: '/blog/:slug',
+        permanent: true,
+      },
+      {
+        source: '/blogs/:slug',
+        destination: '/blog/:slug',
+        permanent: true,
+      },
+      {
+        source: '/tag/:tag',
+        destination: '/tags/:tag',
+        permanent: true,
+      },
+      {
+        source: '/category/:tag',
+        destination: '/tags/:tag',
+        permanent: true,
+      },
+      {
+        source: '/categories/:tag',
+        destination: '/tags/:tag',
+        permanent: true,
+      },
+    ];
+  },
+
   async headers() {
     return [
       {
-        // Apply security headers to all pages except API routes, RSS feeds, and analytics
         source: '/((?!api|rss|atom|_vercel).*)',
         headers: [
           {
             key: 'X-Frame-Options',
-            value: 'SAMEORIGIN', // Changed from DENY to allow framing from same origin
+            value: 'SAMEORIGIN',
           },
           {
             key: 'X-Content-Type-Options',
@@ -51,7 +83,6 @@ const nextConfig: NextConfig = {
     ];
   },
 
-  // Enable static optimization
   trailingSlash: false,
   poweredByHeader: false,
 };

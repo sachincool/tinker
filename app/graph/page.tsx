@@ -4,6 +4,35 @@ import { ArrowLeft, Network } from "lucide-react";
 import Link from "next/link";
 import { GraphView } from "@/components/blog/graph-view";
 import { getAllPosts, getAllTags } from "@/lib/posts";
+import type { Metadata } from "next";
+import { siteConfig, getCurrentDomain } from "@/lib/site-config";
+import { headers } from "next/headers";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const headersList = await headers();
+  const hostname = headersList.get('host') || '';
+  const baseUrl = getCurrentDomain(hostname);
+
+  return {
+    title: `Knowledge Graph | ${siteConfig.author.name}`,
+    description: 'Explore the interactive knowledge graph showing connections between blog posts, TILs, and tags.',
+    openGraph: {
+      title: `Knowledge Graph | ${siteConfig.author.name}`,
+      description: 'Explore the interactive knowledge graph showing connections between blog posts, TILs, and tags.',
+      type: 'website',
+      url: `${baseUrl}/graph`,
+      siteName: siteConfig.title,
+    },
+    twitter: {
+      card: 'summary',
+      title: `Knowledge Graph | ${siteConfig.author.name}`,
+      description: 'Explore the interactive knowledge graph showing connections between blog posts, TILs, and tags.',
+    },
+    alternates: {
+      canonical: `${baseUrl}/graph`,
+    },
+  };
+}
 
 export default function GraphPage() {
   // Fetch all posts and tags for the graph

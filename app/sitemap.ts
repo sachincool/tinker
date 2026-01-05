@@ -1,15 +1,13 @@
-import { getAllPosts, getAllTags } from '@/lib/posts';
+import { getAllPosts, getAllTags, getPostsByTag } from '@/lib/posts';
 import { MetadataRoute } from 'next';
 import { headers } from 'next/headers';
 import { getCurrentDomain } from '@/lib/site-config';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const headersList = await headers();
-  // Use x-forwarded-host for custom domains on Vercel, fallback to host
   const hostname = headersList.get('x-forwarded-host') || headersList.get('host') || '';
   const baseUrl = getCurrentDomain(hostname);
   
-  // Get all posts
   const blogPosts = getAllPosts('blog');
   const tilPosts = getAllPosts('til');
   const allTags = getAllTags();
@@ -70,13 +68,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }));
 
-  // Tag pages
-  const tagPages: MetadataRoute.Sitemap = allTags.map(tag => ({
-    url: `${baseUrl}/tags/${tag}`,
-    lastModified: new Date(),
-    changeFrequency: 'weekly' as const,
-    priority: 0.6,
-  }));
+  const tagPages: MetadataRoute.Sitemap = allTags
+    .filter(tag => getPostsByTag(tag).length > 0)
+    .map(tag => ({
+      url: `${baseUrl}/tags/${tag}`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly' as const,
+      priority: 0.6,
+    }));
 
   return [...staticPages, ...blogPages, ...tilPages, ...tagPages];
 }

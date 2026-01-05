@@ -4,19 +4,54 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, Hash, BookOpen, Lightbulb } from "lucide-react";
 import Link from "next/link";
 import { getPostsByTag, getAllTags } from "@/lib/posts";
+import type { Metadata } from "next";
+import { siteConfig, getCurrentDomain } from "@/lib/site-config";
+import { headers } from "next/headers";
+
+export async function generateMetadata({ 
+  params 
+}: { 
+  params: Promise<{ tag: string }> 
+}): Promise<Metadata> {
+  const { tag: tagParam } = await params;
+  const tag = decodeURIComponent(tagParam);
+  const posts = getPostsByTag(tag);
+  
+  const headersList = await headers();
+  const hostname = headersList.get('host') || '';
+  const baseUrl = getCurrentDomain(hostname);
+  const tagUrl = `${baseUrl}/tags/${encodeURIComponent(tag)}`;
+
+  return {
+    title: `#${tag} | ${siteConfig.author.name}`,
+    description: `${posts.length} post${posts.length !== 1 ? 's' : ''} tagged with #${tag}. Browse all content about ${tag}.`,
+    openGraph: {
+      title: `#${tag} | ${siteConfig.author.name}`,
+      description: `${posts.length} post${posts.length !== 1 ? 's' : ''} tagged with #${tag}. Browse all content about ${tag}.`,
+      type: 'website',
+      url: tagUrl,
+      siteName: siteConfig.title,
+    },
+    twitter: {
+      card: 'summary',
+      title: `#${tag} | ${siteConfig.author.name}`,
+      description: `${posts.length} post${posts.length !== 1 ? 's' : ''} tagged with #${tag}.`,
+    },
+    alternates: {
+      canonical: tagUrl,
+    },
+  };
+}
 
 export default async function TagPage({ params }: { params: Promise<{ tag: string }> }) {
   const { tag: tagParam } = await params;
   const tag = decodeURIComponent(tagParam);
 
-  // Fetch real posts by tag
   const posts = getPostsByTag(tag);
   
-  // Separate blog posts and TILs
   const blogPosts = posts.filter(p => p.type === "blog");
   const tilPosts = posts.filter(p => p.type === "til");
   
-  // Get all tags for related tags section
   const allTags = getAllTags();
   const relatedTags = allTags.filter(t => t !== tag).slice(0, 5);
 
