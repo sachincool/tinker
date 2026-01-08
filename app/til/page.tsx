@@ -17,6 +17,21 @@ export async function generateMetadata(): Promise<Metadata> {
       description: 'Quick insights, code snippets, and daily learnings from the trenches of DevOps and infrastructure.',
       type: 'website',
       url: `${baseUrl}/til`,
+      siteName: siteConfig.title,
+      images: [
+        {
+          url: `${baseUrl}/til/opengraph-image`,
+          width: 1200,
+          height: 630,
+          alt: "Today I Learned - Infra Magician's Digital Garden",
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `Today I Learned | ${siteConfig.author.name}`,
+      description: 'Quick insights, code snippets, and daily learnings from the trenches of DevOps and infrastructure.',
+      images: [`${baseUrl}/til/opengraph-image`],
     },
     alternates: {
       canonical: `${baseUrl}/til`,

@@ -19,10 +19,10 @@ export async function generateMetadata(): Promise<Metadata> {
       siteName: siteConfig.title,
       images: [
         {
-          url: `${baseUrl}/images/workspace-setup.jpg`,
-          width: 600,
-          height: 400,
-          alt: 'Harshit Luthra workspace setup',
+          url: `${baseUrl}/about/opengraph-image`,
+          width: 1200,
+          height: 630,
+          alt: 'About Harshit Luthra - Infrastructure Wizard',
         },
       ],
     },
@@ -31,7 +31,7 @@ export async function generateMetadata(): Promise<Metadata> {
       title: `About | ${siteConfig.author.name}`,
       description: 'Harshit Luthra - Infrastructure Wizard, Chaos Engineer, and Professional Server Whisperer.',
       creator: '@exploit_sh',
-      images: [`${baseUrl}/images/workspace-setup.jpg`],
+      images: [`${baseUrl}/about/opengraph-image`],
     },
     alternates: {
       canonical: `${baseUrl}/about`,

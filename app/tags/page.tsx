@@ -22,11 +22,20 @@ export async function generateMetadata(): Promise<Metadata> {
       type: 'website',
       url: `${baseUrl}/tags`,
       siteName: siteConfig.title,
+      images: [
+        {
+          url: `${baseUrl}/tags/opengraph-image`,
+          width: 1200,
+          height: 630,
+          alt: "Browse Tags - Infra Magician's Digital Garden",
+        },
+      ],
     },
     twitter: {
-      card: 'summary',
+      card: 'summary_large_image',
       title: `Browse Tags | ${siteConfig.author.name}`,
       description: 'Discover content by topics, technologies, and categories.',
+      images: [`${baseUrl}/tags/opengraph-image`],
     },
     alternates: {
       canonical: `${baseUrl}/tags`,

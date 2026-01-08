@@ -17,6 +17,21 @@ export async function generateMetadata(): Promise<Metadata> {
       description: 'Deep dives into web development, infrastructure chaos, and the art of tinkering with technology.',
       type: 'website',
       url: `${baseUrl}/blog`,
+      siteName: siteConfig.title,
+      images: [
+        {
+          url: `${baseUrl}/blog/opengraph-image`,
+          width: 1200,
+          height: 630,
+          alt: "Blog - Infra Magician's Digital Garden",
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `Blog | ${siteConfig.author.name}`,
+      description: 'Deep dives into web development, infrastructure chaos, and the art of tinkering with technology.',
+      images: [`${baseUrl}/blog/opengraph-image`],
     },
     alternates: {
       canonical: `${baseUrl}/blog`,
