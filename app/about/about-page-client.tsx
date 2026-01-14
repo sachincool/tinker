@@ -387,8 +387,8 @@ export default function AboutPageClient() {
 							knowledge.&quot;
 						</blockquote>
 						<p className="text-muted-foreground">
-							This nasty programmer never keeps away. He is never idle. He does
-							all head-butted stuffs to build his Webapps. A tech-savvy by
+							This nasty programmer never keeps away. He is never idle. He 
+							head-butts his way through problems to build his Webapps. A tech-savvy by
 							nature and a professional programmer, this man is damn crazy.
 						</p>
 						<Separator className="my-6" />

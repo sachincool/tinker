@@ -45,15 +45,11 @@ export default function BlogPageClient({ initialPosts }: BlogPageClientProps) {
       );
     }
 
-    // Sort posts
     const sorted = [...filtered].sort((a, b) => {
-      if (sortBy === "newest") {
-        return new Date(b.date).getTime() - new Date(a.date).getTime();
-      } else if (sortBy === "oldest") {
+      if (sortBy === "oldest") {
         return new Date(a.date).getTime() - new Date(b.date).getTime();
       }
-      // "popular" - could be based on likes/views in the future
-      return 0;
+      return new Date(b.date).getTime() - new Date(a.date).getTime();
     });
 
     return sorted;
@@ -117,7 +113,6 @@ export default function BlogPageClient({ initialPosts }: BlogPageClientProps) {
           <SelectContent>
             <SelectItem value="newest">Newest First</SelectItem>
             <SelectItem value="oldest">Oldest First</SelectItem>
-            <SelectItem value="popular">Most Popular</SelectItem>
           </SelectContent>
         </Select>
       </div>
