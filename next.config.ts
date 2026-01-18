@@ -58,6 +58,28 @@ const nextConfig: NextConfig = {
         destination: '/tags/:tag',
         permanent: true,
       },
+      // Fix for common RSS/feed paths that Google is trying to access
+      {
+        source: '/index.xml',
+        destination: '/rss.xml',
+        permanent: true,
+      },
+      {
+        source: '/feed',
+        destination: '/rss.xml',
+        permanent: true,
+      },
+      {
+        source: '/feed.xml',
+        destination: '/rss.xml',
+        permanent: true,
+      },
+      // Fix for categories root path
+      {
+        source: '/categories',
+        destination: '/tags',
+        permanent: true,
+      },
     ];
   },
 
