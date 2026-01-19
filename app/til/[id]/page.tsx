@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Calendar, Clock, ArrowLeft, Lightbulb } from "lucide-react";
 import Link from "next/link";
 import { ViewCounter } from "@/components/blog/view-counter";
-import { LikeButton } from "@/components/blog/like-button";
+
 import { MarkdownContent } from "@/components/blog/markdown-content";
 import { getPostBySlug, getAllPosts } from "@/lib/posts";
 import { notFound } from "next/navigation";
@@ -212,8 +212,7 @@ export default async function TILPost({ params }: { params: Promise<{ id: string
         <MarkdownContent content={til.content} />
 
         {/* Actions Section */}
-        <div className="flex items-center justify-between py-6 border-t">
-          <LikeButton slug={til.slug} />
+        <div className="flex items-center justify-end py-6 border-t">
           <Button variant="outline" size="sm" asChild>
             <Link href="/til">
               See More TILs

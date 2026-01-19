@@ -5,7 +5,7 @@ import { Calendar, Clock, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { ReadingProgress } from "@/components/blog/reading-progress";
 import { ViewCounter } from "@/components/blog/view-counter";
-import { LikeButton } from "@/components/blog/like-button";
+
 import { TableOfContents } from "@/components/blog/table-of-contents";
 import { Comments } from "@/components/blog/comments";
 import { ShareButton } from "@/components/blog/share-button";
@@ -258,8 +258,7 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
             </div>
 
             {/* Actions Section */}
-            <div className="flex items-center justify-between py-8 border-t border-border/50 bg-gradient-to-r from-muted/30 to-transparent rounded-lg px-6 shadow-sm">
-              <LikeButton slug={post.slug} />
+            <div className="flex items-center justify-end py-8 border-t border-border/50 bg-gradient-to-r from-muted/30 to-transparent rounded-lg px-6 shadow-sm">
               <ShareButton title={post.title} excerpt={post.excerpt} />
             </div>
 
