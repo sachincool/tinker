@@ -11,6 +11,7 @@ import { Comments } from "@/components/blog/comments";
 import { ShareButton } from "@/components/blog/share-button";
 import { MarkdownContent } from "@/components/blog/markdown-content";
 import { getPostBySlug, getAllPosts } from "@/lib/posts";
+import { NewsletterForm } from "@/components/blog/newsletter-form";
 import { notFound } from "next/navigation";
 import readingTime from "reading-time";
 import type { Metadata } from "next";
@@ -261,6 +262,12 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
               <LikeButton slug={post.slug} />
               <ShareButton title={post.title} excerpt={post.excerpt} />
             </div>
+
+            {/* Newsletter Section */}
+            <NewsletterForm 
+              title="Enjoyed this post?"
+              description="Subscribe to get notified when I publish new infrastructure adventures and TILs."
+            />
 
             {/* Related Posts */}
             <section className="mt-12">

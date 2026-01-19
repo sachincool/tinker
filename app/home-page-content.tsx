@@ -20,12 +20,14 @@ import {
 } from "lucide-react";
 import { type Post } from "@/lib/posts";
 import ResendCube from "@/components/blog/resend-cube";
+import { NewsletterForm } from "@/components/blog/newsletter-form";
 
 interface HomePageContentProps {
   latestPosts: Post[];
+  tilCount: number;
 }
 
-export default function HomePageContent({ latestPosts }: HomePageContentProps) {
+export default function HomePageContent({ latestPosts, tilCount }: HomePageContentProps) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -123,7 +125,7 @@ export default function HomePageContent({ latestPosts }: HomePageContentProps) {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[
             { label: "Servers Crashed", value: "∞", color: "from-red-500 to-orange-500", icon: Zap },
-            { label: "TILs Written", value: "42+", color: "from-green-500 to-emerald-500", icon: Lightbulb },
+            { label: "TILs Written", value: `${tilCount}`, color: "from-green-500 to-emerald-500", icon: Lightbulb },
             { label: "Dota MMR", value: "5k", color: "from-purple-500 to-pink-500", icon: TrendingUp },
             { label: "Coffee Mugs", value: "9001", color: "from-orange-500 to-yellow-500", icon: Coffee },
           ].map((stat, index) => (
@@ -243,6 +245,13 @@ export default function HomePageContent({ latestPosts }: HomePageContentProps) {
                   About Me
                 </Link>
               </Button>
+            </div>
+            <div className="mt-8">
+              <NewsletterForm 
+                variant="card"
+                title="Join the Chaos Newsletter"
+                description="Weekly infrastructure spells, TILs, and tales from production. No spam, just chaos."
+              />
             </div>
           </CardContent>
         </Card>

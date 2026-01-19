@@ -12,6 +12,8 @@ import { KeyboardShortcuts } from '@/components/keyboard-shortcuts'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import { siteConfig } from '@/lib/site-config'
+import { TilCountProvider } from '@/components/providers/til-count-provider'
+import { getAllPosts } from '@/lib/posts'
 
 const inter = Inter({ 
   subsets: ['latin'],
@@ -71,6 +73,8 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
+  const tilCount = getAllPosts('til').length;
+  
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -148,20 +152,22 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <div className="min-h-screen bg-background flex flex-col">
-            <Header />
-            <main className="container mx-auto px-4 py-8 flex-1">
-              {children}
-            </main>
-            <Footer />
-          </div>
-          <KonamiCode />
-          <ConsoleMessage />
-          <ScrollToTop />
-          <KeyboardShortcuts />
-          <Toaster />
-          <Analytics />
-          <SpeedInsights />
+          <TilCountProvider count={tilCount}>
+            <div className="min-h-screen bg-background flex flex-col">
+              <Header />
+              <main className="container mx-auto px-4 py-8 flex-1">
+                {children}
+              </main>
+              <Footer />
+            </div>
+            <KonamiCode />
+            <ConsoleMessage />
+            <ScrollToTop />
+            <KeyboardShortcuts />
+            <Toaster />
+            <Analytics />
+            <SpeedInsights />
+          </TilCountProvider>
         </ThemeProvider>
       </body>
     </html>

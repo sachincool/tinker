@@ -16,6 +16,9 @@ export default async function RootPage() {
   const allBlogPosts = getAllPosts('blog');
   const latestPosts = allBlogPosts.slice(0, 2); // Get 2 most recent posts
   
+  // Fetch TIL count for homepage stats
+  const tilCount = getAllPosts('til').length;
+  
   // Show normal homepage for blog.harshit.cloud, tinker.expert, and localhost
-  return <HomePageContent latestPosts={latestPosts} />;
+  return <HomePageContent latestPosts={latestPosts} tilCount={tilCount} />;
 }

@@ -15,8 +15,12 @@ import {
   Terminal,
   Rss
 } from "lucide-react";
+import { useTilCount } from "@/components/providers/til-count-provider";
+import { NewsletterForm } from "@/components/blog/newsletter-form";
 
 export function Footer() {
+  const tilCount = useTilCount();
+  
   return (
     <footer className="border-t mt-auto bg-gradient-to-b from-background to-muted/20">
       <div className="container mx-auto px-4 py-12">
@@ -127,6 +131,10 @@ export function Footer() {
             <p className="text-xs text-muted-foreground">
               Infra, K8s, Meepo, Tinker. Pick your poison.
             </p>
+            <div className="mt-4">
+              <p className="text-xs text-muted-foreground mb-2">Get chaos delivered</p>
+              <NewsletterForm variant="compact" />
+            </div>
             <div className="mt-3 p-2 rounded border border-dashed border-muted-foreground/30 hover:border-yellow-500/50 transition-colors group cursor-help" title="Try the Konami Code on your keyboard!">
               <div className="flex items-center gap-2">
                 <span className="text-xs text-muted-foreground/60 group-hover:text-yellow-500 transition-colors">🎮</span>
@@ -207,7 +215,7 @@ export function Footer() {
             </div>
             <div className="group cursor-default">
               <div className="text-2xl font-bold text-green-500 group-hover:scale-110 transition-transform">
-                127
+                {tilCount}
               </div>
               <div className="text-xs text-muted-foreground">TILs Shared</div>
             </div>
