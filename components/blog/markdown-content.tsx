@@ -98,7 +98,7 @@ export function MarkdownContent({ content }: MarkdownContentProps) {
           // Special styling for key insights/important callouts
           const parts = content.split(/(\*\*[^*]+:\*\*)/);
           elements.push(
-            <blockquote key={index} className="relative border-l-4 border-purple-500 pl-8 pr-6 py-6 my-10 bg-gradient-to-r from-purple-500/15 via-blue-500/10 to-transparent rounded-r-xl shadow-lg hover:shadow-xl transition-all duration-300">
+            <blockquote key={index} className="relative border-l-4 border-purple-500 pl-4 pr-3 md:pl-8 md:pr-6 py-4 md:py-6 my-6 md:my-10 bg-gradient-to-r from-purple-500/15 via-blue-500/10 to-transparent rounded-r-xl shadow-lg hover:shadow-xl transition-all duration-300">
               <div className="absolute left-2 top-2 text-purple-500/40 text-3xl">💡</div>
               <div className="relative z-10 text-base md:text-lg leading-relaxed">
                 {parts.map((part, idx) => {
@@ -113,8 +113,8 @@ export function MarkdownContent({ content }: MarkdownContentProps) {
         } else {
           // Regular blockquote
           elements.push(
-            <blockquote key={index} className="relative border-l-4 border-blue-500 pl-6 pr-4 py-4 my-8 italic text-lg text-muted-foreground bg-gradient-to-r from-blue-500/10 to-transparent rounded-r-lg shadow-sm">
-              <span className="absolute left-3 top-3 text-blue-500/30 text-4xl font-serif">"</span>
+            <blockquote key={index} className="relative border-l-4 border-blue-500 pl-4 pr-2 md:pl-6 md:pr-4 py-3 md:py-4 my-6 md:my-8 italic text-base md:text-lg text-muted-foreground bg-gradient-to-r from-blue-500/10 to-transparent rounded-r-lg shadow-sm">
+              <span className="absolute left-1 md:left-3 top-2 md:top-3 text-blue-500/30 text-2xl md:text-4xl font-serif">"</span>
               <div className="relative z-10">{content}</div>
             </blockquote>
           );

@@ -315,10 +315,7 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
             <Comments slug={slug} />
           </div>
 
-          {/* Table of Contents Sidebar */}
-          <aside className="hidden lg:block">
-            <TableOfContents />
-          </aside>
+          <TableOfContents />
         </div>
       </div>
     </>

@@ -108,7 +108,7 @@ export function GraphView({ blogPosts, tilPosts, allTags }: GraphViewProps) {
 
     const container = svgElement.parentElement;
     const width = container?.clientWidth || 800;
-    const height = 600;
+    const height = svgElement.clientHeight || 600;
 
     svg.attr("width", width).attr("height", height).attr("viewBox", `0 0 ${width} ${height}`);
 
@@ -298,7 +298,7 @@ export function GraphView({ blogPosts, tilPosts, allTags }: GraphViewProps) {
         </Button>
       </div>
 
-      <svg ref={svgRef} className="w-full h-[600px] border rounded-lg bg-background"></svg>
+      <svg ref={svgRef} className="w-full h-[400px] sm:h-[500px] lg:h-[600px] border rounded-lg bg-background"></svg>
       <div className="flex gap-6 mt-4 text-sm text-muted-foreground justify-center">
         <div className="flex items-center gap-2">
           <div className="w-3 h-3 rounded-full bg-blue-500"></div>
