@@ -187,9 +187,9 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
         Skip to content
       </a>
       <ReadingProgress />
-      <div className="max-w-7xl mx-auto px-4">
+      <div className="max-w-7xl mx-auto px-4 overflow-x-hidden">
         <div className="lg:grid lg:grid-cols-[1fr_280px] lg:gap-16">
-          <div className="max-w-3xl space-y-8">
+          <div className="max-w-3xl space-y-8 overflow-x-hidden">
             {/* Back button */}
             <Button variant="ghost" asChild>
               <Link href="/blog">
@@ -211,7 +211,7 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
                 </div>
               )}
               
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight tracking-tight bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight tracking-tight bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text break-words [overflow-wrap:anywhere]">
                 {post.title}
               </h1>
 

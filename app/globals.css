@@ -427,6 +427,35 @@ html, body {
   }
 }
 
+/* Mobile blog post content fixes */
+@media (max-width: 640px) {
+  .prose h1, .prose h2, .prose h3, .prose h4 {
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    hyphens: auto;
+  }
+  
+  .prose pre {
+    max-width: calc(100vw - 2rem);
+    margin-left: -1rem;
+    margin-right: -1rem;
+    border-radius: 0;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  article {
+    overflow-x: hidden;
+    max-width: 100%;
+  }
+  
+  /* Ensure code blocks scroll properly on mobile */
+  .prose pre code {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
 /* Performance optimizations */
 @media (prefers-reduced-motion: reduce) {
   *,

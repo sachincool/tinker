@@ -61,8 +61,8 @@ export function CodeBlock({ code, language = "bash", className = "" }: CodeBlock
   };
 
   return (
-    <div className={cn("relative group my-8", className)}>
-      <div className="rounded-xl overflow-hidden border border-border/50 shadow-lg hover:shadow-xl transition-shadow duration-300">
+    <div className={cn("relative group my-8 max-w-full overflow-hidden", className)}>
+      <div className="rounded-xl overflow-hidden border border-border/50 shadow-lg hover:shadow-xl transition-shadow duration-300 max-w-full">
         {language && (
           <div className="flex items-center justify-between px-4 py-2.5 bg-gradient-to-r from-muted to-muted/50 border-b border-border/50">
             <span className="text-xs font-mono font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wider">
@@ -88,17 +88,18 @@ export function CodeBlock({ code, language = "bash", className = "" }: CodeBlock
             </Button>
           </div>
         )}
-        <div className="relative bg-gradient-to-br from-muted/30 to-muted/50">
+        <div className="relative bg-gradient-to-br from-muted/30 to-muted/50 max-w-full">
           {highlightedCode ? (
             <div 
               className={cn(
-                "overflow-x-auto [&>pre]:!bg-transparent [&>pre]:!m-0 [&>pre]:p-4 [&>pre]:text-sm [&>pre]:leading-relaxed",
-                "[&_code]:!bg-transparent [&_code]:text-sm [&_code]:font-mono"
+                "overflow-x-auto [&>pre]:!bg-transparent [&>pre]:!m-0 [&>pre]:p-4 [&>pre]:text-sm [&>pre]:leading-relaxed [&>pre]:overflow-x-auto",
+                "[&_code]:!bg-transparent [&_code]:text-sm [&_code]:font-mono",
+                "[-webkit-overflow-scrolling:touch] max-w-full"
               )}
               dangerouslySetInnerHTML={{ __html: highlightedCode }}
             />
           ) : (
-            <pre className="p-4 overflow-x-auto">
+            <pre className="p-4 overflow-x-auto [-webkit-overflow-scrolling:touch] max-w-full">
               <code className="text-sm font-mono">{code}</code>
             </pre>
           )}

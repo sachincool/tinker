@@ -22,7 +22,7 @@ export function MarkdownContent({ content }: MarkdownContentProps) {
         const text = paragraph.substring(2);
         const id = text.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '');
         elements.push(
-          <h2 key={index} id={id} className="text-3xl font-bold mt-12 mb-4 scroll-mt-24">
+          <h2 key={index} id={id} className="text-3xl font-bold mt-12 mb-4 scroll-mt-24 break-words [overflow-wrap:anywhere]">
             {text}
           </h2>
         );
@@ -37,7 +37,7 @@ export function MarkdownContent({ content }: MarkdownContentProps) {
           <h2 
             key={index} 
             id={id} 
-            className="text-2xl md:text-3xl font-bold mt-16 mb-8 scroll-mt-24 border-l-4 border-blue-500 pl-4 py-2 bg-gradient-to-r from-blue-500/5 to-transparent"
+            className="text-2xl md:text-3xl font-bold mt-16 mb-8 scroll-mt-24 border-l-4 border-blue-500 pl-4 py-2 bg-gradient-to-r from-blue-500/5 to-transparent break-words [overflow-wrap:anywhere]"
           >
             {text}
           </h2>
@@ -53,9 +53,9 @@ export function MarkdownContent({ content }: MarkdownContentProps) {
           <h3 
             key={index} 
             id={id} 
-            className="text-xl font-semibold mt-12 mb-6 scroll-mt-24 text-blue-600 dark:text-blue-400 flex items-center gap-2"
+            className="text-xl font-semibold mt-12 mb-6 scroll-mt-24 text-blue-600 dark:text-blue-400 flex items-center gap-2 break-words [overflow-wrap:anywhere]"
           >
-            <Zap className="h-5 w-5" />
+            <Zap className="h-5 w-5 flex-shrink-0" />
             {text}
           </h3>
         );
@@ -409,8 +409,8 @@ export function MarkdownContent({ content }: MarkdownContentProps) {
   };
 
   return (
-    <article className="prose prose-lg max-w-none dark:prose-invert prose-headings:font-bold prose-headings:tracking-tight prose-p:text-lg prose-p:leading-relaxed prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-a:no-underline hover:prose-a:underline prose-strong:text-foreground prose-ul:my-6 prose-ol:my-6 prose-li:my-2">
-      <div className="space-y-8">
+    <article className="prose prose-lg max-w-none dark:prose-invert prose-headings:font-bold prose-headings:tracking-tight prose-p:text-lg prose-p:leading-relaxed prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-a:no-underline hover:prose-a:underline prose-strong:text-foreground prose-ul:my-6 prose-ol:my-6 prose-li:my-2 overflow-x-hidden">
+      <div className="space-y-8 max-w-full">
         {renderMarkdown()}
       </div>
     </article>
