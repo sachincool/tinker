@@ -257,11 +257,6 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
               <MarkdownContent content={post.content} />
             </div>
 
-            {/* Actions Section */}
-            <div className="flex items-center justify-end pt-6">
-              <ShareButton title={post.title} excerpt={post.excerpt} />
-            </div>
-
             {/* Newsletter Section */}
             <NewsletterForm 
               title="Enjoyed this post?"
@@ -311,7 +306,11 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
               </div>
             </section>
 
-            {/* Comments Section */}
+            {/* Share & Comments Section */}
+            <div className="flex items-center justify-between pt-6 border-t border-border/50">
+              <span className="text-sm text-muted-foreground">Share this post</span>
+              <ShareButton title={post.title} excerpt={post.excerpt} />
+            </div>
             <Comments slug={slug} />
           </div>
 
