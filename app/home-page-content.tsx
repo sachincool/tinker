@@ -164,24 +164,24 @@ export default function HomePageContent({ latestPosts, tilCount }: HomePageConte
           </Button>
         </div>
         
-        <div className="grid md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {latestPosts.map((post, index) => (
             <Card 
               key={post.slug} 
-              className="group hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-l-4 border-l-blue-500"
+              className="group hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-l-4 border-l-blue-500 overflow-hidden"
             >
-              <CardHeader>
-                <CardTitle className="text-xl group-hover:text-blue-600 transition-colors">
+              <CardHeader className="space-y-2">
+                <CardTitle className="text-lg sm:text-xl group-hover:text-blue-600 transition-colors break-words">
                   <Link href={`/blog/${post.slug}`}>
                     {post.title}
                   </Link>
                 </CardTitle>
-                <CardDescription className="text-base">{post.excerpt}</CardDescription>
+                <CardDescription className="text-sm sm:text-base line-clamp-3">{post.excerpt}</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="flex flex-wrap gap-2 mb-4">
+                <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-4">
                   {post.tags.map((tag) => (
-                    <Badge key={tag} variant="secondary" className="hover:bg-blue-100 dark:hover:bg-blue-900 transition-colors">
+                    <Badge key={tag} variant="secondary" className="text-xs hover:bg-blue-100 dark:hover:bg-blue-900 transition-colors">
                       {tag}
                     </Badge>
                   ))}

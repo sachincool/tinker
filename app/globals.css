@@ -390,6 +390,43 @@ a {
   }
 }
 
+/* Prevent horizontal overflow on mobile */
+html, body {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
+/* Mobile card content fixes */
+@media (max-width: 640px) {
+  /* Ensure card titles and descriptions wrap properly */
+  [data-slot="card"] h3,
+  [data-slot="card"] [data-slot="card-title"],
+  .card-title {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
+  }
+  
+  /* Prevent content from overflowing cards */
+  [data-slot="card-content"],
+  [data-slot="card-header"],
+  [data-slot="card-description"] {
+    max-width: 100%;
+    overflow: hidden;
+  }
+  
+  /* Ensure main container doesn't cause horizontal scroll */
+  main.container {
+    max-width: 100vw;
+    overflow-x: hidden;
+  }
+  
+  /* Fix badge overflow on mobile */
+  .flex-wrap {
+    max-width: 100%;
+  }
+}
+
 /* Performance optimizations */
 @media (prefers-reduced-motion: reduce) {
   *,

@@ -139,37 +139,35 @@ export default function BlogPageClient({ initialPosts }: BlogPageClientProps) {
               return (
                 <Card key={post.slug} className="hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-l-4 border-l-blue-500 relative overflow-hidden group">
                   <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                  <CardHeader className="relative">
-                    <div className="flex items-start justify-between">
-                      <div className="space-y-2 flex-1">
-                        <CardTitle className="text-2xl hover:text-blue-600 transition-colors">
-                          <Link href={`/blog/${post.slug}`}>
-                            {post.title}
-                          </Link>
-                        </CardTitle>
-                        <CardDescription className="text-base leading-relaxed">
-                          {post.excerpt}
-                        </CardDescription>
-                      </div>
+                  <CardHeader className="relative space-y-3">
+                    <div className="space-y-2 min-w-0">
+                      <CardTitle className="text-xl sm:text-2xl hover:text-blue-600 transition-colors break-words">
+                        <Link href={`/blog/${post.slug}`}>
+                          {post.title}
+                        </Link>
+                      </CardTitle>
+                      <CardDescription className="text-sm sm:text-base leading-relaxed line-clamp-3">
+                        {post.excerpt}
+                      </CardDescription>
                     </div>
-                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                    <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-xs sm:text-sm text-muted-foreground">
                       <div className="flex items-center gap-1">
-                        <Calendar className="h-4 w-4" />
+                        <Calendar className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0" />
                         <span>{new Date(post.date).toLocaleDateString('en-US', { 
                           year: 'numeric', 
-                          month: 'long', 
+                          month: 'short', 
                           day: 'numeric' 
                         })}</span>
                       </div>
                       <div className="flex items-center gap-1">
-                        <Clock className="h-4 w-4" />
+                        <Clock className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0" />
                         <span>{stats.text}</span>
                       </div>
                     </div>
-                    <div className="flex flex-wrap gap-2">
+                    <div className="flex flex-wrap gap-1.5 sm:gap-2">
                       {post.tags.map((tag) => (
                         <Link key={tag} href={`/tags/${tag}`}>
-                          <Badge variant="secondary" className="hover:bg-blue-100 hover:text-blue-800 transition-colors">
+                          <Badge variant="secondary" className="text-xs hover:bg-blue-100 hover:text-blue-800 transition-colors">
                             {tag}
                           </Badge>
                         </Link>
@@ -196,36 +194,34 @@ export default function BlogPageClient({ initialPosts }: BlogPageClientProps) {
             {regularPosts.map((post) => {
               const stats = readingTime(post.content);
               return (
-                <Card key={post.slug} className="hover:shadow-lg transition-all duration-300 hover:-translate-y-1 group">
-                  <CardHeader>
-                    <div className="flex items-start justify-between">
-                      <div className="space-y-2 flex-1">
-                        <CardTitle className="text-xl hover:text-blue-600 transition-colors">
-                          <Link href={`/blog/${post.slug}`}>
-                            {post.title}
-                          </Link>
-                        </CardTitle>
-                        <CardDescription>{post.excerpt}</CardDescription>
-                      </div>
+                <Card key={post.slug} className="hover:shadow-lg transition-all duration-300 hover:-translate-y-1 group overflow-hidden">
+                  <CardHeader className="space-y-3">
+                    <div className="space-y-2 min-w-0">
+                      <CardTitle className="text-lg sm:text-xl hover:text-blue-600 transition-colors break-words">
+                        <Link href={`/blog/${post.slug}`}>
+                          {post.title}
+                        </Link>
+                      </CardTitle>
+                      <CardDescription className="text-sm line-clamp-2">{post.excerpt}</CardDescription>
                     </div>
-                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                    <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-xs sm:text-sm text-muted-foreground">
                       <div className="flex items-center gap-1">
-                        <Calendar className="h-4 w-4" />
+                        <Calendar className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0" />
                         <span>{new Date(post.date).toLocaleDateString('en-US', { 
                           year: 'numeric', 
-                          month: 'long', 
+                          month: 'short', 
                           day: 'numeric' 
                         })}</span>
                       </div>
                       <div className="flex items-center gap-1">
-                        <Clock className="h-4 w-4" />
+                        <Clock className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0" />
                         <span>{stats.text}</span>
                       </div>
                     </div>
-                    <div className="flex flex-wrap gap-2">
+                    <div className="flex flex-wrap gap-1.5 sm:gap-2">
                       {post.tags.map((tag) => (
                         <Link key={tag} href={`/tags/${tag}`}>
-                          <Badge variant="secondary" className="hover:bg-blue-100 hover:text-blue-800 transition-colors">
+                          <Badge variant="secondary" className="text-xs hover:bg-blue-100 hover:text-blue-800 transition-colors">
                             {tag}
                           </Badge>
                         </Link>

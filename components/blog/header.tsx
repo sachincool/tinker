@@ -114,7 +114,7 @@ export function Header() {
                   <Menu className="h-4 w-4" />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="right" className="w-80">
+              <SheetContent side="right" className="w-[85vw] max-w-[320px] px-6">
                 <div className="flex flex-col space-y-4 mt-8">
                   <div className="flex items-center space-x-3 mb-6">
                     <div className="relative">

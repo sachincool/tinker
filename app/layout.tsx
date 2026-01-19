@@ -153,9 +153,9 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <TilCountProvider count={tilCount}>
-            <div className="min-h-screen bg-background flex flex-col">
+            <div className="min-h-screen bg-background flex flex-col overflow-x-hidden">
               <Header />
-              <main className="container mx-auto px-4 py-8 flex-1">
+              <main className="container mx-auto px-4 py-8 flex-1 max-w-full overflow-x-hidden">
                 {children}
               </main>
               <Footer />
