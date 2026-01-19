@@ -110,6 +110,7 @@ CMD ["node", "server.js"]
 ```
 
 **Results:**
+
 - Image size: -88%
 - Vulnerabilities: -97%
 - Build time: -60%
@@ -276,6 +277,7 @@ services:
 Mounting the Docker socket gives the container complete control over the host. It's effectively root access.
 
 If you need Docker-in-Docker, use alternatives:
+
 - Docker-outside-of-Docker (DooD) with proper access controls
 - Kaniko for building images
 - Podman for rootless containers
@@ -478,15 +480,19 @@ Before deploying to production:
 ## Common Excuses and Rebuttals
 
 **"It works fine as root"**
+
 - Until it doesn't. One RCE and you're owned.
 
 **"Security is slow"**
+
 - Slower than a data breach? I doubt it.
 
 **"This is too complex"**
+
 - It's a few extra lines. Your users' data is worth it.
 
 **"We're behind a firewall"**
+
 - Defense in depth. Assume breach.
 
 ## The Results
@@ -504,6 +510,7 @@ After implementing these changes:
 Container security isn't optional. It's not hard, it just requires discipline.
 
 Start small:
+
 1. Run as non-root
 2. Use minimal images
 3. Scan regularly
