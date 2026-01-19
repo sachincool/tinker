@@ -5,9 +5,10 @@ import { useEffect, useState } from "react";
 
 interface CommentsProps {
   slug: string;
+  shareButton?: React.ReactNode;
 }
 
-export function Comments({ slug }: CommentsProps) {
+export function Comments({ slug, shareButton }: CommentsProps) {
   const [error, setError] = useState<string | null>(null);
   const [errorDetails, setErrorDetails] = useState<any>(null);
   const [mounted, setMounted] = useState(false);
@@ -48,8 +49,11 @@ export function Comments({ slug }: CommentsProps) {
   // Don't render until mounted on client
   if (!mounted) {
     return (
-      <div className="mt-16 pt-8 border-t">
-        <h3 className="text-2xl font-bold mb-6">Comments</h3>
+      <div className="mt-12 pt-8 border-t">
+        <div className="flex items-center justify-between mb-6">
+          <h3 className="text-2xl font-bold">Comments</h3>
+          {shareButton}
+        </div>
         <div className="p-6 bg-muted/50 rounded-lg border border-border/50">
           <p className="text-muted-foreground">Loading comments...</p>
         </div>
@@ -59,8 +63,11 @@ export function Comments({ slug }: CommentsProps) {
 
   if (error) {
     return (
-      <div className="mt-16 pt-8 border-t">
-        <h3 className="text-2xl font-bold mb-6">Comments</h3>
+      <div className="mt-12 pt-8 border-t">
+        <div className="flex items-center justify-between mb-6">
+          <h3 className="text-2xl font-bold">Comments</h3>
+          {shareButton}
+        </div>
         <div className="p-6 bg-muted/50 rounded-lg border border-border/50">
           <p className="text-muted-foreground mb-4">
             Comments are temporarily unavailable.
@@ -94,8 +101,11 @@ export function Comments({ slug }: CommentsProps) {
   }
 
   return (
-    <div className="mt-16 pt-8 border-t">
-      <h3 className="text-2xl font-bold mb-6">Comments</h3>
+    <div className="mt-12 pt-8 border-t">
+      <div className="flex items-center justify-between mb-6">
+        <h3 className="text-2xl font-bold">Comments</h3>
+        {shareButton}
+      </div>
       <Giscus
         id="comments"
         repo={giscusRepo}

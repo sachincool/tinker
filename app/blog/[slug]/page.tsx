@@ -306,12 +306,7 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
               </div>
             </section>
 
-            {/* Share & Comments Section */}
-            <div className="flex items-center justify-between pt-6 border-t border-border/50">
-              <span className="text-sm text-muted-foreground">Share this post</span>
-              <ShareButton title={post.title} excerpt={post.excerpt} />
-            </div>
-            <Comments slug={slug} />
+            <Comments slug={slug} shareButton={<ShareButton title={post.title} excerpt={post.excerpt} />} />
           </div>
 
           <TableOfContents />
