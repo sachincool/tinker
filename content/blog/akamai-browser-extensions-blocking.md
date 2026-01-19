@@ -56,6 +56,7 @@ Some users reported User-Agent changes helped. I didn't test that. I also didn't
 WAF rules are aggressive by design. Your legitimate security tools look exactly like attack vectors because, well, they kind of are. The line between security researcher and threat actor is thinner than we'd like to admit.
 
 If you're getting blocked by Akamai with a clean IP:
+
 1. Check your extensions first, not your ISP
 2. VPN working temporarily? That's behavioral detection, not IP blocking
 3. The Client Reputation tool won't catch extension-based triggers

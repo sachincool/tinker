@@ -17,6 +17,7 @@ Our services kept having mystery outages. By the time we noticed, customers were
 ## Why Prometheus + Grafana?
 
 After trying CloudWatch, Datadog, and New Relic:
+
 - **Prometheus**: Open source, pull-based, perfect for Kubernetes
 - **Grafana**: Beautiful dashboards, free, integrates with everything
 - **Cost**: ~$0 (self-hosted) vs $500+/month for commercial solutions
@@ -399,6 +400,7 @@ storage:
 ```
 
 For longer retention, use:
+
 - **Thanos**: Distributed Prometheus
 - **Cortex**: Multi-tenant Prometheus as a service
 - **VictoriaMetrics**: Drop-in replacement, more efficient

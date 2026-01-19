@@ -63,6 +63,7 @@ Enable versioning on that S3 bucket. Trust me.
 **The Mistake:** One giant `main.tf` with 2000 lines. Good luck finding anything.
 
 **The Fix:** Break it up:
+
 - `main.tf` - Main resources
 - `variables.tf` - Input variables
 - `outputs.tf` - Output values
@@ -99,6 +100,7 @@ terraform {
 **The Mistake:** Running `terraform destroy` in the wrong terminal window. We've all been there.
 
 **The Fix:** 
+
 - Use workspace prefixes in your terminal
 - Add lifecycle prevent_destroy blocks:
 
@@ -118,6 +120,7 @@ resource "aws_instance" "critical" {
 Infrastructure as Code is powerful, but it's also dangerous. Treat your Terraform code like production code because it literally creates your production.
 
 My golden rules:
+
 1. Always use remote state
 2. Lock your provider versions
 3. Use modules for reusability

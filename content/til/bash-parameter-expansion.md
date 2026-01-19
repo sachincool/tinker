@@ -158,6 +158,7 @@ done
 ## Why This Matters
 
 In a script processing 10,000 files:
+
 - **With external commands**: ~5 minutes
 - **With parameter expansion**: ~10 seconds
 

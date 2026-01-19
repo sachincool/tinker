@@ -66,11 +66,13 @@ That was 30% of our traffic.
 ## What JA4 Actually Tells You
 
 JA4 fingerprints map to:
+
 - Browser + version + OS
 - HTTP client library + version + OS
 - Any TLS stack implementation
 
 Not to:
+
 - Individual users
 - Individual devices
 - Individual IP addresses
@@ -108,6 +110,7 @@ def record_request_metrics(request):
 ```
 
 Now we can see in Grafana:
+
 - "go-http-client suddenly went from 100k req/day to 1M" (scaling issue)
 - "chrome-119-macos dropped to zero" (browser update pushed)
 - "unknown fingerprint at 10k req/sec" (investigate this)
@@ -117,6 +120,7 @@ It's a classification dimension, not an identity.
 ## The a_b_c Format Actually Matters
 
 JA4 uses `a_b_c` format for a reason. The sections are:
+
 - `a`: protocol, TLS version, SNI, counts, ALPN
 - `b`: cipher hash
 - `c`: extension hash

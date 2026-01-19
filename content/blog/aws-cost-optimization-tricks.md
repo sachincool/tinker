@@ -15,6 +15,7 @@ Three months later, we're at $20,000/month with better performance. Here's how.
 ## The Starting Point
 
 Our monthly AWS bill:
+
 - **EC2**: $28,000
 - **RDS**: $12,000
 - **Data Transfer**: $6,000
@@ -87,6 +88,7 @@ aws ce get-reservation-purchase-recommendation \
 ```
 
 Bought RIs for:
+
 - 10 x `m5.large` (app servers)
 - 5 x `c5.xlarge` (API servers)
 
@@ -367,6 +369,7 @@ aws ec2 create-flow-logs \
 ```
 
 Found:
+
 - App servers pulling Docker images from external registries
 - Databases syncing across regions unnecessarily
 
@@ -540,6 +543,7 @@ resource "aws_budgets_budget" "monthly" {
 AWS cost optimization isn't a one-time thing. It's a continuous process.
 
 Our routine now:
+
 - Weekly review of new resources
 - Monthly cost analysis meeting
 - Quarterly deep-dive optimization

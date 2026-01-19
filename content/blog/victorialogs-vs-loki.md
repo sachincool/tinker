@@ -131,12 +131,14 @@ Using Locust with 10 concurrent users simulating production traffic, VictoriaLog
 ### When to Choose Each System
 
 **Choose VictoriaLogs if:**
+
 - Text search and grep-like queries are primary use cases
 - You need fast ad-hoc exploration of logs
 - Resource efficiency is critical
 - You want minimal operational overhead
 
 **Choose Loki if:**
+
 - Label-based queries dominate your workload
 - Deep Grafana ecosystem integration is essential
 - You have existing Loki infrastructure and workflows
@@ -146,6 +148,7 @@ Using Locust with 10 concurrent users simulating production traffic, VictoriaLog
 For text-search-heavy workloads, VictoriaLogs provides **order-of-magnitude faster queries** and **material cost savings**. The zero-tuning required approach makes it particularly attractive for teams wanting reliable log search without operational complexity.
 
 Our benchmarking revealed:
+
 - **94% lower query latencies** for full-text searches
 - **40% storage compression** over 7-day retention
 - **50% reduction in CPU/RAM consumption**

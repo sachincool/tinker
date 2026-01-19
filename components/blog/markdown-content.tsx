@@ -13,7 +13,13 @@ interface MarkdownContentProps {
 export function MarkdownContent({ content }: MarkdownContentProps) {
   const renderMarkdown = () => {
     const elements: React.ReactElement[] = [];
-    const paragraphs = content.split('\n\n');
+    // Split by code blocks first to preserve them, then by double newlines for text
+    const parts = content.split(/(```[\s\S]*?```)/g);
+    const paragraphs = parts.flatMap(part => 
+      part.startsWith('```') 
+        ? [part] 
+        : part.split('\n\n').filter(p => p.trim())
+    );
     let firstParagraphRendered = false;
 
     paragraphs.forEach((paragraph, index) => {

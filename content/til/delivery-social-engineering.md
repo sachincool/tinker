@@ -57,6 +57,7 @@ No order confirmation requested. No delivery tracking number asked for. No verif
 ## Real-World Impact
 
 This attack can be used for:
+
 - Physical surveillance and stalking
 - Burglary planning (knowing when someone is home)
 - Identity theft (address is often used for verification)
