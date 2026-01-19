@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Mail, Loader2, CheckCircle2, AlertCircle, Sparkles } from "lucide-react";
@@ -106,51 +107,62 @@ export function NewsletterForm({
     return (
       <div className={`relative overflow-hidden rounded-lg border bg-card p-6 ${className}`}>
         <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-purple-500/5 to-pink-500/5" />
-        <div className="relative space-y-4">
-          <div className="flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-purple-500" />
-            <h3 className="font-semibold text-lg">{title}</h3>
-          </div>
-          <p className="text-sm text-muted-foreground">{description}</p>
-          <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3">
-            <Input
-              type="email"
-              placeholder="wizard@infrastructure.magic"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              disabled={status === "loading" || status === "success"}
-              className="flex-1"
-              required
+        <div className="relative flex flex-col md:flex-row gap-6 items-center">
+          <div className="shrink-0">
+            <Image
+              src="/images/newsletter-wizard.png"
+              alt="Newsletter Wizard"
+              width={140}
+              height={140}
+              className="rounded-lg"
             />
-            <Button
-              type="submit"
-              disabled={status === "loading" || status === "success"}
-              className="group"
-            >
-              {status === "loading" ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Subscribing...
-                </>
-              ) : status === "success" ? (
-                <>
-                  <CheckCircle2 className="mr-2 h-4 w-4" />
-                  Subscribed!
-                </>
-              ) : (
-                <>
-                  <Mail className="mr-2 h-4 w-4 group-hover:scale-110 transition-transform" />
-                  Subscribe
-                </>
-              )}
-            </Button>
-          </form>
-          {status === "error" && (
-            <div className="flex items-center gap-2 text-sm text-red-500">
-              <AlertCircle className="h-4 w-4" />
-              {message}
+          </div>
+          <div className="flex-1 space-y-4">
+            <div className="flex items-center gap-2">
+              <Sparkles className="h-5 w-5 text-purple-500" />
+              <h3 className="font-semibold text-lg">{title}</h3>
             </div>
-          )}
+            <p className="text-sm text-muted-foreground">{description}</p>
+            <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3">
+              <Input
+                type="email"
+                placeholder="wizard@infrastructure.magic"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                disabled={status === "loading" || status === "success"}
+                className="flex-1"
+                required
+              />
+              <Button
+                type="submit"
+                disabled={status === "loading" || status === "success"}
+                className="group"
+              >
+                {status === "loading" ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Subscribing...
+                  </>
+                ) : status === "success" ? (
+                  <>
+                    <CheckCircle2 className="mr-2 h-4 w-4" />
+                    Subscribed!
+                  </>
+                ) : (
+                  <>
+                    <Mail className="mr-2 h-4 w-4 group-hover:scale-110 transition-transform" />
+                    Subscribe
+                  </>
+                )}
+              </Button>
+            </form>
+            {status === "error" && (
+              <div className="flex items-center gap-2 text-sm text-red-500">
+                <AlertCircle className="h-4 w-4" />
+                {message}
+              </div>
+            )}
+          </div>
         </div>
       </div>
     );
