@@ -258,7 +258,7 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
             </div>
 
             {/* Actions Section */}
-            <div className="flex items-center justify-end py-8 border-t border-border/50 bg-gradient-to-r from-muted/30 to-transparent rounded-lg px-6 shadow-sm">
+            <div className="flex items-center justify-end pt-6">
               <ShareButton title={post.title} excerpt={post.excerpt} />
             </div>
 
