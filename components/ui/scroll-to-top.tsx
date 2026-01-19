@@ -43,7 +43,7 @@ export function ScrollToTop() {
       size="icon"
       onClick={scrollToTop}
       className={cn(
-        "fixed bottom-8 right-8 z-50 h-12 w-12 rounded-full shadow-lg transition-all duration-300 hover:scale-110",
+        "fixed bottom-4 right-4 sm:bottom-8 sm:right-8 z-40 h-10 w-10 sm:h-12 sm:w-12 rounded-full shadow-lg transition-all duration-300 hover:scale-110",
         "bg-background/95 backdrop-blur border-2",
         isVisible
           ? "opacity-100 translate-y-0"
@@ -54,9 +54,8 @@ export function ScrollToTop() {
     >
       {/* Progress ring */}
       <svg
-        className="absolute inset-0 -rotate-90"
-        width="48"
-        height="48"
+        className="absolute inset-0 -rotate-90 h-10 w-10 sm:h-12 sm:w-12"
+        viewBox="0 0 48 48"
       >
         <circle
           cx="24"
@@ -80,7 +79,7 @@ export function ScrollToTop() {
           strokeLinecap="round"
         />
       </svg>
-      <ArrowUp className="h-5 w-5 relative z-10" />
+      <ArrowUp className="h-4 w-4 sm:h-5 sm:w-5 relative z-10" />
     </Button>
   );
 }
