@@ -446,7 +446,7 @@ resource "aws_budgets_budget" "monthly" {
 
 ## The Complete Checklist
 
-**Compute**
+### Compute
 
 - Rightsize EC2 instances based on actual usage
 - Use Reserved Instances for steady-state workloads
@@ -455,7 +455,7 @@ resource "aws_budgets_budget" "monthly" {
 - Use Auto Scaling (scale down when idle)
 - Consider Graviton instances (20-40% cheaper)
 
-**Storage**
+### Storage
 
 - Implement S3 lifecycle policies
 - Delete unused EBS volumes
@@ -464,7 +464,7 @@ resource "aws_budgets_budget" "monthly" {
 - Compress data before storing
 - Delete old snapshots
 
-**Database**
+### Database
 
 - Rightsize RDS instances
 - Use Aurora Serverless for variable workloads
@@ -473,7 +473,7 @@ resource "aws_budgets_budget" "monthly" {
 - Use read replicas efficiently
 - Enable Performance Insights (it's cheap)
 
-**Network**
+### Network
 
 - Consolidate NAT Gateways (if acceptable)
 - Use VPC Endpoints for AWS services
@@ -482,7 +482,7 @@ resource "aws_budgets_budget" "monthly" {
 - Use AWS Direct Connect for large transfers
 - Avoid cross-region data transfer
 
-**Monitoring**
+### Monitoring
 
 - Set CloudWatch Logs retention
 - Delete unused custom metrics
@@ -490,7 +490,7 @@ resource "aws_budgets_budget" "monthly" {
 - Consider alternative logging (CloudWatch is expensive)
 - Enable AWS Cost Anomaly Detection
 
-**General**
+### General
 
 - Tag everything for cost allocation
 - Set up AWS Budgets and alerts
@@ -501,20 +501,20 @@ resource "aws_budgets_budget" "monthly" {
 
 ## Tools That Help
 
-**Cost Analysis**
+### Cost Analysis
 
 - **AWS Cost Explorer**: Built-in, free
 - **CloudHealth**: Multi-cloud visibility
 - **CloudCheckr**: Deep analysis
 - **Komiser**: Open-source alternative
 
-**Automation**
+### Automation
 
 - **AWS Instance Scheduler**: Stop/start EC2 on schedule
 - **Cloud Custodian**: Policy-as-code for cleanup
 - **Terraform**: Infrastructure as code
 
-**Monitoring**
+### Monitoring
 
 - **AWS Cost Anomaly Detection**: Free, catches spikes
 - **CloudWatch**: Set up billing alarms
