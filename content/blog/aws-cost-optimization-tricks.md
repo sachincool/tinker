@@ -501,18 +501,21 @@ resource "aws_budgets_budget" "monthly" {
 
 ## Tools That Help
 
-### Cost Analysis
+**Cost Analysis**
+
 - **AWS Cost Explorer**: Built-in, free
 - **CloudHealth**: Multi-cloud visibility
 - **CloudCheckr**: Deep analysis
 - **Komiser**: Open-source alternative
 
-### Automation
+**Automation**
+
 - **AWS Instance Scheduler**: Stop/start EC2 on schedule
 - **Cloud Custodian**: Policy-as-code for cleanup
 - **Terraform**: Infrastructure as code
 
-### Monitoring
+**Monitoring**
+
 - **AWS Cost Anomaly Detection**: Free, catches spikes
 - **CloudWatch**: Set up billing alarms
 - **Datadog**: Unified monitoring + costs
