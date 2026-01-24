@@ -446,52 +446,58 @@ resource "aws_budgets_budget" "monthly" {
 
 ## The Complete Checklist
 
-### Compute
-- [ ] Rightsize EC2 instances based on actual usage
-- [ ] Use Reserved Instances for steady-state workloads
-- [ ] Use Spot Instances for fault-tolerant workloads
-- [ ] Stop/start non-production resources
-- [ ] Use Auto Scaling (scale down when idle)
-- [ ] Consider Graviton instances (20-40% cheaper)
+**Compute**
 
-### Storage
-- [ ] Implement S3 lifecycle policies
-- [ ] Delete unused EBS volumes
-- [ ] Use appropriate storage classes (IA, Glacier)
-- [ ] Enable S3 Intelligent-Tiering
-- [ ] Compress data before storing
-- [ ] Delete old snapshots
+- Rightsize EC2 instances based on actual usage
+- Use Reserved Instances for steady-state workloads
+- Use Spot Instances for fault-tolerant workloads
+- Stop/start non-production resources
+- Use Auto Scaling (scale down when idle)
+- Consider Graviton instances (20-40% cheaper)
 
-### Database
-- [ ] Rightsize RDS instances
-- [ ] Use Aurora Serverless for variable workloads
-- [ ] Enable automated backups cleanup
-- [ ] Consider RDS Reserved Instances
-- [ ] Use read replicas efficiently
-- [ ] Enable Performance Insights (it's cheap)
+**Storage**
 
-### Network
-- [ ] Consolidate NAT Gateways (if acceptable)
-- [ ] Use VPC Endpoints for AWS services
-- [ ] Enable CloudFront for static content
-- [ ] Review data transfer patterns
-- [ ] Use AWS Direct Connect for large transfers
-- [ ] Avoid cross-region data transfer
+- Implement S3 lifecycle policies
+- Delete unused EBS volumes
+- Use appropriate storage classes (IA, Glacier)
+- Enable S3 Intelligent-Tiering
+- Compress data before storing
+- Delete old snapshots
 
-### Monitoring
-- [ ] Set CloudWatch Logs retention
-- [ ] Delete unused custom metrics
-- [ ] Use metric filters sparingly
-- [ ] Consider alternative logging (CloudWatch is expensive)
-- [ ] Enable AWS Cost Anomaly Detection
+**Database**
 
-### General
-- [ ] Tag everything for cost allocation
-- [ ] Set up AWS Budgets and alerts
-- [ ] Review AWS Trusted Advisor weekly
-- [ ] Use AWS Cost Explorer regularly
-- [ ] Delete unused resources
-- [ ] Enable AWS Cost Optimization Hub
+- Rightsize RDS instances
+- Use Aurora Serverless for variable workloads
+- Enable automated backups cleanup
+- Consider RDS Reserved Instances
+- Use read replicas efficiently
+- Enable Performance Insights (it's cheap)
+
+**Network**
+
+- Consolidate NAT Gateways (if acceptable)
+- Use VPC Endpoints for AWS services
+- Enable CloudFront for static content
+- Review data transfer patterns
+- Use AWS Direct Connect for large transfers
+- Avoid cross-region data transfer
+
+**Monitoring**
+
+- Set CloudWatch Logs retention
+- Delete unused custom metrics
+- Use metric filters sparingly
+- Consider alternative logging (CloudWatch is expensive)
+- Enable AWS Cost Anomaly Detection
+
+**General**
+
+- Tag everything for cost allocation
+- Set up AWS Budgets and alerts
+- Review AWS Trusted Advisor weekly
+- Use AWS Cost Explorer regularly
+- Delete unused resources
+- Enable AWS Cost Optimization Hub
 
 ## Tools That Help
 
