@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { useTilCount } from "@/components/providers/til-count-provider";
 import { NewsletterForm } from "@/components/blog/newsletter-form";
+import ToptalBadge from "@/components/toptal-badge";
 
 export function Footer() {
   const tilCount = useTilCount();
@@ -46,6 +47,7 @@ export function Footer() {
             <p className="text-sm text-muted-foreground">
               Breaking production and fixing it before anyone notices since 2010.
             </p>
+            <ToptalBadge />
           </div>
 
           {/* Quick Links */}
