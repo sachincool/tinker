@@ -213,14 +213,13 @@ export function MarkdownContent({ content }: MarkdownContentProps) {
         if (match) {
           const [, alt, src] = match;
           elements.push(
-            <figure key={index} className="my-12 group">
-              <div className="relative overflow-hidden rounded-xl shadow-xl ring-1 ring-black/5 dark:ring-white/10 transition-all duration-300 hover:shadow-2xl hover:ring-blue-500/50">
+            <figure key={index} className="my-12">
+              <div className="relative overflow-hidden rounded-xl shadow-xl ring-1 ring-black/5 dark:ring-white/10">
                 <ImageLightbox
                   src={src}
                   alt={alt}
-                  className="w-full transition-transform duration-300 group-hover:scale-[1.02]"
+                  className="w-full"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
               </div>
               {alt && (
                 <figcaption className="text-center text-sm text-muted-foreground mt-5 italic font-medium border-t border-border/30 pt-3 px-4">
