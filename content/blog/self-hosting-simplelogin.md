@@ -609,18 +609,9 @@ Six things I wish I'd known before starting:
 
 5. **Pin your Postgres version.** Use `postgres:16`, not `postgres:latest`. A major version bump (16 to 17) on a container restart will break your data directory without a manual migration.
 
-6. **Use the `app` image, not `app-ci`.** SimpleLogin publishes both `simplelogin/app` and `simplelogin/app-ci`. The `app-ci` image is for their CI/CD pipeline. Use `simplelogin/app` with a specific version tag.
+6. **Use the app image, not app-ci.** SimpleLogin publishes both `simplelogin/app` and `simplelogin/app-ci`. The `app-ci` image is for their CI/CD pipeline. Use `simplelogin/app` with a specific version tag.
 
-## Testing Checklist
-
-Run through this before calling it done:
-
-- [ ] **Inbound:** Send an email to your alias from an external account. Does it arrive in your mailbox?
-- [ ] **Outbound:** Reply to that email from your mailbox. Does the recipient see your alias as the sender?
-- [ ] **New outbound:** Create a new email from your alias (not a reply). Does it send?
-- [ ] **Block test:** Block an alias and send to it. Does the sender get a bounce?
-- [ ] **Web UI:** Log into SimpleLogin, create a new alias. Does it work?
-- [ ] **Mail-tester:** Send an email to [mail-tester.com](https://www.mail-tester.com/) and check your score. Aim for 9/10+.
+## The Proof
 
 Here's what the full flow looks like in practice. Send a test email to your alias:
 
