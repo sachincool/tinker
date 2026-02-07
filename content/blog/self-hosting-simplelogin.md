@@ -138,7 +138,7 @@ Set this in your hosting provider's panel, not your DNS. It maps your IP back to
 
 > **Key Insight:** If you're using Cloudflare DNS, the A record for your mail subdomain **must** be set to "DNS only" (grey cloud). Cloudflare's proxy doesn't pass through SMTP traffic on port 25. Orange cloud = your MX record points to Cloudflare's proxy = mail delivery fails silently.
 
-![Cloudflare DNS panel showing all configured records](/images/self-hosting-simplelogin/dns-records.png)
+![Cloudflare DNS panel showing all configured records](/images/self-hosting-simplelogin/sl-dns-records.png)
 
 ### Verify Everything
 
@@ -173,7 +173,7 @@ Sign up at [brevo.com](https://www.brevo.com). Then:
 3. Note your SMTP login (it's your account email, not a generated username)
 4. Add and verify your domain under **Settings > Senders & Domains**
 
-![Brevo SMTP settings page](/images/self-hosting-simplelogin/brevo-smtp-settings.png)
+![Brevo SMTP settings page](/images/self-hosting-simplelogin/sl-brevo-smtp.png)
 
 Save the SMTP key. You'll need it for both the SimpleLogin env file and Postfix config.
 
@@ -328,7 +328,7 @@ docker run -d \
   python job_runner.py
 ```
 
-![Docker containers running healthily](/images/self-hosting-simplelogin/docker-containers.png)
+![Docker containers running healthily](/images/self-hosting-simplelogin/sl-docker-ps.png)
 
 Four containers. All running. But we're not done — Postfix is the piece that actually handles SMTP.
 
@@ -565,7 +565,7 @@ Restart the app container:
 docker restart sl-app
 ```
 
-![SimpleLogin dashboard with multiple aliases configured](/images/self-hosting-simplelogin/newletters.png)
+![SimpleLogin dashboard with multiple aliases configured](/images/self-hosting-simplelogin/sl-dashboard-aliases.png)
 
 Your instance. Your aliases. Your data.
 
@@ -624,31 +624,31 @@ Run through this before calling it done:
 
 Here's what the full flow looks like in practice. Send a test email to your alias:
 
-![Sending a test email to the SimpleLogin alias](/images/self-hosting-simplelogin/email1.png)
+![Sending a test email to the SimpleLogin alias](/images/self-hosting-simplelogin/sl-inbound-test.png)
 
 It arrives in your mailbox, forwarded through SimpleLogin. Check the headers — mailed by Brevo's relay, signed by your domain:
 
-![Forwarded email showing Brevo relay and domain signature in headers](/images/self-hosting-simplelogin/email2.png)
+![Forwarded email showing Brevo relay and domain signature in headers](/images/self-hosting-simplelogin/sl-forwarded-headers.png)
 
 Now the real test. Hit reply. The recipient should see your alias, not your real email:
 
-![Reply sent from the alias address](/images/self-hosting-simplelogin/reply.png)
+![Reply sent from the alias address](/images/self-hosting-simplelogin/sl-reply-from-alias.png)
 
 Check the headers on the reply. From: your alias. Signed-by: your domain. Your real address is nowhere in sight:
 
-![Reply headers confirming alias as sender with TLS encryption](/images/self-hosting-simplelogin/reply2.png)
+![Reply headers confirming alias as sender with TLS encryption](/images/self-hosting-simplelogin/sl-reply-headers.png)
 
 SimpleLogin's dashboard confirms the reply went through:
 
-![SimpleLogin dashboard showing successful reply activity on the alias](/images/self-hosting-simplelogin/reply-alias-sent.png)
+![SimpleLogin dashboard showing successful reply activity on the alias](/images/self-hosting-simplelogin/sl-reply-confirmed.png)
 
 ### Browser Extension Bonus
 
 SimpleLogin also ships a browser extension. Visit any site, click the icon, and create an alias on the fly — no need to open the dashboard:
 
-![SimpleLogin browser extension creating an alias on a website](/images/self-hosting-simplelogin/simple1.png)
+![SimpleLogin browser extension creating an alias on a website](/images/self-hosting-simplelogin/sl-browser-extension.png)
 
-![Browser extension showing existing aliases for the current site](/images/self-hosting-simplelogin/testing-simple.png)
+![Browser extension showing existing aliases for the current site](/images/self-hosting-simplelogin/sl-extension-aliases.png)
 
 ## Closing Thoughts
 
