@@ -162,9 +162,21 @@ dig -x 203.0.113.50 +short
 # Should return: sl.example.com.
 ```
 
-## Setting Up Brevo
+## Why Brevo? IP Reputation Is Everything
 
-Why a relay? Two reasons. First, sending email directly from a fresh VPS IP is a one-way ticket to spam folders. Gmail, Outlook, Yahoo — they all reject mail from IPs without established reputation. Second, Brevo's free tier gives you 300 emails/day. Unless you're running a newsletter, that's plenty.
+Before the setup steps — why can't we just send email directly from Postfix?
+
+You can. Technically. Postfix will happily relay outbound mail straight to Gmail, Outlook, Yahoo. The problem is they'll reject it, or worse, silently drop it into spam.
+
+Email deliverability lives and dies on IP reputation. Every IP address has a sender score built over months of legitimate sending. Gmail checks this before even looking at your SPF or DKIM records. A fresh Hetzner VPS IP has zero reputation. To the big providers, zero reputation looks identical to a spammer who just spun up a throwaway server.
+
+Building reputation from scratch takes weeks of carefully metered sending, warming up the IP with small volumes, and hoping you don't hit a blacklist along the way. For a personal alias service sending maybe 10 emails a day, it's not worth the effort.
+
+Brevo solves this. Your Postfix hands outbound mail to Brevo's SMTP relay. Brevo sends it from their infrastructure — IPs with years of established reputation, proper feedback loops with major providers, and dedicated deliverability teams keeping those IPs clean. Your email arrives in inboxes, not spam folders.
+
+The free tier gives you 300 emails/day. For personal aliases, that's more than enough.
+
+## Setting Up Brevo
 
 Sign up at [brevo.com](https://www.brevo.com). Then:
 
