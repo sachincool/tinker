@@ -106,7 +106,7 @@ jobs:
               body: JSON.stringify({
                 subject,
                 body,
-                status: "draft",  // TODO: change to "about_to_send" after testing
+                status: "about_to_send",
               }),
             });
 
