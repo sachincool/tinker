@@ -1,22 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-
-const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
-const RATE_LIMIT = 5;
-const RATE_LIMIT_WINDOW = 60 * 60 * 1000;
-
-function checkRateLimit(ip: string): boolean {
-  const now = Date.now();
-  const record = rateLimitMap.get(ip);
-  
-  if (!record || now > record.resetTime) {
-    rateLimitMap.set(ip, { count: 1, resetTime: now + RATE_LIMIT_WINDOW });
-    return true;
-  }
-  
-  if (record.count >= RATE_LIMIT) return false;
-  record.count++;
-  return true;
-}
+import { verifyTurnstileToken } from '@/lib/turnstile';
 
 function isValidEmail(email: string): boolean {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -25,20 +8,34 @@ function isValidEmail(email: string): boolean {
 
 export async function POST(request: NextRequest) {
   try {
-    const ip = request.headers.get('x-forwarded-for') || 
-               request.headers.get('x-real-ip') || 
-               'unknown';
-    
-    if (!checkRateLimit(ip)) {
+    const body = await request.json();
+    const { email, turnstileToken, website } = body;
+
+    // Honeypot: bots fill hidden fields, humans don't
+    if (website) {
       return NextResponse.json(
-        { error: 'Too many requests. Please try again later.' },
-        { status: 429 }
+        { message: 'Successfully subscribed! Check your email to confirm.' },
+        { status: 200 }
       );
     }
 
-    const body = await request.json();
-    const { email } = body;
+    // Turnstile verification
+    if (!turnstileToken) {
+      return NextResponse.json(
+        { error: 'Bot verification required. Please try again.' },
+        { status: 400 }
+      );
+    }
 
+    const turnstileResult = await verifyTurnstileToken(turnstileToken);
+    if (!turnstileResult.success) {
+      return NextResponse.json(
+        { error: turnstileResult.error || 'Bot verification failed.' },
+        { status: 403 }
+      );
+    }
+
+    // Email validation
     if (!email || !isValidEmail(email)) {
       return NextResponse.json(
         { error: 'Please enter a valid email address.' },
@@ -69,14 +66,14 @@ export async function POST(request: NextRequest) {
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      
+
       if (response.status === 400 && errorData.email) {
         return NextResponse.json(
           { error: "You're already subscribed! Check your inbox." },
           { status: 400 }
         );
       }
-      
+
       console.error('Buttondown API error:', errorData);
       return NextResponse.json(
         { error: 'Failed to subscribe. Please try again.' },
