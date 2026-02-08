@@ -48,3 +48,6 @@ Thumbs.db
 *.bundle
 .vercel
 .env.local
+
+# serena
+.serena/

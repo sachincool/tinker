@@ -18,7 +18,19 @@
       "WebFetch(domain:developers.cloudflare.com)",
       "Bash(git add:*)",
       "Bash(git commit:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(ls:*)",
+      "WebFetch(domain:docs.buttondown.com)",
+      "mcp__plugin_serena_serena__check_onboarding_performed",
+      "mcp__plugin_serena_serena__activate_project",
+      "mcp__plugin_serena_serena__onboarding",
+      "mcp__plugin_serena_serena__find_file",
+      "mcp__plugin_serena_serena__read_file",
+      "mcp__plugin_serena_serena__think_about_collected_information",
+      "mcp__plugin_serena_serena__write_memory",
+      "mcp__plugin_serena_serena__think_about_whether_you_are_done",
+      "Bash(gh run list:*)",
+      "Bash(git -C /Users/bluebox/projects/blogs reset:*)"
     ],
     "deny": [],
     "ask": []
