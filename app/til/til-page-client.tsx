@@ -10,6 +10,7 @@ import { Search, Calendar, Lightbulb, ExternalLink, Sparkles, Zap } from "lucide
 import Link from "next/link";
 import { useDebounce } from "@/hooks/use-debounce";
 import { type Post } from "@/lib/posts";
+import { motion, AnimatePresence } from "motion/react";
 
 interface TILPageClientProps {
   initialTils: Post[];
@@ -106,7 +107,15 @@ export default function TILPageClient({ initialTils }: TILPageClientProps) {
       {/* Results count */}
       {(debouncedSearchQuery || selectedTag !== "all") && (
         <div className="text-sm text-muted-foreground">
-          Found {filteredTils.length} TIL{filteredTils.length !== 1 ? 's' : ''}
+          Found{" "}
+          <motion.span
+            key={filteredTils.length}
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.3 }}
+          >
+            {filteredTils.length} TIL{filteredTils.length !== 1 ? 's' : ''}
+          </motion.span>
           {debouncedSearchQuery && ` matching "${debouncedSearchQuery}"`}
           {selectedTag !== "all" && ` in ${selectedTag}`}
         </div>
@@ -114,77 +123,105 @@ export default function TILPageClient({ initialTils }: TILPageClientProps) {
 
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card className="hover:shadow-lg transition-all duration-300 hover:-translate-y-1 group cursor-default">
-          <CardContent className="pt-6 text-center">
-            <Zap className="h-6 w-6 mx-auto mb-2 text-yellow-500 group-hover:scale-110 transition-transform" />
-            <div className="text-3xl font-bold bg-gradient-to-r from-yellow-500 to-orange-500 bg-clip-text text-transparent">{initialTils.length}</div>
-            <p className="text-xs text-muted-foreground mt-1">Total TILs</p>
-          </CardContent>
-        </Card>
-        <Card className="hover:shadow-lg transition-all duration-300 hover:-translate-y-1 group cursor-default">
-          <CardContent className="pt-6 text-center">
-            <Sparkles className="h-6 w-6 mx-auto mb-2 text-orange-500 group-hover:scale-110 transition-transform" />
-            <div className="text-3xl font-bold bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">{filteredTils.length}</div>
-            <p className="text-xs text-muted-foreground mt-1">Showing</p>
-          </CardContent>
-        </Card>
-        <Card className="hover:shadow-lg transition-all duration-300 hover:-translate-y-1 group cursor-default">
-          <CardContent className="pt-6 text-center">
-            <Lightbulb className="h-6 w-6 mx-auto mb-2 text-red-500 group-hover:scale-110 transition-transform" />
-            <div className="text-3xl font-bold bg-gradient-to-r from-red-500 to-pink-500 bg-clip-text text-transparent">{new Set(initialTils.flatMap(t => t.tags)).size}</div>
-            <p className="text-xs text-muted-foreground mt-1">Different topics</p>
-          </CardContent>
-        </Card>
+        <motion.div
+          initial={{ opacity: 0, y: 20, scale: 0.95 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ delay: 0, duration: 0.5 }}
+        >
+          <Card className="hover:shadow-lg transition-all duration-300 hover:-translate-y-1 group cursor-default">
+            <CardContent className="pt-6 text-center">
+              <Zap className="h-6 w-6 mx-auto mb-2 text-yellow-500 group-hover:scale-110 transition-transform" />
+              <div className="text-3xl font-bold bg-gradient-to-r from-yellow-500 to-orange-500 bg-clip-text text-transparent">{initialTils.length}</div>
+              <p className="text-xs text-muted-foreground mt-1">Total TILs</p>
+            </CardContent>
+          </Card>
+        </motion.div>
+        <motion.div
+          initial={{ opacity: 0, y: 20, scale: 0.95 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ delay: 0.1, duration: 0.5 }}
+        >
+          <Card className="hover:shadow-lg transition-all duration-300 hover:-translate-y-1 group cursor-default">
+            <CardContent className="pt-6 text-center">
+              <Sparkles className="h-6 w-6 mx-auto mb-2 text-orange-500 group-hover:scale-110 transition-transform" />
+              <div className="text-3xl font-bold bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">{filteredTils.length}</div>
+              <p className="text-xs text-muted-foreground mt-1">Showing</p>
+            </CardContent>
+          </Card>
+        </motion.div>
+        <motion.div
+          initial={{ opacity: 0, y: 20, scale: 0.95 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ delay: 0.2, duration: 0.5 }}
+        >
+          <Card className="hover:shadow-lg transition-all duration-300 hover:-translate-y-1 group cursor-default">
+            <CardContent className="pt-6 text-center">
+              <Lightbulb className="h-6 w-6 mx-auto mb-2 text-red-500 group-hover:scale-110 transition-transform" />
+              <div className="text-3xl font-bold bg-gradient-to-r from-red-500 to-pink-500 bg-clip-text text-transparent">{new Set(initialTils.flatMap(t => t.tags)).size}</div>
+              <p className="text-xs text-muted-foreground mt-1">Different topics</p>
+            </CardContent>
+          </Card>
+        </motion.div>
       </div>
 
       {/* TIL Grid */}
       {filteredTils.length > 0 ? (
-        <div className="grid gap-6">
-          {filteredTils.map((til) => (
-          <Card key={til.slug} className="hover:shadow-lg transition-all duration-300 hover:-translate-y-1 group border-l-4 border-l-yellow-500">
-            <CardHeader>
-              <div className="flex items-start justify-between">
-                <div className="space-y-2 flex-1">
-                  <CardTitle className="text-lg flex items-center gap-2 group-hover:text-yellow-600 transition-colors">
-                    <Lightbulb className="h-4 w-4 text-yellow-500 group-hover:animate-pulse" />
-                    <Link href={`/til/${til.slug}`} className="hover:text-yellow-600 transition-colors">
-                      {til.title}
-                    </Link>
-                  </CardTitle>
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Calendar className="h-3 w-3" />
-                    <span>{new Date(til.date).toLocaleDateString('en-US', { 
-                      year: 'numeric', 
-                      month: 'long', 
-                      day: 'numeric' 
-                    })}</span>
-                  </div>
-                </div>
-                <Button variant="ghost" size="sm" asChild>
-                  <Link href={`/til/${til.slug}`}>
-                    <ExternalLink className="h-4 w-4" />
-                  </Link>
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground mb-4 leading-relaxed">
-                {til.excerpt || til.content.substring(0, 200) + '...'}
-              </p>
-              
-              <div className="flex flex-wrap gap-2">
-                {til.tags.map((tag) => (
-                  <Link key={tag} href={`/tags/${tag}`}>
-                    <Badge variant="outline" className="hover:bg-yellow-100 hover:text-yellow-800 dark:hover:bg-yellow-900 transition-colors text-xs cursor-pointer">
-                      {tag}
-                    </Badge>
-                  </Link>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-          ))}
-        </div>
+        <AnimatePresence mode="wait">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {filteredTils.map((til, index) => (
+              <motion.div
+                key={til.slug}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ delay: Math.min(index * 0.05, 0.5), duration: 0.3 }}
+              >
+                <Card className="hover:shadow-lg transition-all duration-300 hover:-translate-y-1 group border-l-4 border-l-yellow-500 h-full">
+                  <CardHeader>
+                    <div className="flex items-start justify-between">
+                      <div className="space-y-2 flex-1">
+                        <CardTitle className="text-lg flex items-center gap-2 group-hover:text-yellow-600 transition-colors">
+                          <Lightbulb className="h-4 w-4 text-yellow-500 group-hover:animate-pulse" />
+                          <Link href={`/til/${til.slug}`} className="hover:text-yellow-600 transition-colors">
+                            {til.title}
+                          </Link>
+                        </CardTitle>
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <Calendar className="h-3 w-3" />
+                          <span>{new Date(til.date).toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                          })}</span>
+                        </div>
+                      </div>
+                      <Button variant="ghost" size="sm" asChild>
+                        <Link href={`/til/${til.slug}`}>
+                          <ExternalLink className="h-4 w-4" />
+                        </Link>
+                      </Button>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-muted-foreground mb-4 leading-relaxed">
+                      {til.excerpt || til.content.substring(0, 200) + '...'}
+                    </p>
+
+                    <div className="flex flex-wrap gap-2">
+                      {til.tags.map((tag) => (
+                        <Link key={tag} href={`/tags/${tag}`}>
+                          <Badge variant="outline" className="hover:bg-yellow-100 hover:text-yellow-800 dark:hover:bg-yellow-900 transition-colors text-xs cursor-pointer">
+                            {tag}
+                          </Badge>
+                        </Link>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+        </AnimatePresence>
       ) : (
         <Card className="p-12 text-center">
           <div className="space-y-4">

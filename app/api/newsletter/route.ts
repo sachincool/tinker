@@ -74,6 +74,13 @@ export async function POST(request: NextRequest) {
         );
       }
 
+      if (errorData.code === 'subscriber_suppressed') {
+        return NextResponse.json(
+          { error: 'This email was previously unsubscribed. Please use a different email or contact me to re-enable your subscription.' },
+          { status: 409 }
+        );
+      }
+
       console.error('Buttondown API error:', errorData);
       return NextResponse.json(
         { error: 'Failed to subscribe. Please try again.' },

@@ -33,7 +33,15 @@
       "Bash(git -C /Users/bluebox/projects/blogs reset:*)",
       "mcp__plugin_serena_serena__read_memory",
       "mcp__plugin_serena_serena__find_symbol",
-      "mcp__plugin_serena_serena__get_symbols_overview"
+      "mcp__plugin_serena_serena__get_symbols_overview",
+      "mcp__plugin_serena_serena__search_for_pattern",
+      "mcp__plugin_serena_serena__think_about_task_adherence",
+      "mcp__plugin_serena_serena__replace_content",
+      "Bash(npx next build:*)",
+      "Bash(for type in blocked complained unsubscribed removed)",
+      "Bash(do echo \"=== $type ===\")",
+      "Bash(python3:*)",
+      "Bash(done)"
     ],
     "deny": [],
     "ask": []
