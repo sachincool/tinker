@@ -30,7 +30,10 @@
       "mcp__plugin_serena_serena__write_memory",
       "mcp__plugin_serena_serena__think_about_whether_you_are_done",
       "Bash(gh run list:*)",
-      "Bash(git -C /Users/bluebox/projects/blogs reset:*)"
+      "Bash(git -C /Users/bluebox/projects/blogs reset:*)",
+      "mcp__plugin_serena_serena__read_memory",
+      "mcp__plugin_serena_serena__find_symbol",
+      "mcp__plugin_serena_serena__get_symbols_overview"
     ],
     "deny": [],
     "ask": []
