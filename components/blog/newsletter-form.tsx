@@ -37,7 +37,7 @@ export function NewsletterForm({
       callback: (token: string) => setTurnstileToken(token),
       "error-callback": () => setTurnstileToken(null),
       "expired-callback": () => setTurnstileToken(null),
-      size: "invisible",
+      size: "flexible",
       theme: "auto",
     });
   }, []);
