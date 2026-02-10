@@ -278,7 +278,7 @@ export default function ResumePage() {
             <Button size="lg" asChild className="group relative overflow-hidden">
               <a href="/Harshit_Resume.pdf" download>
                 <motion.div
-                  className="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-purple-600/20"
+                  className="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-purple-600/20 pointer-events-none"
                   animate={{ scale: [1, 1.2, 1], opacity: [0.5, 0.8, 0.5] }}
                   transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
                 />
@@ -316,7 +316,7 @@ export default function ResumePage() {
             <motion.div key={stat.label} variants={itemVariants}>
               <Card className="text-center hover:shadow-lg transition-all hover:-translate-y-1 group cursor-default relative overflow-hidden">
                 <motion.div
-                  className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-purple-500/5 to-pink-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                  className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-purple-500/5 to-pink-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
                 />
                 <CardContent className="pt-6 pb-4 relative z-10">
                   <div className={`inline-flex p-3 rounded-xl bg-gradient-to-br ${stat.color} mb-3`}>
@@ -415,7 +415,7 @@ export default function ResumePage() {
 
                 <Card className="hover:shadow-lg transition-all hover:-translate-y-0.5 group overflow-hidden">
                   <motion.div
-                    className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-purple-500/5 to-pink-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                    className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-purple-500/5 to-pink-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
                   />
                   <CardHeader className="relative z-10">
                     <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
@@ -488,7 +488,7 @@ export default function ResumePage() {
             <motion.div key={category.label} variants={itemVariants}>
               <Card className="h-full hover:shadow-lg transition-all hover:-translate-y-0.5 group overflow-hidden">
                 <motion.div
-                  className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-purple-500/5 to-pink-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                  className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-purple-500/5 to-pink-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
                 />
                 <CardHeader className="pb-3 relative z-10">
                   <CardTitle className="flex items-center gap-2 text-base">
@@ -637,7 +637,7 @@ export default function ResumePage() {
         <Card className="bg-gradient-to-br from-blue-500/10 via-purple-500/10 to-pink-500/10 border-2 relative overflow-hidden">
           {/* Floating decorative elements */}
           <motion.div
-            className="absolute top-6 right-8 text-5xl text-purple-500/10 font-serif"
+            className="absolute top-6 right-8 text-5xl text-purple-500/10 font-serif pointer-events-none"
             animate={{ y: [0, -8, 0], opacity: [0.1, 0.2, 0.1] }}
             transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
           >
@@ -682,7 +682,7 @@ export default function ResumePage() {
                 <Button asChild size="lg" className="relative overflow-hidden group">
                   <a href="mailto:root@harshit.cloud">
                     <motion.div
-                      className="absolute inset-0 bg-gradient-to-r from-blue-600/30 to-purple-600/30"
+                      className="absolute inset-0 bg-gradient-to-r from-blue-600/30 to-purple-600/30 pointer-events-none"
                       animate={{ scale: [1, 1.5, 1], opacity: [0.3, 0.6, 0.3] }}
                       transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
                     />
