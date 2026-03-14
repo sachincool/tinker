@@ -12,7 +12,6 @@ import {
 import { Separator } from '@/components/ui/separator';
 import {
 	BookOpen,
-	Calendar,
 	Code2,
 	Coffee,
 	FileText,
@@ -729,16 +728,6 @@ export default function AboutPageClient() {
 								viewport={{ once: true }}
 								transition={{ delay: 0.3, duration: 0.4 }}
 							>
-								<Button asChild size="lg" variant="outline">
-									<a
-										href="https://meet.harshit.cloud"
-										target="_blank"
-										rel="noopener noreferrer"
-									>
-										<Calendar className="mr-2 h-5 w-5" />
-										Schedule a meeting
-									</a>
-								</Button>
 							</motion.div>
 							<motion.div
 								initial={{ opacity: 0, scale: 0.9 }}

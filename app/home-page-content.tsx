@@ -17,7 +17,6 @@ import {
   Rocket,
   Code2,
   TrendingUp,
-  Calendar
 } from "lucide-react";
 import { type Post } from "@/lib/posts";
 import ResendCube from "@/components/blog/resend-cube";
@@ -104,12 +103,6 @@ export default function HomePageContent({ latestPosts, tilCount }: HomePageConte
                   Browse TILs
                   <Sparkles className="ml-2 h-4 w-4 group-hover:rotate-12 transition-transform" />
                 </Link>
-              </Button>
-              <Button asChild size="lg" variant="secondary" className="group">
-                <a href="https://meet.harshit.cloud" target="_blank" rel="noopener noreferrer">
-                  <Calendar className="mr-2 h-5 w-5" />
-                  Schedule a Meeting
-                </a>
               </Button>
             </div>
           </div>
