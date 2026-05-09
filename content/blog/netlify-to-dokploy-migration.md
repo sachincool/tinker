@@ -22,7 +22,7 @@ Five sites down:
 
 Netlify moved legacy free tier users to their new 300-credit plan. I burned through it in a week.
 
-![Netlify upgrade notice](/images/netlify-to-dokploy-migration/dokploy_upgrade_netlify.png)
+![Netlify upgrade notice](/images/netlify-to-dokploy-migration/dokploy_upgrade_netlify.webp)
 
 New option: $9/month for 1000 credits, or figure something else out.
 

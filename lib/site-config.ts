@@ -1,16 +1,18 @@
-// Get the site URL dynamically based on environment or fallback
+// Production canonical for build-time metadata (Vercel previews shouldn't leak into canonicals)
+const PRODUCTION_SITE_URL = 'https://harshit.cloud';
+
 function getSiteUrl(): string {
-  // In production, use the environment variable or detect from request
   if (process.env.NEXT_PUBLIC_SITE_URL) {
     return process.env.NEXT_PUBLIC_SITE_URL;
   }
-  
-  // Fallback for different environments
-  if (process.env.VERCEL_URL) {
-    return `https://${process.env.VERCEL_URL}`;
+
+  // On Vercel (any environment), pin canonical to production domain to avoid
+  // preview URLs becoming canonical for harshit.cloud / tinker.expert.
+  if (process.env.VERCEL) {
+    return PRODUCTION_SITE_URL;
   }
-  
-  // Default fallback (development)
+
+  // Local development
   return 'http://localhost:3000';
 }
 
@@ -33,25 +35,20 @@ export const siteConfig = {
 
 // Helper to get the current domain dynamically (for use in server components)
 export function getCurrentDomain(hostname?: string): string {
-  // If hostname is provided (from headers), use it
   if (hostname) {
-    // Always use https in production
     if (hostname.includes('localhost')) {
       return `http://${hostname}`;
     }
     return `https://${hostname}`;
   }
-  
-  // Fallback: check environment variable first
+
   if (process.env.NEXT_PUBLIC_SITE_URL) {
     return process.env.NEXT_PUBLIC_SITE_URL;
   }
-  
-  // Last resort: use Vercel URL (but this means headers failed)
-  if (process.env.VERCEL_URL) {
-    return `https://${process.env.VERCEL_URL}`;
+
+  if (process.env.VERCEL) {
+    return PRODUCTION_SITE_URL;
   }
-  
-  // Development fallback
+
   return 'http://localhost:3000';
 }

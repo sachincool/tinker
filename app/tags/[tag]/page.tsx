@@ -16,26 +16,50 @@ export async function generateMetadata({
   const { tag: tagParam } = await params;
   const tag = decodeURIComponent(tagParam);
   const posts = getPostsByTag(tag);
-  
+
   const headersList = await headers();
   const hostname = headersList.get('host') || '';
   const baseUrl = getCurrentDomain(hostname);
   const tagUrl = `${baseUrl}/tags/${encodeURIComponent(tag)}`;
 
+  const count = posts.length;
+  const blogCount = posts.filter(p => p.type === 'blog').length;
+  const tilCount = posts.filter(p => p.type === 'til').length;
+
+  const breakdown = blogCount && tilCount
+    ? `${blogCount} blog post${blogCount !== 1 ? 's' : ''} and ${tilCount} TIL note${tilCount !== 1 ? 's' : ''}`
+    : blogCount
+      ? `${blogCount} in-depth blog post${blogCount !== 1 ? 's' : ''}`
+      : `${tilCount} TIL note${tilCount !== 1 ? 's' : ''}`;
+
+  const titlePreview = posts
+    .slice(0, 3)
+    .map(p => p.title)
+    .filter(Boolean)
+    .join(' · ');
+
+  const description = count
+    ? `Explore ${breakdown} on #${tag} — DevOps, Kubernetes, infrastructure, and production war stories from the Infra Magician's digital garden.${titlePreview ? ` Featuring: ${titlePreview}.` : ''}`
+    : `Articles, notes, and tutorials on #${tag} from the Infra Magician's digital garden — DevOps, Kubernetes, infrastructure, and production engineering insights.`;
+
+  const trimmed = description.length > 158
+    ? description.slice(0, description.lastIndexOf(' ', 155)).replace(/[,;:.\s]+$/, '') + '…'
+    : description;
+
   return {
-    title: `#${tag} | ${siteConfig.author.name}`,
-    description: `${posts.length} post${posts.length !== 1 ? 's' : ''} tagged with #${tag}. Browse all content about ${tag}.`,
+    title: `#${tag}`,
+    description: trimmed,
     openGraph: {
-      title: `#${tag} | ${siteConfig.author.name}`,
-      description: `${posts.length} post${posts.length !== 1 ? 's' : ''} tagged with #${tag}. Browse all content about ${tag}.`,
+      title: `#${tag} — ${siteConfig.title}`,
+      description: trimmed,
       type: 'website',
       url: tagUrl,
       siteName: siteConfig.title,
     },
     twitter: {
       card: 'summary',
-      title: `#${tag} | ${siteConfig.author.name}`,
-      description: `${posts.length} post${posts.length !== 1 ? 's' : ''} tagged with #${tag}.`,
+      title: `#${tag} — ${siteConfig.title}`,
+      description: trimmed,
     },
     alternates: {
       canonical: tagUrl,

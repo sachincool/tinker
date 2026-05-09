@@ -33,7 +33,7 @@ export async function generateMetadata({
   const tilUrl = `${baseUrl}/til/${id}`;
 
   return {
-    title: `TIL: ${til.title} | ${siteConfig.author.name}`,
+    title: `TIL: ${til.title}`,
     description: til.excerpt || til.title,
     keywords: til.tags,
     authors: [{ name: siteConfig.author.name, url: baseUrl }],
