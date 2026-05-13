@@ -2,7 +2,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Network } from "lucide-react";
 import Link from "next/link";
-import { GraphView } from "@/components/blog/graph-view";
+import GraphView from "@/components/blog/graph-view-lazy";
 import { getAllPosts, getAllTags } from "@/lib/posts";
 import type { Metadata } from "next";
 import { siteConfig, getCurrentDomain } from "@/lib/site-config";

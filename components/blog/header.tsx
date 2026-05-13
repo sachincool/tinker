@@ -41,9 +41,11 @@ export function Header() {
           <Link href="/" className="flex items-center space-x-3 group">
             <div className="relative h-12 w-12 transition-transform group-hover:scale-105 rounded-full overflow-hidden">
               <img
-                src="/logo/infra-magician-clean.png"
+                src="/logo/infra-magician-clean.webp"
                 alt="Infra Magician Logo"
                 className="h-full w-full object-cover scale-[1.55] drop-shadow-[0_0_10px_rgba(139,92,246,0.5)]"
+                width={48}
+                height={48}
               />
             </div>
             <div className="flex flex-col">

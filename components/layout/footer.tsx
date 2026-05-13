@@ -31,7 +31,7 @@ export function Footer() {
             <Link href="/" className="flex items-center gap-3 group w-fit">
               <div className="relative h-16 w-16 transition-all group-hover:scale-105 rounded-full overflow-hidden">
                 <Image
-                  src="/logo/infra-magician-clean.png"
+                  src="/logo/infra-magician-clean.webp"
                   alt="Infra Magician Logo"
                   width={64}
                   height={64}

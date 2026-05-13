@@ -1,14 +1,13 @@
 @import "tailwindcss";
 @import "tw-animate-css";
-@import "highlight.js/styles/github-dark.css";
 
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-inter), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, 'Cascadia Mono', monospace;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -137,24 +136,19 @@ html {
 }
 
 body {
-  font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: var(--font-sans);
   letter-spacing: -0.01em;
   line-height: 1.6;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
 }
 
-/* Typography improvements */
 h1, h2, h3, h4, h5, h6 {
   letter-spacing: -0.02em;
   font-weight: 600;
   line-height: 1.2;
 }
 
-/* Smooth transitions */
-* {
-  transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
-}
-
-/* Code blocks styling */
 code {
   @apply bg-muted px-1.5 py-0.5 rounded text-sm font-mono;
 }
@@ -163,19 +157,8 @@ pre code {
   @apply bg-transparent p-0;
 }
 
-/* Link hover effects */
 a {
   @apply transition-colors duration-200;
-}
-
-/* Card hover effects */
-.card-hover {
-  @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
-}
-
-/* Gradient text */
-.gradient-text {
-  @apply bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent;
 }
 
 /* Custom scrollbar */
@@ -227,7 +210,12 @@ a {
 }
 
 .prose p {
-  @apply text-lg leading-relaxed mb-6 text-foreground/90;
+  @apply text-base md:text-lg leading-relaxed mb-6 text-foreground/90;
+  text-wrap: pretty;
+}
+
+.prose h1, .prose h2, .prose h3 {
+  text-wrap: balance;
 }
 
 .prose a {
@@ -267,7 +255,7 @@ a {
 }
 
 .prose li {
-  @apply text-lg leading-relaxed;
+  @apply text-base md:text-lg leading-relaxed;
 }
 
 .prose li > p {
@@ -279,7 +267,7 @@ a {
 }
 
 .prose img {
-  @apply rounded-lg my-8 shadow-lg;
+  @apply rounded-md my-8 border border-border/60;
 }
 
 .prose table {
@@ -294,16 +282,7 @@ a {
   @apply p-3 border border-border;
 }
 
-/* Animation utilities */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.animate-fade-in {
-  animation: fadeIn 0.5s ease-out;
-}
-
+/* Animations used by home page only */
 @keyframes float {
   0%, 100% { transform: translateY(0px); }
   50% { transform: translateY(-20px); }
@@ -354,25 +333,6 @@ a {
 .animate-gradient-xy {
   background-size: 400% 400%;
   animation: gradient-xy 15s ease infinite;
-}
-
-/* Glass effect */
-.glass {
-  @apply bg-background/80 backdrop-blur-sm border border-border/50;
-}
-
-/* Perspective for 3D transforms */
-.perspective-1000 {
-  perspective: 1000px;
-}
-
-/* Tinkerer/Anime themed accents */
-.accent-glow {
-  box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
-}
-
-.neon-text {
-  text-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
 }
 
 /* Mobile optimizations */
@@ -469,80 +429,7 @@ html, body {
   }
 }
 
-/* Shimmer effect for loading states */
-@keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
-}
-
-.animate-shimmer {
-  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.05) 50%, transparent 100%);
-  background-size: 200% 100%;
-  animation: shimmer 2s ease-in-out infinite;
-}
-
-/* Glow pulse effect */
-@keyframes glow-pulse {
-  0%, 100% { box-shadow: 0 0 5px rgba(139, 92, 246, 0.3); }
-  50% { box-shadow: 0 0 20px rgba(139, 92, 246, 0.6), 0 0 40px rgba(139, 92, 246, 0.2); }
-}
-
-.animate-glow-pulse {
-  animation: glow-pulse 3s ease-in-out infinite;
-}
-
-/* Slide in from left */
-@keyframes slide-in-left {
-  from { opacity: 0; transform: translateX(-30px); }
-  to { opacity: 1; transform: translateX(0); }
-}
-
-/* Slide in from right */
-@keyframes slide-in-right {
-  from { opacity: 0; transform: translateX(30px); }
-  to { opacity: 1; transform: translateX(0); }
-}
-
-.animate-slide-in-left {
-  animation: slide-in-left 0.5s ease-out;
-}
-
-.animate-slide-in-right {
-  animation: slide-in-right 0.5s ease-out;
-}
-
-/* Scale in */
-@keyframes scale-in {
-  from { opacity: 0; transform: scale(0.9); }
-  to { opacity: 1; transform: scale(1); }
-}
-
-.animate-scale-in {
-  animation: scale-in 0.4s ease-out;
-}
-
-/* Rotating gradient border */
-@keyframes rotate-gradient {
-  0% { --gradient-angle: 0deg; }
-  100% { --gradient-angle: 360deg; }
-}
-
-/* Subtle background grain texture */
-.bg-grain {
-  position: relative;
-}
-
-.bg-grain::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  opacity: 0.03;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-  pointer-events: none;
-  z-index: 1;
-}
-
-/* Performance optimizations */
+/* Respect prefers-reduced-motion */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

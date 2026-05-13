@@ -19,8 +19,17 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { type Post } from "@/lib/posts";
-import ResendCube from "@/components/blog/resend-cube";
+import dynamic from "next/dynamic";
 import { NewsletterForm } from "@/components/blog/newsletter-form";
+
+const ResendCube = dynamic(() => import("@/components/blog/resend-cube"), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full h-full flex items-center justify-center text-muted-foreground/40 text-sm">
+      Loading cube…
+    </div>
+  ),
+});
 import ScrollReveal from "@/components/animations/scroll-reveal";
 import AnimatedCounter from "@/components/animations/animated-counter";
 
@@ -108,9 +117,9 @@ export default function HomePageContent({ latestPosts, tilCount }: HomePageConte
           </div>
         </div>
 
-        {/* 3D Cube - Centered below text */}
+        {/* Rubik's cube - Centered below text */}
         <div className="mt-12 flex justify-center px-4">
-          <div className="w-full max-w-[450px] aspect-square relative" style={{ mixBlendMode: "lighten" }}>
+          <div className="w-full max-w-[450px] aspect-square relative">
             <ResendCube />
           </div>
         </div>

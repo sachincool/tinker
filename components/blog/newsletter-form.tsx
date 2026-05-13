@@ -190,7 +190,7 @@ export function NewsletterForm({
         <div className="relative flex flex-col md:flex-row gap-6 items-center">
           <div className="shrink-0">
             <Image
-              src="/images/newsletter-wizard.png"
+              src="/images/newsletter-wizard.webp"
               alt="Newsletter Wizard"
               width={140}
               height={140}

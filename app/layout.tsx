@@ -5,10 +5,7 @@ import { ThemeProvider } from '@/components/theme-provider'
 import { Header } from '@/components/blog/header'
 import { Footer } from '@/components/layout/footer'
 import { Toaster } from '@/components/ui/sonner'
-import { KonamiCode } from '@/components/easter-eggs/konami-code'
-import { ConsoleMessage } from '@/components/easter-eggs/console-message'
-import { ScrollToTop } from '@/components/ui/scroll-to-top'
-import { KeyboardShortcuts } from '@/components/keyboard-shortcuts'
+import { ClientExtras } from '@/components/layout/client-extras'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import { siteConfig } from '@/lib/site-config'
@@ -160,10 +157,7 @@ export default function RootLayout({
               </main>
               <Footer />
             </div>
-            <KonamiCode />
-            <ConsoleMessage />
-            <ScrollToTop />
-            <KeyboardShortcuts />
+            <ClientExtras />
             <Toaster />
             <Analytics />
             <SpeedInsights />

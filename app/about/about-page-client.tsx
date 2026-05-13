@@ -259,7 +259,7 @@ export default function AboutPageClient() {
 							/>
 							<div className="relative">
 								<Image
-									src="/images/workspace-setup.jpg"
+									src="/images/workspace-setup.webp"
 									alt="My workspace setup with multiple monitors and tech equipment"
 									width={600}
 									height={400}
