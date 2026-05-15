@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EKS · ArgoCD hub-spoke · Personal lab</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0F1419;
+      --bg-2: #131C2C;
+      --panel: #1B2533;
+      --panel-2: #232F3E;
+      --rule: rgba(255, 255, 255, 0.08);
+      --ink: #E6EDF3;
+      --ink-dim: #8B949E;
+      --ink-faint: #5A6473;
+      /* AWS service category accents */
+      --aws-orange: #FF9900;
+      --aws-orange-deep: #EC7211;
+      --aws-purple: #8C4FFF;
+      --aws-green: #5DEAA0;
+      --aws-pink: #E7157B;
+      --aws-blue: #00A1C9;
+      --font: 'JetBrains Mono', ui-monospace, monospace;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { background: var(--bg); color: var(--ink); font-family: var(--font); min-height: 100vh; }
+    body { background: radial-gradient(ellipse at top, var(--bg-2) 0%, var(--bg) 70%); padding: 2rem 1.5rem 3rem; }
+
+    .container { max-width: 1320px; margin: 0 auto; }
+
+    /* ============= HEADER ============= */
+    .top-bar {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 0.625rem 1rem;
+      border: 1px solid var(--rule);
+      border-radius: 4px;
+      font-size: 0.7rem; letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--ink-dim);
+      margin-bottom: 2rem;
+      background: linear-gradient(180deg, rgba(255, 153, 0, 0.04), transparent);
+    }
+    .top-bar .brand { color: var(--aws-orange); font-weight: 700; letter-spacing: 0.22em; }
+    .top-bar .brand::before { content: '▶'; margin-right: 0.5rem; color: var(--aws-orange-deep); }
+    .top-bar .meta { display: flex; gap: 1.25rem; }
+    .top-bar .meta span { color: var(--ink-dim); }
+    .top-bar .meta span b { color: var(--ink); font-weight: 500; }
+
+    .hero { margin-bottom: 2.25rem; }
+    .hero .eyebrow {
+      font-size: 0.7rem; color: var(--aws-orange);
+      letter-spacing: 0.32em; text-transform: uppercase; font-weight: 600;
+      margin-bottom: 0.625rem;
+    }
+    h1 {
+      font-family: var(--font);
+      font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      line-height: 1.1;
+      color: var(--ink);
+      margin-bottom: 0.625rem;
+    }
+    h1 .accent { color: var(--aws-orange); }
+    .hero .subtitle {
+      color: var(--ink-dim);
+      font-size: 0.875rem;
+      max-width: 76ch;
+      line-height: 1.6;
+    }
+
+    /* ============= TOPOLOGY ROW ============= */
+    .topology {
+      display: grid;
+      grid-template-columns: 1.1fr 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+      position: relative;
+    }
+    @media (max-width: 980px) { .topology { grid-template-columns: 1fr; } }
+
+    .vpc {
+      position: relative;
+      background: var(--panel);
+      border: 1px solid var(--rule);
+      border-radius: 6px;
+      padding: 0;
+      overflow: hidden;
+    }
+    .vpc.hub {
+      border-color: rgba(255, 153, 0, 0.45);
+      box-shadow: inset 0 0 0 1px rgba(255, 153, 0, 0.10);
+    }
+    .vpc.hub::before {
+      /* glowing top edge */
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, var(--aws-orange-deep), var(--aws-orange), var(--aws-orange-deep));
+      box-shadow: 0 0 12px rgba(255, 153, 0, 0.45);
+    }
+    .vpc.spoke::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--aws-purple), transparent);
+      opacity: 0.55;
+    }
+
+    .vpc-head {
+      padding: 0.875rem 1rem 0.75rem;
+      border-bottom: 1px solid var(--rule);
+      background: linear-gradient(180deg, rgba(0,0,0,0.20), transparent);
+    }
+    .vpc-head .role {
+      display: inline-block;
+      font-size: 0.55rem;
+      font-weight: 700;
+      letter-spacing: 0.24em;
+      padding: 0.2rem 0.5rem;
+      border-radius: 2px;
+      margin-bottom: 0.5rem;
+    }
+    .vpc.hub .role { color: var(--aws-orange); border: 1px solid rgba(255, 153, 0, 0.50); background: rgba(255, 153, 0, 0.06); }
+    .vpc.spoke .role { color: var(--aws-purple); border: 1px solid rgba(140, 79, 255, 0.50); background: rgba(140, 79, 255, 0.06); }
+
+    .vpc-head .name {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--ink);
+      letter-spacing: -0.01em;
+      margin-bottom: 0.2rem;
+    }
+    .vpc-head .region {
+      display: flex; align-items: center; justify-content: space-between;
+      font-size: 0.72rem;
+      color: var(--ink-dim);
+    }
+    .vpc-head .region .cidr {
+      color: var(--ink);
+      letter-spacing: 0.04em;
+    }
+
+    .vpc-body { padding: 0.875rem 1rem 1rem; display: flex; flex-direction: column; gap: 0.625rem; }
+
+    .service {
+      display: flex; align-items: flex-start; gap: 0.625rem;
+      padding: 0.625rem 0.75rem;
+      background: var(--bg-2);
+      border: 1px solid var(--rule);
+      border-radius: 4px;
+      position: relative;
+    }
+    .service::before {
+      content: '';
+      position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+      border-radius: 4px 0 0 4px;
+    }
+    .service.compute::before { background: var(--aws-orange); }
+    .service.scaling::before { background: var(--aws-green); }
+    .service.workload::before { background: var(--aws-blue); }
+    .service.gitops::before { background: var(--aws-pink); }
+    .service.observ::before { background: var(--aws-green); }
+
+    .service .ico {
+      width: 28px; height: 28px;
+      border-radius: 4px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.78rem; font-weight: 700;
+      flex-shrink: 0;
+      margin-top: 0.1rem;
+    }
+    .service.compute .ico { background: rgba(255, 153, 0, 0.12); color: var(--aws-orange); border: 1px solid rgba(255, 153, 0, 0.30); }
+    .service.scaling .ico { background: rgba(93, 234, 160, 0.10); color: var(--aws-green); border: 1px solid rgba(93, 234, 160, 0.30); }
+    .service.workload .ico { background: rgba(0, 161, 201, 0.10); color: var(--aws-blue); border: 1px solid rgba(0, 161, 201, 0.30); }
+    .service.gitops .ico { background: rgba(231, 21, 123, 0.10); color: var(--aws-pink); border: 1px solid rgba(231, 21, 123, 0.30); }
+
+    .service .meta { display: flex; flex-direction: column; gap: 0.1rem; min-width: 0; }
+    .service .title { font-size: 0.78rem; font-weight: 600; color: var(--ink); letter-spacing: -0.005em; }
+    .service .sub { font-size: 0.66rem; color: var(--ink-dim); line-height: 1.4; word-break: break-word; }
+
+    /* ============= HUB-SPOKE ARROWS (overlaid) ============= */
+    .arrows {
+      position: relative;
+      height: 0;
+      margin-top: -0.75rem;
+      margin-bottom: 0.75rem;
+      pointer-events: none;
+    }
+    .arrows svg { width: 100%; height: 56px; display: block; }
+
+    /* ============= OBSERVABILITY STRIP ============= */
+    .obs {
+      background: var(--panel);
+      border: 1px solid var(--rule);
+      border-radius: 6px;
+      padding: 1rem 1.25rem;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 1.25rem;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      border-left: 3px solid var(--aws-green);
+    }
+    .obs .label {
+      font-size: 0.55rem; font-weight: 700;
+      color: var(--aws-green);
+      letter-spacing: 0.24em;
+      padding: 0.3rem 0.5rem;
+      border: 1px solid rgba(93, 234, 160, 0.40);
+      border-radius: 2px;
+      background: rgba(93, 234, 160, 0.06);
+      white-space: nowrap;
+    }
+    .obs .pipeline {
+      display: flex; align-items: center; gap: 0.875rem; flex-wrap: wrap;
+      font-size: 0.78rem; color: var(--ink);
+    }
+    .obs .pipeline .node {
+      padding: 0.4rem 0.75rem;
+      background: var(--bg-2);
+      border: 1px solid var(--rule);
+      border-radius: 4px;
+      font-weight: 600;
+    }
+    .obs .pipeline .arrow { color: var(--aws-green); font-size: 1rem; }
+    .obs .pipeline .pager { color: var(--ink-dim); font-size: 0.7rem; letter-spacing: 0.1em; }
+    .obs .meta { font-size: 0.66rem; color: var(--ink-dim); text-align: right; line-height: 1.5; }
+    .obs .meta b { color: var(--ink); }
+
+    /* ============= LEGEND ============= */
+    .legend {
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--rule);
+      display: flex; flex-wrap: wrap; gap: 1.5rem; align-items: center;
+      font-size: 0.7rem; color: var(--ink-dim);
+    }
+    .legend .label { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.24em; text-transform: uppercase; color: var(--ink-dim); }
+    .legend .item { display: inline-flex; align-items: center; gap: 0.5rem; }
+    .legend .swatch { width: 14px; height: 10px; border-radius: 2px; border: 1px solid var(--rule); }
+    .legend .swatch.compute { background: rgba(255, 153, 0, 0.18); border-color: var(--aws-orange); }
+    .legend .swatch.net { background: rgba(140, 79, 255, 0.18); border-color: var(--aws-purple); }
+    .legend .swatch.obs { background: rgba(93, 234, 160, 0.18); border-color: var(--aws-green); }
+    .legend .swatch.gitops { background: rgba(231, 21, 123, 0.18); border-color: var(--aws-pink); }
+    .legend .swatch.workload { background: rgba(0, 161, 201, 0.18); border-color: var(--aws-blue); }
+
+    .footer {
+      margin-top: 1.5rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--rule);
+      display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem;
+      font-size: 0.6rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-faint);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <header class="top-bar">
+      <span class="brand">re:Invent · architecture</span>
+      <div class="meta">
+        <span>account · <b>prod</b></span>
+        <span>regions · <b>3</b></span>
+        <span>workloads · <b>~150</b></span>
+        <span>services · <b>~40</b></span>
+      </div>
+    </header>
+
+    <section class="hero">
+      <p class="eyebrow">EKS · ArgoCD · App-of-Apps</p>
+      <h1>Multi-cluster <span class="accent">hub-spoke</span> sync on Personal lab</h1>
+      <p class="subtitle">One ArgoCD instance in us-east-2 reconciles desired state for two spoke clusters in ap-south-1 and eu-west-1. Karpenter handles compute on every cluster; KEDA drives the agent-orchestrator workload. New Relic and Zenduty close the loop.</p>
+    </section>
+
+    <!-- ============= TOPOLOGY ============= -->
+    <main class="topology">
+
+      <!-- HUB: us-east-2 -->
+      <article class="vpc hub">
+        <header class="vpc-head">
+          <span class="role">▲ HUB · CONTROL PLANE</span>
+          <div class="name">prod-master</div>
+          <div class="region"><span>us-east-2</span><span class="cidr">10.0.0.0/16</span></div>
+        </header>
+        <div class="vpc-body">
+          <div class="service gitops">
+            <div class="ico">G</div>
+            <div class="meta">
+              <span class="title">ArgoCD</span>
+              <span class="sub">App-of-Apps · application-controller · repo-server · server</span>
+            </div>
+          </div>
+          <div class="service compute">
+            <div class="ico">K</div>
+            <div class="meta">
+              <span class="title">Karpenter</span>
+              <span class="sub">NodePool: spot + on-demand</span>
+            </div>
+          </div>
+          <div class="service scaling">
+            <div class="ico">⤢</div>
+            <div class="meta">
+              <span class="title">KEDA</span>
+              <span class="sub">ScaledObject → agent-orchestrator</span>
+            </div>
+          </div>
+          <div class="service workload">
+            <div class="ico">W</div>
+            <div class="meta">
+              <span class="title">Workloads</span>
+              <span class="sub">~15 microservices · agent-orchestrator · control-api · workflow-runner</span>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- SPOKE: ap-south-1 -->
+      <article class="vpc spoke">
+        <header class="vpc-head">
+          <span class="role">SPOKE · APAC</span>
+          <div class="name">prod-india</div>
+          <div class="region"><span>ap-south-1</span><span class="cidr">10.10.0.0/16</span></div>
+        </header>
+        <div class="vpc-body">
+          <div class="service gitops">
+            <div class="ico">⇆</div>
+            <div class="meta">
+              <span class="title">argocd-agent (sync target)</span>
+              <span class="sub">receives App-of-Apps manifests from hub</span>
+            </div>
+          </div>
+          <div class="service compute">
+            <div class="ico">K</div>
+            <div class="meta">
+              <span class="title">Karpenter</span>
+              <span class="sub">NodePool: spot + on-demand</span>
+            </div>
+          </div>
+          <div class="service scaling">
+            <div class="ico">⤢</div>
+            <div class="meta">
+              <span class="title">KEDA</span>
+              <span class="sub">ScaledObject → agent-orchestrator</span>
+            </div>
+          </div>
+          <div class="service workload">
+            <div class="ico">W</div>
+            <div class="meta">
+              <span class="title">Workloads</span>
+              <span class="sub">~13 microservices · regional replicas of core services</span>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- SPOKE: eu-west-1 -->
+      <article class="vpc spoke">
+        <header class="vpc-head">
+          <span class="role">SPOKE · EMEA</span>
+          <div class="name">prod-eu</div>
+          <div class="region"><span>eu-west-1</span><span class="cidr">10.20.0.0/16</span></div>
+        </header>
+        <div class="vpc-body">
+          <div class="service gitops">
+            <div class="ico">⇆</div>
+            <div class="meta">
+              <span class="title">argocd-agent (sync target)</span>
+              <span class="sub">receives App-of-Apps manifests from hub</span>
+            </div>
+          </div>
+          <div class="service compute">
+            <div class="ico">K</div>
+            <div class="meta">
+              <span class="title">Karpenter</span>
+              <span class="sub">NodePool: spot + on-demand</span>
+            </div>
+          </div>
+          <div class="service scaling">
+            <div class="ico">⤢</div>
+            <div class="meta">
+              <span class="title">KEDA</span>
+              <span class="sub">ScaledObject → agent-orchestrator</span>
+            </div>
+          </div>
+          <div class="service workload">
+            <div class="ico">W</div>
+            <div class="meta">
+              <span class="title">Workloads</span>
+              <span class="sub">~12 microservices · regional replicas of core services</span>
+            </div>
+          </div>
+        </div>
+      </article>
+    </main>
+
+    <!-- ============= HUB → SPOKE ARROWS ============= -->
+    <div class="arrows" aria-hidden="true">
+      <svg viewBox="0 0 1200 56" preserveAspectRatio="none">
+        <defs>
+          <marker id="r-arr" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+            <polygon points="0 0, 8 3, 0 6" fill="#FF9900"/>
+          </marker>
+        </defs>
+        <path d="M 240 0 C 240 28, 520 28, 520 56" fill="none" stroke="#FF9900" stroke-width="1.4" stroke-dasharray="5,4" marker-end="url(#r-arr)" opacity="0.75"/>
+        <path d="M 240 0 C 240 28, 880 28, 880 56" fill="none" stroke="#FF9900" stroke-width="1.4" stroke-dasharray="5,4" marker-end="url(#r-arr)" opacity="0.75"/>
+        <text x="528" y="20" fill="#FF9900" font-family="JetBrains Mono, monospace" font-size="9" font-weight="700" letter-spacing="0.18em" text-anchor="middle">SYNC</text>
+        <text x="864" y="20" fill="#FF9900" font-family="JetBrains Mono, monospace" font-size="9" font-weight="700" letter-spacing="0.18em" text-anchor="middle">SYNC</text>
+      </svg>
+    </div>
+
+    <!-- ============= OBSERVABILITY STRIP ============= -->
+    <section class="obs">
+      <span class="label">OBSERVABILITY · OPS</span>
+      <div class="pipeline">
+        <span class="node">3× newrelic-agent</span>
+        <span class="arrow">→</span>
+        <span class="node">New Relic · single account</span>
+        <span class="arrow">→</span>
+        <span class="node">Zenduty</span>
+        <span class="arrow">→</span>
+        <span class="pager">▌ ON-CALL</span>
+      </div>
+      <div class="meta">DaemonSets on all 3 clusters<br/><b>APM + infra + k8s events</b></div>
+    </section>
+
+    <!-- ============= LEGEND ============= -->
+    <div class="legend">
+      <span class="label">LEGEND</span>
+      <span class="item"><span class="swatch compute"></span> Compute · Karpenter</span>
+      <span class="item"><span class="swatch net"></span> Networking · VPC</span>
+      <span class="item"><span class="swatch workload"></span> Workloads · services</span>
+      <span class="item"><span class="swatch obs"></span> Observability · NR + Zenduty</span>
+      <span class="item"><span class="swatch gitops"></span> GitOps · ArgoCD</span>
+    </div>
+
+    <footer class="footer">
+      <span>lab · eks · argocd hub-spoke</span>
+      <span>trial 1 · hand-authored AWS re:Invent dark</span>
+    </footer>
+
+  </div>
+</body>
+</html>

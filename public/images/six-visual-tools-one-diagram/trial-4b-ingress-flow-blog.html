@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fig · Request flow through Istio ingress</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0a0a;
+      --surface: #131313;
+      --rule: rgba(255, 255, 255, 0.08);
+      --rule-bright: rgba(255, 255, 255, 0.18);
+      --ink: #f0f0f0;
+      --ink-dim: #888;
+      --ink-faint: #555;
+      --emerald: #00ff95;
+      --emerald-dim: rgba(0, 255, 149, 0.50);
+      --amber: #ffb800;
+      --amber-dim: rgba(255, 184, 0, 0.50);
+      --font-display: 'Instrument Serif', serif;
+      --font-body: 'Space Grotesk', system-ui, sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    /* Demo page background — actual blog would not include this */
+    html, body { background: #fafaf7; min-height: 100vh; font-family: var(--font-body); }
+    body { padding: 4rem 1.5rem; display: flex; justify-content: center; align-items: flex-start; }
+
+    /* ============ FIGURE — the actual blog asset ============ */
+    figure.flow-figure {
+      max-width: 760px; width: 100%;
+      background: var(--bg);
+      border: 1px solid #1f1f1f;
+      border-radius: 8px;
+      padding: 1.5rem 1.25rem 1.25rem;
+      color: var(--ink);
+      font-family: var(--font-body);
+    }
+
+    .figure-head {
+      display: flex; justify-content: space-between; align-items: baseline;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--rule);
+    }
+    .figure-head .num {
+      font-family: var(--font-mono);
+      font-size: 0.62rem; letter-spacing: 0.24em; text-transform: uppercase;
+      color: var(--ink-faint);
+    }
+    .figure-head .title {
+      font-family: var(--font-display);
+      font-size: 1.1rem; font-style: italic;
+      color: var(--ink-dim);
+      font-weight: 400;
+    }
+
+    svg.flow {
+      width: 100%; display: block;
+    }
+
+    .hop-name { font-family: var(--font-body); font-size: 10px; font-weight: 600; fill: var(--ink); letter-spacing: -0.005em; }
+    .hop-kind { font-family: var(--font-mono); font-size: 7px; fill: var(--ink-dim); letter-spacing: 0.06em; }
+    .hop-role { font-family: var(--font-mono); font-size: 7px; fill: var(--ink-faint); letter-spacing: 0.04em; }
+
+    .hop-body { fill: var(--surface); stroke: var(--rule-bright); stroke-width: 1; }
+    .hop-glyph { fill: none; stroke: var(--ink-dim); stroke-width: 1.2; }
+    .hop-dot { fill: var(--ink-dim); }
+
+    .wire-fwd { stroke: var(--rule-bright); stroke-width: 1; fill: none; }
+    .wire-rtn { stroke: var(--rule); stroke-width: 1; fill: none; stroke-dasharray: 4,4; }
+
+    figcaption {
+      margin-top: 1rem; padding-top: 0.875rem;
+      border-top: 1px solid var(--rule);
+      font-family: var(--font-mono);
+      font-size: 0.7rem; line-height: 1.6;
+      color: var(--ink-dim);
+      display: flex; justify-content: space-between; gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+    figcaption .text { flex: 1; min-width: 240px; }
+    figcaption .text .emph { color: var(--ink); }
+    figcaption .legend {
+      display: flex; gap: 0.875rem; align-items: center; flex-shrink: 0;
+      font-size: 0.62rem; letter-spacing: 0.08em;
+    }
+    figcaption .legend .swatch { display: inline-flex; align-items: center; gap: 0.4rem; }
+    figcaption .legend .dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; }
+    figcaption .legend .dot.emerald { background: var(--emerald); box-shadow: 0 0 4px var(--emerald-dim); }
+    figcaption .legend .dot.amber { background: var(--amber); box-shadow: 0 0 4px var(--amber-dim); border-radius: 1px; width: 8px; height: 8px; }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+      .packet { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <figure class="flow-figure">
+
+    <header class="figure-head">
+      <span class="num">Fig. 1</span>
+      <span class="title">Request lifecycle</span>
+    </header>
+
+    <svg class="flow" viewBox="0 0 720 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Request flow from client through NLB, Istio gateway, virtual service, destination rule, kubernetes service, to backend pod">
+      <defs>
+        <path id="fwdPath" d="M 60 140 H 660" fill="none"/>
+        <path id="rtnPath" d="M 660 178 H 60" fill="none"/>
+        <marker id="amberArrow" markerWidth="6" markerHeight="5" refX="5" refY="2.5" orient="auto">
+          <polygon points="0 0, 6 2.5, 0 5" fill="#ffb800"/>
+        </marker>
+      </defs>
+
+      <!-- Wires -->
+      <line class="wire-fwd" x1="60" y1="140" x2="660" y2="140"/>
+      <line class="wire-rtn" x1="660" y1="178" x2="60" y2="178" marker-end="url(#amberArrow)"/>
+
+      <!-- Tiny phase markers -->
+      <text x="360" y="132" class="hop-kind" text-anchor="middle" fill="#3f3f3f">REQUEST →</text>
+      <text x="360" y="194" class="hop-kind" text-anchor="middle" fill="#3f3f3f">← RESPONSE</text>
+
+      <!-- HOP 1 · CLIENT (x=60) -->
+      <g class="hop" transform="translate(60, 140)">
+        <text class="hop-kind" x="0" y="-66" text-anchor="middle">EXTERNAL</text>
+        <text class="hop-name" x="0" y="-52" text-anchor="middle">Client</text>
+        <rect class="hop-body" x="-22" y="-40" width="44" height="32" rx="3"/>
+        <line x1="-22" y1="-32" x2="22" y2="-32" stroke="rgba(255,255,255,0.10)" stroke-width="1"/>
+        <circle class="hop-dot" cx="-17" cy="-36" r="1"/>
+        <circle class="hop-dot" cx="-13" cy="-36" r="1"/>
+        <circle class="hop-dot" cx="-9" cy="-36" r="1"/>
+        <path class="hop-glyph" d="M -5 -25 L 4 -21 L -1 -19 L -1 -14 Z" fill="rgba(255,255,255,0.12)" stroke-width="0.8"/>
+        <text class="hop-role" x="0" y="60" text-anchor="middle">HTTP/2 · TLS</text>
+      </g>
+
+      <!-- HOP 2 · NLB (x=160) -->
+      <g class="hop" transform="translate(160, 140)">
+        <text class="hop-kind" x="0" y="-66" text-anchor="middle">AWS · L4</text>
+        <text class="hop-name" x="0" y="-52" text-anchor="middle">Network LB</text>
+        <polygon class="hop-body" points="-22,-40 22,-40 30,-24 22,-8 -22,-8 -30,-24"/>
+        <path class="hop-glyph" d="M -10 -32 L 4 -24 L -10 -16"/>
+        <circle class="hop-dot" cx="14" cy="-24" r="1.8"/>
+        <text class="hop-role" x="0" y="60" text-anchor="middle">TCP passthrough</text>
+      </g>
+
+      <!-- HOP 3 · ISTIO GATEWAY (x=260) -->
+      <g class="hop" transform="translate(260, 140)">
+        <text class="hop-kind" x="0" y="-66" text-anchor="middle">kind: Gateway</text>
+        <text class="hop-name" x="0" y="-52" text-anchor="middle">IngressGateway</text>
+        <polygon class="hop-body" points="-22,-40 22,-40 30,-24 22,-8 -22,-8 -30,-24"/>
+        <polygon class="hop-glyph" points="-11,-33 11,-33 15,-24 11,-15 -11,-15 -15,-24"/>
+        <circle class="hop-dot" cx="0" cy="-24" r="2"/>
+        <circle class="hop-dot" cx="-8" cy="-28" r="1"/>
+        <circle class="hop-dot" cx="8" cy="-28" r="1"/>
+        <circle class="hop-dot" cx="-8" cy="-20" r="1"/>
+        <circle class="hop-dot" cx="8" cy="-20" r="1"/>
+        <text class="hop-role" x="0" y="60" text-anchor="middle">envoy · TLS term</text>
+      </g>
+
+      <!-- HOP 4 · VIRTUAL SERVICE (x=360) -->
+      <g class="hop" transform="translate(360, 140)">
+        <text class="hop-kind" x="0" y="-66" text-anchor="middle">kind: VirtualService</text>
+        <text class="hop-name" x="0" y="-52" text-anchor="middle">VirtualService</text>
+        <rect class="hop-body" x="-22" y="-40" width="44" height="32" rx="3"/>
+        <line class="hop-glyph" x1="-14" y1="-24" x2="-2" y2="-24"/>
+        <line class="hop-glyph" x1="-2" y1="-24" x2="12" y2="-34"/>
+        <line class="hop-glyph" x1="-2" y1="-24" x2="12" y2="-24"/>
+        <line class="hop-glyph" x1="-2" y1="-24" x2="12" y2="-14"/>
+        <circle class="hop-dot" cx="-14" cy="-24" r="1.4"/>
+        <circle class="hop-dot" cx="12" cy="-34" r="1.4"/>
+        <circle class="hop-dot" cx="12" cy="-24" r="1.4"/>
+        <circle class="hop-dot" cx="12" cy="-14" r="1.4"/>
+        <text class="hop-role" x="0" y="60" text-anchor="middle">host · path · rewrite</text>
+      </g>
+
+      <!-- HOP 5 · DESTINATION RULE (x=460) -->
+      <g class="hop" transform="translate(460, 140)">
+        <text class="hop-kind" x="0" y="-66" text-anchor="middle">kind: DestinationRule</text>
+        <text class="hop-name" x="0" y="-52" text-anchor="middle">DestinationRule</text>
+        <rect class="hop-body" x="-22" y="-40" width="44" height="32" rx="3"/>
+        <path class="hop-glyph" d="M -13 -34 L 13 -34 L 4 -22 L 4 -14 L -4 -14 L -4 -22 Z"/>
+        <circle class="hop-dot" cx="-9" cy="-31" r="1"/>
+        <circle class="hop-dot" cx="0" cy="-31" r="1"/>
+        <circle class="hop-dot" cx="9" cy="-31" r="1"/>
+        <text class="hop-role" x="0" y="60" text-anchor="middle">subsets · mTLS</text>
+      </g>
+
+      <!-- HOP 6 · K8S SERVICE (x=560) -->
+      <g class="hop" transform="translate(560, 140)">
+        <text class="hop-kind" x="0" y="-66" text-anchor="middle">kind: Service</text>
+        <text class="hop-name" x="0" y="-52" text-anchor="middle">Service</text>
+        <circle class="hop-body" cx="0" cy="-24" r="18"/>
+        <g class="hop-glyph">
+          <line x1="0" y1="-40" x2="0" y2="-34"/>
+          <line x1="10" y1="-35" x2="6" y2="-31"/>
+          <line x1="14" y1="-24" x2="8" y2="-24"/>
+          <line x1="10" y1="-13" x2="6" y2="-17"/>
+          <line x1="0" y1="-8" x2="0" y2="-14"/>
+          <line x1="-10" y1="-13" x2="-6" y2="-17"/>
+          <line x1="-14" y1="-24" x2="-8" y2="-24"/>
+          <line x1="-10" y1="-35" x2="-6" y2="-31"/>
+        </g>
+        <circle class="hop-glyph" cx="0" cy="-24" r="4" fill="none"/>
+        <text class="hop-role" x="0" y="60" text-anchor="middle">ClusterIP</text>
+      </g>
+
+      <!-- HOP 7 · POD (x=660) -->
+      <g class="hop" transform="translate(660, 140)">
+        <text class="hop-kind" x="0" y="-66" text-anchor="middle">kind: Pod</text>
+        <text class="hop-name" x="0" y="-52" text-anchor="middle">Backend Pod</text>
+        <rect class="hop-body" x="-22" y="-42" width="44" height="11" rx="2"/>
+        <rect class="hop-body" x="-22" y="-29" width="44" height="11" rx="2"/>
+        <rect class="hop-body" x="-22" y="-16" width="44" height="11" rx="2"/>
+        <rect x="-18" y="-39" width="4" height="4" fill="rgba(255,255,255,0.20)"/>
+        <rect x="-18" y="-26" width="4" height="4" fill="rgba(255,255,255,0.20)"/>
+        <rect x="-18" y="-13" width="4" height="4" fill="rgba(255,255,255,0.20)"/>
+        <text class="hop-glyph" x="16" y="-33" font-family="JetBrains Mono, monospace" font-size="6" fill="#888" text-anchor="end">×3</text>
+        <text class="hop-role" x="0" y="60" text-anchor="middle">replica · :8080</text>
+      </g>
+
+      <!-- ============ ANIMATED PACKETS ============ -->
+      <circle class="packet" r="4" fill="#00ff95" style="filter: drop-shadow(0 0 5px #00ff95);">
+        <animateMotion dur="5s" repeatCount="indefinite" begin="0s">
+          <mpath href="#fwdPath"/>
+        </animateMotion>
+      </circle>
+      <circle class="packet" r="4" fill="#00ff95" style="filter: drop-shadow(0 0 5px #00ff95);">
+        <animateMotion dur="5s" repeatCount="indefinite" begin="2s">
+          <mpath href="#fwdPath"/>
+        </animateMotion>
+      </circle>
+
+      <rect class="packet" x="-3.5" y="-3.5" width="7" height="7" fill="#ffb800" rx="1" style="filter: drop-shadow(0 0 4px #ffb800);">
+        <animateMotion dur="5s" repeatCount="indefinite" begin="1.5s">
+          <mpath href="#rtnPath"/>
+        </animateMotion>
+      </rect>
+      <rect class="packet" x="-3.5" y="-3.5" width="7" height="7" fill="#ffb800" rx="1" style="filter: drop-shadow(0 0 4px #ffb800);">
+        <animateMotion dur="5s" repeatCount="indefinite" begin="3.5s">
+          <mpath href="#rtnPath"/>
+        </animateMotion>
+      </rect>
+    </svg>
+
+    <figcaption>
+      <div class="text">
+        <span class="emph">Fig. 1 —</span> An HTTPS request from a public client reaches the cluster via an AWS NLB, terminates TLS at the Istio <code>IngressGateway</code> (envoy), is routed by a <code>VirtualService</code>, shaped by a <code>DestinationRule</code> (mTLS, subsets, outlier detection), and lands at a backend pod via a standard <code>ClusterIP</code>. Response returns along the reverse path.
+      </div>
+      <div class="legend">
+        <span class="swatch"><span class="dot emerald"></span>request</span>
+        <span class="swatch"><span class="dot amber"></span>response</span>
+      </div>
+    </figcaption>
+
+  </figure>
+
+</body>
+</html>

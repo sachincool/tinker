@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>ArgoCD sync flow — Personal lab multi-cluster</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px;
+    }
+    .container {
+      background: #0D1117;
+      border-radius: 16px;
+      padding: 32px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+      text-align: center; max-width: 1100px; width: 100%;
+      border: 1px solid #30363D;
+    }
+    h1 { color: #E6EDF3; margin-bottom: 8px; font-size: 22px; font-family: 'JetBrains Mono', ui-monospace, monospace; }
+    .subtitle { color: #8B949E; margin-bottom: 20px; font-size: 12px; letter-spacing: 1.5px; }
+    #status { padding: 14px; border-radius: 8px; margin-bottom: 16px; display: flex; align-items: center; justify-content: center; gap: 12px; font-family: inherit; }
+    .generating { background: #2D333B; color: #D29922; }
+    .success { background: #1C3D2E; color: #3FB950; }
+    .spinner { width: 18px; height: 18px; border: 3px solid rgba(210, 153, 34, 0.3); border-top-color: #D29922; border-radius: 50%; animation: spin 1s linear infinite; }
+    .success .spinner { display: none; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    #percentage { font-size: 18px; font-weight: 700; color: #E6EDF3; min-width: 50px; font-family: inherit; }
+    #statusText { flex: 1; text-align: left; font-size: 13px; }
+    #preview { max-width: 100%; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.4); margin-bottom: 16px; border: 1px solid #30363D; }
+    .btn { display: inline-block; background: linear-gradient(135deg, #58A6FF 0%, #A371F7 100%); color: white; padding: 12px 28px; border-radius: 8px; text-decoration: none; font-weight: 600; cursor: pointer; border: none; font-size: 14px; font-family: inherit; }
+    .btn-secondary { background: linear-gradient(135deg, #3FB950 0%, #58A6FF 100%); }
+    .btn-container { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+    #canvas { display: none; }
+    .progress-bar { width: 100%; height: 6px; background: #21262D; border-radius: 4px; overflow: hidden; margin-bottom: 16px; }
+    .progress-fill { height: 100%; background: linear-gradient(90deg, #58A6FF, #A371F7); width: 0%; transition: width 0.2s; }
+    #videoStatus { margin-top: 10px; color: #8B949E; font-size: 12px; min-height: 18px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>ArgoCD sync flow — Personal lab multi-cluster</h1>
+    <p class="subtitle" id="subtitleText">HUB-SPOKE DISTRIBUTION · ~150 WORKLOADS · 3 EKS CLUSTERS</p>
+    <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+    <div id="status" class="generating">
+      <div class="spinner"></div>
+      <span id="percentage">0%</span>
+      <span id="statusText">Initializing...</span>
+    </div>
+    <canvas id="canvas" width="1000" height="600"></canvas>
+    <img id="preview" style="display:none;" alt="ArgoCD sync flow infographic">
+    <div class="btn-container">
+      <a id="downloadGif" class="btn" style="display:none;" download="argocd-sync-flow.gif">Download GIF</a>
+      <button id="downloadVideo" class="btn btn-secondary" style="display:none;">Download MP4</button>
+    </div>
+    <div id="videoStatus"></div>
+  </div>
+
+<script>
+// ============================================================
+// GIF ENCODER (self-contained, adapted from infographic-gif skill)
+// ============================================================
+function GIFEncoder(width, height) {
+  this.width = width; this.height = height; this.data = [];
+  this.writeByte = function(b) { this.data.push(b & 0xFF); };
+  this.writeShort = function(s) { this.writeByte(s & 0xFF); this.writeByte((s >> 8) & 0xFF); };
+  this.writeString = function(s) { for (var i = 0; i < s.length; i++) this.writeByte(s.charCodeAt(i)); };
+  this.start = function() {
+    this.data = [];
+    this.writeString('GIF89a');
+    this.writeShort(width); this.writeShort(height);
+    this.writeByte(0x70); this.writeByte(0); this.writeByte(0);
+    this.writeByte(0x21); this.writeByte(0xFF); this.writeByte(0x0B);
+    this.writeString('NETSCAPE2.0');
+    this.writeByte(0x03); this.writeByte(0x01); this.writeShort(0); this.writeByte(0x00);
+  };
+  this.addFrame = function(ctx, delay) {
+    var imgData = ctx.getImageData(0, 0, width, height);
+    var pixels = imgData.data;
+    var colorCounts = {};
+    for (var i = 0; i < pixels.length; i += 4) {
+      var r = pixels[i] & 0xF8, g = pixels[i+1] & 0xF8, b = pixels[i+2] & 0xF8;
+      var key = (r << 16) | (g << 8) | b;
+      colorCounts[key] = (colorCounts[key] || 0) + 1;
+    }
+    var sortedColors = Object.keys(colorCounts).map(function(k) {
+      return { color: parseInt(k), count: colorCounts[k] };
+    }).sort(function(a, b) { return b.count - a.count; }).slice(0, 256);
+    var palette = [], colorMap = {};
+    for (var i = 0; i < sortedColors.length; i++) {
+      var c = sortedColors[i].color;
+      palette.push((c >> 16) & 0xFF, (c >> 8) & 0xFF, c & 0xFF);
+      colorMap[c] = i;
+    }
+    while (palette.length < 256 * 3) palette.push(0);
+    var indexed = new Uint8Array(width * height);
+    for (var i = 0; i < pixels.length; i += 4) {
+      var r = pixels[i] & 0xF8, g = pixels[i+1] & 0xF8, b = pixels[i+2] & 0xF8;
+      var key = (r << 16) | (g << 8) | b;
+      if (colorMap[key] !== undefined) indexed[i/4] = colorMap[key];
+      else {
+        var bestDist = Infinity, bestIdx = 0;
+        for (var j = 0; j < sortedColors.length; j++) {
+          var c = sortedColors[j].color;
+          var cr = (c >> 16) & 0xFF, cg = (c >> 8) & 0xFF, cb = c & 0xFF;
+          var dist = (r-cr)*(r-cr) + (g-cg)*(g-cg) + (b-cb)*(b-cb);
+          if (dist < bestDist) { bestDist = dist; bestIdx = j; }
+        }
+        indexed[i/4] = bestIdx;
+      }
+    }
+    this.writeByte(0x21); this.writeByte(0xF9); this.writeByte(0x04);
+    this.writeByte(0x00); this.writeShort(Math.round(delay / 10));
+    this.writeByte(0x00); this.writeByte(0x00);
+    this.writeByte(0x2C); this.writeShort(0); this.writeShort(0);
+    this.writeShort(width); this.writeShort(height); this.writeByte(0x87);
+    for (var i = 0; i < palette.length; i++) this.writeByte(palette[i]);
+    this.writeByte(8); this.lzwEncode(indexed); this.writeByte(0x00);
+  };
+  this.lzwEncode = function(pixels) {
+    var clearCode = 256, eoiCode = 257, codeSize = 9, nextCode = 258;
+    var dict = {}, buffer = 0, bufferLen = 0, output = [];
+    var emit = function(code) {
+      buffer |= code << bufferLen; bufferLen += codeSize;
+      while (bufferLen >= 8) { output.push(buffer & 0xFF); buffer >>= 8; bufferLen -= 8; }
+    };
+    emit(clearCode); var prev = pixels[0];
+    for (var i = 1; i < pixels.length; i++) {
+      var curr = pixels[i], key = prev + ',' + curr;
+      if (dict[key] !== undefined) prev = dict[key];
+      else {
+        emit(prev);
+        if (nextCode < 4096) { dict[key] = nextCode++; if (nextCode > (1 << codeSize) && codeSize < 12) codeSize++; }
+        else { emit(clearCode); dict = {}; codeSize = 9; nextCode = 258; }
+        prev = curr;
+      }
+    }
+    emit(prev); emit(eoiCode);
+    if (bufferLen > 0) output.push(buffer & 0xFF);
+    for (var i = 0; i < output.length; i += 255) {
+      var chunk = output.slice(i, Math.min(i + 255, output.length));
+      this.writeByte(chunk.length);
+      for (var j = 0; j < chunk.length; j++) this.writeByte(chunk[j]);
+    }
+  };
+  this.finish = function() {
+    this.writeByte(0x3B);
+    return new Blob([new Uint8Array(this.data)], {type: 'image/gif'});
+  };
+}
+
+// ============================================================
+// CONFIGURATION
+// ============================================================
+var WIDTH = 1000, HEIGHT = 600;
+var ANIMATION = { totalFrames: 55, holdFrames: 55, frameDelay: 45, holdDelay: 65 };
+
+var STYLE = {
+  background: '#0D1117',
+  text: '#E6EDF3',
+  textMuted: '#8B949E',
+  fontFamily: '"JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace'
+};
+
+// Hub-spoke data:
+// Level 1: ArgoCD Hub (100%)
+// Level 2: 3 spoke clusters split
+// Level 3: Resources within each cluster (aggregated)
+var CLUSTERS = [
+  { label: 'us-east-2',   region: 'prod-master', value: 45, color: '#58A6FF' },
+  { label: 'ap-south-1',  region: 'prod-india',  value: 30, color: '#3FB950' },
+  { label: 'eu-west-1',   region: 'prod-eu',     value: 25, color: '#A371F7' }
+];
+
+var RESOURCES = [
+  { label: 'Apps',           value: 50, color: '#7EE787' },
+  { label: 'Karpenter',      value: 40, color: '#79C0FF' },
+  { label: 'Observability',  value: 10, color: '#D29922' }
+];
+
+// ============================================================
+// LAYOUT
+// ============================================================
+var PADDING = { top: 70, bottom: 50, left: 140, right: 160 };
+var NODE_W = 18;
+var CHART_LEFT  = PADDING.left;
+var CHART_RIGHT = WIDTH - PADDING.right;
+var CHART_TOP   = PADDING.top;
+var CHART_BOT   = HEIGHT - PADDING.bottom;
+var CHART_H     = CHART_BOT - CHART_TOP;
+var CENTER_X    = (CHART_LEFT + CHART_RIGHT) / 2;
+var HUB_X       = CHART_LEFT;        // ArgoCD hub (single source) at far left
+var CLUSTER_X   = CENTER_X - NODE_W / 2;  // 3 clusters in middle
+var RES_X       = CHART_RIGHT - NODE_W;   // resources at right
+
+// ============================================================
+// HELPERS
+// ============================================================
+function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
+
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
+}
+
+function drawFlow(ctx, x1, y1Top, y1Bot, x2, y2Top, y2Bot, color, progress, opacity) {
+  var control = Math.abs(x2 - x1) * 0.5;
+  ctx.globalAlpha = opacity * progress;
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  ctx.moveTo(x1, y1Top);
+  var mx = x1 + (x2 - x1) * progress;
+  var myT = y1Top + (y2Top - y1Top) * progress;
+  var myB = y1Bot + (y2Bot - y1Bot) * progress;
+  ctx.bezierCurveTo(x1 + control * progress, y1Top, mx - control * progress, myT, mx, myT);
+  ctx.lineTo(mx, myB);
+  ctx.bezierCurveTo(mx - control * progress, myB, x1 + control * progress, y1Bot, x1, y1Bot);
+  ctx.closePath();
+  ctx.fill();
+  ctx.globalAlpha = 1;
+}
+
+// ============================================================
+// COMPUTE POSITIONS
+// ============================================================
+function computeLayout() {
+  // Hub takes full chart height
+  var hub = { x: HUB_X, y: CHART_TOP, h: CHART_H };
+
+  // Clusters: gap-separated, heights proportional to value
+  var clusterGap = 16;
+  var clusterTotalH = CHART_H - clusterGap * (CLUSTERS.length - 1);
+  var totalClusterValue = CLUSTERS.reduce(function(s,c){ return s + c.value; }, 0);
+  var clusters = [];
+  var y = CHART_TOP;
+  CLUSTERS.forEach(function(c) {
+    var h = (c.value / totalClusterValue) * clusterTotalH;
+    clusters.push({ label: c.label, region: c.region, value: c.value, color: c.color, x: CLUSTER_X, y: y, h: h });
+    y += h + clusterGap;
+  });
+
+  // Resources: gap-separated on right
+  var resGap = 16;
+  var resTotalH = CHART_H - resGap * (RESOURCES.length - 1);
+  var totalResValue = RESOURCES.reduce(function(s,r){ return s + r.value; }, 0);
+  var resources = [];
+  y = CHART_TOP;
+  RESOURCES.forEach(function(r) {
+    var h = (r.value / totalResValue) * resTotalH;
+    resources.push({ label: r.label, value: r.value, color: r.color, x: RES_X, y: y, h: h });
+    y += h + resGap;
+  });
+
+  return { hub: hub, clusters: clusters, resources: resources };
+}
+
+var LAYOUT = computeLayout();
+
+// ============================================================
+// RENDER
+// ============================================================
+function renderFrame(ctx, progress) {
+  // Background
+  ctx.fillStyle = STYLE.background;
+  ctx.fillRect(0, 0, WIDTH, HEIGHT);
+
+  // Subtle grid
+  ctx.strokeStyle = '#161B22';
+  ctx.lineWidth = 1;
+  for (var gx = 0; gx < WIDTH; gx += 40) {
+    ctx.beginPath(); ctx.moveTo(gx, 0); ctx.lineTo(gx, HEIGHT); ctx.stroke();
+  }
+
+  // Title
+  ctx.font = 'bold 18px ' + STYLE.fontFamily;
+  ctx.fillStyle = STYLE.text;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('ARGOCD SYNC FLOW · TRUEFOUNDRY', WIDTH / 2, 28);
+
+  ctx.font = '11px ' + STYLE.fontFamily;
+  ctx.fillStyle = STYLE.textMuted;
+  ctx.fillText('hub-spoke · 3 clusters · ~150 workloads · ~40 microservices', WIDTH / 2, 50);
+
+  // Column headers
+  ctx.textBaseline = 'top';
+  ctx.font = 'bold 10px ' + STYLE.fontFamily;
+  ctx.fillStyle = '#8B949E';
+  ctx.fillText('ARGOCD HUB', HUB_X + NODE_W / 2, CHART_TOP - 16);
+  ctx.fillText('SPOKE CLUSTERS', CLUSTER_X + NODE_W / 2, CHART_TOP - 16);
+  ctx.fillText('RESOURCES', RES_X + NODE_W / 2, CHART_TOP - 16);
+
+  // Animation phases
+  var p1 = Math.min(1, progress * 2.5);                          // hub → cluster flows
+  var p2 = Math.min(1, Math.max(0, (progress - 0.30) * 2.5));    // cluster → resource flows
+  var p3 = Math.min(1, Math.max(0, (progress - 0.55) * 2.5));    // labels
+
+  // -------- Flows: Hub → Clusters --------
+  var hubFlowY = CHART_TOP;
+  var totalClusterH = LAYOUT.clusters.reduce(function(s,c){ return s + c.h; }, 0);
+  LAYOUT.clusters.forEach(function(c, i) {
+    var pp = easeOutCubic(Math.min(1, Math.max(0, p1 - i * 0.07) / 0.65));
+    if (pp > 0) {
+      var targetH = c.h * (CHART_H / totalClusterH);
+      drawFlow(ctx,
+        HUB_X + NODE_W, hubFlowY, hubFlowY + targetH,
+        c.x, c.y, c.y + c.h,
+        c.color, pp, 0.45);
+    }
+    hubFlowY += c.h * (CHART_H / totalClusterH);
+  });
+
+  // -------- Flows: Clusters → Resources --------
+  // For each cluster, split its outflow proportionally to resource %
+  var resStartY = {};  // running y per resource for stacking flows
+  LAYOUT.resources.forEach(function(r) { resStartY[r.label] = r.y; });
+
+  LAYOUT.clusters.forEach(function(c, i) {
+    var clusterFlowStartY = c.y;
+    LAYOUT.resources.forEach(function(r, j) {
+      var pp = easeOutCubic(Math.min(1, Math.max(0, p2 - (i + j) * 0.05) / 0.55));
+      if (pp > 0) {
+        var clusterShare = c.h * (r.value / 100);            // height of this resource's slice in this cluster
+        var resShare = r.h * (c.value / 100);                // height of this cluster's contribution to this resource
+        drawFlow(ctx,
+          c.x + NODE_W, clusterFlowStartY, clusterFlowStartY + clusterShare,
+          r.x, resStartY[r.label], resStartY[r.label] + resShare,
+          r.color, pp, 0.4);
+      }
+      clusterFlowStartY += c.h * (r.value / 100);
+      resStartY[r.label] += r.h * (c.value / 100);
+    });
+  });
+
+  // -------- Nodes: Hub --------
+  var hubAlpha = easeOutCubic(Math.min(1, p1 * 1.4));
+  ctx.globalAlpha = hubAlpha;
+  var grad = ctx.createLinearGradient(HUB_X, CHART_TOP, HUB_X, CHART_BOT);
+  grad.addColorStop(0, '#FF9900');
+  grad.addColorStop(0.5, '#F78166');
+  grad.addColorStop(1, '#A371F7');
+  ctx.fillStyle = grad;
+  roundRect(ctx, HUB_X, CHART_TOP, NODE_W, CHART_H, 5);
+  ctx.fill();
+  ctx.globalAlpha = 1;
+
+  // -------- Nodes: Clusters --------
+  LAYOUT.clusters.forEach(function(c, i) {
+    var a = easeOutCubic(Math.min(1, p1 * 1.4 - i * 0.08));
+    if (a > 0) {
+      ctx.globalAlpha = a;
+      ctx.fillStyle = c.color;
+      roundRect(ctx, c.x, c.y, NODE_W, c.h, 5);
+      ctx.fill();
+      ctx.globalAlpha = 1;
+    }
+  });
+
+  // -------- Nodes: Resources --------
+  LAYOUT.resources.forEach(function(r, i) {
+    var a = easeOutCubic(Math.min(1, p2 * 1.4 - i * 0.06));
+    if (a > 0) {
+      ctx.globalAlpha = a;
+      ctx.fillStyle = r.color;
+      roundRect(ctx, r.x, r.y, NODE_W, r.h, 5);
+      ctx.fill();
+      ctx.globalAlpha = 1;
+    }
+  });
+
+  // -------- Labels --------
+  ctx.globalAlpha = easeOutCubic(p3);
+
+  // Hub label (vertical, rotated)
+  ctx.save();
+  ctx.translate(HUB_X - 18, CHART_TOP + CHART_H / 2);
+  ctx.rotate(-Math.PI / 2);
+  ctx.font = 'bold 13px ' + STYLE.fontFamily;
+  ctx.fillStyle = STYLE.text;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('ARGOCD · 100%', 0, 0);
+  ctx.restore();
+
+  // Cluster labels (above each node, in column)
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  LAYOUT.clusters.forEach(function(c) {
+    var midY = c.y + c.h / 2;
+    ctx.font = 'bold 12px ' + STYLE.fontFamily;
+    ctx.fillStyle = STYLE.text;
+    ctx.fillText(c.label, c.x + NODE_W / 2, midY - 18);
+    ctx.font = '10px ' + STYLE.fontFamily;
+    ctx.fillStyle = c.color;
+    ctx.fillText(c.region, c.x + NODE_W / 2, midY - 4);
+    ctx.font = 'bold 11px ' + STYLE.fontFamily;
+    ctx.fillStyle = c.color;
+    ctx.fillText(c.value + '%', c.x + NODE_W / 2, midY + 12);
+  });
+
+  // Resource labels (right side)
+  ctx.textAlign = 'left';
+  LAYOUT.resources.forEach(function(r) {
+    var midY = r.y + r.h / 2;
+    ctx.font = 'bold 13px ' + STYLE.fontFamily;
+    ctx.fillStyle = STYLE.text;
+    ctx.textBaseline = 'bottom';
+    ctx.fillText(r.label, r.x + NODE_W + 12, midY - 2);
+    ctx.font = '11px ' + STYLE.fontFamily;
+    ctx.fillStyle = r.color;
+    ctx.textBaseline = 'top';
+    ctx.fillText(r.value + '%', r.x + NODE_W + 12, midY + 2);
+  });
+
+  ctx.globalAlpha = 1;
+
+  // Footer
+  ctx.font = '9px ' + STYLE.fontFamily;
+  ctx.fillStyle = '#4A5566';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'bottom';
+  ctx.fillText('TRIAL 3 · INFOGRAPHIC-GIF SKILL · APP-OF-APPS PATTERN', WIDTH / 2, HEIGHT - 12);
+}
+
+// ============================================================
+// GENERATE
+// ============================================================
+function generate() {
+  var status = document.getElementById('status');
+  var statusText = document.getElementById('statusText');
+  var percentage = document.getElementById('percentage');
+  var progressBar = document.getElementById('progress');
+  var canvas = document.getElementById('canvas');
+  var ctx = canvas.getContext('2d');
+
+  var encoder = new GIFEncoder(WIDTH, HEIGHT);
+  encoder.start();
+
+  var total = ANIMATION.totalFrames + ANIMATION.holdFrames + 1;
+  var current = 0;
+
+  function update(pct, text) {
+    percentage.textContent = pct + '%';
+    statusText.textContent = text;
+    progressBar.style.width = pct + '%';
+  }
+
+  function anim(i) {
+    if (i <= ANIMATION.totalFrames) {
+      renderFrame(ctx, i / ANIMATION.totalFrames);
+      encoder.addFrame(ctx, ANIMATION.frameDelay);
+      current++;
+      update(Math.round((current / total) * 100), 'Rendering frame ' + (i + 1));
+      setTimeout(function() { anim(i + 1); }, 0);
+    } else {
+      hold(0);
+    }
+  }
+
+  function hold(i) {
+    if (i < ANIMATION.holdFrames) {
+      renderFrame(ctx, 1);
+      encoder.addFrame(ctx, ANIMATION.holdDelay);
+      current++;
+      update(Math.round((current / total) * 100), 'Hold frame ' + (i + 1));
+      setTimeout(function() { hold(i + 1); }, 0);
+    } else {
+      done();
+    }
+  }
+
+  function done() {
+    update(99, 'Encoding GIF...');
+    setTimeout(function() {
+      var blob = encoder.finish();
+      var url = URL.createObjectURL(blob);
+      document.getElementById('preview').src = url;
+      document.getElementById('preview').style.display = 'block';
+      document.getElementById('downloadGif').href = url;
+      document.getElementById('downloadGif').style.display = 'inline-block';
+      document.getElementById('downloadVideo').style.display = 'inline-block';
+      status.className = 'success';
+      percentage.textContent = '100%';
+      statusText.textContent = 'Done · GIF size: ' + (blob.size / 1024).toFixed(0) + ' KB';
+      progressBar.style.width = '100%';
+      document.getElementById('subtitleText').textContent = 'GIF generated — click Download GIF to save';
+      document.getElementById('downloadVideo').onclick = recordVideo;
+    }, 50);
+  }
+
+  update(0, 'Starting render...');
+  setTimeout(function() { anim(0); }, 100);
+}
+
+// ============================================================
+// VIDEO (WebM fallback, simpler than MP4 path)
+// ============================================================
+function recordVideo() {
+  var videoStatus = document.getElementById('videoStatus');
+  var videoBtn = document.getElementById('downloadVideo');
+  videoBtn.disabled = true;
+  videoBtn.textContent = 'Recording...';
+  var canvas = document.getElementById('canvas');
+  canvas.style.display = 'block';
+  canvas.style.position = 'absolute';
+  canvas.style.left = '-9999px';
+  var ctx = canvas.getContext('2d');
+  var stream = canvas.captureStream(30);
+  var chunks = [];
+  var mime = MediaRecorder.isTypeSupported('video/webm;codecs=vp9') ? 'video/webm;codecs=vp9' : 'video/webm';
+  var rec = new MediaRecorder(stream, { mimeType: mime, videoBitsPerSecond: 5000000 });
+  rec.ondataavailable = function(e) { if (e.data.size > 0) chunks.push(e.data); };
+  rec.onstop = function() {
+    var blob = new Blob(chunks, { type: mime });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url; a.download = 'argocd-sync-flow.webm';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    videoStatus.textContent = 'WebM downloaded · ' + (blob.size / 1024).toFixed(0) + ' KB';
+    videoBtn.disabled = false; videoBtn.textContent = 'Download MP4';
+    canvas.style.display = 'none';
+  };
+  rec.start();
+  var totalFrames = ANIMATION.totalFrames + ANIMATION.holdFrames;
+  var idx = 0;
+  function next() {
+    if (idx <= ANIMATION.totalFrames) renderFrame(ctx, idx / ANIMATION.totalFrames);
+    else renderFrame(ctx, 1);
+    idx++;
+    videoStatus.textContent = 'Recording frame ' + idx + '/' + totalFrames;
+    if (idx < totalFrames) setTimeout(next, 1000 / 30);
+    else setTimeout(function() { rec.stop(); }, 200);
+  }
+  next();
+}
+
+window.onload = function() { setTimeout(generate, 100); };
+</script>
+</body>
+</html>

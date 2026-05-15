@@ -1,0 +1,108 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 850" font-family="'Comic Sans MS','Bradley Hand','Segoe Print',Chalkboard,'Apple Chancery',cursive">
+  <defs>
+    <filter id="rough" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.02" numOctaves="2" seed="3"/>
+      <feDisplacementMap in="SourceGraphic" scale="1.6"/>
+    </filter>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#1e1e1e"/>
+    </marker>
+    <marker id="arrg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#1e1e1e"/>
+    </marker>
+  </defs>
+
+  <rect width="1400" height="850" fill="#ffffff"/>
+
+  <!-- Title -->
+  <text x="700" y="55" text-anchor="middle" font-size="32" fill="#1e1e1e">EKS hub-spoke · ArgoCD App-of-Apps</text>
+  <text x="700" y="92" text-anchor="middle" font-size="18" fill="#555">~150 workloads  ·  ~40 microservices</text>
+
+  <!-- Left spoke: prod-india -->
+  <g filter="url(#rough)">
+    <rect x="60" y="190" width="370" height="380" rx="14" fill="#a5d8ff" stroke="#1971c2" stroke-width="2.5"/>
+  </g>
+  <text x="245" y="230" text-anchor="middle" font-size="22" fill="#1e1e1e">prod-india  (SPOKE)</text>
+  <text x="245" y="258" text-anchor="middle" font-size="16" fill="#1e1e1e">ap-south-1  ·  10.10.0.0/16</text>
+  <g filter="url(#rough)">
+    <rect x="90" y="285" width="310" height="56" rx="10" fill="#ffffff" stroke="#1e1e1e" stroke-width="2"/>
+  </g>
+  <text x="245" y="320" text-anchor="middle" font-size="17" fill="#1e1e1e">argocd-agent  (receiver)</text>
+  <text x="245" y="380" text-anchor="middle" font-size="17" fill="#1e1e1e">Karpenter  (spot + on-demand)</text>
+  <text x="245" y="418" text-anchor="middle" font-size="17" fill="#1e1e1e">KEDA  →  ScaledObject</text>
+  <text x="245" y="440" text-anchor="middle" font-size="14" fill="#555">on  agent-orchestrator</text>
+  <text x="245" y="482" text-anchor="middle" font-size="17" fill="#1e1e1e">New Relic agent  (DaemonSet)</text>
+  <text x="245" y="528" text-anchor="middle" font-size="14" fill="#777">regional workloads</text>
+
+  <!-- Hub: prod-master -->
+  <g filter="url(#rough)">
+    <rect x="510" y="140" width="380" height="460" rx="16" fill="#ffec99" stroke="#f08c00" stroke-width="3"/>
+  </g>
+  <text x="700" y="180" text-anchor="middle" font-size="24" fill="#1e1e1e">prod-master  (HUB)</text>
+  <text x="700" y="208" text-anchor="middle" font-size="16" fill="#1e1e1e">us-east-2  ·  10.0.0.0/16</text>
+  <g filter="url(#rough)">
+    <rect x="540" y="235" width="320" height="78" rx="10" fill="#ffffff" stroke="#1e1e1e" stroke-width="2"/>
+  </g>
+  <text x="700" y="266" text-anchor="middle" font-size="20" fill="#1e1e1e">ArgoCD</text>
+  <text x="700" y="292" text-anchor="middle" font-size="15" fill="#555">App-of-Apps pattern</text>
+  <text x="700" y="345" text-anchor="middle" font-size="16" fill="#1e1e1e">argocd-agent  (principal)</text>
+  <text x="700" y="382" text-anchor="middle" font-size="16" fill="#1e1e1e">Karpenter  (spot + on-demand)</text>
+  <text x="700" y="420" text-anchor="middle" font-size="16" fill="#1e1e1e">KEDA  →  ScaledObject</text>
+  <text x="700" y="442" text-anchor="middle" font-size="13" fill="#555">on  agent-orchestrator</text>
+  <text x="700" y="482" text-anchor="middle" font-size="16" fill="#1e1e1e">New Relic agent  (DaemonSet)</text>
+  <text x="700" y="528" text-anchor="middle" font-size="13" fill="#777">control plane + shared workloads</text>
+
+  <!-- Right spoke: prod-eu -->
+  <g filter="url(#rough)">
+    <rect x="970" y="190" width="370" height="380" rx="14" fill="#a5d8ff" stroke="#1971c2" stroke-width="2.5"/>
+  </g>
+  <text x="1155" y="230" text-anchor="middle" font-size="22" fill="#1e1e1e">prod-eu  (SPOKE)</text>
+  <text x="1155" y="258" text-anchor="middle" font-size="16" fill="#1e1e1e">eu-west-1  ·  10.20.0.0/16</text>
+  <g filter="url(#rough)">
+    <rect x="1000" y="285" width="310" height="56" rx="10" fill="#ffffff" stroke="#1e1e1e" stroke-width="2"/>
+  </g>
+  <text x="1155" y="320" text-anchor="middle" font-size="17" fill="#1e1e1e">argocd-agent  (receiver)</text>
+  <text x="1155" y="380" text-anchor="middle" font-size="17" fill="#1e1e1e">Karpenter  (spot + on-demand)</text>
+  <text x="1155" y="418" text-anchor="middle" font-size="17" fill="#1e1e1e">KEDA  →  ScaledObject</text>
+  <text x="1155" y="440" text-anchor="middle" font-size="14" fill="#555">on  agent-orchestrator</text>
+  <text x="1155" y="482" text-anchor="middle" font-size="17" fill="#1e1e1e">New Relic agent  (DaemonSet)</text>
+  <text x="1155" y="528" text-anchor="middle" font-size="14" fill="#777">regional workloads</text>
+
+  <!-- Sync arrows: hub -> spokes -->
+  <g filter="url(#rough)">
+    <line x1="510" y1="310" x2="432" y2="310" stroke="#1e1e1e" stroke-width="2.5" marker-end="url(#arr)"/>
+    <line x1="890" y1="310" x2="968" y2="310" stroke="#1e1e1e" stroke-width="2.5" marker-end="url(#arr)"/>
+  </g>
+  <text x="470" y="298" text-anchor="middle" font-size="16" fill="#1e1e1e">sync</text>
+  <text x="930" y="298" text-anchor="middle" font-size="16" fill="#1e1e1e">sync</text>
+
+  <!-- Dashed observability lines (cluster -> strip) -->
+  <g stroke="#2f9e44" stroke-width="2.5" stroke-dasharray="8 6" fill="none">
+    <line x1="245" y1="572" x2="245" y2="640"/>
+    <line x1="700" y1="602" x2="700" y2="640"/>
+    <line x1="1155" y1="572" x2="1155" y2="640"/>
+  </g>
+
+  <!-- Observability strip -->
+  <g filter="url(#rough)">
+    <rect x="60" y="640" width="1280" height="170" rx="14" fill="#b2f2bb" stroke="#2f9e44" stroke-width="2.5"/>
+  </g>
+  <text x="700" y="675" text-anchor="middle" font-size="18" fill="#1e1e1e">Observability  &amp;  Alerting</text>
+
+  <g filter="url(#rough)">
+    <rect x="340" y="700" width="320" height="80" rx="10" fill="#ffffff" stroke="#1e1e1e" stroke-width="2"/>
+  </g>
+  <text x="500" y="732" text-anchor="middle" font-size="22" fill="#1e1e1e">New Relic</text>
+  <text x="500" y="758" text-anchor="middle" font-size="14" fill="#555">single account  ·  metrics, logs, traces</text>
+
+  <g filter="url(#rough)">
+    <rect x="820" y="700" width="280" height="80" rx="10" fill="#ffffff" stroke="#1e1e1e" stroke-width="2"/>
+  </g>
+  <text x="960" y="732" text-anchor="middle" font-size="22" fill="#1e1e1e">Zenduty</text>
+  <text x="960" y="758" text-anchor="middle" font-size="14" fill="#555">on-call paging</text>
+
+  <g filter="url(#rough)">
+    <line x1="660" y1="740" x2="818" y2="740" stroke="#1e1e1e" stroke-width="2.5" marker-end="url(#arr)"/>
+  </g>
+  <text x="740" y="730" text-anchor="middle" font-size="14" fill="#1e1e1e">alerts</text>
+</svg>

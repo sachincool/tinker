@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ingress flow · every request, traced · Personal lab</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #000000;
+      --surface-1: #0a0a0a;
+      --surface-2: #121212;
+      --surface-3: #181818;
+      --rule: rgba(255, 255, 255, 0.08);
+      --rule-bright: rgba(255, 255, 255, 0.20);
+      --ink: #f5f5f5;
+      --ink-dim: #8a8a8a;
+      --ink-faint: #4a4a4a;
+      --emerald: #00ff95;
+      --emerald-dim: rgba(0, 255, 149, 0.45);
+      --emerald-faint: rgba(0, 255, 149, 0.10);
+      --amber: #ffb800;
+      --amber-dim: rgba(255, 184, 0, 0.45);
+      --amber-faint: rgba(255, 184, 0, 0.08);
+      --font-display: 'Instrument Serif', serif;
+      --font-body: 'Space Grotesk', system-ui, sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { background: var(--bg); color: var(--ink); font-family: var(--font-body); min-height: 100vh; }
+    body {
+      padding: 3rem 1.5rem 4rem;
+      overflow-x: hidden;
+      background:
+        radial-gradient(ellipse 80% 50% at 50% 0%, rgba(0, 255, 149, 0.04), transparent),
+        radial-gradient(ellipse 60% 40% at 90% 100%, rgba(255, 184, 0, 0.03), transparent),
+        var(--bg);
+    }
+
+    .page { max-width: 1500px; margin: 0 auto; }
+
+    /* ============ HEADER ============ */
+    header.hero {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 2rem;
+      align-items: end;
+      margin-bottom: 2rem;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid var(--rule);
+    }
+    .hero .eyebrow {
+      font-family: var(--font-mono);
+      font-size: 0.66rem; letter-spacing: 0.32em; text-transform: uppercase;
+      color: var(--emerald); font-weight: 500;
+      margin-bottom: 0.875rem;
+      display: inline-flex; align-items: center; gap: 0.5rem;
+    }
+    .hero .eyebrow::before {
+      content: ''; width: 6px; height: 6px; border-radius: 50%;
+      background: var(--emerald); box-shadow: 0 0 8px var(--emerald);
+      animation: blink 1.8s ease-in-out infinite;
+    }
+    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.25; } }
+
+    h1 {
+      font-family: var(--font-display);
+      font-size: clamp(2.5rem, 6vw, 5.5rem);
+      font-weight: 400; letter-spacing: -0.015em; line-height: 0.95;
+      color: var(--ink);
+      margin-bottom: 0.75rem;
+    }
+    h1 .italic { font-style: italic; color: var(--emerald); }
+    .hero .dek {
+      color: var(--ink-dim);
+      font-size: 0.95rem; line-height: 1.55;
+      max-width: 56ch;
+    }
+
+    .hero .chip-stack {
+      display: flex; flex-direction: column; gap: 0.4rem;
+      font-family: var(--font-mono); font-size: 0.66rem;
+      color: var(--ink-faint);
+      text-align: right; letter-spacing: 0.08em;
+    }
+    .hero .chip-stack span b { color: var(--ink-dim); font-weight: 500; }
+
+    /* ============ LIVE CHROME ============ */
+    .chrome {
+      display: flex; gap: 0; flex-wrap: wrap;
+      margin-bottom: 2.5rem;
+      border: 1px solid var(--rule);
+      border-radius: 6px;
+      background: var(--surface-1);
+      overflow: hidden;
+    }
+    .stat {
+      flex: 1; min-width: 180px;
+      padding: 1rem 1.25rem;
+      border-right: 1px solid var(--rule);
+      position: relative;
+    }
+    .stat:last-child { border-right: 0; }
+    .stat .label {
+      display: block;
+      font-family: var(--font-mono);
+      font-size: 0.6rem; color: var(--ink-faint);
+      letter-spacing: 0.24em; text-transform: uppercase;
+      margin-bottom: 0.4rem;
+    }
+    .stat .value {
+      font-family: var(--font-mono);
+      font-size: 1.125rem; font-weight: 600;
+      color: var(--ink);
+      letter-spacing: -0.01em;
+    }
+    .stat .value.ok {
+      color: var(--emerald);
+      display: inline-flex; align-items: center; gap: 0.5rem;
+    }
+    .stat .value.ok::before {
+      content: ''; width: 7px; height: 7px; border-radius: 50%;
+      background: var(--emerald); box-shadow: 0 0 6px var(--emerald);
+      animation: blink 1.6s ease-in-out infinite;
+    }
+    .stat .sub {
+      font-family: var(--font-mono);
+      font-size: 0.62rem; color: var(--ink-faint);
+      margin-top: 0.3rem;
+    }
+
+    /* ============ FLOW VISUALIZATION ============ */
+    .flow-wrap {
+      background: var(--surface-1);
+      border: 1px solid var(--rule);
+      border-radius: 8px;
+      padding: 2rem 1rem 1.5rem;
+      margin-bottom: 1.5rem;
+      overflow-x: auto;
+      position: relative;
+    }
+    .flow-wrap::before {
+      /* subtle gradient overlay top */
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse 60% 80% at 50% 50%, transparent, rgba(0,0,0,0.4));
+      pointer-events: none;
+    }
+    svg.flow {
+      width: 100%; min-width: 1400px;
+      display: block;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Components — text styles */
+    .hop-name { font-family: var(--font-body); font-size: 13px; font-weight: 600; fill: var(--ink); letter-spacing: -0.005em; }
+    .hop-kind { font-family: var(--font-mono); font-size: 9px; fill: var(--ink-dim); letter-spacing: 0.06em; }
+    .hop-role { font-family: var(--font-mono); font-size: 9px; fill: var(--ink-faint); letter-spacing: 0.04em; }
+
+    /* Hop group base + active states */
+    .hop { transition: filter 280ms ease-out; }
+    .hop.active-fwd { filter: drop-shadow(0 0 14px var(--emerald-dim)) brightness(1.25); }
+    .hop.active-rtn { filter: drop-shadow(0 0 12px var(--amber-dim)) brightness(1.15); }
+
+    .hop-body { fill: var(--surface-3); stroke: var(--rule-bright); stroke-width: 1; }
+    .hop-glyph { fill: none; stroke: var(--ink-dim); stroke-width: 1.4; }
+    .hop-dot { fill: var(--ink-dim); }
+
+    .hop.active-fwd .hop-body { stroke: var(--emerald); }
+    .hop.active-fwd .hop-glyph { stroke: var(--emerald); }
+    .hop.active-fwd .hop-dot { fill: var(--emerald); }
+    .hop.active-rtn .hop-body { stroke: var(--amber); }
+    .hop.active-rtn .hop-glyph { stroke: var(--amber); }
+    .hop.active-rtn .hop-dot { fill: var(--amber); }
+
+    /* Flow connector lines */
+    .wire-fwd { stroke: var(--rule-bright); stroke-width: 1; fill: none; }
+    .wire-rtn { stroke: var(--rule); stroke-width: 1; fill: none; stroke-dasharray: 5,5; }
+
+    /* ============ LEGEND ============ */
+    .legend {
+      display: flex; gap: 1.5rem; flex-wrap: wrap;
+      padding: 1rem 1.25rem;
+      border: 1px solid var(--rule);
+      border-radius: 6px;
+      background: var(--surface-1);
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--ink-dim);
+      align-items: center;
+    }
+    .legend .item { display: inline-flex; align-items: center; gap: 0.5rem; }
+    .legend .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .legend .dot.emerald { background: var(--emerald); box-shadow: 0 0 6px var(--emerald); }
+    .legend .dot.amber { background: var(--amber); box-shadow: 0 0 6px var(--amber); }
+    .legend .sep { color: var(--ink-faint); }
+
+    .foot {
+      margin-top: 2rem; padding-top: 1.5rem;
+      border-top: 1px solid var(--rule);
+      display: flex; justify-content: space-between; flex-wrap: wrap;
+      font-family: var(--font-mono);
+      font-size: 0.62rem; letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--ink-faint);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+      .packet { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+
+    <header class="hero">
+      <div>
+        <p class="eyebrow">Live · ingress · Istio · trial 4b</p>
+        <h1>Every request, <span class="italic">traced</span>.</h1>
+        <p class="dek">Seven hops between a public client and a backend pod on Personal lab's EKS clusters. Two staggered flows, looping. Forward path in emerald, response path in amber.</p>
+      </div>
+      <div class="chip-stack">
+        <span>cluster · <b>prod-master</b></span>
+        <span>region · <b>us-east-2</b></span>
+        <span>mesh · <b>istio 1.22</b></span>
+        <span>protocol · <b>HTTP/2 · mTLS</b></span>
+      </div>
+    </header>
+
+    <!-- ============ LIVE CHROME ============ -->
+    <section class="chrome" aria-label="Live telemetry">
+      <div class="stat">
+        <span class="label">request rate</span>
+        <span class="value" id="rate">1.24k req/s</span>
+        <div class="sub">rolling 30s · all routes</div>
+      </div>
+      <div class="stat">
+        <span class="label">latency · p50</span>
+        <span class="value" id="lat50">47ms</span>
+        <div class="sub">ingress → pod · gateway-traced</div>
+      </div>
+      <div class="stat">
+        <span class="label">latency · p99</span>
+        <span class="value" id="lat99">182ms</span>
+        <div class="sub">tail · including retries</div>
+      </div>
+      <div class="stat">
+        <span class="label">success</span>
+        <span class="value ok">99.94%</span>
+        <div class="sub">2xx + cached · last 5m</div>
+      </div>
+    </section>
+
+    <!-- ============ FLOW SVG ============ -->
+    <div class="flow-wrap">
+      <svg class="flow" viewBox="0 0 1500 460" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <!-- Hidden motion paths -->
+          <path id="fwdPath" d="M 110 240 H 1390" fill="none"/>
+          <path id="rtnPath" d="M 1390 312 H 110" fill="none"/>
+          <!-- Marker for return path arrowhead at end -->
+          <marker id="amberArrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+            <polygon points="0 0, 8 3, 0 6" fill="#ffb800"/>
+          </marker>
+        </defs>
+
+        <!-- Wires (drawn behind components) -->
+        <line class="wire-fwd" x1="110" y1="240" x2="1390" y2="240"/>
+        <line class="wire-rtn" x1="1390" y1="312" x2="110" y2="312" marker-end="url(#amberArrow)"/>
+
+        <!-- Phase labels on wires -->
+        <text x="750" y="225" class="hop-kind" text-anchor="middle" fill="#5e5e5e">REQUEST · forward</text>
+        <text x="750" y="335" class="hop-kind" text-anchor="middle" fill="#5e5e5e">RESPONSE · return</text>
+
+        <!-- ===== HOP 1 · CLIENT ===== -->
+        <g id="hop-client" class="hop" transform="translate(110, 240)">
+          <text class="hop-kind" x="0" y="-94" text-anchor="middle">EXTERNAL</text>
+          <text class="hop-name" x="0" y="-78" text-anchor="middle">Client</text>
+          <!-- Browser window glyph -->
+          <rect class="hop-body" x="-32" y="-58" width="64" height="42" rx="4"/>
+          <line x1="-32" y1="-48" x2="32" y2="-48" stroke="rgba(255,255,255,0.10)" stroke-width="1"/>
+          <circle class="hop-dot" cx="-25" cy="-53" r="1.5"/>
+          <circle class="hop-dot" cx="-19" cy="-53" r="1.5"/>
+          <circle class="hop-dot" cx="-13" cy="-53" r="1.5"/>
+          <path class="hop-glyph" d="M -8 -38 L 6 -32 L -2 -28 L -2 -22 Z" fill="rgba(255,255,255,0.12)" stroke-width="1"/>
+          <text class="hop-role" x="0" y="80" text-anchor="middle">HTTP/2 · TLS 1.3</text>
+          <text class="hop-role" x="0" y="92" text-anchor="middle" fill="#5e5e5e">browser · mobile · api consumer</text>
+        </g>
+
+        <!-- ===== HOP 2 · NLB ===== -->
+        <g id="hop-nlb" class="hop" transform="translate(310, 240)">
+          <text class="hop-kind" x="0" y="-94" text-anchor="middle">aws · vpc edge</text>
+          <text class="hop-name" x="0" y="-78" text-anchor="middle">Network LB</text>
+          <!-- Hexagon NLB shape -->
+          <polygon class="hop-body" points="-30,-58 30,-58 42,-37 30,-16 -30,-16 -42,-37"/>
+          <!-- Chevron inside -->
+          <path class="hop-glyph" d="M -14 -47 L 4 -37 L -14 -27"/>
+          <circle class="hop-dot" cx="18" cy="-37" r="2.5"/>
+          <text class="hop-role" x="0" y="80" text-anchor="middle">Service.spec.type</text>
+          <text class="hop-role" x="0" y="92" text-anchor="middle" fill="#5e5e5e">TCP passthrough · L4 · multi-AZ</text>
+        </g>
+
+        <!-- ===== HOP 3 · ISTIO INGRESS GATEWAY ===== -->
+        <g id="hop-gw" class="hop" transform="translate(510, 240)">
+          <text class="hop-kind" x="0" y="-94" text-anchor="middle">kind: Gateway · v1beta1</text>
+          <text class="hop-name" x="0" y="-78" text-anchor="middle">IngressGateway</text>
+          <!-- Hex with mesh -->
+          <polygon class="hop-body" points="-30,-58 30,-58 42,-37 30,-16 -30,-16 -42,-37"/>
+          <polygon class="hop-glyph" points="-16,-49 16,-49 22,-37 16,-25 -16,-25 -22,-37"/>
+          <circle class="hop-dot" cx="0" cy="-37" r="3"/>
+          <circle class="hop-dot" cx="-12" cy="-43" r="1.4"/>
+          <circle class="hop-dot" cx="12" cy="-43" r="1.4"/>
+          <circle class="hop-dot" cx="-12" cy="-31" r="1.4"/>
+          <circle class="hop-dot" cx="12" cy="-31" r="1.4"/>
+          <text class="hop-role" x="0" y="80" text-anchor="middle">envoy · listener :443</text>
+          <text class="hop-role" x="0" y="92" text-anchor="middle" fill="#5e5e5e">TLS termination · SNI routing</text>
+        </g>
+
+        <!-- ===== HOP 4 · VIRTUAL SERVICE ===== -->
+        <g id="hop-vs" class="hop" transform="translate(710, 240)">
+          <text class="hop-kind" x="0" y="-94" text-anchor="middle">kind: VirtualService</text>
+          <text class="hop-name" x="0" y="-78" text-anchor="middle">Virtual Service</text>
+          <!-- Square with 3-way fork glyph -->
+          <rect class="hop-body" x="-32" y="-58" width="64" height="42" rx="4"/>
+          <line class="hop-glyph" x1="-22" y1="-37" x2="-4" y2="-37"/>
+          <line class="hop-glyph" x1="-4" y1="-37" x2="14" y2="-50"/>
+          <line class="hop-glyph" x1="-4" y1="-37" x2="14" y2="-37"/>
+          <line class="hop-glyph" x1="-4" y1="-37" x2="14" y2="-24"/>
+          <circle class="hop-dot" cx="-22" cy="-37" r="2"/>
+          <circle class="hop-dot" cx="14" cy="-50" r="2"/>
+          <circle class="hop-dot" cx="14" cy="-37" r="2"/>
+          <circle class="hop-dot" cx="14" cy="-24" r="2"/>
+          <text class="hop-role" x="0" y="80" text-anchor="middle">host + path routing</text>
+          <text class="hop-role" x="0" y="92" text-anchor="middle" fill="#5e5e5e">match · rewrite · weighted split</text>
+        </g>
+
+        <!-- ===== HOP 5 · DESTINATION RULE ===== -->
+        <g id="hop-dr" class="hop" transform="translate(910, 240)">
+          <text class="hop-kind" x="0" y="-94" text-anchor="middle">kind: DestinationRule</text>
+          <text class="hop-name" x="0" y="-78" text-anchor="middle">Destination Rule</text>
+          <!-- Square with funnel glyph -->
+          <rect class="hop-body" x="-32" y="-58" width="64" height="42" rx="4"/>
+          <!-- Funnel: trapezoid + spout -->
+          <path class="hop-glyph" d="M -18 -50 L 18 -50 L 6 -34 L 6 -22 L -6 -22 L -6 -34 Z"/>
+          <circle class="hop-dot" cx="-12" cy="-46" r="1.5"/>
+          <circle class="hop-dot" cx="0" cy="-46" r="1.5"/>
+          <circle class="hop-dot" cx="12" cy="-46" r="1.5"/>
+          <text class="hop-role" x="0" y="80" text-anchor="middle">subsets · mTLS · outlier</text>
+          <text class="hop-role" x="0" y="92" text-anchor="middle" fill="#5e5e5e">trafficPolicy · connection pool</text>
+        </g>
+
+        <!-- ===== HOP 6 · K8S SERVICE ===== -->
+        <g id="hop-svc" class="hop" transform="translate(1110, 240)">
+          <text class="hop-kind" x="0" y="-94" text-anchor="middle">kind: Service</text>
+          <text class="hop-name" x="0" y="-78" text-anchor="middle">Service</text>
+          <!-- K8s wheel -->
+          <circle class="hop-body" cx="0" cy="-37" r="26"/>
+          <g class="hop-glyph">
+            <line x1="0" y1="-58" x2="0" y2="-49"/>
+            <line x1="14" y1="-51" x2="8" y2="-45"/>
+            <line x1="20" y1="-37" x2="11" y2="-37"/>
+            <line x1="14" y1="-23" x2="8" y2="-29"/>
+            <line x1="0" y1="-16" x2="0" y2="-25"/>
+            <line x1="-14" y1="-23" x2="-8" y2="-29"/>
+            <line x1="-20" y1="-37" x2="-11" y2="-37"/>
+            <line x1="-14" y1="-51" x2="-8" y2="-45"/>
+          </g>
+          <circle class="hop-glyph" cx="0" cy="-37" r="5" fill="none"/>
+          <text class="hop-role" x="0" y="80" text-anchor="middle">ClusterIP · endpoints</text>
+          <text class="hop-role" x="0" y="92" text-anchor="middle" fill="#5e5e5e">selector match · kube-proxy</text>
+        </g>
+
+        <!-- ===== HOP 7 · POD ===== -->
+        <g id="hop-pod" class="hop" transform="translate(1310, 240)">
+          <text class="hop-kind" x="0" y="-94" text-anchor="middle">kind: Pod · replica</text>
+          <text class="hop-name" x="0" y="-78" text-anchor="middle">Backend Pod</text>
+          <!-- Three stacked replicas -->
+          <rect class="hop-body" x="-30" y="-62" width="60" height="14" rx="2"/>
+          <rect class="hop-body" x="-30" y="-46" width="60" height="14" rx="2"/>
+          <rect class="hop-body" x="-30" y="-30" width="60" height="14" rx="2"/>
+          <rect class="hop-glyph" x="-24" y="-58" width="6" height="6" fill="rgba(255,255,255,0.10)"/>
+          <rect class="hop-glyph" x="-24" y="-42" width="6" height="6" fill="rgba(255,255,255,0.10)"/>
+          <rect class="hop-glyph" x="-24" y="-26" width="6" height="6" fill="rgba(255,255,255,0.10)"/>
+          <text class="hop-glyph" x="20" y="-52" font-family="JetBrains Mono, monospace" font-size="7" fill="#888" text-anchor="end">×3</text>
+          <text class="hop-role" x="0" y="80" text-anchor="middle">agent-orchestrator</text>
+          <text class="hop-role" x="0" y="92" text-anchor="middle" fill="#5e5e5e">replica set · envoy sidecar · :8080</text>
+        </g>
+
+        <!-- ===== ANIMATED PACKETS · FORWARD (emerald) ===== -->
+        <circle class="packet" r="6" fill="#00ff95" style="filter: drop-shadow(0 0 8px #00ff95);">
+          <animateMotion dur="4.2s" repeatCount="indefinite" begin="0s">
+            <mpath href="#fwdPath"/>
+          </animateMotion>
+        </circle>
+        <circle class="packet" r="6" fill="#00ff95" style="filter: drop-shadow(0 0 8px #00ff95);">
+          <animateMotion dur="4.2s" repeatCount="indefinite" begin="1.6s">
+            <mpath href="#fwdPath"/>
+          </animateMotion>
+        </circle>
+
+        <!-- ===== ANIMATED PACKETS · RETURN (amber, square) ===== -->
+        <rect class="packet" x="-5" y="-5" width="10" height="10" fill="#ffb800" style="filter: drop-shadow(0 0 6px #ffb800);" rx="1">
+          <animateMotion dur="4.2s" repeatCount="indefinite" begin="2.1s">
+            <mpath href="#rtnPath"/>
+          </animateMotion>
+        </rect>
+        <rect class="packet" x="-5" y="-5" width="10" height="10" fill="#ffb800" style="filter: drop-shadow(0 0 6px #ffb800);" rx="1">
+          <animateMotion dur="4.2s" repeatCount="indefinite" begin="3.7s">
+            <mpath href="#rtnPath"/>
+          </animateMotion>
+        </rect>
+      </svg>
+    </div>
+
+    <!-- ============ LEGEND ============ -->
+    <div class="legend">
+      <span class="item"><span class="dot emerald"></span> request · forward</span>
+      <span class="sep">/</span>
+      <span class="item"><span class="dot amber"></span> response · return</span>
+      <span class="sep">/</span>
+      <span class="item">2 concurrent flows · staggered 1.6s</span>
+      <span class="sep">/</span>
+      <span class="item">cycle · 4.2s</span>
+    </div>
+
+    <footer class="foot">
+      <span>lab · eks · istio · trial 4b</span>
+      <span>frontend-design-pro · dark OLED luxury</span>
+    </footer>
+
+  </div>
+
+<script>
+  // ===== Component pulse coordination =====
+  var hops = ['hop-client', 'hop-nlb', 'hop-gw', 'hop-vs', 'hop-dr', 'hop-svc', 'hop-pod'];
+  var CYCLE = 4200;                  // matches SVG animateMotion dur
+  var STAGGER = 1600;                // matches second packet begin offset
+  var RTN_OFFSET = 2100;             // matches return packet begin
+  var RTN_STAGGER = 1600;            // second return packet
+  var HOP_SPACING = CYCLE / 7;       // ~600ms between hop activations
+
+  function pulse(id, cls, dur) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    el.classList.add(cls);
+    setTimeout(function() { el.classList.remove(cls); }, dur);
+  }
+
+  function fireForward(offset) {
+    hops.forEach(function(id, i) {
+      setTimeout(function() { pulse(id, 'active-fwd', 320); }, offset + i * HOP_SPACING);
+    });
+  }
+
+  function fireReturn(offset) {
+    // reverse order — return path
+    hops.slice().reverse().forEach(function(id, i) {
+      setTimeout(function() { pulse(id, 'active-rtn', 280); }, offset + i * HOP_SPACING);
+    });
+  }
+
+  function schedule(fn, startDelay) {
+    setTimeout(function() {
+      fn();
+      setInterval(fn, CYCLE);
+    }, startDelay);
+  }
+
+  if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    schedule(function() { fireForward(0); }, 0);
+    schedule(function() { fireForward(0); }, STAGGER);
+    schedule(function() { fireReturn(0); }, RTN_OFFSET);
+    schedule(function() { fireReturn(0); }, RTN_OFFSET + RTN_STAGGER);
+  }
+
+  // ===== Live telemetry chrome (cosmetic ticker) =====
+  var rateEl = document.getElementById('rate');
+  var lat50El = document.getElementById('lat50');
+  var lat99El = document.getElementById('lat99');
+  function ticker() {
+    var r = (1.15 + Math.random() * 0.18).toFixed(2);
+    rateEl.textContent = r + 'k req/s';
+    lat50El.textContent = (44 + Math.floor(Math.random() * 7)) + 'ms';
+    lat99El.textContent = (170 + Math.floor(Math.random() * 22)) + 'ms';
+  }
+  setInterval(ticker, 2200);
+</script>
+</body>
+</html>
