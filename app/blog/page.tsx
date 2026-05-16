@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { getAllPosts } from "@/lib/posts";
 import BlogPageClient from "./blog-page-client";
 import type { Metadata } from "next";
@@ -40,9 +41,13 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default function BlogPage() {
-  // Fetch posts on server side
   const posts = getAllPosts('blog');
 
-  // Pass to client component for interactivity
-  return <BlogPageClient initialPosts={posts} />;
+  // Suspense boundary required because BlogPageClient calls useSearchParams()
+  // for ?q= deep-link sync — Next 15 bails out of prerender otherwise.
+  return (
+    <Suspense fallback={null}>
+      <BlogPageClient initialPosts={posts} />
+    </Suspense>
+  );
 }
