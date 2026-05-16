@@ -1,27 +1,20 @@
 import { generateTagFeed } from '@/lib/rss';
 import { getAllTags } from '@/lib/posts';
-import { headers } from 'next/headers';
-import { getCurrentDomain } from '@/lib/site-config';
+import { siteConfig } from '@/lib/site-config';
 
 export async function GET(
-  request: Request,
-  { params }: { params: { tag: string } }
+  _request: Request,
+  { params }: { params: Promise<{ tag: string }> }
 ) {
   try {
-    const tag = params.tag;
+    const { tag } = await params;
 
-    // Verify tag exists
     const allTags = getAllTags();
     if (!allTags.includes(tag)) {
       return new Response('Tag not found', { status: 404 });
     }
 
-    const headersList = await headers();
-    // Use x-forwarded-host for custom domains on Vercel, fallback to host
-    const hostname = headersList.get('x-forwarded-host') || headersList.get('host') || '';
-    const baseUrl = getCurrentDomain(hostname);
-
-    const feed = generateTagFeed(tag, baseUrl);
+    const feed = generateTagFeed(tag, siteConfig.siteUrl);
     const rss = feed.rss2();
 
     return new Response(rss, {
@@ -38,7 +31,5 @@ export async function GET(
 
 export async function generateStaticParams() {
   const tags = getAllTags();
-  return tags.map((tag) => ({
-    tag,
-  }));
+  return tags.map((tag) => ({ tag }));
 }
