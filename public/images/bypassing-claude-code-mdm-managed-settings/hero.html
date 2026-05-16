@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Two corporate leashes on Claude Code</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper:        #faf7f2;
+    --paper-2:      #f1ece3;
+    --ink:          #1c1917;
+    --muted:        #6b655c;
+    --soft:         #a39e95;
+    --rule:         rgba(28,25,23,0.12);
+    --rule-solid:   rgba(28,25,23,0.20);
+    --accent:       #b5523a;
+    --accent-tint:  #efe9df;
+  }
+  html, body { margin: 0; padding: 0; background: var(--paper); color: var(--ink);
+    font-family: 'Geist', sans-serif; -webkit-font-smoothing: antialiased; }
+  .page { max-width: 1240px; margin: 0 auto; padding: 56px 32px 40px; }
+  .eyebrow { font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--muted); margin: 0 0 16px; }
+  h1 { font-family: 'Instrument Serif', serif; font-weight: 400; font-size: 44px;
+    line-height: 1.1; margin: 0 0 8px; letter-spacing: -0.01em; }
+  .sub { font-family: 'Instrument Serif', serif; font-style: italic; color: var(--muted);
+    font-size: 19px; margin: 0 0 36px; }
+  .diagram { width: 100%; }
+</style>
+</head>
+<body>
+  <div class="page">
+    <p class="eyebrow">Hero · architecture · sketchy variant</p>
+    <h1>Two corporate leashes on Claude Code</h1>
+    <p class="sub">MDM owns the settings file. The AI gateway owns the wire. Claude Code sits between them, doing what it's told.</p>
+
+    <svg class="diagram" viewBox="0 0 1200 720" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <!-- arrow markers -->
+        <marker id="arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+          <polygon points="0 0, 8 3, 0 6" fill="#6b655c"/>
+        </marker>
+        <marker id="arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+          <polygon points="0 0, 8 3, 0 6" fill="#b5523a"/>
+        </marker>
+        <marker id="arrow-soft" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+          <polygon points="0 0, 8 3, 0 6" fill="#a39e95"/>
+        </marker>
+        <!-- sketchy filter — applied to shape groups, never to text -->
+        <filter id="sketchy" x="-2%" y="-2%" width="104%" height="104%">
+          <feTurbulence type="fractalNoise" baseFrequency="0.018" numOctaves="2" seed="7"/>
+          <feDisplacementMap in="SourceGraphic" scale="1.4"/>
+        </filter>
+        <filter id="sketchy-arrows" x="-2%" y="-2%" width="104%" height="104%">
+          <feTurbulence type="fractalNoise" baseFrequency="0.022" numOctaves="2" seed="3"/>
+          <feDisplacementMap in="SourceGraphic" scale="1.2"/>
+        </filter>
+      </defs>
+
+      <!-- ===== Region boundaries (dashed, sketchy) ===== -->
+      <g filter="url(#sketchy)">
+        <!-- Left zone: MDM control plane -->
+        <rect x="40" y="80" width="360" height="528" rx="8" fill="none"
+          stroke="#a39e95" stroke-width="1" stroke-dasharray="6,5"/>
+        <!-- Right zone: Network egress -->
+        <rect x="800" y="80" width="360" height="528" rx="8" fill="none"
+          stroke="#a39e95" stroke-width="1" stroke-dasharray="6,5"/>
+      </g>
+      <!-- region labels (text — not sketched) -->
+      <rect x="60" y="68" width="148" height="22" rx="2" fill="#faf7f2"/>
+      <text x="68" y="84" fill="#6b655c" font-size="10" font-family="'Geist Mono', monospace"
+        letter-spacing="0.16em">CORPORATE MDM</text>
+      <rect x="820" y="68" width="148" height="22" rx="2" fill="#faf7f2"/>
+      <text x="828" y="84" fill="#6b655c" font-size="10" font-family="'Geist Mono', monospace"
+        letter-spacing="0.16em">NETWORK EGRESS</text>
+
+      <!-- ===== Arrows (drawn before nodes, sketchy) ===== -->
+      <g filter="url(#sketchy-arrows)">
+        <!-- LEFT chain: MDM agent -> settings file -->
+        <line x1="220" y1="220" x2="220" y2="284" stroke="#6b655c" stroke-width="1.2"
+          marker-end="url(#arrow)"/>
+        <!-- LEFT leash: settings file -> Claude (the leash, accent) -->
+        <line x1="400" y1="380" x2="500" y2="380" stroke="#b5523a" stroke-width="1.4"
+          marker-end="url(#arrow-accent)"/>
+        <!-- RIGHT leash: Claude -> ANTHROPIC_BASE_URL (the wire bend, accent) -->
+        <line x1="700" y1="380" x2="800" y2="380" stroke="#b5523a" stroke-width="1.4"
+          marker-end="url(#arrow-accent)"/>
+        <!-- RIGHT chain: env -> gateway -->
+        <line x1="980" y1="220" x2="980" y2="284" stroke="#6b655c" stroke-width="1.2"
+          marker-end="url(#arrow)"/>
+        <!-- gateway -> api.anthropic.com (forward, soft) -->
+        <line x1="980" y1="476" x2="980" y2="540" stroke="#a39e95" stroke-width="1.2"
+          marker-end="url(#arrow-soft)" stroke-dasharray="5,4"/>
+      </g>
+
+      <!-- ===== Arrow labels (with masking rects) ===== -->
+      <rect x="226" y="244" width="50" height="14" rx="2" fill="#faf7f2"/>
+      <text x="251" y="254" fill="#6b655c" font-size="9" font-family="'Geist Mono', monospace"
+        text-anchor="middle" letter-spacing="0.10em">PUSH</text>
+
+      <rect x="423" y="362" width="56" height="14" rx="2" fill="#faf7f2"/>
+      <text x="451" y="372" fill="#b5523a" font-size="9" font-family="'Geist Mono', monospace"
+        text-anchor="middle" letter-spacing="0.10em" font-weight="600">IMPOSES</text>
+
+      <rect x="720" y="362" width="62" height="14" rx="2" fill="#faf7f2"/>
+      <text x="751" y="372" fill="#b5523a" font-size="9" font-family="'Geist Mono', monospace"
+        text-anchor="middle" letter-spacing="0.10em" font-weight="600">REROUTES</text>
+
+      <rect x="996" y="244" width="60" height="14" rx="2" fill="#faf7f2"/>
+      <text x="1026" y="254" fill="#6b655c" font-size="9" font-family="'Geist Mono', monospace"
+        text-anchor="middle" letter-spacing="0.10em">EXPORTS</text>
+
+      <rect x="996" y="496" width="60" height="14" rx="2" fill="#faf7f2"/>
+      <text x="1026" y="506" fill="#a39e95" font-size="9" font-family="'Geist Mono', monospace"
+        text-anchor="middle" letter-spacing="0.10em">FORWARDS</text>
+
+      <!-- ===== LEFT NODES ===== -->
+      <!-- MDM agent (external) -->
+      <g filter="url(#sketchy)">
+        <rect x="80" y="140" width="280" height="80" rx="6" fill="#faf7f2"/>
+        <rect x="80" y="140" width="280" height="80" rx="6"
+          fill="rgba(28,25,23,0.03)" stroke="rgba(28,25,23,0.30)" stroke-width="1"/>
+        <rect x="92" y="150" width="64" height="14" rx="2" fill="none"
+          stroke="rgba(28,25,23,0.30)" stroke-width="0.8"/>
+      </g>
+      <text x="124" y="161" fill="#6b655c" font-size="8"
+        font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.14em">EXTERNAL</text>
+      <text x="220" y="186" fill="#1c1917" font-size="14" font-weight="600"
+        font-family="'Geist', sans-serif" text-anchor="middle">MDM agent</text>
+      <text x="220" y="206" fill="#6b655c" font-size="10"
+        font-family="'Geist Mono', monospace" text-anchor="middle">jamf · kandji · intune</text>
+
+      <!-- managed-settings.json (store, with schg badge) -->
+      <g filter="url(#sketchy)">
+        <rect x="80" y="284" width="280" height="192" rx="6" fill="#faf7f2"/>
+        <rect x="80" y="284" width="280" height="192" rx="6"
+          fill="rgba(28,25,23,0.05)" stroke="#6b655c" stroke-width="1"/>
+        <rect x="92" y="294" width="44" height="14" rx="2" fill="none"
+          stroke="rgba(107,101,92,0.50)" stroke-width="0.8"/>
+        <!-- schg lock badge -->
+        <rect x="296" y="294" width="56" height="14" rx="2" fill="#b5523a" opacity="0.9"/>
+      </g>
+      <text x="114" y="305" fill="#6b655c" font-size="8"
+        font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.14em">FILE</text>
+      <text x="324" y="305" fill="#faf7f2" font-size="8" font-weight="600"
+        font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.16em">SCHG</text>
+
+      <text x="220" y="340" fill="#1c1917" font-size="14" font-weight="600"
+        font-family="'Geist', sans-serif" text-anchor="middle">managed-settings.json</text>
+      <text x="220" y="360" fill="#6b655c" font-size="10"
+        font-family="'Geist Mono', monospace" text-anchor="middle">/Library/Application Support/</text>
+      <text x="220" y="376" fill="#6b655c" font-size="10"
+        font-family="'Geist Mono', monospace" text-anchor="middle">ClaudeCode/</text>
+
+      <line x1="100" y1="396" x2="340" y2="396" stroke="rgba(28,25,23,0.10)" stroke-width="0.8"/>
+
+      <text x="220" y="420" fill="#1c1917" font-size="11"
+        font-family="'Geist Mono', monospace" text-anchor="middle">permissions.deny</text>
+      <text x="220" y="438" fill="#1c1917" font-size="11"
+        font-family="'Geist Mono', monospace" text-anchor="middle">enabledMcpjsonServers</text>
+      <text x="220" y="456" fill="#1c1917" font-size="11"
+        font-family="'Geist Mono', monospace" text-anchor="middle">env.ANTHROPIC_BASE_URL</text>
+
+      <!-- ===== CENTER NODE — Claude Code (focal) ===== -->
+      <g filter="url(#sketchy)">
+        <rect x="500" y="284" width="200" height="192" rx="6" fill="#faf7f2"/>
+        <rect x="500" y="284" width="200" height="192" rx="6"
+          fill="#efe9df" stroke="#b5523a" stroke-width="1.2"/>
+        <rect x="512" y="294" width="64" height="14" rx="2" fill="none"
+          stroke="rgba(181,82,58,0.55)" stroke-width="0.8"/>
+      </g>
+      <text x="544" y="305" fill="#b5523a" font-size="8" font-weight="600"
+        font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.16em">RUNTIME</text>
+      <text x="600" y="368" fill="#1c1917" font-size="20" font-weight="600"
+        font-family="'Geist', sans-serif" text-anchor="middle">Claude Code</text>
+      <text x="600" y="392" fill="#6b655c" font-size="11"
+        font-family="'Geist Mono', monospace" text-anchor="middle">~/.claude/</text>
+      <line x1="520" y1="408" x2="680" y2="408" stroke="rgba(28,25,23,0.10)" stroke-width="0.8"/>
+      <text x="600" y="432" fill="#6b655c" font-size="10" font-style="italic"
+        font-family="'Instrument Serif', serif" text-anchor="middle">does what</text>
+      <text x="600" y="450" fill="#6b655c" font-size="10" font-style="italic"
+        font-family="'Instrument Serif', serif" text-anchor="middle">it's told</text>
+
+      <!-- ===== RIGHT NODES ===== -->
+      <!-- ANTHROPIC_BASE_URL env (small, optional/dashed treatment) -->
+      <g filter="url(#sketchy)">
+        <rect x="840" y="140" width="280" height="80" rx="6" fill="#faf7f2"/>
+        <rect x="840" y="140" width="280" height="80" rx="6"
+          fill="rgba(28,25,23,0.02)" stroke="rgba(28,25,23,0.20)" stroke-width="1"
+          stroke-dasharray="4,3"/>
+        <rect x="852" y="150" width="36" height="14" rx="2" fill="none"
+          stroke="rgba(28,25,23,0.30)" stroke-width="0.8"/>
+      </g>
+      <text x="870" y="161" fill="#6b655c" font-size="8"
+        font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.14em">ENV</text>
+      <text x="980" y="188" fill="#1c1917" font-size="13" font-weight="600"
+        font-family="'Geist Mono', monospace" text-anchor="middle">ANTHROPIC_BASE_URL</text>
+      <text x="980" y="208" fill="#6b655c" font-size="10"
+        font-family="'Geist Mono', monospace" text-anchor="middle">set by managed-settings</text>
+
+      <!-- Corporate AI Gateway (proxy / external) -->
+      <g filter="url(#sketchy)">
+        <rect x="840" y="284" width="280" height="192" rx="6" fill="#faf7f2"/>
+        <rect x="840" y="284" width="280" height="192" rx="6"
+          fill="rgba(28,25,23,0.03)" stroke="rgba(28,25,23,0.30)" stroke-width="1"/>
+        <rect x="852" y="294" width="64" height="14" rx="2" fill="none"
+          stroke="rgba(28,25,23,0.30)" stroke-width="0.8"/>
+      </g>
+      <text x="884" y="305" fill="#6b655c" font-size="8"
+        font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.14em">EXTERNAL</text>
+      <text x="980" y="340" fill="#1c1917" font-size="14" font-weight="600"
+        font-family="'Geist', sans-serif" text-anchor="middle">corporate AI gateway</text>
+      <text x="980" y="360" fill="#6b655c" font-size="10"
+        font-family="'Geist Mono', monospace" text-anchor="middle">litellm · helicone · custom</text>
+
+      <line x1="860" y1="386" x2="1100" y2="386" stroke="rgba(28,25,23,0.10)" stroke-width="0.8"/>
+
+      <text x="980" y="410" fill="#6b655c" font-size="10"
+        font-family="'Geist Mono', monospace" text-anchor="middle">logs prompts</text>
+      <text x="980" y="428" fill="#6b655c" font-size="10"
+        font-family="'Geist Mono', monospace" text-anchor="middle">enforces models</text>
+      <text x="980" y="446" fill="#6b655c" font-size="10"
+        font-family="'Geist Mono', monospace" text-anchor="middle">caps tokens</text>
+
+      <!-- api.anthropic.com (true destination, soft) -->
+      <g filter="url(#sketchy)">
+        <rect x="840" y="540" width="280" height="64" rx="6" fill="#faf7f2"/>
+        <rect x="840" y="540" width="280" height="64" rx="6"
+          fill="rgba(28,25,23,0.02)" stroke="rgba(28,25,23,0.20)" stroke-width="1"/>
+      </g>
+      <text x="980" y="566" fill="#6b655c" font-size="11"
+        font-family="'Geist Mono', monospace" text-anchor="middle">api.anthropic.com</text>
+      <text x="980" y="586" fill="#a39e95" font-size="9" font-style="italic"
+        font-family="'Instrument Serif', serif" text-anchor="middle">where Claude thinks it's going</text>
+
+      <!-- ===== Legend strip ===== -->
+      <line x1="40" y1="640" x2="1160" y2="640" stroke="rgba(28,25,23,0.12)" stroke-width="0.8"/>
+      <text x="40" y="660" fill="#6b655c" font-size="9"
+        font-family="'Geist Mono', monospace" letter-spacing="0.14em">LEGEND</text>
+
+      <!-- legend: leash arrow -->
+      <line x1="160" y1="656" x2="200" y2="656" stroke="#b5523a" stroke-width="1.4"
+        marker-end="url(#arrow-accent)"/>
+      <text x="208" y="660" fill="#1c1917" font-size="10"
+        font-family="'Geist', sans-serif">corporate leash</text>
+
+      <!-- legend: default -->
+      <line x1="340" y1="656" x2="380" y2="656" stroke="#6b655c" stroke-width="1.2"
+        marker-end="url(#arrow)"/>
+      <text x="388" y="660" fill="#1c1917" font-size="10"
+        font-family="'Geist', sans-serif">internal flow</text>
+
+      <!-- legend: optional -->
+      <line x1="500" y1="656" x2="540" y2="656" stroke="#a39e95" stroke-width="1.2"
+        marker-end="url(#arrow-soft)" stroke-dasharray="5,4"/>
+      <text x="548" y="660" fill="#1c1917" font-size="10"
+        font-family="'Geist', sans-serif">downstream forward</text>
+
+      <!-- legend: schg badge -->
+      <rect x="700" y="650" width="36" height="12" rx="2" fill="#b5523a" opacity="0.9"/>
+      <text x="718" y="659" fill="#faf7f2" font-size="7" font-weight="600"
+        font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.16em">SCHG</text>
+      <text x="744" y="660" fill="#1c1917" font-size="10"
+        font-family="'Geist', sans-serif">system-immutable flag</text>
+
+      <!-- legend: focal -->
+      <rect x="930" y="650" width="14" height="12" rx="2" fill="#efe9df"
+        stroke="#b5523a" stroke-width="1"/>
+      <text x="952" y="660" fill="#1c1917" font-size="10"
+        font-family="'Geist', sans-serif">focal node</text>
+
+      <!-- footer colophon -->
+      <text x="1160" y="700" fill="#a39e95" font-size="8" text-anchor="end"
+        font-family="'Geist Mono', monospace" letter-spacing="0.10em">harshit.cloud · architecture · sketchy</text>
+    </svg>
+  </div>
+</body>
+</html>

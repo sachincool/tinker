@@ -10,6 +10,8 @@ export interface Post {
   excerpt: string;
   content: string;
   featured?: boolean;
+  heroImage?: string;
+  heroAlt?: string;
   type: 'blog' | 'til';
 }
 
@@ -22,6 +24,40 @@ function clampToMetaLength(text: string): string {
   const slice = text.slice(0, max);
   const cut = slice.lastIndexOf(' ');
   return (cut > 80 ? slice.slice(0, cut) : slice).replace(/[,;:.\s]+$/, '') + '…';
+}
+
+// Pull the first inline image from markdown — that's the hero, by project convention.
+// Returns { src, alt } or null. Skips images inside code fences.
+function extractFirstImage(content: string): { src: string; alt: string } | null {
+  const withoutCode = content.replace(/```[\s\S]*?```/g, '');
+  const match = withoutCode.match(/!\[([^\]]*)]\(([^)\s]+)/);
+  if (!match) return null;
+  return { alt: match[1].trim(), src: match[2].trim() };
+}
+
+// Strip the first inline image (and an optional italic caption line right after it)
+// from raw markdown — used so the post page can render the hero as a frontispiece
+// without it appearing twice in the body.
+export function stripFirstImageBlock(content: string): string {
+  const lines = content.split('\n');
+  let inFence = false;
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    if (line.startsWith('```')) inFence = !inFence;
+    if (inFence) continue;
+    if (/^!\[[^\]]*]\([^)\s]+/.test(line)) {
+      // Found the first image. Drop it.
+      lines.splice(i, 1);
+      // Drop blank lines and an italic caption (a *Fig. — ...* style line) immediately after.
+      while (i < lines.length && lines[i].trim() === '') lines.splice(i, 1);
+      if (i < lines.length && /^\*[^*].+\*\s*$/.test(lines[i])) {
+        lines.splice(i, 1);
+        while (i < lines.length && lines[i].trim() === '') lines.splice(i, 1);
+      }
+      break;
+    }
+  }
+  return lines.join('\n');
 }
 
 // Derive a meta-description-friendly excerpt from raw markdown content.
@@ -54,6 +90,8 @@ export function getPostBySlug(slug: string, type: 'blog' | 'til' = 'blog'): Post
       ? clampToMetaLength(rawExcerpt)
       : deriveExcerpt(content, title);
 
+    const hero = extractFirstImage(content);
+
     return {
       slug,
       title,
@@ -62,6 +100,8 @@ export function getPostBySlug(slug: string, type: 'blog' | 'til' = 'blog'): Post
       excerpt,
       content,
       featured: data.featured || false,
+      heroImage: hero?.src,
+      heroAlt: hero?.alt,
       type,
     };
   } catch (error) {

@@ -8,31 +8,25 @@ featured: false
 
 # AWS Cost Optimization: How We Cut Our Bill by 60%
 
-When our CFO saw the AWS bill hit $50,000/month, I got a meeting invitation titled "We need to talk about AWS." Not fun.
+The CFO saw the AWS bill hit $50,000 a month and I got a calendar invite titled "We need to talk about AWS." I knew the meeting before I clicked accept.
 
-Three months later, we're at $20,000/month with better performance. Here's how.
+Three months later we were at $20,000 a month, with better p95 latency than when we started. The interesting part is that none of the wins were clever. Most of them were a checkbox someone had skipped two years ago.
 
-## The Starting Point
+![Per-service AWS bill before and after, animated as a dumbbell chart: EC2 $28k to $12k, RDS $12k to $7k, Data Transfer $6k to $2.5k, CloudWatch $2k to $0.5k, Other $2k to $1k, total $50k to $20k per month](/images/aws-cost-optimization-tricks/hero.gif)
 
-Our monthly AWS bill:
+*Fig. 1 — most of the bill was EC2 doing nothing in particular.*
 
-- **EC2**: $28,000
-- **RDS**: $12,000
-- **Data Transfer**: $6,000
-- **CloudWatch**: $2,000
-- **Other**: $2,000
+## the starting point
 
-**Total**: $50,000/month
+The bill broke down like this: EC2 $28,000, RDS $12,000, data transfer $6,000, CloudWatch $2,000, everything else $2,000. Fifty grand a month. The cost-allocation tags were missing on roughly 40% of resources, so for the first week the work was just figuring out who owned what.
 
-Most of it was waste.
+Most of it turned out to be waste. Not bad architecture, not premature scale, just defaults that nobody had revisited since the seed round.
 
-## Quick Win #1: Rightsize EC2 Instances
+## rightsizing the EC2 fleet
 
-### The Problem
+Every app server in the fleet was running on `m5.2xlarge`. Not because anything needed eight vCPUs, but because the previous engineer picked an instance type once in 2022 and Terraform copy-pasted it forever after.
 
-We were running everything on `m5.2xlarge` instances because... that's what the previous engineer used.
-
-### The Analysis
+A month of CloudWatch told the real story:
 
 ```bash
 # Check actual CPU utilization
@@ -46,40 +40,31 @@ aws cloudwatch get-metric-statistics \
   --statistics Average
 ```
 
-Average CPU usage: **12%**. Memory: **30%**.
+Average CPU 12%. Average memory 30%. The fleet was a parking lot.
 
-### The Fix
-
-Downsized to `m5.large` (1/4 the cost):
+Dropping to `m5.large` cut the per-hour rate by 4x:
 
 ```hcl
 # Before
 resource "aws_instance" "app" {
   instance_type = "m5.2xlarge"  # $0.384/hour
-  # ...
 }
 
 # After
 resource "aws_instance" "app" {
   instance_type = "m5.large"     # $0.096/hour
-  # ...
 }
 ```
 
-**Savings**: $18,000/month
+That single change saved $18,000 a month. p95 latency went down because the new instances were on a newer hypervisor generation. (I have stopped being surprised by this.)
 
-## Quick Win #2: Reserved Instances
+## reserved instances for the steady-state fleet
 
-### The Problem
+The app servers ran 24/7. We were paying On-Demand for them anyway, because nobody had wanted to commit a year ahead during a hiring freeze.
 
-We were paying On-Demand rates for instances that run 24/7.
-
-### The Fix
-
-Bought 1-year Reserved Instances for predictable workloads:
+The Cost Explorer recommendation API will tell you what to buy if you ask it nicely:
 
 ```bash
-# Analyze usage patterns
 aws ce get-reservation-purchase-recommendation \
   --service "Amazon Elastic Compute Cloud - Compute" \
   --lookback-period-in-days SIXTY_DAYS \
@@ -87,32 +72,20 @@ aws ce get-reservation-purchase-recommendation \
   --payment-option ALL_UPFRONT
 ```
 
-Bought RIs for:
+We bought 1-year RIs for ten `m5.large` app servers and five `c5.xlarge` API servers. 40% off On-Demand, no architectural change, no risk. $4,000 a month back.
 
-- 10 x `m5.large` (app servers)
-- 5 x `c5.xlarge` (API servers)
+The argument against RIs is always "but what if our load profile changes." Three months later it hadn't.
 
-**Discount**: 40% compared to On-Demand
+## spot for the things that can die
 
-**Savings**: $4,000/month
-
-## Quick Win #3: Spot Instances for Non-Critical
-
-### The Problem
-
-Our CI/CD runners were On-Demand.
-
-### The Fix
-
-Switched to Spot Instances with fallback:
+The CI fleet was On-Demand `c5.xlarge` runners that sat idle most of the day and got hammered for an hour around lunch. A perfect Spot workload — interruptible, parallelizable, with a queue in front.
 
 ```hcl
 resource "aws_launch_template" "ci_runner" {
   name_prefix   = "ci-runner-"
   image_id      = data.aws_ami.ubuntu.id
   instance_type = "c5.xlarge"
-  
-  # Request Spot
+
   instance_market_options {
     market_type = "spot"
     spot_options {
@@ -125,49 +98,42 @@ resource "aws_launch_template" "ci_runner" {
 
 resource "aws_autoscaling_group" "ci_runners" {
   name = "ci-runners"
-  
+
   mixed_instances_policy {
     launch_template {
       launch_template_specification {
         launch_template_id = aws_launch_template.ci_runner.id
       }
     }
-    
+
     instances_distribution {
-      on_demand_base_capacity                  = 1  # Always have 1 on-demand
-      on_demand_percentage_above_base_capacity = 0  # Rest are Spot
+      on_demand_base_capacity                  = 1  # one runner always on
+      on_demand_percentage_above_base_capacity = 0  # everything else is Spot
       spot_allocation_strategy                 = "capacity-optimized"
     }
   }
-  
+
   min_size = 2
   max_size = 10
 }
 ```
 
-**Savings**: $2,500/month
+One On-Demand runner for the always-on baseline, the rest Spot, capacity-optimized strategy so AWS picks pools with low interruption rates. $2,500 a month. The CI team noticed the build queue was faster, not that the underlying instances had changed.
 
-## Quick Win #4: S3 Lifecycle Policies
+## S3 lifecycle policies
 
-### The Problem
-
-We had 50TB of S3 data. All in Standard storage.
-
-### The Analysis
+We had 50 TB in S3, all in Standard. The application logs were the worst offender — every JSON line our services had ever emitted, sitting at $0.023 per GB-month, being read by exactly nobody.
 
 ```bash
-# Check access patterns
 aws s3api list-objects-v2 \
   --bucket my-bucket \
   --query "Contents[?LastModified<'2023-01-01'].[Key,Size]" \
   --output table
 ```
 
-Most files hadn't been accessed in months.
+Most of it hadn't been touched in a year.
 
-### The Fix
-
-Implemented lifecycle policies:
+The lifecycle policy is the thing AWS lets you write once and forget:
 
 ```json
 {
@@ -175,52 +141,32 @@ Implemented lifecycle policies:
     {
       "Id": "Archive old logs",
       "Status": "Enabled",
-      "Filter": {
-        "Prefix": "logs/"
-      },
+      "Filter": { "Prefix": "logs/" },
       "Transitions": [
-        {
-          "Days": 30,
-          "StorageClass": "STANDARD_IA"
-        },
-        {
-          "Days": 90,
-          "StorageClass": "GLACIER_IR"
-        },
-        {
-          "Days": 180,
-          "StorageClass": "DEEP_ARCHIVE"
-        }
+        { "Days": 30,  "StorageClass": "STANDARD_IA" },
+        { "Days": 90,  "StorageClass": "GLACIER_IR" },
+        { "Days": 180, "StorageClass": "DEEP_ARCHIVE" }
       ]
     },
     {
       "Id": "Delete old temp files",
       "Status": "Enabled",
-      "Filter": {
-        "Prefix": "temp/"
-      },
-      "Expiration": {
-        "Days": 7
-      }
+      "Filter": { "Prefix": "temp/" },
+      "Expiration": { "Days": 7 }
     },
     {
       "Id": "Intelligent tiering for backups",
       "Status": "Enabled",
-      "Filter": {
-        "Prefix": "backups/"
-      },
+      "Filter": { "Prefix": "backups/" },
       "Transitions": [
-        {
-          "Days": 0,
-          "StorageClass": "INTELLIGENT_TIERING"
-        }
+        { "Days": 0, "StorageClass": "INTELLIGENT_TIERING" }
       ]
     }
   ]
 }
 ```
 
-Apply it:
+Apply it once:
 
 ```bash
 aws s3api put-bucket-lifecycle-configuration \
@@ -228,95 +174,73 @@ aws s3api put-bucket-lifecycle-configuration \
   --lifecycle-configuration file://lifecycle.json
 ```
 
-**Savings**: $3,000/month
+$3,000 a month. The work was reading enough of the data to be confident no on-call runbook secretly depended on a five-year-old log line. (One did. We rewrote the runbook.)
 
-## Quick Win #5: RDS Optimization
+## RDS, where the real fat lived
 
-### The Problem
+The dev database was a `db.r5.4xlarge`. Sixteen vCPUs and 128 GB of RAM, running 24/7, used by maybe three engineers between 10am and 6pm in one timezone. It cost more than half the engineering team's laptops combined.
 
-We had a `db.r5.4xlarge` RDS instance running 24/7 for development.
-
-### The Fix
-
-1. **Downsize dev database**: `db.r5.4xlarge` → `db.t3.large`
-2. **Enable auto-stop for dev**: Stops at night, weekends
-3. **Use Aurora Serverless v2 for staging**
+The fix was three changes. Drop the dev instance to `db.t3.large`. Auto-stop it at night and on weekends. Move staging to Aurora Serverless v2 so it scales to half a capacity unit when idle:
 
 ```hcl
 resource "aws_db_instance" "dev" {
   identifier     = "dev-database"
-  instance_class = "db.t3.large"  # Was db.r5.4xlarge
-  
-  # Enable IAM authentication (no need for password rotation)
+  instance_class = "db.t3.large"  # was db.r5.4xlarge
+
   iam_database_authentication_enabled = true
-  
-  # Enable auto minor version upgrades
-  auto_minor_version_upgrade = true
-  
-  # Backup settings
+  auto_minor_version_upgrade          = true
+
   backup_retention_period = 7
-  backup_window          = "03:00-04:00"
-  maintenance_window     = "mon:04:00-mon:05:00"
+  backup_window           = "03:00-04:00"
+  maintenance_window      = "mon:04:00-mon:05:00"
 }
 
 resource "aws_rds_cluster" "staging" {
   cluster_identifier = "staging-aurora"
-  engine            = "aurora-postgresql"
-  engine_mode       = "provisioned"
-  
+  engine             = "aurora-postgresql"
+  engine_mode        = "provisioned"
+
   serverlessv2_scaling_configuration {
-    max_capacity = 2.0   # Scale up when needed
-    min_capacity = 0.5   # Scale down when idle
+    max_capacity = 2.0
+    min_capacity = 0.5
   }
 }
 ```
 
-**Savings**: $5,000/month
+$5,000 a month. The complaints about staging being slow on the first request after lunch went away once people understood that two seconds of cold-start was the trade.
 
-## Quick Win #6: CloudWatch Logs Retention
+## CloudWatch logs, kept forever
 
-### The Problem
+CloudWatch logs default to "never expire," which is fine if you want to be the company paying $0.03 per GB ingested for a stack trace from 2021.
 
-We were keeping all logs forever.
-
-### The Fix
-
-Set retention policies:
+A short script set retention on every log group in the account:
 
 ```python
 import boto3
 
 client = boto3.client('logs')
 
-# Set retention for all log groups
 log_groups = client.describe_log_groups()
 
 for log_group in log_groups['logGroups']:
     group_name = log_group['logGroupName']
-    
-    # Dev/staging: 7 days
-    # Production: 30 days
+
+    # prod keeps 30 days, everything else keeps 7
     retention_days = 30 if 'prod' in group_name else 7
-    
+
     client.put_retention_policy(
         logGroupName=group_name,
         retentionInDays=retention_days
     )
-    
+
     print(f"Set {group_name} to {retention_days} days")
 ```
 
-**Savings**: $1,500/month
+$1,500 a month, recovered from log groups whose entire purpose was to exist.
 
-## Quick Win #7: NAT Gateway Consolidation
+## the NAT gateway tax
 
-### The Problem
-
-We had NAT Gateways in every AZ. $0.045/hour each = $100/month per gateway.
-
-### The Fix
-
-Consolidated to 1 NAT Gateway (acceptable for non-critical):
+Three NAT Gateways, one per AZ, $0.045 per hour each. The HA story was airtight. The actual traffic profile didn't justify it for the non-prod VPCs.
 
 ```hcl
 # Before: 3 NAT Gateways
@@ -328,38 +252,26 @@ resource "aws_nat_gateway" "az3" { /* ... */ }
 resource "aws_nat_gateway" "main" {
   allocation_id = aws_eip.nat.id
   subnet_id     = aws_subnet.public[0].id
-  
-  tags = {
-    Name = "main-nat-gateway"
-  }
+
+  tags = { Name = "main-nat-gateway" }
 }
 
-# Update route tables
 resource "aws_route" "private_nat" {
   for_each = aws_route_table.private
-  
+
   route_table_id         = each.value.id
   destination_cidr_block = "0.0.0.0/0"
   nat_gateway_id         = aws_nat_gateway.main.id
 }
 ```
 
-**Savings**: $200/month
+$200 a month. We kept the three-gateway HA setup in production. The argument against single-NAT in dev is "but what if the AZ goes down?" The answer in dev is "then dev is down."
 
-For critical prod, we kept HA setup.
+## data transfer, the silent killer
 
-## Quick Win #8: Data Transfer Optimization
-
-### The Problem
-
-$6,000/month in data transfer fees.
-
-### The Analysis
-
-Used VPC Flow Logs to identify traffic:
+$6,000 a month in data transfer fees, which is the kind of bill where you can't actually see what you're paying for until you turn on VPC Flow Logs and read them.
 
 ```bash
-# Enable VPC Flow Logs
 aws ec2 create-flow-logs \
   --resource-type VPC \
   --resource-ids vpc-xxxxx \
@@ -368,14 +280,9 @@ aws ec2 create-flow-logs \
   --log-destination arn:aws:s3:::my-flow-logs
 ```
 
-Found:
+Two culprits. App servers were pulling Docker images from external registries on every cold start, paying NAT egress on every layer. And one stale cron job was syncing a database snapshot across regions every hour for a use case that nobody could remember sponsoring.
 
-- App servers pulling Docker images from external registries
-- Databases syncing across regions unnecessarily
-
-### The Fix
-
-1. **Use ECR VPC Endpoints** (no data charges):
+ECR interface endpoints route the registry traffic privately, so it never leaves the VPC and never touches NAT:
 
 ```hcl
 resource "aws_vpc_endpoint" "ecr_api" {
@@ -383,8 +290,8 @@ resource "aws_vpc_endpoint" "ecr_api" {
   service_name        = "com.amazonaws.us-east-1.ecr.api"
   vpc_endpoint_type   = "Interface"
   private_dns_enabled = true
-  
-  subnet_ids = aws_subnet.private[*].id
+
+  subnet_ids         = aws_subnet.private[*].id
   security_group_ids = [aws_security_group.vpc_endpoints.id]
 }
 
@@ -393,30 +300,28 @@ resource "aws_vpc_endpoint" "ecr_dkr" {
   service_name        = "com.amazonaws.us-east-1.ecr.dkr"
   vpc_endpoint_type   = "Interface"
   private_dns_enabled = true
-  
-  subnet_ids = aws_subnet.private[*].id
+
+  subnet_ids         = aws_subnet.private[*].id
   security_group_ids = [aws_security_group.vpc_endpoints.id]
 }
 ```
 
-2. **Use S3 Gateway Endpoint** (free):
+The S3 gateway endpoint is free, which is the only kind of free that AWS hands out without an asterisk:
 
 ```hcl
 resource "aws_vpc_endpoint" "s3" {
   vpc_id       = aws_vpc.main.id
   service_name = "com.amazonaws.us-east-1.s3"
-  
+
   route_table_ids = aws_route_table.private[*].id
 }
 ```
 
-3. **Enabled CloudFront for static assets**
+CloudFront went in front of the static asset bucket, which moved bytes out of the per-GB egress lane and into the CDN lane. $3,500 a month back, most of which was the ECR change alone.
 
-**Savings**: $3,500/month
+## budgets, so the next surprise isn't a surprise
 
-## Ongoing: AWS Cost Explorer & Budgets
-
-Set up alerts to prevent surprises:
+The reason this whole exercise happened in the first place was that nobody had a budget alert. The fix is twelve lines of Terraform:
 
 ```hcl
 resource "aws_budgets_budget" "monthly" {
@@ -425,102 +330,28 @@ resource "aws_budgets_budget" "monthly" {
   limit_amount = "25000"
   limit_unit   = "USD"
   time_unit    = "MONTHLY"
-  
+
   notification {
     comparison_operator        = "GREATER_THAN"
     threshold                  = 80
-    threshold_type            = "PERCENTAGE"
-    notification_type         = "ACTUAL"
+    threshold_type             = "PERCENTAGE"
+    notification_type          = "ACTUAL"
     subscriber_email_addresses = ["alerts@company.com"]
   }
-  
+
   notification {
     comparison_operator        = "GREATER_THAN"
     threshold                  = 100
-    threshold_type            = "PERCENTAGE"
-    notification_type         = "FORECASTED"
+    threshold_type             = "PERCENTAGE"
+    notification_type          = "FORECASTED"
     subscriber_email_addresses = ["cfo@company.com"]
   }
 }
 ```
 
-## The Complete Checklist
+The CFO gets the forecasted-overshoot alert. The on-call gets the 80%-of-actual alert. By the time the second one fires, somebody is already digging.
 
-### Compute
-
-- Rightsize EC2 instances based on actual usage
-- Use Reserved Instances for steady-state workloads
-- Use Spot Instances for fault-tolerant workloads
-- Stop/start non-production resources
-- Use Auto Scaling (scale down when idle)
-- Consider Graviton instances (20-40% cheaper)
-
-### Storage
-
-- Implement S3 lifecycle policies
-- Delete unused EBS volumes
-- Use appropriate storage classes (IA, Glacier)
-- Enable S3 Intelligent-Tiering
-- Compress data before storing
-- Delete old snapshots
-
-### Database
-
-- Rightsize RDS instances
-- Use Aurora Serverless for variable workloads
-- Enable automated backups cleanup
-- Consider RDS Reserved Instances
-- Use read replicas efficiently
-- Enable Performance Insights (it's cheap)
-
-### Network
-
-- Consolidate NAT Gateways (if acceptable)
-- Use VPC Endpoints for AWS services
-- Enable CloudFront for static content
-- Review data transfer patterns
-- Use AWS Direct Connect for large transfers
-- Avoid cross-region data transfer
-
-### Monitoring
-
-- Set CloudWatch Logs retention
-- Delete unused custom metrics
-- Use metric filters sparingly
-- Consider alternative logging (CloudWatch is expensive)
-- Enable AWS Cost Anomaly Detection
-
-### General
-
-- Tag everything for cost allocation
-- Set up AWS Budgets and alerts
-- Review AWS Trusted Advisor weekly
-- Use AWS Cost Explorer regularly
-- Delete unused resources
-- Enable AWS Cost Optimization Hub
-
-## Tools That Help
-
-### Cost Analysis
-
-- **AWS Cost Explorer**: Built-in, free
-- **CloudHealth**: Multi-cloud visibility
-- **CloudCheckr**: Deep analysis
-- **Komiser**: Open-source alternative
-
-### Automation
-
-- **AWS Instance Scheduler**: Stop/start EC2 on schedule
-- **Cloud Custodian**: Policy-as-code for cleanup
-- **Terraform**: Infrastructure as code
-
-### Monitoring
-
-- **AWS Cost Anomaly Detection**: Free, catches spikes
-- **CloudWatch**: Set up billing alarms
-- **Datadog**: Unified monitoring + costs
-
-## The Results
+## the receipts
 
 | Category | Before | After | Savings |
 |----------|--------|-------|---------|
@@ -531,35 +362,6 @@ resource "aws_budgets_budget" "monthly" {
 | Other | $2,000 | $1,000 | 50% |
 | **Total** | **$50,000** | **$20,000** | **60%** |
 
-## Lessons Learned
+Six weeks of part-time work, no architecture rewrites, no migrations, no vendor changes. Mostly Terraform diffs and one Python script.
 
-1. **Tag everything**: Can't optimize what you can't measure
-2. **Review monthly**: Costs creep up slowly
-3. **Automate cleanup**: Manual cleanup doesn't scale
-4. **Challenge defaults**: "We've always done it this way" is expensive
-5. **Monitor continuously**: Set up alerts BEFORE you get surprised
-
-## Common Mistakes to Avoid
-
-1. **Over-optimizing**: Don't sacrifice reliability for $10/month
-2. **Ignoring reserved instances**: 40% discount is huge
-3. **Keeping zombie resources**: Unused resources cost money
-4. **Not setting budgets**: Prevention is cheaper than cure
-5. **Optimizing once**: This is an ongoing process
-
-## Final Thoughts
-
-AWS cost optimization isn't a one-time thing. It's a continuous process.
-
-Our routine now:
-
-- Weekly review of new resources
-- Monthly cost analysis meeting
-- Quarterly deep-dive optimization
-
-The CFO is happy. Our budget is predictable. And we can actually scale without fear.
-
-**Remember**: Every dollar saved is a dollar earned. And it compounds.
-
-What's your AWS horror story? Share your cost-saving wins below!
-
+The line from the postmortem the CFO actually circulated was the part I keep coming back to: *"The bill didn't grow because we scaled. The bill grew because nobody was looking."*

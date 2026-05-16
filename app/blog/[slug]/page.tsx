@@ -1,8 +1,9 @@
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Calendar, Clock } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { ReadingProgress } from "@/components/blog/reading-progress";
 import { ViewCounter } from "@/components/blog/view-counter";
 
@@ -10,7 +11,7 @@ import { TableOfContents } from "@/components/blog/table-of-contents";
 import { Comments } from "@/components/blog/comments";
 import { ShareButton } from "@/components/blog/share-button";
 import { MarkdownContent } from "@/components/blog/markdown-content";
-import { getPostBySlug, getAllPosts } from "@/lib/posts";
+import { getPostBySlug, getAllPosts, stripFirstImageBlock } from "@/lib/posts";
 import { NewsletterForm } from "@/components/blog/newsletter-form";
 import { notFound } from "next/navigation";
 import readingTime from "reading-time";
@@ -99,6 +100,8 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
   // Calculate reading time
   const stats = readingTime(post.content);
   const readTime = stats.text;
+
+  const [primaryTag, ...secondaryTags] = post.tags;
 
   // Get base URL for structured data
   const headersList = await headers();
@@ -190,54 +193,99 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
       <div className="max-w-7xl mx-auto px-4">
         <div className="lg:grid lg:grid-cols-[1fr_280px] lg:gap-16">
           <div className="max-w-3xl space-y-8 min-w-0">
-            <Button variant="ghost" asChild>
+            <Button variant="ghost" size="sm" asChild className="-ml-3 h-8 text-muted-foreground hover:text-foreground">
               <Link href="/blog">
-                <ArrowLeft className="mr-2 h-4 w-4" />
+                <ArrowLeft className="mr-1.5 h-3.5 w-3.5" />
                 Back to Blog
               </Link>
             </Button>
 
-            <header className="space-y-5 pb-8 border-b border-border/60">
-              <h1 className="text-balance text-4xl md:text-5xl font-bold leading-[1.15] tracking-tight text-foreground break-words">
+            <header className="relative space-y-6 pb-10">
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute -top-16 -left-16 -right-16 h-64 -z-10"
+                style={{
+                  background:
+                    "radial-gradient(ellipse at top left, rgba(59,130,246,0.08), transparent 55%), radial-gradient(ellipse at top right, rgba(168,85,247,0.06), transparent 55%)",
+                }}
+              />
+
+              {primaryTag && (
+                <Link
+                  href={`/tags/${primaryTag}`}
+                  className="inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
+                >
+                  <span className="h-1 w-1 rounded-full bg-current" />
+                  {primaryTag}
+                </Link>
+              )}
+
+              <h1 className="text-balance text-4xl md:text-5xl lg:text-[3.5rem] font-bold leading-[1.08] tracking-tight text-foreground break-words">
                 {post.title}
               </h1>
 
               {post.excerpt && (
-                <p className="text-pretty text-lg md:text-xl text-muted-foreground leading-relaxed">
+                <p className="text-pretty text-lg md:text-xl text-muted-foreground leading-[1.55] max-w-[62ch]">
                   {post.excerpt}
                 </p>
               )}
 
-              <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-muted-foreground">
-                <time dateTime={post.date}>
-                  {new Date(post.date).toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
-                  })}
-                </time>
-                <span aria-hidden="true">·</span>
-                <span>{readTime}</span>
-                <span aria-hidden="true">·</span>
+              <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-muted-foreground pt-1">
+                <span className="inline-flex items-center gap-1.5">
+                  <Calendar className="h-3.5 w-3.5" />
+                  <time dateTime={post.date}>
+                    {new Date(post.date).toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'short',
+                      day: 'numeric'
+                    })}
+                  </time>
+                </span>
+                <span className="inline-flex items-center gap-1.5">
+                  <Clock className="h-3.5 w-3.5" />
+                  {readTime}
+                </span>
                 <ViewCounter slug={post.slug} />
               </div>
 
-              <div className="flex flex-wrap gap-2">
-                {post.tags.map((tag) => (
-                  <Link key={tag} href={`/tags/${tag}`}>
-                    <Badge
-                      variant="secondary"
-                      className="hover:bg-blue-100 dark:hover:bg-blue-900 hover:text-blue-800 dark:hover:text-blue-100"
-                    >
-                      #{tag}
-                    </Badge>
-                  </Link>
-                ))}
-              </div>
+              {secondaryTags.length > 0 && (
+                <div className="flex flex-wrap gap-1.5 pt-1">
+                  {secondaryTags.map((tag) => (
+                    <Link key={tag} href={`/tags/${tag}`}>
+                      <Badge
+                        variant="secondary"
+                        className="font-normal text-xs bg-muted/60 hover:bg-blue-100 dark:hover:bg-blue-900/40 hover:text-blue-800 dark:hover:text-blue-200"
+                      >
+                        #{tag}
+                      </Badge>
+                    </Link>
+                  ))}
+                </div>
+              )}
+
+              <div
+                aria-hidden="true"
+                className="h-px w-16 bg-primary/60"
+              />
             </header>
 
+            {post.heroImage && (
+              <figure className="-mx-4 sm:mx-0 my-8 sm:my-10">
+                <div className="relative aspect-[16/9] overflow-hidden sm:rounded-lg border-y sm:border border-border/60 bg-muted/40">
+                  <Image
+                    src={post.heroImage}
+                    alt={post.heroAlt || post.title}
+                    fill
+                    priority
+                    sizes="(min-width: 1024px) 768px, 100vw"
+                    className="object-cover"
+                  />
+                </div>
+              </figure>
+            )}
+
             <div id="article-content">
-              <MarkdownContent content={post.content} />
+              <MarkdownContent content={post.heroImage ? stripFirstImageBlock(post.content) : post.content} />
             </div>
 
             <Comments slug={slug} shareButton={<ShareButton title={post.title} excerpt={post.excerpt} />} />

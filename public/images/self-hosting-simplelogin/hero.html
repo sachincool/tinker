@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>why cloudflare email routing can't reply</title>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --color-paper:   #11141c;
+      --color-paper-2: #161a24;
+      --color-ink:     #ecedf0;
+      --color-muted:   #8a93a6;
+      --color-soft:    #5c6478;
+      --color-rule:    rgba(236,237,240,0.10);
+      --color-broken:  #ff6b5a;
+      --color-works:   #5bc0d9;
+      --font-sans:     'Geist', system-ui, sans-serif;
+      --font-serif:    'Instrument Serif', serif;
+      --font-mono:     'Geist Mono', ui-monospace, monospace;
+    }
+
+    html, body { background: var(--color-paper); }
+
+    body {
+      font-family: var(--font-sans);
+      color: var(--color-ink);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    .frame { max-width: 1520px; width: 100%; }
+
+    .eyebrow {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--color-muted);
+      margin-bottom: 0.6rem;
+    }
+
+    h1 {
+      font-family: var(--font-serif);
+      font-size: clamp(1.8rem, 2.8vw + 0.75rem, 2.6rem);
+      font-weight: 400;
+      letter-spacing: -0.015em;
+      line-height: 1.15;
+      color: var(--color-ink);
+      margin-bottom: 1.25rem;
+    }
+
+    svg { width: 100%; display: block; }
+  </style>
+</head>
+<body>
+  <div class="frame">
+    <p class="eyebrow">Figure &middot; mail flow comparison</p>
+    <h1>two stacks, one reply problem.</h1>
+
+    <svg viewBox="0 0 1600 760" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Sequence diagram comparing Cloudflare Email Routing inbound-only flow against SimpleLogin self-hosted bidirectional flow">
+      <defs>
+        <pattern id="dots" width="24" height="24" patternUnits="userSpaceOnUse">
+          <circle cx="1" cy="1" r="0.9" fill="rgba(236,237,240,0.05)"/>
+        </pattern>
+        <marker id="arrow-muted" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+          <polygon points="0 0, 8 3, 0 6" fill="#8a93a6"/>
+        </marker>
+        <marker id="arrow-broken" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+          <polygon points="0 0, 8 3, 0 6" fill="#ff6b5a"/>
+        </marker>
+        <marker id="arrow-works" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+          <polygon points="0 0, 8 3, 0 6" fill="#5bc0d9"/>
+        </marker>
+      </defs>
+
+      <rect width="100%" height="100%" fill="#11141c"/>
+      <rect width="100%" height="100%" fill="url(#dots)" opacity="0.7"/>
+
+      <!-- Vertical divider between the two scenarios -->
+      <line x1="800" y1="40" x2="800" y2="700" stroke="rgba(236,237,240,0.10)" stroke-width="1" stroke-dasharray="3,4"/>
+
+      <!-- ========================================================== -->
+      <!-- LEFT PANEL: Cloudflare Email Routing (broken at reply)     -->
+      <!-- ========================================================== -->
+
+      <!-- Panel eyebrow -->
+      <text x="60" y="64" fill="rgba(255,107,90,0.10)" font-size="56" font-weight="600" font-family="'Geist Mono', monospace" letter-spacing="0.04em">CLOUDFLARE</text>
+      <text x="60" y="92" fill="#ff6b5a" font-size="9" font-family="'Geist Mono', monospace" letter-spacing="0.22em" font-weight="500">INBOUND-ONLY ROUTING</text>
+
+      <!-- Lifeline columns: SENDER, ALIAS, GMAIL -->
+      <!-- Sender -->
+      <rect x="80" y="120" width="160" height="44" rx="6" fill="rgba(236,237,240,0.06)" stroke="#8a93a6" stroke-width="1"/>
+      <text x="160" y="144" fill="#ecedf0" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">stranger@example</text>
+      <text x="160" y="158" fill="#8a93a6" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">sender</text>
+
+      <!-- Alias (focal-broken) -->
+      <rect x="320" y="120" width="160" height="44" rx="6" fill="rgba(255,107,90,0.06)" stroke="#ff6b5a" stroke-width="1.2" stroke-dasharray="4,4"/>
+      <text x="400" y="144" fill="#ecedf0" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">hi@harshit.cloud</text>
+      <text x="400" y="158" fill="#ff6b5a" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">cf email routing</text>
+
+      <!-- Gmail -->
+      <rect x="560" y="120" width="160" height="44" rx="6" fill="rgba(236,237,240,0.04)" stroke="rgba(236,237,240,0.30)" stroke-width="1"/>
+      <text x="640" y="144" fill="#ecedf0" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">harshit@gmail</text>
+      <text x="640" y="158" fill="#8a93a6" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">real mailbox</text>
+
+      <!-- Lifelines -->
+      <line x1="160" y1="170" x2="160" y2="640" stroke="rgba(236,237,240,0.20)" stroke-width="1" stroke-dasharray="3,3"/>
+      <line x1="400" y1="170" x2="400" y2="640" stroke="rgba(255,107,90,0.30)" stroke-width="1" stroke-dasharray="3,3"/>
+      <line x1="640" y1="170" x2="640" y2="640" stroke="rgba(236,237,240,0.20)" stroke-width="1" stroke-dasharray="3,3"/>
+
+      <!-- INBOUND step (works) -->
+      <text x="280" y="206" fill="#8a93a6" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.18em">STEP 01 &middot; INBOUND</text>
+      <line x1="160" y1="220" x2="395" y2="220" stroke="#8a93a6" stroke-width="1.2" marker-end="url(#arrow-muted)"/>
+      <rect x="220" y="226" width="120" height="14" rx="2" fill="#11141c"/>
+      <text x="280" y="237" fill="#8a93a6" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">MAIL TO ALIAS</text>
+
+      <!-- Forward to Gmail -->
+      <line x1="400" y1="262" x2="635" y2="262" stroke="#8a93a6" stroke-width="1.2" marker-end="url(#arrow-muted)"/>
+      <rect x="460" y="268" width="120" height="14" rx="2" fill="#11141c"/>
+      <text x="520" y="279" fill="#8a93a6" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">SMTP FORWARD</text>
+
+      <!-- Receipt note on Gmail side -->
+      <text x="640" y="300" fill="#5bc0d9" font-size="10" font-family="'Geist', sans-serif" text-anchor="middle">delivered. fine so far.</text>
+
+      <!-- REPLY step (broken) -->
+      <text x="400" y="368" fill="#ff6b5a" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.18em">STEP 02 &middot; REPLY</text>
+
+      <!-- Gmail tries to reply: starts at gmail, exits to sender directly -->
+      <line x1="640" y1="394" x2="640" y2="448" stroke="#ff6b5a" stroke-width="1.2" stroke-dasharray="5,4"/>
+      <line x1="640" y1="448" x2="165" y2="448" stroke="#ff6b5a" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#arrow-broken)"/>
+      <rect x="320" y="436" width="200" height="22" rx="2" fill="#11141c"/>
+      <text x="420" y="446" fill="#ff6b5a" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">FROM: HARSHIT@GMAIL</text>
+      <text x="420" y="456" fill="#ff6b5a" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">(real address leaked)</text>
+
+      <!-- Big X over the alias lifeline at reply step to indicate it's bypassed -->
+      <g transform="translate(400, 422)">
+        <circle r="14" fill="#11141c" stroke="#ff6b5a" stroke-width="1.5"/>
+        <line x1="-6" y1="-6" x2="6" y2="6" stroke="#ff6b5a" stroke-width="1.6"/>
+        <line x1="6" y1="-6" x2="-6" y2="6" stroke="#ff6b5a" stroke-width="1.6"/>
+      </g>
+      <text x="400" y="470" fill="#ff6b5a" font-size="10" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.04em">alias bypassed</text>
+
+      <!-- Editorial aside -->
+      <text x="400" y="568" fill="#8a93a6" font-size="13" font-family="'Instrument Serif', serif" font-style="italic" text-anchor="middle">the alias works once. the moment you hit reply,</text>
+      <text x="400" y="588" fill="#8a93a6" font-size="13" font-family="'Instrument Serif', serif" font-style="italic" text-anchor="middle">the whole point of having one evaporates.</text>
+
+      <!-- ========================================================== -->
+      <!-- RIGHT PANEL: SimpleLogin (bidirectional)                   -->
+      <!-- ========================================================== -->
+
+      <text x="860" y="64" fill="rgba(91,192,217,0.10)" font-size="56" font-weight="600" font-family="'Geist Mono', monospace" letter-spacing="0.04em">SIMPLELOGIN</text>
+      <text x="860" y="92" fill="#5bc0d9" font-size="9" font-family="'Geist Mono', monospace" letter-spacing="0.22em" font-weight="500">SELF-HOSTED &middot; HETZNER &middot; BREVO</text>
+
+      <!-- Lifelines: SENDER, SL (Postfix+app on Hetzner), GMAIL -->
+      <rect x="860" y="120" width="160" height="44" rx="6" fill="rgba(236,237,240,0.06)" stroke="#8a93a6" stroke-width="1"/>
+      <text x="940" y="144" fill="#ecedf0" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">stranger@example</text>
+      <text x="940" y="158" fill="#8a93a6" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">sender</text>
+
+      <!-- SimpleLogin (focal works) -->
+      <rect x="1100" y="112" width="200" height="60" rx="6" fill="rgba(91,192,217,0.06)" stroke="#5bc0d9" stroke-width="1.2"/>
+      <text x="1200" y="134" fill="#ecedf0" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">SimpleLogin</text>
+      <text x="1200" y="150" fill="#5bc0d9" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">postfix :25 &middot; sl-app</text>
+      <text x="1200" y="164" fill="#5bc0d9" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">brevo smtp relay</text>
+
+      <!-- Gmail -->
+      <rect x="1380" y="120" width="160" height="44" rx="6" fill="rgba(236,237,240,0.04)" stroke="rgba(236,237,240,0.30)" stroke-width="1"/>
+      <text x="1460" y="144" fill="#ecedf0" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">harshit@gmail</text>
+      <text x="1460" y="158" fill="#8a93a6" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">real mailbox</text>
+
+      <!-- Lifelines -->
+      <line x1="940" y1="170" x2="940" y2="640" stroke="rgba(236,237,240,0.20)" stroke-width="1" stroke-dasharray="3,3"/>
+      <line x1="1200" y1="180" x2="1200" y2="640" stroke="rgba(91,192,217,0.30)" stroke-width="1" stroke-dasharray="3,3"/>
+      <line x1="1460" y1="170" x2="1460" y2="640" stroke="rgba(236,237,240,0.20)" stroke-width="1" stroke-dasharray="3,3"/>
+
+      <!-- STEP 01 INBOUND -->
+      <text x="1070" y="206" fill="#8a93a6" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.18em">STEP 01 &middot; INBOUND</text>
+      <line x1="940" y1="220" x2="1195" y2="220" stroke="#8a93a6" stroke-width="1.2" marker-end="url(#arrow-muted)"/>
+      <rect x="1000" y="226" width="140" height="14" rx="2" fill="#11141c"/>
+      <text x="1070" y="237" fill="#8a93a6" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">TO ALIAS &middot; MX</text>
+
+      <!-- SL forwards rewritten to Gmail -->
+      <line x1="1200" y1="262" x2="1455" y2="262" stroke="#5bc0d9" stroke-width="1.2" marker-end="url(#arrow-works)"/>
+      <rect x="1260" y="268" width="140" height="14" rx="2" fill="#11141c"/>
+      <text x="1330" y="279" fill="#5bc0d9" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">REWRITTEN FORWARD</text>
+
+      <!-- STEP 02 REPLY -->
+      <text x="1200" y="368" fill="#5bc0d9" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.18em">STEP 02 &middot; REPLY</text>
+
+      <!-- Gmail replies to a reverse-alias hosted by SL -->
+      <line x1="1460" y1="394" x2="1205" y2="394" stroke="#5bc0d9" stroke-width="1.2" marker-end="url(#arrow-works)"/>
+      <rect x="1260" y="380" width="140" height="14" rx="2" fill="#11141c"/>
+      <text x="1330" y="391" fill="#5bc0d9" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">REPLY → REVERSE-ALIAS</text>
+
+      <!-- SL relays to sender via Brevo, FROM the alias -->
+      <line x1="1200" y1="436" x2="945" y2="436" stroke="#5bc0d9" stroke-width="1.2" marker-end="url(#arrow-works)"/>
+      <rect x="1000" y="422" width="140" height="22" rx="2" fill="#11141c"/>
+      <text x="1070" y="432" fill="#5bc0d9" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">FROM: HI@HARSHIT.CLOUD</text>
+      <text x="1070" y="442" fill="#5bc0d9" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">(real address never leaves the box)</text>
+
+      <!-- Activation bar on SL spanning both directions -->
+      <rect x="1196" y="220" width="8" height="220" fill="rgba(91,192,217,0.10)" stroke="#5bc0d9" stroke-width="0.8"/>
+
+      <!-- Editorial aside -->
+      <text x="1200" y="568" fill="#8a93a6" font-size="13" font-family="'Instrument Serif', serif" font-style="italic" text-anchor="middle">every reply leaves the server with the alias on it.</text>
+      <text x="1200" y="588" fill="#8a93a6" font-size="13" font-family="'Instrument Serif', serif" font-style="italic" text-anchor="middle">gmail never sees the address it's actually replying to.</text>
+
+      <!-- ========================================================== -->
+      <!-- LEGEND STRIP                                               -->
+      <!-- ========================================================== -->
+      <line x1="60" y1="676" x2="1540" y2="676" stroke="rgba(236,237,240,0.10)" stroke-width="0.8"/>
+      <text x="60" y="696" fill="#8a93a6" font-size="9" font-family="'Geist Mono', monospace" letter-spacing="0.22em">LEGEND</text>
+
+      <line x1="60" y1="724" x2="92" y2="724" stroke="#8a93a6" stroke-width="1.2" marker-end="url(#arrow-muted)"/>
+      <text x="104" y="728" fill="#bfc4cf" font-size="10.5" font-family="'Geist', sans-serif">neutral hop &middot; sender → alias → mailbox</text>
+
+      <line x1="440" y1="724" x2="472" y2="724" stroke="#ff6b5a" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#arrow-broken)"/>
+      <text x="484" y="728" fill="#bfc4cf" font-size="10.5" font-family="'Geist', sans-serif">broken path &middot; reply leaks the real address</text>
+
+      <line x1="900" y1="724" x2="932" y2="724" stroke="#5bc0d9" stroke-width="1.2" marker-end="url(#arrow-works)"/>
+      <text x="944" y="728" fill="#bfc4cf" font-size="10.5" font-family="'Geist', sans-serif">rewritten path &middot; alias survives both directions</text>
+
+      <text x="1540" y="728" fill="#8a93a6" font-size="10.5" font-family="'Geist', sans-serif" font-style="italic" text-anchor="end">time flows top → down. lifelines are not to scale.</text>
+    </svg>
+  </div>
+</body>
+</html>

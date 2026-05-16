@@ -1,296 +1,268 @@
-"use client";
-
-import { useEffect, useState } from "react";
 import Link from "next/link";
-import { motion } from "motion/react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import {
-  ArrowRight,
-  Sparkles,
-  Zap,
-  Terminal,
-  Coffee,
-  BookOpen,
-  Lightbulb,
-  Rocket,
-  Code2,
-  TrendingUp,
-} from "lucide-react";
+import Image from "next/image";
 import { type Post } from "@/lib/posts";
-import dynamic from "next/dynamic";
 import { NewsletterForm } from "@/components/blog/newsletter-form";
-
-const ResendCube = dynamic(() => import("@/components/blog/resend-cube"), {
-  ssr: false,
-  loading: () => (
-    <div className="w-full h-full flex items-center justify-center text-muted-foreground/40 text-sm">
-      Loading cube…
-    </div>
-  ),
-});
-import ScrollReveal from "@/components/animations/scroll-reveal";
-import AnimatedCounter from "@/components/animations/animated-counter";
+import { CurrentlyStatus } from "@/components/blog/currently-status";
 
 interface HomePageContentProps {
   latestPosts: Post[];
   tilCount: number;
+  blogCount: number;
 }
 
-export default function HomePageContent({ latestPosts, tilCount }: HomePageContentProps) {
-  const [mounted, setMounted] = useState(false);
+function formatDate(date: string) {
+  return new Date(date).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+}
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+const TECH_STACK = ["kubernetes", "terraform", "aws", "next.js", "typescript", "postgres"];
 
-  const techStack = [
-    { name: "Kubernetes", icon: "☸️", color: "text-blue-500" },
-    { name: "Next.js", icon: "▲", color: "text-purple-500" },
-    { name: "TypeScript", icon: "TS", color: "text-cyan-500" },
-    { name: "Docker", icon: "🐳", color: "text-blue-600" },
-    { name: "Terraform", icon: "🏗️", color: "text-purple-600" },
-    { name: "AWS", icon: "☁️", color: "text-orange-500" },
-  ];
+const CURRENTLY = [
+  "antenna building",
+  "hardware hacking",
+  "frequency scanning",
+  "signal analysis",
+  "tinkering",
+  "configuring",
+  "anime watching",
+  "contemplating",
+];
+
+export default function HomePageContent({ latestPosts, tilCount, blogCount }: HomePageContentProps) {
+  const [lead, ...rest] = latestPosts.slice(0, 4);
+  const secondary = rest.slice(0, 3);
 
   return (
-    <div className="space-y-12 md:space-y-16">
-      {/* Hero Section with Animations */}
-      <section className="relative py-12 md:py-16 overflow-hidden">
-        {/* Animated Background Gradient */}
-        <div className="absolute inset-0 -z-10 bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-blue-950/20 dark:via-purple-950/20 dark:to-pink-950/20 animate-gradient-xy"></div>
-        
-        {/* Floating Elements */}
-        <div className="absolute top-20 left-10 opacity-20 animate-float hidden lg:block">
-          <Terminal className="h-12 w-12 text-blue-500" />
-        </div>
-        <div className="absolute top-40 right-20 opacity-20 animate-float-delayed hidden lg:block">
-          <Code2 className="h-16 w-16 text-purple-500" />
-        </div>
-        <div className="absolute bottom-20 right-40 opacity-20 animate-float hidden lg:block">
-          <Sparkles className="h-10 w-10 text-pink-500" />
-        </div>
-
-        <div className="text-center space-y-6 md:space-y-8 max-w-4xl mx-auto px-4">
-          <div className={`space-y-4 md:space-y-6 transition-all duration-1000 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-sm font-medium">
-              <Sparkles className="h-4 w-4" />
-              <span>Welcome to the chaos</span>
-            </div>
-            
-            <h1 className="text-5xl md:text-7xl font-bold leading-tight">
-              <span className="inline-block animate-wave">🧙‍♂️</span>
-              {" "}
-              <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent animate-gradient-x">
-                Infra Magician&apos;s
-              </span>
-              <br />
-              <span className="text-foreground">Digital Spellbook</span>
-            </h1>
-            
-            <p className="text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-              Level 99 Infrastructure Wizard, Dota2 Scrub, and Professional Chaos Engineer
-            </p>
-            
-            <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-              I make servers cry, Kubernetes pods CrashLoopBackOff, and occasionally something works in production. 
-              Welcome to my digital garden of infrastructure spells, epic fails, and rare victories. ✨
-            </p>
-
-            <div className="flex flex-wrap gap-4 justify-center pt-4">
-              <Button asChild size="lg" className="group">
-                <Link href="/blog">
-                  <BookOpen className="mr-2 h-5 w-5" />
-                  Read My Chaos
-                  <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                </Link>
-              </Button>
-              <Button asChild size="lg" variant="outline" className="group">
-                <Link href="/til">
-                  <Lightbulb className="mr-2 h-5 w-5" />
-                  Browse TILs
-                  <Sparkles className="ml-2 h-4 w-4 group-hover:rotate-12 transition-transform" />
-                </Link>
-              </Button>
-            </div>
+    <div className="max-w-6xl mx-auto px-4 py-12 md:py-16">
+      {/* Hero */}
+      <section className="grid md:grid-cols-[1fr_auto] md:gap-12 lg:gap-16 items-start">
+        <div className="max-w-3xl space-y-6 md:space-y-8">
+          <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-[0.22em] text-muted-foreground">
+            <span className="inline-block h-1.5 w-1.5 rounded-full bg-primary" />
+            Infrastructure notes
           </div>
+
+          <h1 className="text-5xl md:text-6xl leading-[1.05] tracking-tight">
+            Production stories,
+            <br />
+            written in the calm after.
+          </h1>
+
+          <p className="text-lg text-muted-foreground leading-relaxed max-w-xl">
+            I do platform work at a startup. This is where I write down the things
+            I had to figure out the hard way, so future-me at 3am doesn&apos;t have to.
+          </p>
+
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-2 pt-2 text-base">
+            <Link
+              href="/blog"
+              className="text-primary underline underline-offset-4 decoration-primary/40 hover:decoration-primary transition-colors"
+            >
+              Read the latest &rarr;
+            </Link>
+            <Link
+              href="/til"
+              className="text-foreground/80 underline underline-offset-4 decoration-border hover:decoration-foreground transition-colors"
+            >
+              Browse TILs ({tilCount})
+            </Link>
+          </div>
+
+          <CurrentlyStatus activities={CURRENTLY} />
         </div>
 
-        {/* Rubik's cube - Centered below text */}
-        <div className="mt-12 flex justify-center px-4">
-          <div className="w-full max-w-[450px] aspect-square relative">
-            <ResendCube />
+        {/* Avatar — small, framed, no glow */}
+        <div className="hidden md:block">
+          <div className="relative h-32 w-32 lg:h-40 lg:w-40 rounded-full overflow-hidden border border-border/60 bg-muted/40 shrink-0">
+            <Image
+              src="/logo/infra-magician-clean.webp"
+              alt="Harshit"
+              fill
+              sizes="160px"
+              className="object-cover scale-[1.55]"
+              priority
+            />
           </div>
         </div>
       </section>
 
-      {/* Stats Section */}
-      <ScrollReveal>
-        <section className="max-w-6xl mx-auto px-4">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {[
-              { label: "Servers Crashed", value: "∞", color: "from-red-500 to-orange-500", icon: Zap },
-              { label: "TILs Written", value: `${tilCount}`, color: "from-green-500 to-emerald-500", icon: Lightbulb },
-              { label: "Dota MMR", value: "5k", color: "from-purple-500 to-pink-500", icon: TrendingUp },
-              { label: "Coffee Mugs", value: "9001", color: "from-orange-500 to-yellow-500", icon: Coffee },
-            ].map((stat, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1, duration: 0.5 }}
-              >
-                <Card
-                  className="relative overflow-hidden group hover:shadow-lg transition-all duration-300 hover:-translate-y-1 cursor-default"
-                >
-                  <div className={`absolute inset-0 bg-gradient-to-br ${stat.color} opacity-0 group-hover:opacity-10 transition-opacity`}></div>
-                  <CardContent className="pt-6 text-center">
-                    <stat.icon className="h-6 w-6 mx-auto mb-2 text-muted-foreground group-hover:scale-110 transition-transform" />
-                    <div className={`text-3xl font-bold bg-gradient-to-r ${stat.color} bg-clip-text text-transparent`}>
-                      <AnimatedCounter value={stat.value} duration={2} />
-                    </div>
-                    <p className="text-xs text-muted-foreground mt-1">{stat.label}</p>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
-        </section>
-      </ScrollReveal>
+      {/* Divider */}
+      <hr className="my-12 md:my-16 border-border/60" />
 
-      {/* Latest Posts */}
-      <ScrollReveal delay={0.1}>
-        <section className="max-w-6xl mx-auto px-4">
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <h2 className="text-3xl font-bold flex items-center gap-2">
-                <Rocket className="h-8 w-8 text-blue-500" />
-                Latest Adventures
-              </h2>
-              <p className="text-muted-foreground mt-2">Fresh chaos from the trenches</p>
+      {/* The lair — teaser, links to /lair */}
+      <section>
+        <div className="flex items-baseline justify-between flex-wrap gap-3 mb-4">
+          <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-[0.22em] text-muted-foreground">
+            <span className="inline-block h-1.5 w-1.5 rounded-full bg-primary" />
+            The lair
+          </div>
+          <Link
+            href="/lair"
+            className="text-xs font-mono uppercase tracking-[0.18em] text-muted-foreground hover:text-foreground transition-colors"
+          >
+            See the workbench &rarr;
+          </Link>
+        </div>
+
+        <Link href="/lair" className="group flex flex-col sm:flex-row gap-5 sm:gap-6 items-start">
+          <div className="relative w-full sm:w-64 md:w-72 aspect-[4/3] shrink-0 overflow-hidden rounded-md border border-border/60 bg-muted/40">
+            <Image
+              src="/images/workspace-setup.webp"
+              alt="The workbench: SDR, Flipper Zero, Pwnagotchi, a Pi Zero, and an hourglass."
+              fill
+              sizes="(min-width: 1024px) 288px, (min-width: 640px) 256px, 100vw"
+              className="object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+            />
+          </div>
+          <div className="flex-1 space-y-2 sm:pt-1">
+            <h3 className="font-serif text-2xl leading-tight tracking-tight group-hover:text-primary transition-colors">
+              The workbench, in detail.
+            </h3>
+            <p className="text-sm text-muted-foreground leading-relaxed max-w-prose">
+              SDR, a Flipper, a Pwnagotchi, a few antennas I tuned in bad lighting, and an hourglass for measuring how long a deploy actually takes.
+            </p>
+            <p className="text-xs font-mono uppercase tracking-[0.18em] text-primary/80 pt-1 group-hover:text-primary">
+              See the lair &rarr;
+            </p>
+          </div>
+        </Link>
+      </section>
+
+      {/* Divider */}
+      <hr className="my-12 md:my-16 border-border/60" />
+
+      {/* Latest — newspaper-front layout: 1 lead + 3 secondary */}
+      {lead && (
+        <section className="space-y-6">
+          <div className="flex items-baseline justify-between flex-wrap gap-3">
+            <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-[0.22em] text-muted-foreground">
+              <span className="inline-block h-1.5 w-1.5 rounded-full bg-primary" />
+              Latest
             </div>
-            <Button asChild variant="ghost">
-              <Link href="/blog">
-                View All
-                <ArrowRight className="ml-2 h-4 w-4" />
+            <Link
+              href="/blog"
+              className="text-xs font-mono uppercase tracking-[0.18em] text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Browse all &rarr;
+            </Link>
+          </div>
+
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-10">
+            {/* Lead post */}
+            <article className="group">
+              <Link href={`/blog/${lead.slug}`} className="block space-y-4">
+                {lead.heroImage && (
+                  <div className="relative aspect-[16/10] overflow-hidden rounded-md bg-muted/40 border border-border/60">
+                    <Image
+                      src={lead.heroImage}
+                      alt={lead.heroAlt || lead.title}
+                      fill
+                      sizes="(min-width: 1024px) 560px, 100vw"
+                      className="object-cover"
+                    />
+                  </div>
+                )}
+                <div className="space-y-2">
+                  <p className="text-xs font-mono uppercase tracking-[0.18em] text-muted-foreground">
+                    {formatDate(lead.date).toLowerCase()}
+                  </p>
+                  <h2 className="font-serif text-3xl md:text-4xl leading-[1.1] tracking-tight group-hover:text-primary transition-colors">
+                    {lead.title}
+                  </h2>
+                  <p className="text-base text-muted-foreground leading-relaxed line-clamp-3 max-w-prose">
+                    {lead.excerpt}
+                  </p>
+                </div>
               </Link>
-            </Button>
-          </div>
+            </article>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {latestPosts.map((post, index) => (
-              <motion.div
-                key={post.slug}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.15, duration: 0.5 }}
-              >
-                <Card
-                  className="group hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-l-4 border-l-blue-500 overflow-hidden h-full"
-                >
-                  <CardHeader className="space-y-2">
-                    <CardTitle className="text-lg sm:text-xl group-hover:text-blue-600 transition-colors break-words">
-                      <Link href={`/blog/${post.slug}`}>
+            {/* Secondary posts — vertical stack on the right */}
+            <div className="space-y-6 lg:border-l lg:border-border/60 lg:pl-10">
+              {secondary.map((post) => (
+                <article key={post.slug} className="group border-b border-border/60 pb-6 last:border-b-0 last:pb-0">
+                  <Link href={`/blog/${post.slug}`} className="flex gap-4">
+                    {post.heroImage && (
+                      <div className="relative w-24 sm:w-28 aspect-square shrink-0 overflow-hidden rounded-md bg-muted/40 border border-border/60">
+                        <Image
+                          src={post.heroImage}
+                          alt={post.heroAlt || post.title}
+                          fill
+                          sizes="112px"
+                          className="object-cover"
+                        />
+                      </div>
+                    )}
+                    <div className="flex-1 min-w-0 space-y-1.5">
+                      <p className="text-[11px] font-mono uppercase tracking-[0.18em] text-muted-foreground">
+                        {formatDate(post.date).toLowerCase()}
+                      </p>
+                      <h3 className="font-serif text-lg sm:text-xl leading-snug tracking-tight group-hover:text-primary transition-colors">
                         {post.title}
-                      </Link>
-                    </CardTitle>
-                    <CardDescription className="text-sm sm:text-base line-clamp-3">{post.excerpt}</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-4">
-                      {post.tags.map((tag) => (
-                        <Badge key={tag} variant="secondary" className="text-xs hover:bg-blue-100 dark:hover:bg-blue-900 transition-colors">
-                          {tag}
-                        </Badge>
-                      ))}
+                      </h3>
+                      <p className="text-sm text-muted-foreground line-clamp-2">
+                        {post.excerpt}
+                      </p>
                     </div>
-                    <Button asChild variant="ghost" size="sm" className="group/btn">
-                      <Link href={`/blog/${post.slug}`}>
-                        Read More
-                        <ArrowRight className="ml-2 h-4 w-4 group-hover/btn:translate-x-1 transition-transform" />
-                      </Link>
-                    </Button>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
-        </section>
-      </ScrollReveal>
-
-      {/* Tech Stack */}
-      <ScrollReveal delay={0.1}>
-        <section className="max-w-6xl mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-3">My Arsenal</h2>
-            <p className="text-muted-foreground">Tools I use to summon infrastructure magic</p>
-          </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-            {techStack.map((tech, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.08, duration: 0.5 }}
-              >
-                <Card
-                  className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-1 cursor-default text-center"
-                >
-                  <CardContent className="pt-6 pb-6">
-                    <div className={`text-4xl mb-2 group-hover:scale-125 transition-transform ${tech.color}`}>
-                      {tech.icon}
-                    </div>
-                    <p className="text-sm font-medium">{tech.name}</p>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
-        </section>
-      </ScrollReveal>
-
-      {/* CTA Section */}
-      <ScrollReveal delay={0.2}>
-        <section className="max-w-4xl mx-auto px-4">
-          <Card className="relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 via-purple-500/10 to-pink-500/10"></div>
-            <CardContent className="pt-12 pb-12 text-center relative">
-              <Sparkles className="h-12 w-12 mx-auto mb-4 text-purple-500 animate-pulse" />
-              <h2 className="text-3xl font-bold mb-4">Ready to Dive In?</h2>
-              <p className="text-lg text-muted-foreground mb-6 max-w-2xl mx-auto">
-                Join me on this chaotic journey through infrastructure, code, and the occasional rage quit.
-                No infrastructure was permanently harmed in the making of this blog.
-              </p>
-              <div className="flex flex-wrap gap-4 justify-center">
-                <Button asChild size="lg">
-                  <Link href="/blog">
-                    Start Reading
-                    <ArrowRight className="ml-2 h-5 w-5" />
                   </Link>
-                </Button>
-                <Button asChild size="lg" variant="outline">
-                  <Link href="/about">
-                    About Me
-                  </Link>
-                </Button>
-              </div>
-              <div className="mt-8">
-                <NewsletterForm
-                  variant="card"
-                  title="Join the Chaos Newsletter"
-                  description="Weekly infrastructure spells, TILs, and tales from production. No spam, just chaos."
-                />
-              </div>
-            </CardContent>
-          </Card>
+                </article>
+              ))}
+            </div>
+          </div>
         </section>
-      </ScrollReveal>
+      )}
+
+      {/* Divider */}
+      <hr className="my-12 md:my-16 border-border/60" />
+
+      {/* Newsletter — quiet, editorial */}
+      <section className="max-w-3xl space-y-4">
+        <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-[0.22em] text-muted-foreground">
+          <span className="inline-block h-1.5 w-1.5 rounded-full bg-primary" />
+          Subscribe
+        </div>
+        <NewsletterForm
+          variant="default"
+          title="The next post, in your inbox."
+          description="Long-form infra writing, every few weeks. No tracking pixels, no marketing sequences, no LinkedIn-isms."
+        />
+      </section>
+
+      {/* Divider */}
+      <hr className="my-12 md:my-16 border-border/60" />
+
+      {/* About + tech stack + honest numbers */}
+      <section className="max-w-3xl space-y-4">
+        <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-[0.22em] text-muted-foreground">
+          <span className="inline-block h-1.5 w-1.5 rounded-full bg-primary" />
+          About
+        </div>
+        <p className="text-base text-muted-foreground leading-relaxed">
+          Harshit Luthra. Sénior SRE, infrequent essayist, occasional
+          source of production incidents.{" "}
+          <Link
+            href="/about"
+            className="text-foreground underline underline-offset-4 decoration-border hover:decoration-foreground transition-colors"
+          >
+            More about me &rarr;
+          </Link>
+        </p>
+
+        {/* What I work in */}
+        <div className="pt-2">
+          <p className="text-[11px] font-mono uppercase tracking-[0.18em] text-muted-foreground mb-2">What I work in</p>
+          <p className="font-mono text-sm text-foreground/80">
+            {TECH_STACK.join(" · ")}
+          </p>
+        </div>
+
+        {/* Honest numbers — real ones only */}
+        <p className="font-mono text-xs text-muted-foreground pt-2">
+          {blogCount} posts · {tilCount} TILs · writing here since 2018
+        </p>
+      </section>
     </div>
   );
 }
-

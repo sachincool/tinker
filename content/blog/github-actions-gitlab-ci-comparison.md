@@ -10,6 +10,10 @@ featured: true
 
 I've spent the last two years working with both GitHub Actions and GitLab CI across multiple projects. Here's what I've learned about each platform, minus the marketing fluff.
 
+![A six-row comparison of GitHub Actions and GitLab CI across syntax, runners, caching, secrets, ecosystem, and pricing at fifty microservices, with the pricing row marked focal.](/images/github-actions-gitlab-ci-comparison/hero.png)
+
+*Fig. 1 — six rows, two YAMLs, one billing model that ended the debate.*
+
 ## The Context
 
 Our team manages about 50 microservices across different repositories. Some are on GitHub, some on GitLab. This gave me a unique perspective on both platforms under real production workloads.

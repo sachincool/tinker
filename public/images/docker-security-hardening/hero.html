@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>before and after: dropping container privileges</title>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --color-paper:   #11141c;
+      --color-paper-2: #161a24;
+      --color-ink:     #ecedf0;
+      --color-muted:   #8a93a6;
+      --color-soft:    #5c6478;
+      --color-rule:    rgba(236,237,240,0.10);
+      --color-danger:  #ff6b5a;
+      --color-safe:    #5bc0d9;
+      --font-sans:     'Geist', system-ui, sans-serif;
+      --font-serif:    'Instrument Serif', serif;
+      --font-mono:     'Geist Mono', ui-monospace, monospace;
+    }
+
+    html, body { background: var(--color-paper); }
+
+    body {
+      font-family: var(--font-sans);
+      color: var(--color-ink);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 2rem;
+    }
+
+    .frame { max-width: 1520px; width: 100%; }
+
+    .eyebrow {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--color-muted);
+      margin-bottom: 0.6rem;
+    }
+
+    h1 {
+      font-family: var(--font-serif);
+      font-size: clamp(1.8rem, 2.8vw + 0.75rem, 2.6rem);
+      font-weight: 400;
+      letter-spacing: -0.015em;
+      line-height: 1.15;
+      color: var(--color-ink);
+      margin-bottom: 1.5rem;
+    }
+
+    figcaption {
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-size: 1.05rem;
+      color: var(--color-muted);
+      margin-top: 1.1rem;
+      letter-spacing: -0.005em;
+    }
+
+    svg { width: 100%; display: block; }
+  </style>
+</head>
+<body>
+  <div class="frame">
+    <p class="eyebrow">Figure &middot; container privilege hardening</p>
+    <h1>same app, two trust postures</h1>
+
+    <svg viewBox="0 0 1600 720" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Side by side comparison of a Docker container running as root versus a hardened non-root container with capabilities dropped, seccomp, AppArmor, read-only filesystem, and minimal base image">
+      <defs>
+        <pattern id="dots" width="24" height="24" patternUnits="userSpaceOnUse">
+          <circle cx="1" cy="1" r="0.9" fill="rgba(236,237,240,0.05)"/>
+        </pattern>
+      </defs>
+
+      <rect width="100%" height="100%" fill="#11141c"/>
+      <rect width="100%" height="100%" fill="url(#dots)" opacity="0.7"/>
+
+      <!-- Phase eyebrows (ghosted background) -->
+      <text x="80" y="120" fill="rgba(255,107,90,0.10)" font-size="68" font-weight="600" font-family="'Geist Mono', monospace" letter-spacing="0.04em">BEFORE</text>
+      <text x="900" y="120" fill="rgba(91,192,217,0.10)" font-size="68" font-weight="600" font-family="'Geist Mono', monospace" letter-spacing="0.04em">AFTER</text>
+
+      <!-- Vertical phase divider -->
+      <line x1="800" y1="160" x2="800" y2="600" stroke="rgba(236,237,240,0.10)" stroke-width="1" stroke-dasharray="3,4"/>
+      <text x="800" y="148" fill="#5c6478" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.18em">HARDEN</text>
+
+      <!-- ============ LEFT SIDE — BEFORE (root, all caps, etc) ============ -->
+      <!-- Column header -->
+      <text x="120" y="200" fill="#ff6b5a" font-size="10" font-family="'Geist Mono', monospace" letter-spacing="0.22em" font-weight="500">CONTAINER · 01</text>
+      <text x="120" y="232" fill="#ecedf0" font-size="20" font-weight="600" font-family="'Geist', sans-serif">node:20 &middot; runs as root</text>
+      <text x="120" y="256" fill="#8a93a6" font-size="12" font-family="'Geist', sans-serif">one CVE in the app, one in the base, and you're</text>
+      <text x="120" y="272" fill="#8a93a6" font-size="12" font-family="'Geist', sans-serif">root on the host's namespace.</text>
+
+      <!-- Outer container box (red) -->
+      <rect x="100" y="296" width="640" height="296" rx="8" fill="#11141c" stroke="#ff6b5a" stroke-width="1.4"/>
+      <rect x="100" y="296" width="640" height="296" rx="8" fill="rgba(255,107,90,0.04)"/>
+
+      <!-- Container header bar -->
+      <text x="116" y="320" fill="#5c6478" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.18em">CONTAINER ROOTFS</text>
+      <line x1="100" y1="332" x2="740" y2="332" stroke="rgba(255,107,90,0.20)" stroke-width="0.8"/>
+
+      <!-- Layer 1: USER -->
+      <rect x="120" y="352" width="600" height="36" rx="4" fill="rgba(255,107,90,0.08)" stroke="rgba(255,107,90,0.40)" stroke-width="1"/>
+      <text x="136" y="375" fill="#ecedf0" font-size="13" font-weight="600" font-family="'Geist', sans-serif">USER</text>
+      <text x="704" y="375" fill="#ff6b5a" font-size="11" font-family="'Geist Mono', monospace" text-anchor="end" letter-spacing="0.04em">uid=0 (root)</text>
+
+      <!-- Layer 2: CAPABILITIES -->
+      <rect x="120" y="396" width="600" height="36" rx="4" fill="rgba(255,107,90,0.08)" stroke="rgba(255,107,90,0.40)" stroke-width="1"/>
+      <text x="136" y="419" fill="#ecedf0" font-size="13" font-weight="600" font-family="'Geist', sans-serif">CAPABILITIES</text>
+      <text x="704" y="419" fill="#ff6b5a" font-size="11" font-family="'Geist Mono', monospace" text-anchor="end" letter-spacing="0.04em">all 38, including SYS_ADMIN</text>
+
+      <!-- Layer 3: FILESYSTEM -->
+      <rect x="120" y="440" width="600" height="36" rx="4" fill="rgba(255,107,90,0.08)" stroke="rgba(255,107,90,0.40)" stroke-width="1"/>
+      <text x="136" y="463" fill="#ecedf0" font-size="13" font-weight="600" font-family="'Geist', sans-serif">FILESYSTEM</text>
+      <text x="704" y="463" fill="#ff6b5a" font-size="11" font-family="'Geist Mono', monospace" text-anchor="end" letter-spacing="0.04em">read-write, writable /etc</text>
+
+      <!-- Layer 4: SECCOMP / LSM -->
+      <rect x="120" y="484" width="600" height="36" rx="4" fill="rgba(255,107,90,0.08)" stroke="rgba(255,107,90,0.40)" stroke-width="1"/>
+      <text x="136" y="507" fill="#ecedf0" font-size="13" font-weight="600" font-family="'Geist', sans-serif">SECCOMP &middot; APPARMOR</text>
+      <text x="704" y="507" fill="#ff6b5a" font-size="11" font-family="'Geist Mono', monospace" text-anchor="end" letter-spacing="0.04em">default (permissive)</text>
+
+      <!-- Layer 5: BASE IMAGE -->
+      <rect x="120" y="528" width="600" height="44" rx="4" fill="rgba(255,107,90,0.08)" stroke="rgba(255,107,90,0.40)" stroke-width="1"/>
+      <text x="136" y="552" fill="#ecedf0" font-size="13" font-weight="600" font-family="'Geist', sans-serif">BASE IMAGE</text>
+      <text x="136" y="566" fill="#8a93a6" font-size="10" font-family="'Geist Mono', monospace">ubuntu:latest &middot; curl, wget, git, build tools</text>
+      <text x="704" y="552" fill="#ff6b5a" font-size="11" font-family="'Geist Mono', monospace" text-anchor="end" letter-spacing="0.04em">1.2 GB &middot; 300+ CVEs</text>
+
+      <!-- BEFORE scoreboard -->
+      <line x1="100" y1="616" x2="740" y2="616" stroke="rgba(236,237,240,0.10)" stroke-width="0.8"/>
+      <text x="120" y="640" fill="#8a93a6" font-size="9" font-family="'Geist Mono', monospace" letter-spacing="0.22em">AUDIT REPORT</text>
+
+      <text x="120" y="676" fill="#ff6b5a" font-size="22" font-weight="600" font-family="'Geist', sans-serif">47</text>
+      <text x="120" y="694" fill="#5c6478" font-size="9" font-family="'Geist Mono', monospace" letter-spacing="0.10em">CRITICAL</text>
+
+      <text x="240" y="676" fill="#ff6b5a" font-size="22" font-weight="600" font-family="'Geist', sans-serif">129</text>
+      <text x="240" y="694" fill="#5c6478" font-size="9" font-family="'Geist Mono', monospace" letter-spacing="0.10em">HIGH</text>
+
+      <text x="380" y="676" fill="#ff6b5a" font-size="22" font-weight="600" font-family="'Geist', sans-serif">156</text>
+      <text x="380" y="694" fill="#5c6478" font-size="9" font-family="'Geist Mono', monospace" letter-spacing="0.10em">CONTAINERS AS ROOT</text>
+
+      <text x="600" y="676" fill="#ff6b5a" font-size="22" font-weight="600" font-family="'Geist', sans-serif">300+</text>
+      <text x="600" y="694" fill="#5c6478" font-size="9" font-family="'Geist Mono', monospace" letter-spacing="0.10em">UNPATCHED CVEs</text>
+
+      <!-- ============ RIGHT SIDE — AFTER (hardened) ============ -->
+      <!-- Column header -->
+      <text x="860" y="200" fill="#5bc0d9" font-size="10" font-family="'Geist Mono', monospace" letter-spacing="0.22em" font-weight="500">CONTAINER · 02</text>
+      <text x="860" y="232" fill="#ecedf0" font-size="20" font-weight="600" font-family="'Geist', sans-serif">node:20-slim &middot; runs as nodejs</text>
+      <text x="860" y="256" fill="#8a93a6" font-size="12" font-family="'Geist', sans-serif">same app code, four lines of Dockerfile,</text>
+      <text x="860" y="272" fill="#8a93a6" font-size="12" font-family="'Geist', sans-serif">one runtime flag set the right way.</text>
+
+      <!-- Outer container box (cyan) -->
+      <rect x="840" y="296" width="640" height="296" rx="8" fill="#11141c" stroke="#5bc0d9" stroke-width="1.4"/>
+      <rect x="840" y="296" width="640" height="296" rx="8" fill="rgba(91,192,217,0.04)"/>
+
+      <text x="856" y="320" fill="#5c6478" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.18em">CONTAINER ROOTFS</text>
+      <line x1="840" y1="332" x2="1480" y2="332" stroke="rgba(91,192,217,0.20)" stroke-width="0.8"/>
+
+      <!-- Layer 1: USER -->
+      <rect x="860" y="352" width="600" height="36" rx="4" fill="rgba(91,192,217,0.08)" stroke="rgba(91,192,217,0.45)" stroke-width="1"/>
+      <text x="876" y="375" fill="#ecedf0" font-size="13" font-weight="600" font-family="'Geist', sans-serif">USER</text>
+      <text x="1444" y="375" fill="#5bc0d9" font-size="11" font-family="'Geist Mono', monospace" text-anchor="end" letter-spacing="0.04em">uid=10001 (nodejs)</text>
+
+      <!-- Layer 2: CAPABILITIES -->
+      <rect x="860" y="396" width="600" height="36" rx="4" fill="rgba(91,192,217,0.08)" stroke="rgba(91,192,217,0.45)" stroke-width="1"/>
+      <text x="876" y="419" fill="#ecedf0" font-size="13" font-weight="600" font-family="'Geist', sans-serif">CAPABILITIES</text>
+      <text x="1444" y="419" fill="#5bc0d9" font-size="11" font-family="'Geist Mono', monospace" text-anchor="end" letter-spacing="0.04em">--cap-drop=ALL &middot; +NET_BIND</text>
+
+      <!-- Layer 3: FILESYSTEM -->
+      <rect x="860" y="440" width="600" height="36" rx="4" fill="rgba(91,192,217,0.08)" stroke="rgba(91,192,217,0.45)" stroke-width="1"/>
+      <text x="876" y="463" fill="#ecedf0" font-size="13" font-weight="600" font-family="'Geist', sans-serif">FILESYSTEM</text>
+      <text x="1444" y="463" fill="#5bc0d9" font-size="11" font-family="'Geist Mono', monospace" text-anchor="end" letter-spacing="0.04em">--read-only &middot; tmpfs /tmp</text>
+
+      <!-- Layer 4: SECCOMP / LSM -->
+      <rect x="860" y="484" width="600" height="36" rx="4" fill="rgba(91,192,217,0.08)" stroke="rgba(91,192,217,0.45)" stroke-width="1"/>
+      <text x="876" y="507" fill="#ecedf0" font-size="13" font-weight="600" font-family="'Geist', sans-serif">SECCOMP &middot; APPARMOR</text>
+      <text x="1444" y="507" fill="#5bc0d9" font-size="11" font-family="'Geist Mono', monospace" text-anchor="end" letter-spacing="0.04em">runtime/default + custom profile</text>
+
+      <!-- Layer 5: BASE IMAGE -->
+      <rect x="860" y="528" width="600" height="44" rx="4" fill="rgba(91,192,217,0.08)" stroke="rgba(91,192,217,0.45)" stroke-width="1"/>
+      <text x="876" y="552" fill="#ecedf0" font-size="13" font-weight="600" font-family="'Geist', sans-serif">BASE IMAGE</text>
+      <text x="876" y="566" fill="#8a93a6" font-size="10" font-family="'Geist Mono', monospace">distroless/nodejs20-debian12 &middot; no shell, no apt</text>
+      <text x="1444" y="552" fill="#5bc0d9" font-size="11" font-family="'Geist Mono', monospace" text-anchor="end" letter-spacing="0.04em">180 MB &middot; 0 CVEs</text>
+
+      <!-- AFTER scoreboard -->
+      <line x1="840" y1="616" x2="1480" y2="616" stroke="rgba(236,237,240,0.10)" stroke-width="0.8"/>
+      <text x="860" y="640" fill="#8a93a6" font-size="9" font-family="'Geist Mono', monospace" letter-spacing="0.22em">AUDIT REPORT</text>
+
+      <text x="860" y="676" fill="#5bc0d9" font-size="22" font-weight="600" font-family="'Geist', sans-serif">0</text>
+      <text x="860" y="694" fill="#5c6478" font-size="9" font-family="'Geist Mono', monospace" letter-spacing="0.10em">CRITICAL</text>
+
+      <text x="980" y="676" fill="#5bc0d9" font-size="22" font-weight="600" font-family="'Geist', sans-serif">2</text>
+      <text x="980" y="694" fill="#5c6478" font-size="9" font-family="'Geist Mono', monospace" letter-spacing="0.10em">HIGH</text>
+
+      <text x="1120" y="676" fill="#5bc0d9" font-size="22" font-weight="600" font-family="'Geist', sans-serif">0</text>
+      <text x="1120" y="694" fill="#5c6478" font-size="9" font-family="'Geist Mono', monospace" letter-spacing="0.10em">CONTAINERS AS ROOT</text>
+
+      <text x="1340" y="676" fill="#5bc0d9" font-size="22" font-weight="600" font-family="'Geist', sans-serif">85%</text>
+      <text x="1340" y="694" fill="#5c6478" font-size="9" font-family="'Geist Mono', monospace" letter-spacing="0.10em">SMALLER IMAGE</text>
+    </svg>
+  </div>
+</body>
+</html>

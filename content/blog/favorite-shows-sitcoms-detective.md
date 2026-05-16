@@ -9,6 +9,10 @@ type: "post"
 
 When I'm not wrestling with Kubernetes clusters or debugging infrastructure at 2 AM, you'll find me binging shows that either make me laugh or make me think. Here's my watchlist confession.
 
+![A dark living room lit only by the purple ambient glow of a flat-screen TV showing a grid of streaming app tiles.](/images/favorite-shows-sitcoms-detective/hero.jpg)
+
+*Fig. 1 — the home screen, also known as the longest-running decision of the night.*
+
 ## The Sitcom Holy Trinity
 
 ### That 70's Show

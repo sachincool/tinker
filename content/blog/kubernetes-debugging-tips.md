@@ -6,73 +6,74 @@ excerpt: "Hard-learned lessons from debugging Kubernetes issues at 3 AM. These t
 featured: true
 ---
 
-# 5 Kubernetes Debugging Tricks That Saved My Production
+The first time I got paged for a `CrashLoopBackOff` it was 03:47, the pod was on its 14th restart, and `kubectl logs` was returning a perfectly clean six-line startup banner with no error in sight. I sat staring at that output for about twenty minutes before someone on Slack asked, casually, whether I'd tried `--previous`. Reader, I had not. Once you've made that mistake once, you stop making it. The five flags below are what I now reach for before anything else, in roughly the order I reach for them.
 
-After countless nights debugging Kubernetes clusters, I've collected some battle-tested tricks that have saved my sanity (and my production environments) more times than I can count.
+![Decision tree mapping five Kubernetes pod symptoms to the kubectl command that diagnoses each, drawn for a 3 a.m. on-call brain.](/images/kubernetes-debugging-tips/hero.png)
 
-## 1. The CrashLoopBackOff Detective Work
+*Fig. 1 — the chart I wish someone had taped to the wall before my first on-call shift.*
 
-When a pod is in CrashLoopBackOff, don't just check the current logs. Check the previous container's logs:
+## the crashloopbackoff that lies to you
+
+The pod has restarted 14 times. You run `kubectl logs` and you get the logs of the *current* container, which is the one that hasn't crashed yet because it just started. The interesting bytes — the panic, the missing env var, the OOM at byte 1 — are in the previous container's stdout, and they're a single flag away.
 
 ```bash
 kubectl logs <pod-name> --previous
 ```
 
-This shows you what happened before the crash. Game-changer.
+Add `-c <container>` if it's a multi-container pod, because the default container is rarely the one that died. I have wasted hours on this exact omission.
 
-## 2. Ephemeral Debug Containers
+## ephemeral debug containers
 
-Instead of rebuilding your image with debug tools, use ephemeral containers (K8s 1.23+):
+There used to be a ritual: edit the Dockerfile, add `curl` and `dig` and `tcpdump`, push, wait for CI, redeploy, exec in, debug, then forget to take any of it back out and ship a 900 MB image to prod. As of 1.23 you don't have to. `kubectl debug` attaches a sidecar to a running pod with whatever image you want, in the same network and PID namespace, without touching the original container.
 
 ```bash
 kubectl debug -it <pod-name> --image=nicolaka/netshoot
 ```
 
-Now you have all the networking tools you need without modifying your image.
+`netshoot` is the standard kit — `dig`, `curl`, `tcpdump`, `iperf`, `mtr`, the works. The container vanishes when you detach. Your prod image stays the size it was supposed to be.
 
-## 3. The "Why Won't You Schedule?" Mystery
+## ask the scheduler, don't guess
 
-Pod not scheduling? Don't guess. Ask Kubernetes directly:
+A pod stuck in `Pending` is the scheduler telling you, very politely, that none of your nodes will have it. You can stare at node taints all day or you can read the events for the pod itself, which spell out the reason in English.
 
 ```bash
 kubectl get events --field-selector involvedObject.name=<pod-name>
 ```
 
-The events will tell you exactly why the scheduler is giving up.
+`0/12 nodes are available: 8 Insufficient memory, 4 node(s) had untolerated taint`. That's the answer. The scheduler is the most articulate component in the cluster as long as you ask it directly.
 
-## 4. Network Policy Debugging
+## a throwaway pod for network policy work
 
-Testing network policies is painful. Use this quick test:
+Network policies are the part of Kubernetes that fail silently. The packet just doesn't arrive, and there's no log line that says *I dropped your SYN because of policy `default-deny-egress` in namespace `payments`*. The cheapest way to figure out what's reachable from where is to land a pod in the namespace you care about and try.
 
 ```bash
 kubectl run test-pod --rm -it --image=nicolaka/netshoot -- /bin/bash
 ```
 
-Then test connectivity from inside the cluster. Way better than production trial-and-error.
+`--rm` cleans up when you exit, which matters because otherwise you will accumulate seven `test-pod-2` pods in `default` and one of them will eventually become the reason a node fills up. From inside, `curl` and `nc` your way through the policy until something connects.
 
-## 5. The Resource Detective
+## sort the noisy neighbours
 
-Finding which pod is eating all your memory?
+When the cluster feels slow and nobody knows why, the answer is usually one workload in one namespace eating more than its share. `kubectl top` with a sort flag is the single fastest way to find them.
 
 ```bash
 kubectl top pods --all-namespaces --sort-by=memory
 ```
 
-Sort by CPU or memory. Find the culprit. Fix it. Sleep peacefully.
+Swap `memory` for `cpu` depending on what's burning. Requires `metrics-server` to be installed, which it almost always is, and which is worth installing the day you bring up a cluster if it isn't.
 
-## Bonus: The Ultimate Debug Command
+## the one I forget I have
 
-My personal favorite - the Swiss Army knife of debugging:
+`describe` is so obvious nobody writes about it, and so dense that nobody reads its full output. It includes the events, the resource limits, the volume mounts, the readiness probe definition, the last termination reason, and the QoS class — all the things you were about to run five separate commands to find.
 
 ```bash
 kubectl describe pod <pod-name> | less
 ```
 
-It's simple, but the amount of information here is incredible. Read it carefully.
+Pipe to `less` because the output is longer than your terminal and the events at the bottom are usually where the answer is. Read from the bottom up if you're in a hurry.
 
-## Conclusion
+---
 
-These tricks have saved me countless hours of debugging. Next time you're staring at CrashLoopBackOff at 3 AM, remember: Kubernetes is trying to tell you what's wrong. You just need to know how to listen.
+The pattern across all five is the same. Kubernetes is unusually good at telling you what went wrong, in plain prose, in a place you have to know to look. The flag is always `--previous`. The answer is always in `events`. The container is always the wrong one by default. Memorise the five commands above and most pages stop being mysteries and start being typing exercises.
 
-Got any other favorite debugging tricks? Let me know!
-
+Next time the alert fires at 03:47, the first thing you type is `kubectl logs <pod> --previous -c <container>`. The second thing is `kubectl describe pod <pod> | less`. If the answer isn't in those two outputs, you actually have a problem.

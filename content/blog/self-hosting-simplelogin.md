@@ -18,6 +18,10 @@ I'd already moved my infrastructure to [a self-hosted Dokploy setup](/blog/netli
 
 Two hours later, I had full bidirectional email aliases running on SimpleLogin. Here's every step, including the TLS trap that almost made me quit.
 
+![Side-by-side sequence diagram showing Cloudflare Email Routing leaking the real Gmail address on reply, while a self-hosted SimpleLogin stack on Hetzner rewrites the reply path so the alias survives in both directions.](/images/self-hosting-simplelogin/hero.png)
+
+*Fig. 1 — Cloudflare can hand you the letter. It just can't post one back without signing your real name.*
+
 ## Why Cloudflare Email Routing Wasn't Enough
 
 Credit where it's due. Cloudflare Email Routing is genuinely great for what it does:

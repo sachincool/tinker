@@ -57,8 +57,9 @@ export default async function RootPage() {
   }
 
   const allBlogPosts = getAllPosts('blog');
-  const latestPosts = allBlogPosts.slice(0, 2);
+  const latestPosts = allBlogPosts.slice(0, 4);
   const tilCount = getAllPosts('til').length;
+  const blogCount = allBlogPosts.length;
 
-  return <HomePageContent latestPosts={latestPosts} tilCount={tilCount} />;
+  return <HomePageContent latestPosts={latestPosts} tilCount={tilCount} blogCount={blogCount} />;
 }

@@ -1,16 +1,13 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, Calendar, Lightbulb, ExternalLink, Sparkles, Zap } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Search } from "lucide-react";
 import Link from "next/link";
 import { useDebounce } from "@/hooks/use-debounce";
 import { type Post } from "@/lib/posts";
-import { motion, AnimatePresence } from "motion/react";
 
 interface TILPageClientProps {
   initialTils: Post[];
@@ -27,65 +24,61 @@ export default function TILPageClient({ initialTils }: TILPageClientProps) {
   const filteredTils = useMemo(() => {
     let filtered = initialTils;
 
-    // Filter by search query (using debounced value)
     if (debouncedSearchQuery) {
       const query = debouncedSearchQuery.toLowerCase();
-      filtered = filtered.filter(til =>
+      filtered = filtered.filter((til) =>
         til.title.toLowerCase().includes(query) ||
         til.content.toLowerCase().includes(query) ||
         til.excerpt.toLowerCase().includes(query) ||
-        til.tags.some(tag => tag.toLowerCase().includes(query))
+        til.tags.some((tag) => tag.toLowerCase().includes(query))
       );
     }
 
-    // Filter by tag
     if (selectedTag !== "all") {
-      filtered = filtered.filter(til =>
-        til.tags.some(tag => tag.toLowerCase() === selectedTag.toLowerCase())
+      filtered = filtered.filter((til) =>
+        til.tags.some((tag) => tag.toLowerCase() === selectedTag.toLowerCase())
       );
     }
 
     // Sort by date (newest first)
-    return filtered.sort((a, b) =>
-      new Date(b.date).getTime() - new Date(a.date).getTime()
+    return [...filtered].sort(
+      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
     );
   }, [initialTils, debouncedSearchQuery, selectedTag]);
 
   // Get all unique tags for the dropdown
   const allTags = useMemo(() => {
     const tagsSet = new Set<string>();
-    initialTils.forEach(til => til.tags.forEach(tag => tagsSet.add(tag)));
+    initialTils.forEach((til) => til.tags.forEach((tag) => tagsSet.add(tag)));
     return Array.from(tagsSet).sort();
   }, [initialTils]);
 
+  const isFiltered = !!debouncedSearchQuery || selectedTag !== "all";
+
   return (
-    <div className="space-y-8">
+    <div className="max-w-3xl mx-auto px-4 py-12 md:py-16 space-y-10 md:space-y-12">
       {/* Header */}
-      <div className="text-center space-y-4 relative py-8">
-        <div className="absolute inset-0 -z-10 bg-gradient-to-br from-yellow-50 via-orange-50 to-transparent dark:from-yellow-950/20 dark:via-orange-950/20 rounded-3xl"></div>
-        <div className="inline-flex items-center gap-2 px-4 py-2 bg-yellow-500/10 rounded-full text-sm font-medium mb-4">
-          <Sparkles className="h-4 w-4 text-yellow-500" />
-          <span>Daily Knowledge Drops</span>
+      <header className="space-y-4">
+        <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-[0.22em] text-muted-foreground">
+          <span className="inline-block h-1.5 w-1.5 rounded-full bg-primary" />
+          Today I learned
         </div>
-        <div className="flex items-center justify-center gap-3">
-          <Lightbulb className="h-10 w-10 text-yellow-500 animate-pulse" />
-          <h1 className="text-4xl md:text-5xl font-bold">
-            <span className="bg-gradient-to-r from-yellow-600 via-orange-600 to-red-600 bg-clip-text text-transparent">
-              Today I Learned
-            </span>
-          </h1>
-        </div>
-        <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-          Quick insights, code snippets, and "aha!" moments from my daily tinkering and chaos engineering.
+        <h1 className="font-serif text-4xl md:text-5xl leading-[1.1] tracking-tight">
+          Notes from the workbench.
+        </h1>
+        <p className="text-base md:text-lg text-muted-foreground leading-relaxed max-w-2xl">
+          Short entries. The kind of thing you scribble on the back of a receipt
+          before you forget &mdash; a flag that finally made sense, a one-liner
+          that saved an hour, a footgun that drew blood.
         </p>
-      </div>
+      </header>
 
       {/* Search and Filter */}
-      <div className="flex flex-col sm:flex-row gap-4">
+      <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Search TILs..."
+            placeholder="Search notes..."
             className="pl-10"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -96,144 +89,88 @@ export default function TILPageClient({ initialTils }: TILPageClientProps) {
             <SelectValue placeholder="Filter by tag" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All Tags</SelectItem>
-            {allTags.map(tag => (
-              <SelectItem key={tag} value={tag}>{tag}</SelectItem>
+            <SelectItem value="all">All tags</SelectItem>
+            {allTags.map((tag) => (
+              <SelectItem key={tag} value={tag}>
+                {tag}
+              </SelectItem>
             ))}
           </SelectContent>
         </Select>
       </div>
 
-      {/* Results count */}
-      {(debouncedSearchQuery || selectedTag !== "all") && (
-        <div className="text-sm text-muted-foreground">
-          Found{" "}
-          <motion.span
-            key={filteredTils.length}
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.3 }}
-          >
-            {filteredTils.length} TIL{filteredTils.length !== 1 ? 's' : ''}
-          </motion.span>
+      {isFiltered && (
+        <div className="text-xs font-mono uppercase tracking-[0.18em] text-muted-foreground">
+          {filteredTils.length} {filteredTils.length === 1 ? "note" : "notes"}
           {debouncedSearchQuery && ` matching "${debouncedSearchQuery}"`}
           {selectedTag !== "all" && ` in ${selectedTag}`}
         </div>
       )}
 
-      {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <motion.div
-          initial={{ opacity: 0, y: 20, scale: 0.95 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ delay: 0, duration: 0.5 }}
-        >
-          <Card className="hover:shadow-lg transition-all duration-300 hover:-translate-y-1 group cursor-default">
-            <CardContent className="pt-6 text-center">
-              <Zap className="h-6 w-6 mx-auto mb-2 text-yellow-500 group-hover:scale-110 transition-transform" />
-              <div className="text-3xl font-bold bg-gradient-to-r from-yellow-500 to-orange-500 bg-clip-text text-transparent">{initialTils.length}</div>
-              <p className="text-xs text-muted-foreground mt-1">Total TILs</p>
-            </CardContent>
-          </Card>
-        </motion.div>
-        <motion.div
-          initial={{ opacity: 0, y: 20, scale: 0.95 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ delay: 0.1, duration: 0.5 }}
-        >
-          <Card className="hover:shadow-lg transition-all duration-300 hover:-translate-y-1 group cursor-default">
-            <CardContent className="pt-6 text-center">
-              <Sparkles className="h-6 w-6 mx-auto mb-2 text-orange-500 group-hover:scale-110 transition-transform" />
-              <div className="text-3xl font-bold bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">{filteredTils.length}</div>
-              <p className="text-xs text-muted-foreground mt-1">Showing</p>
-            </CardContent>
-          </Card>
-        </motion.div>
-        <motion.div
-          initial={{ opacity: 0, y: 20, scale: 0.95 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ delay: 0.2, duration: 0.5 }}
-        >
-          <Card className="hover:shadow-lg transition-all duration-300 hover:-translate-y-1 group cursor-default">
-            <CardContent className="pt-6 text-center">
-              <Lightbulb className="h-6 w-6 mx-auto mb-2 text-red-500 group-hover:scale-110 transition-transform" />
-              <div className="text-3xl font-bold bg-gradient-to-r from-red-500 to-pink-500 bg-clip-text text-transparent">{new Set(initialTils.flatMap(t => t.tags)).size}</div>
-              <p className="text-xs text-muted-foreground mt-1">Different topics</p>
-            </CardContent>
-          </Card>
-        </motion.div>
-      </div>
+      {/* TIL list */}
+      <section className="space-y-6">
+        <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-[0.22em] text-muted-foreground border-b border-border/60 pb-2">
+          <span className="inline-block h-1.5 w-1.5 rounded-full bg-primary" />
+          {isFiltered ? "Results" : "All notes"}
+        </div>
 
-      {/* TIL Grid */}
-      {filteredTils.length > 0 ? (
-        <AnimatePresence mode="wait">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {filteredTils.map((til, index) => (
-              <motion.div
-                key={til.slug}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ delay: Math.min(index * 0.05, 0.5), duration: 0.3 }}
-              >
-                <Card className="hover:shadow-lg transition-all duration-300 hover:-translate-y-1 group border-l-4 border-l-yellow-500 h-full">
-                  <CardHeader>
-                    <div className="flex items-start justify-between">
-                      <div className="space-y-2 flex-1">
-                        <CardTitle className="text-lg flex items-center gap-2 group-hover:text-yellow-600 transition-colors">
-                          <Lightbulb className="h-4 w-4 text-yellow-500 group-hover:animate-pulse" />
-                          <Link href={`/til/${til.slug}`} className="hover:text-yellow-600 transition-colors">
-                            {til.title}
-                          </Link>
-                        </CardTitle>
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                          <Calendar className="h-3 w-3" />
-                          <span>{new Date(til.date).toLocaleDateString('en-US', {
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric'
-                          })}</span>
-                        </div>
-                      </div>
-                      <Button variant="ghost" size="sm" asChild>
-                        <Link href={`/til/${til.slug}`}>
-                          <ExternalLink className="h-4 w-4" />
-                        </Link>
-                      </Button>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-muted-foreground mb-4 leading-relaxed">
-                      {til.excerpt || til.content.substring(0, 200) + '...'}
+        {filteredTils.length > 0 ? (
+          <ul className="divide-y divide-border/60">
+            {filteredTils.map((til) => (
+              <li key={til.slug} className="py-5 first:pt-2">
+                <article className="space-y-2">
+                  <div className="flex items-center gap-2 text-[11px] font-mono uppercase tracking-[0.18em] text-muted-foreground">
+                    <time dateTime={til.date}>
+                      {new Date(til.date)
+                        .toLocaleDateString("en-US", {
+                          year: "numeric",
+                          month: "short",
+                          day: "numeric",
+                        })
+                        .toLowerCase()}
+                    </time>
+                  </div>
+                  <h2 className="font-serif text-xl sm:text-2xl leading-[1.2] tracking-tight">
+                    <Link
+                      href={`/til/${til.slug}`}
+                      className="hover:text-primary transition-colors"
+                    >
+                      {til.title}
+                    </Link>
+                  </h2>
+                  {til.excerpt && (
+                    <p className="text-sm sm:text-base text-muted-foreground leading-relaxed line-clamp-2 max-w-[60ch]">
+                      {til.excerpt}
                     </p>
-
-                    <div className="flex flex-wrap gap-2">
-                      {til.tags.map((tag) => (
-                        <Link key={tag} href={`/tags/${tag}`}>
-                          <Badge variant="outline" className="hover:bg-yellow-100 hover:text-yellow-800 dark:hover:bg-yellow-900 transition-colors text-xs cursor-pointer">
-                            {tag}
-                          </Badge>
+                  )}
+                  {til.tags.length > 0 && (
+                    <div className="flex flex-wrap gap-x-3 gap-y-1 pt-1">
+                      {til.tags.slice(0, 5).map((tag) => (
+                        <Link
+                          key={tag}
+                          href={`/tags/${tag}`}
+                          className="text-[11px] text-muted-foreground hover:text-primary transition-colors"
+                        >
+                          #{tag}
                         </Link>
                       ))}
                     </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
+                  )}
+                </article>
+              </li>
             ))}
-          </div>
-        </AnimatePresence>
-      ) : (
-        <Card className="p-12 text-center">
-          <div className="space-y-4">
-            <Search className="h-12 w-12 mx-auto text-muted-foreground opacity-50" />
-            <div>
-              <h3 className="text-lg font-semibold mb-2">No TILs found</h3>
-              <p className="text-muted-foreground">
-                Try adjusting your search or filters
-              </p>
-            </div>
+          </ul>
+        ) : (
+          <div className="py-16 text-center space-y-4">
+            <p className="font-serif text-lg text-foreground">
+              Nothing in this drawer.
+            </p>
+            <p className="text-sm text-muted-foreground max-w-sm mx-auto">
+              Try a different search or clear the tag filter.
+            </p>
             <Button
               variant="outline"
+              size="sm"
               onClick={() => {
                 setSearchQuery("");
                 setSelectedTag("all");
@@ -242,9 +179,18 @@ export default function TILPageClient({ initialTils }: TILPageClientProps) {
               Clear filters
             </Button>
           </div>
-        </Card>
-      )}
+        )}
+      </section>
+
+      {/* Back link */}
+      <div className="pt-2">
+        <Link
+          href="/"
+          className="text-xs font-mono uppercase tracking-[0.18em] text-muted-foreground hover:text-foreground transition-colors"
+        >
+          &larr; Back to home
+        </Link>
+      </div>
     </div>
   );
 }
-

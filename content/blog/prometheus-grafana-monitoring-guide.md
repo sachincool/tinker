@@ -10,6 +10,10 @@ featured: true
 
 Setting up monitoring shouldn't require a PhD. Here's how I set up Prometheus and Grafana for our production infrastructure, explained like you're implementing it tomorrow.
 
+![Prometheus pulls metrics from exporters running next to each service, stores them in its TSDB, then fans out to Alertmanager for paging and Grafana for dashboards.](/images/prometheus-grafana-monitoring-guide/hero.png)
+
+*Fig. 1 — five boxes do most of the work; the other ten you'll add later are mostly for taste.*
+
 ## The Problem
 
 Our services kept having mystery outages. By the time we noticed, customers were already complaining. We needed visibility, fast.

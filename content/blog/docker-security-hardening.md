@@ -8,11 +8,15 @@ featured: false
 
 # Docker Security: Stop Running Everything as Root
 
-Last year, a security audit revealed that 90% of our containers were running as root. We were one exploit away from a very bad day. Here's what we fixed.
+The audit came back with 47 critical issues, 129 highs, 156 containers running as root, and 300-plus unpatched CVEs. We had been shipping the same Node Dockerfile for two years. It was the one from the official `node` image's README, with our app dropped on top. Nobody had ever questioned it. The auditor wrote one line in the summary: *one RCE in any of these and you own the cluster.*
 
-## The Wake-Up Call
+![Side-by-side comparison of a Docker container running as root with permissive defaults versus a hardened container with a non-root user, dropped capabilities, a read-only filesystem, a seccomp profile, and a distroless base image.](/images/docker-security-hardening/hero.png)
 
-Our security team ran a scan. The report was... not great:
+*Fig. 1 — same app code, two trust postures; the audit numbers do most of the arguing.*
+
+## the report
+
+Here's what landed in my inbox on a Tuesday morning, paraphrased into the format the scanner emits:
 
 ```
 Critical Issues: 47
@@ -21,11 +25,11 @@ Running as root: 156 containers
 Unpatched CVEs: 300+
 ```
 
-Yeah. Time to fix this.
+The 156 number was the one that hurt. We didn't have 156 services. We had about thirty. The rest were sidecars, jobs, debug images, one-off tools that someone had built three years ago and never thought about again. Each one ran as UID 0 because the base image did, and nobody had bothered to override it.
 
-## Problem #1: Running as Root
+## running as root, by accident
 
-### The Bad Way (What We Had)
+This is the Dockerfile we had. Maybe yours too.
 
 ```dockerfile
 FROM node:20
@@ -39,9 +43,7 @@ EXPOSE 3000
 CMD ["node", "server.js"]
 ```
 
-Everything runs as root (UID 0). If someone compromises this container, they have root privileges.
-
-### The Good Way
+The `node` image runs as root by default. There's a `node` user already created inside it, but you have to opt in with `USER node`. Almost nobody does. Six years of Stack Overflow answers, including the accepted ones, omit it. The fix is one line, and the version that creates a fresh user is a habit worth keeping for images that don't ship one.
 
 ```dockerfile
 FROM node:20-slim
@@ -65,11 +67,11 @@ EXPOSE 3000
 CMD ["node", "server.js"]
 ```
 
-Now the app runs as user `nodejs` (non-root). Attackers can't escalate to root even if they compromise the app.
+The thing the `--chown` flag buys you is that the running process can't `chmod` its own binaries. An attacker who pops the app can read what it can read and write to what it can write to, but can't go and rewrite `server.js` to add a backdoor. That's a real piece of mitigation that costs you nothing.
 
-## Problem #2: Bloated Images with Vulnerabilities
+## images that arrived with everything
 
-### Before: 1.2GB with 300+ CVEs
+Our prod image was 1.2 GB. The base was `ubuntu:latest`, then a kitchen-sink `apt-get install` of `curl`, `wget`, `git`, `build-essential`, Python, Node, and npm. The build engineer who wrote it had reasons for each one at some point. None of those reasons were still true in production.
 
 ```dockerfile
 FROM ubuntu:latest
@@ -86,9 +88,7 @@ RUN apt-get update && apt-get install -y \
 # ... rest of the Dockerfile
 ```
 
-Every package is a potential vulnerability.
-
-### After: 150MB with <10 CVEs
+Every binary in there is a CVE waiting to be reported. The replacement is the same app on `node:20-alpine`, with `dumb-init` for signal handling and nothing else.
 
 ```dockerfile
 FROM node:20-alpine
@@ -109,15 +109,11 @@ ENTRYPOINT ["dumb-init", "--"]
 CMD ["node", "server.js"]
 ```
 
-**Results:**
+The image dropped to 150 MB. Vulnerability count fell by 97% the morning we shipped it, mostly because we stopped shipping `git` and a C compiler in production. Build time is 60% shorter. None of that required clever engineering. We deleted things.
 
-- Image size: -88%
-- Vulnerabilities: -97%
-- Build time: -60%
+## secrets baked into layers
 
-## Problem #3: Secrets in Images
-
-### Never Do This
+The first time I saw this in our codebase I assumed it was a stub:
 
 ```dockerfile
 FROM node:20
@@ -130,16 +126,14 @@ COPY . .
 CMD ["node", "server.js"]
 ```
 
-These secrets are baked into the image layers. Anyone with access can extract them:
+It wasn't. It had been deployed for eight months. The defense everyone offers is "the registry is private". The problem is that `ENV` lives in the image layer history forever, and `docker history` and `docker save` will hand it to anyone who pulls the image once.
 
 ```bash
 docker history myapp:latest
 docker save myapp:latest | tar -xO | grep -a "API_KEY"
 ```
 
-### Do This Instead
-
-Use build secrets (Docker BuildKit):
+BuildKit secrets fix the build-time half. The secret mounts during the `RUN` step and never lands in a layer.
 
 ```dockerfile
 # syntax=docker/dockerfile:1
@@ -162,19 +156,17 @@ Build with:
 docker build --secret id=npmrc,src=$HOME/.npmrc -t myapp .
 ```
 
-At runtime, use environment variables or secret management:
+For runtime secrets, the right answer depends on where you're running. On a single host:
 
 ```bash
 docker run -e DB_PASSWORD="$(cat /path/to/secret)" myapp
 ```
 
-Better yet: Use Docker secrets (Swarm) or Kubernetes secrets.
+On Swarm or Kubernetes, use the platform's secret store. Anything else is a layer of `chmod 600` and hope.
 
-## Problem #4: Unnecessary Capabilities
+## capabilities you didn't ask for
 
-By default, Docker containers have too many capabilities.
-
-### Principle of Least Privilege
+A vanilla container gets fourteen Linux capabilities by default — including `CAP_NET_RAW`, which lets the process craft raw packets. Most apps need `NET_BIND_SERVICE` and nothing else. Drop the lot, add back what you actually use.
 
 ```bash
 # Drop all capabilities, add only what's needed
@@ -185,7 +177,7 @@ docker run --rm \
   myapp
 ```
 
-In Docker Compose:
+The Compose form, which is what most teams actually deploy:
 
 ```yaml
 services:
@@ -199,9 +191,11 @@ services:
       - no-new-privileges:true
 ```
 
-## Problem #5: Writable Root Filesystem
+`no-new-privileges:true` is the sleeper line. It blocks setuid binaries from elevating during a process exec. Without it, dropping caps is partial protection. With it, it's actual.
 
-### Make Filesystem Read-Only
+## a writable root for no reason
+
+Most apps write to `/tmp`, maybe a logging volume, and nothing else. Their root filesystem can be read-only and the app will never notice. Attackers will.
 
 ```bash
 docker run --rm \
@@ -210,7 +204,7 @@ docker run --rm \
   myapp
 ```
 
-In Docker Compose:
+In Compose:
 
 ```yaml
 services:
@@ -222,13 +216,11 @@ services:
       - /var/run:rw,noexec,nosuid,size=10m
 ```
 
-Now attackers can't write malicious files to disk.
+The first time you ship this you'll discover one library that writes a cache file to `/var/cache` at startup. Add a tmpfs for it and move on. After that the surprises stop.
 
-## Problem #6: Outdated Base Images
+## base images that age
 
-### Auto-Update Base Images
-
-Use Dependabot or Renovate:
+The `:latest` tag pins nothing. The pin you actually want is a digest, but a version-with-distro tag (`node:20.10.0-alpine3.19`) is the working compromise. Then automate the bump.
 
 ```yaml
 # .github/dependabot.yml
@@ -240,7 +232,7 @@ updates:
       interval: "weekly"
 ```
 
-### Scan Images Regularly
+And scan the image. It doesn't matter much which scanner you pick (the lists overlap heavily), but pick one and run it on every build.
 
 ```bash
 # Using Trivy
@@ -253,7 +245,7 @@ snyk container test myapp:latest
 docker scout cves myapp:latest
 ```
 
-Set up CI to fail builds with critical vulnerabilities:
+Wire it into CI as a hard gate on critical and high:
 
 ```yaml
 # .github/workflows/security.yml
@@ -262,9 +254,11 @@ Set up CI to fail builds with critical vulnerabilities:
     trivy image --exit-code 1 --severity CRITICAL,HIGH myapp:latest
 ```
 
-## Problem #7: Exposed Docker Socket
+Yes, you'll have weeks where the gate fires on a CVE you can't fix because there's no patched base image yet. That's a feature. It tells you which deploys are knowingly carrying risk.
 
-### Never Mount Docker Socket
+## the docker socket
+
+If a container has `/var/run/docker.sock` mounted, it can start a sibling container with `--privileged --pid=host -v /:/host` and own the host. There is no way to make this safe.
 
 ```yaml
 # NEVER DO THIS
@@ -274,17 +268,11 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock  # DON'T!
 ```
 
-Mounting the Docker socket gives the container complete control over the host. It's effectively root access.
+It still shows up in build agents, log shippers, and "monitoring" sidecars from vendors who should know better. If you genuinely need to build images from inside a container, Kaniko does that without the socket. If you need to inspect other containers, the orchestrator's API is the supported path.
 
-If you need Docker-in-Docker, use alternatives:
+## resource limits as a security control
 
-- Docker-outside-of-Docker (DooD) with proper access controls
-- Kaniko for building images
-- Podman for rootless containers
-
-## Problem #8: Unbounded Resource Usage
-
-### Limit Resources
+Resource limits feel like a performance concern, but the most common DoS we saw on our cluster was a container OOM-killing its node by allocating until the kernel reaper showed up. Limits don't prevent that, they contain it.
 
 ```bash
 docker run --rm \
@@ -295,7 +283,7 @@ docker run --rm \
   myapp
 ```
 
-In Docker Compose:
+The Compose version:
 
 ```yaml
 services:
@@ -312,11 +300,11 @@ services:
     pids_limit: 100
 ```
 
-Prevents resource exhaustion attacks.
+`--pids-limit` is the underrated one. A fork bomb in your container will still take the container down, but it won't take its neighbors with it.
 
-## The Complete Hardened Dockerfile
+## the hardened dockerfile, end to end
 
-Putting it all together:
+Putting it all together. This is roughly what every Node service in our prod cluster now looks like:
 
 ```dockerfile
 # syntax=docker/dockerfile:1
@@ -374,7 +362,7 @@ LABEL org.opencontainers.image.source="https://github.com/myorg/myapp" \
       org.opencontainers.image.vendor="My Company"
 ```
 
-## Production Docker Compose
+And the matching Compose, with the runtime hardening that the Dockerfile can't express:
 
 ```yaml
 version: '3.8'
@@ -438,86 +426,14 @@ networks:
     internal: true
 ```
 
-## Security Checklist
+## the tools I actually used
 
-Before deploying to production:
+For image scanning we landed on Trivy in CI and Docker Scout for local checks. Snyk has a nicer UI but the per-developer license adds up; Clair is what you reach for when nothing can leave the network. For runtime, Falco watches for the syscall patterns nobody should ever see in production (a shell spawned inside a webserver container is the canonical one). Open Policy Agent and its Kubernetes-native cousins, Gatekeeper and Kyverno, are where you encode the rules from this post so the next person can't push a Dockerfile that violates them. The policy engine is the part that makes the work stick.
 
-- [ ] Container runs as non-root user
-- [ ] Using minimal base image (Alpine, distroless)
-- [ ] No secrets in Dockerfile or image layers
-- [ ] Filesystem is read-only where possible
-- [ ] Resource limits configured
-- [ ] Capabilities dropped (use --cap-drop=ALL)
-- [ ] No new privileges allowed
-- [ ] Regular vulnerability scanning
-- [ ] Base images updated regularly
-- [ ] Health checks implemented
-- [ ] Network segmentation configured
-- [ ] Docker socket NOT mounted
-- [ ] Proper logging configured
+## the receipts
 
-## Tools to Help
+Six months after the audit, the same scanner came back with vulnerabilities down 94%, image sizes down 70%, root containers at zero (from 156), and a compliance score of 95% (from 23%). Zero security incidents that we know about, which is the only honest way to phrase that number.
 
-### Image Scanning
+The change none of those metrics capture is the cultural one. The CI gate caught seven Dockerfiles in the next quarter that would have shipped a `USER root` or a mounted Docker socket. Each of them was added by someone who'd read this exact post in our wiki and still missed something. The point of the gate isn't that engineers are careless. It's that the wrong defaults will outlast any number of training sessions.
 
-- **Trivy**: Fast, accurate, easy to use
-- **Snyk**: Great UI, integrates with CI/CD
-- **Clair**: Self-hosted option
-- **Docker Scout**: Built into Docker
-
-### Runtime Security
-
-- **Falco**: Runtime threat detection
-- **Aqua Security**: Enterprise solution
-- **Sysdig**: Container monitoring + security
-
-### Policy Enforcement
-
-- **Open Policy Agent (OPA)**: Policy as code
-- **Gatekeeper**: OPA for Kubernetes
-- **Kyverno**: Kubernetes-native policies
-
-## Common Excuses and Rebuttals
-
-**"It works fine as root"**
-
-- Until it doesn't. One RCE and you're owned.
-
-**"Security is slow"**
-
-- Slower than a data breach? I doubt it.
-
-**"This is too complex"**
-
-- It's a few extra lines. Your users' data is worth it.
-
-**"We're behind a firewall"**
-
-- Defense in depth. Assume breach.
-
-## The Results
-
-After implementing these changes:
-
-- Vulnerabilities: Down 94%
-- Image sizes: Down 70%
-- Root containers: 0 (down from 156)
-- Compliance score: 95% (up from 23%)
-- Security incidents: 0 in last 6 months
-
-## Final Thoughts
-
-Container security isn't optional. It's not hard, it just requires discipline.
-
-Start small:
-
-1. Run as non-root
-2. Use minimal images
-3. Scan regularly
-
-The rest follows naturally.
-
-**Remember**: The best time to secure your containers was yesterday. The second best time is now.
-
-What security practices have you implemented? Any war stories? Share below!
-
+The auditor who wrote *one RCE and you own the cluster* came back the next year. The line in this year's summary read *no findings rated critical*. I keep both of them in the same Slack channel. They're more useful together.

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>five kubectl tricks, one decision tree</title>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --color-paper:   #11141c;
+      --color-paper-2: #161a24;
+      --color-ink:     #ecedf0;
+      --color-muted:   #8a93a6;
+      --color-soft:    #5c6478;
+      --color-rule:    rgba(236,237,240,0.10);
+      --color-accent:  #ff6b5a;
+      --color-calm:    #5bc0d9;
+      --font-sans:     'Geist', system-ui, sans-serif;
+      --font-serif:    'Instrument Serif', serif;
+      --font-mono:     'Geist Mono', ui-monospace, monospace;
+    }
+
+    html, body { background: var(--color-paper); }
+
+    body {
+      font-family: var(--font-sans);
+      color: var(--color-ink);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    .frame { max-width: 1520px; width: 100%; }
+
+    .eyebrow {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--color-muted);
+      margin-bottom: 0.6rem;
+    }
+
+    h1 {
+      font-family: var(--font-serif);
+      font-size: clamp(1.8rem, 2.6vw + 0.75rem, 2.4rem);
+      font-weight: 400;
+      letter-spacing: -0.015em;
+      line-height: 1.15;
+      color: var(--color-ink);
+      margin-bottom: 1.5rem;
+    }
+
+    svg { width: 100%; display: block; }
+  </style>
+</head>
+<body>
+  <div class="frame">
+    <p class="eyebrow">Figure · production triage, in one glance</p>
+    <h1>five symptoms, five kubectl flags, one decision tree</h1>
+
+    <svg viewBox="0 0 1600 760" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Decision tree mapping five Kubernetes pod symptoms to the kubectl command that diagnoses each.">
+      <defs>
+        <pattern id="dots" width="24" height="24" patternUnits="userSpaceOnUse">
+          <circle cx="1" cy="1" r="0.9" fill="rgba(236,237,240,0.05)"/>
+        </pattern>
+        <marker id="arrow-soft" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+          <polygon points="0 0, 8 3, 0 6" fill="#5c6478"/>
+        </marker>
+        <marker id="arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+          <polygon points="0 0, 8 3, 0 6" fill="#ff6b5a"/>
+        </marker>
+      </defs>
+
+      <rect width="100%" height="100%" fill="#11141c"/>
+      <rect width="100%" height="100%" fill="url(#dots)" opacity="0.7"/>
+
+      <!-- Ghosted phase label -->
+      <text x="80" y="120" fill="rgba(255,107,90,0.10)" font-size="64" font-weight="600" font-family="'Geist Mono', monospace" letter-spacing="0.04em">SOMETHING'S WRONG</text>
+
+      <!-- ============ ROOT — the symptom ============ -->
+      <text x="800" y="184" fill="#ff6b5a" font-size="10" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.22em" font-weight="500">START</text>
+      <ellipse cx="800" cy="220" rx="140" ry="28" fill="rgba(255,107,90,0.06)" stroke="#ff6b5a" stroke-width="1.4"/>
+      <text x="800" y="216" fill="#ecedf0" font-size="14" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">a pod is acting up.</text>
+      <text x="800" y="234" fill="#8a93a6" font-size="11" font-family="'Geist', sans-serif" text-anchor="middle">it's 3 a.m. what do you ask kubectl first?</text>
+
+      <!-- Five connector lines fanning out from root to each branch header -->
+      <line x1="800" y1="248" x2="180" y2="320" stroke="#5c6478" stroke-width="1" opacity="0.55"/>
+      <line x1="800" y1="248" x2="490" y2="320" stroke="#5c6478" stroke-width="1" opacity="0.55"/>
+      <line x1="800" y1="248" x2="800" y2="320" stroke="#5c6478" stroke-width="1" opacity="0.55"/>
+      <line x1="800" y1="248" x2="1110" y2="320" stroke="#5c6478" stroke-width="1" opacity="0.55"/>
+      <line x1="800" y1="248" x2="1420" y2="320" stroke="#5c6478" stroke-width="1" opacity="0.55"/>
+
+      <!-- ============ BRANCH 1 · CrashLoopBackOff ============ -->
+      <text x="180" y="332" fill="#5bc0d9" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.22em" font-weight="500">SYMPTOM 01</text>
+      <text x="180" y="356" fill="#ecedf0" font-size="14" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">CrashLoopBackOff</text>
+      <text x="180" y="376" fill="#8a93a6" font-size="11" font-family="'Geist', sans-serif" text-anchor="middle">pod keeps dying.</text>
+      <text x="180" y="392" fill="#8a93a6" font-size="11" font-family="'Geist', sans-serif" text-anchor="middle">current logs are empty.</text>
+
+      <!-- vertical connector to command box -->
+      <line x1="180" y1="408" x2="180" y2="460" stroke="#5c6478" stroke-width="1" stroke-dasharray="2,3" opacity="0.7"/>
+
+      <!-- command box -->
+      <rect x="40" y="464" width="280" height="64" rx="6" fill="#11141c"/>
+      <rect x="40" y="464" width="280" height="64" rx="6" fill="#161a24" stroke="#5bc0d9" stroke-width="1.2"/>
+      <rect x="52" y="476" width="44" height="14" rx="2" fill="transparent" stroke="rgba(91,192,217,0.40)" stroke-width="0.8"/>
+      <text x="74" y="486" fill="rgba(91,192,217,0.85)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.10em">KUBECTL</text>
+      <text x="180" y="510" fill="#ecedf0" font-size="12" font-family="'Geist Mono', monospace" text-anchor="middle">logs &lt;pod&gt; --previous</text>
+      <text x="180" y="552" fill="#5c6478" font-size="10" font-family="'Geist Mono', monospace" text-anchor="middle" font-style="italic" letter-spacing="0.02em">read what the corpse said</text>
+      <text x="180" y="566" fill="#5c6478" font-size="10" font-family="'Geist Mono', monospace" text-anchor="middle" font-style="italic" letter-spacing="0.02em">on the way out.</text>
+
+      <!-- ============ BRANCH 2 · Pending ============ -->
+      <text x="490" y="332" fill="#5bc0d9" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.22em" font-weight="500">SYMPTOM 02</text>
+      <text x="490" y="356" fill="#ecedf0" font-size="14" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Pending forever</text>
+      <text x="490" y="376" fill="#8a93a6" font-size="11" font-family="'Geist', sans-serif" text-anchor="middle">scheduler is silent.</text>
+      <text x="490" y="392" fill="#8a93a6" font-size="11" font-family="'Geist', sans-serif" text-anchor="middle">no node will take it.</text>
+
+      <line x1="490" y1="408" x2="490" y2="460" stroke="#5c6478" stroke-width="1" stroke-dasharray="2,3" opacity="0.7"/>
+
+      <rect x="350" y="464" width="280" height="64" rx="6" fill="#11141c"/>
+      <rect x="350" y="464" width="280" height="64" rx="6" fill="#161a24" stroke="#5bc0d9" stroke-width="1.2"/>
+      <rect x="362" y="476" width="44" height="14" rx="2" fill="transparent" stroke="rgba(91,192,217,0.40)" stroke-width="0.8"/>
+      <text x="384" y="486" fill="rgba(91,192,217,0.85)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.10em">KUBECTL</text>
+      <text x="490" y="510" fill="#ecedf0" font-size="12" font-family="'Geist Mono', monospace" text-anchor="middle">get events --field-selector ...</text>
+      <text x="490" y="552" fill="#5c6478" font-size="10" font-family="'Geist Mono', monospace" text-anchor="middle" font-style="italic" letter-spacing="0.02em">stop guessing.</text>
+      <text x="490" y="566" fill="#5c6478" font-size="10" font-family="'Geist Mono', monospace" text-anchor="middle" font-style="italic" letter-spacing="0.02em">the scheduler already told you.</text>
+
+      <!-- ============ BRANCH 3 · Mystery container ============ -->
+      <text x="800" y="332" fill="#ff6b5a" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.22em" font-weight="500">SYMPTOM 03</text>
+      <text x="800" y="356" fill="#ecedf0" font-size="14" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">running, but wrong</text>
+      <text x="800" y="376" fill="#8a93a6" font-size="11" font-family="'Geist', sans-serif" text-anchor="middle">distroless image.</text>
+      <text x="800" y="392" fill="#8a93a6" font-size="11" font-family="'Geist', sans-serif" text-anchor="middle">no shell. no curl. no clue.</text>
+
+      <line x1="800" y1="408" x2="800" y2="460" stroke="#ff6b5a" stroke-width="1" stroke-dasharray="2,3" opacity="0.7"/>
+
+      <rect x="660" y="464" width="280" height="64" rx="6" fill="#11141c"/>
+      <rect x="660" y="464" width="280" height="64" rx="6" fill="rgba(255,107,90,0.05)" stroke="#ff6b5a" stroke-width="1.4"/>
+      <rect x="672" y="476" width="44" height="14" rx="2" fill="transparent" stroke="rgba(255,107,90,0.50)" stroke-width="0.8"/>
+      <text x="694" y="486" fill="rgba(255,107,90,0.95)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.10em">KUBECTL</text>
+      <text x="800" y="510" fill="#ecedf0" font-size="12" font-family="'Geist Mono', monospace" text-anchor="middle">debug -it &lt;pod&gt; --image=netshoot</text>
+      <text x="800" y="552" fill="#5c6478" font-size="10" font-family="'Geist Mono', monospace" text-anchor="middle" font-style="italic" letter-spacing="0.02em">attach an ephemeral container.</text>
+      <text x="800" y="566" fill="#5c6478" font-size="10" font-family="'Geist Mono', monospace" text-anchor="middle" font-style="italic" letter-spacing="0.02em">no rebuild required.</text>
+
+      <!-- ============ BRANCH 4 · Network policy ============ -->
+      <text x="1110" y="332" fill="#5bc0d9" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.22em" font-weight="500">SYMPTOM 04</text>
+      <text x="1110" y="356" fill="#ecedf0" font-size="14" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">connection refused</text>
+      <text x="1110" y="376" fill="#8a93a6" font-size="11" font-family="'Geist', sans-serif" text-anchor="middle">DNS works. service exists.</text>
+      <text x="1110" y="392" fill="#8a93a6" font-size="11" font-family="'Geist', sans-serif" text-anchor="middle">policy might disagree.</text>
+
+      <line x1="1110" y1="408" x2="1110" y2="460" stroke="#5c6478" stroke-width="1" stroke-dasharray="2,3" opacity="0.7"/>
+
+      <rect x="970" y="464" width="280" height="64" rx="6" fill="#11141c"/>
+      <rect x="970" y="464" width="280" height="64" rx="6" fill="#161a24" stroke="#5bc0d9" stroke-width="1.2"/>
+      <rect x="982" y="476" width="44" height="14" rx="2" fill="transparent" stroke="rgba(91,192,217,0.40)" stroke-width="0.8"/>
+      <text x="1004" y="486" fill="rgba(91,192,217,0.85)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.10em">KUBECTL</text>
+      <text x="1110" y="510" fill="#ecedf0" font-size="12" font-family="'Geist Mono', monospace" text-anchor="middle">run test --rm -it --image=netshoot</text>
+      <text x="1110" y="552" fill="#5c6478" font-size="10" font-family="'Geist Mono', monospace" text-anchor="middle" font-style="italic" letter-spacing="0.02em">curl from inside the cluster.</text>
+      <text x="1110" y="566" fill="#5c6478" font-size="10" font-family="'Geist Mono', monospace" text-anchor="middle" font-style="italic" letter-spacing="0.02em">trust nothing your laptop says.</text>
+
+      <!-- ============ BRANCH 5 · Resource hog ============ -->
+      <text x="1420" y="332" fill="#5bc0d9" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.22em" font-weight="500">SYMPTOM 05</text>
+      <text x="1420" y="356" fill="#ecedf0" font-size="14" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">node is on fire</text>
+      <text x="1420" y="376" fill="#8a93a6" font-size="11" font-family="'Geist', sans-serif" text-anchor="middle">memory pressure.</text>
+      <text x="1420" y="392" fill="#8a93a6" font-size="11" font-family="'Geist', sans-serif" text-anchor="middle">someone's hoarding.</text>
+
+      <line x1="1420" y1="408" x2="1420" y2="460" stroke="#5c6478" stroke-width="1" stroke-dasharray="2,3" opacity="0.7"/>
+
+      <rect x="1280" y="464" width="280" height="64" rx="6" fill="#11141c"/>
+      <rect x="1280" y="464" width="280" height="64" rx="6" fill="#161a24" stroke="#5bc0d9" stroke-width="1.2"/>
+      <rect x="1292" y="476" width="44" height="14" rx="2" fill="transparent" stroke="rgba(91,192,217,0.40)" stroke-width="0.8"/>
+      <text x="1314" y="486" fill="rgba(91,192,217,0.85)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.10em">KUBECTL</text>
+      <text x="1420" y="510" fill="#ecedf0" font-size="12" font-family="'Geist Mono', monospace" text-anchor="middle">top pods -A --sort-by=memory</text>
+      <text x="1420" y="552" fill="#5c6478" font-size="10" font-family="'Geist Mono', monospace" text-anchor="middle" font-style="italic" letter-spacing="0.02em">sort. find. shame the team</text>
+      <text x="1420" y="566" fill="#5c6478" font-size="10" font-family="'Geist Mono', monospace" text-anchor="middle" font-style="italic" letter-spacing="0.02em">that shipped the leak.</text>
+
+      <!-- Legend strip -->
+      <line x1="80" y1="640" x2="1520" y2="640" stroke="rgba(236,237,240,0.10)" stroke-width="0.8"/>
+      <text x="80" y="660" fill="#8a93a6" font-size="9" font-family="'Geist Mono', monospace" letter-spacing="0.22em">LEGEND</text>
+
+      <ellipse cx="96" cy="694" rx="10" ry="6" fill="rgba(255,107,90,0.06)" stroke="#ff6b5a" stroke-width="1.4"/>
+      <text x="116" y="698" fill="#bfc4cf" font-size="10.5" font-family="'Geist', sans-serif">root symptom — the question you start with</text>
+
+      <rect x="488" y="688" width="20" height="12" rx="3" fill="rgba(255,107,90,0.05)" stroke="#ff6b5a" stroke-width="1.2"/>
+      <text x="516" y="698" fill="#bfc4cf" font-size="10.5" font-family="'Geist', sans-serif">my favourite — the ephemeral debug container</text>
+
+      <rect x="996" y="688" width="20" height="12" rx="3" fill="#161a24" stroke="#5bc0d9" stroke-width="1.2"/>
+      <text x="1024" y="698" fill="#bfc4cf" font-size="10.5" font-family="'Geist', sans-serif">supporting commands — the other four flags worth memorising</text>
+    </svg>
+  </div>
+</body>
+</html>

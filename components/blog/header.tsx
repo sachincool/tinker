@@ -1,19 +1,19 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { 
-  Moon, 
-  Sun, 
-  Search, 
-  Menu, 
-  Home, 
-  BookOpen, 
-  Lightbulb, 
+import { SearchDialog } from "@/components/blog/search-dialog";
+import {
+  Moon,
+  Sun,
+  Search,
+  Menu,
+  Home,
+  BookOpen,
+  Lightbulb,
   Tags,
   Github,
   Twitter,
@@ -24,6 +24,19 @@ import {
 
 export function Header() {
   const { theme, setTheme } = useTheme();
+  const [searchOpen, setSearchOpen] = useState(false);
+
+  // Open search on Cmd+K / Ctrl+K
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setSearchOpen((v) => !v);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
 
   const navigation = [
     { name: "Home", href: "/", icon: Home },
@@ -34,6 +47,8 @@ export function Header() {
   ];
 
   return (
+    <>
+    <SearchDialog open={searchOpen} onOpenChange={setSearchOpen} />
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
@@ -49,8 +64,11 @@ export function Header() {
               />
             </div>
             <div className="flex flex-col">
-              <span className="font-bold text-lg leading-none">harshit.cloud</span>
-              <span className="text-xs text-muted-foreground leading-none">Infra Magician&apos;s Lair</span>
+              <span className="font-bold text-lg leading-none">
+                harshit.cloud{" "}
+                <span className="font-normal text-muted-foreground" aria-hidden="true">ツ</span>
+              </span>
+              <span className="text-xs text-muted-foreground leading-none mt-0.5">Sénior SRE</span>
             </div>
           </Link>
 
@@ -73,16 +91,16 @@ export function Header() {
 
           {/* Right side actions */}
           <div className="flex items-center space-x-2">
-            {/* Search - Navigate to blog */}
+            {/* Search — opens dialog (also Cmd+K) */}
             <Button
               variant="ghost"
               size="sm"
-              asChild
+              onClick={() => setSearchOpen(true)}
+              aria-label="Search posts (Cmd+K)"
+              title="Search posts (⌘K)"
               className="hidden sm:flex"
             >
-              <Link href="/blog">
-                <Search className="h-4 w-4" />
-              </Link>
+              <Search className="h-4 w-4" />
             </Button>
 
             {/* Theme toggle */}
@@ -166,5 +184,6 @@ export function Header() {
         </div>
       </div>
     </header>
+    </>
   );
 }

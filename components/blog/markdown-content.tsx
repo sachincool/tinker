@@ -9,6 +9,45 @@ interface MarkdownContentProps {
   content: string;
 }
 
+// Self-sizing iframe embed for blog widgets.
+// Widget pages can postMessage({type:'iframe-height', height:N}) to resize.
+function EmbedFrame({ src, title, initialHeight, caption }: { src: string; title: string; initialHeight: number; caption?: string }) {
+  const ref = React.useRef<HTMLIFrameElement>(null);
+  const [height, setHeight] = React.useState(initialHeight);
+
+  React.useEffect(() => {
+    function onMessage(ev: MessageEvent) {
+      if (!ref.current || ev.source !== ref.current.contentWindow) return;
+      const data = ev.data as { type?: string; height?: number };
+      if (data?.type === "iframe-height" && typeof data.height === "number") {
+        setHeight(Math.max(120, Math.ceil(data.height)));
+      }
+    }
+    window.addEventListener("message", onMessage);
+    return () => window.removeEventListener("message", onMessage);
+  }, []);
+
+  return (
+    <figure className="my-12">
+      <div className="relative overflow-hidden rounded-xl shadow-xl ring-1 ring-black/5 dark:ring-white/10 bg-white dark:bg-zinc-950">
+        <iframe
+          ref={ref}
+          src={src}
+          title={title}
+          loading="lazy"
+          className="block w-full"
+          style={{ height: `${height}px`, border: 0 }}
+        />
+      </div>
+      {caption && (
+        <figcaption className="text-center text-sm text-muted-foreground mt-5 italic font-medium border-t border-border/30 pt-3 px-4">
+          {caption}
+        </figcaption>
+      )}
+    </figure>
+  );
+}
+
 // million-ignore
 export function MarkdownContent({ content }: MarkdownContentProps) {
   const renderMarkdown = () => {
@@ -202,6 +241,31 @@ export function MarkdownContent({ content }: MarkdownContentProps) {
                 </tbody>
               </table>
             </div>
+          );
+          return;
+        }
+      }
+
+      // Iframe embeds (a standalone <iframe ...></iframe> paragraph)
+      if (paragraph.trim().startsWith('<iframe') && paragraph.trim().endsWith('</iframe>')) {
+        const raw = paragraph.trim();
+        const srcMatch = raw.match(/\bsrc="([^"]+)"/);
+        const titleMatch = raw.match(/\btitle="([^"]+)"/);
+        const heightMatch = raw.match(/\bheight="([^"]+)"/);
+        const captionMatch = raw.match(/\bdata-caption="([^"]+)"/);
+        if (srcMatch) {
+          const src = srcMatch[1]!;
+          const title = titleMatch?.[1] || 'Embedded figure';
+          const initialHeight = parseInt(heightMatch?.[1] || '760', 10);
+          const caption = captionMatch?.[1];
+          elements.push(
+            <EmbedFrame
+              key={index}
+              src={src}
+              title={title}
+              initialHeight={initialHeight}
+              caption={caption}
+            />
           );
           return;
         }

@@ -1,68 +1,13 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import {
-  Download,
-  FileText,
-  Briefcase,
-  GraduationCap,
-  Mail,
-  Sparkles,
-  ExternalLink,
-  Terminal,
-  Github,
-  Linkedin,
-  MapPin,
-  TrendingUp,
-  Shield,
-  Clock,
-  DollarSign,
-  Users,
-  ChevronRight,
-  Globe,
-  Layers,
-  Network,
-  Activity,
-  Database,
-  Code2,
-  User,
-  BookOpen,
-  Award,
-  Trophy,
-  BadgeCheck,
-} from "lucide-react";
-import { motion } from "motion/react";
 import Link from "next/link";
-
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.08,
-      delayChildren: 0.1,
-    },
-  },
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 24 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.5, ease: "easeOut" },
-  },
-};
 
 const experience = [
   {
     title: "Senior Site Reliability Engineer (SRE)",
     company: "TrueFoundry",
     location: "India",
-    period: "Sep. 2024 - Present",
+    period: "Sep 2024 — Present",
     current: true,
     summary:
       "Own platform reliability, observability, incident response, and customer success for a multi-tenant SaaS platform serving enterprise ML workloads across AWS, GCP, Azure, and on-prem. Partner directly with global enterprise customers on onboarding and long-term operational health.",
@@ -75,12 +20,13 @@ const experience = [
       "Escalation point for complex multi-cloud production debugging across EKS/GKE/AKS — Karpenter, EFS/CSI, GPU node scheduling, IAM/IRSA, networking, airgapped artifact registries — while keeping enterprise SLAs intact",
       "Routinely support late-IST and weekend windows for onboarding, cluster upgrades, and live debugging with global enterprise customers (e.g., Riot Games, Zscaler)",
     ],
+    tech: ["kubernetes", "terraform", "aws", "gcp", "azure", "victorialogs", "new relic", "karpenter"],
   },
   {
     title: "Infrastructure Lead (Founding Engineer)",
     company: "Primetrace (Kutumb Crafto)",
     location: "India",
-    period: "Feb. 2021 - Sep. 2024",
+    period: "Feb 2021 — Sep 2024",
     current: false,
     summary:
       "Architected and operated AWS-based infrastructure on self-hosted Kubernetes supporting 4M DAU at 1M RPM peak. Built monitoring on RED/USE methodologies with Prometheus, Grafana, Elastic-APM, Pyroscope, Loki, and Robusta.",
@@ -93,12 +39,13 @@ const experience = [
       "Achieved 99.99% uptime for stateless workloads on 95% spot instances via time-based scaling and node hibernation during low-traffic windows",
       "Led integration of a full observability stack: centralized monitoring, APM, distributed tracing, logging, profiling, and alerting",
     ],
+    tech: ["aws", "kubernetes", "kafka", "elk", "prometheus", "grafana", "argocd", "spot instances"],
   },
   {
     title: "DevOps Engineer",
     company: "smallcase",
     location: "India",
-    period: "Feb. 2019 - Sep. 2020",
+    period: "Feb 2019 — Sep 2020",
     current: false,
     summary:
       "Managed core infrastructure (OpenVPN, Heartbeat, Elastalert, Grafana) and integrated developer tooling (Wiki.js, Sentry, JFrog Artifactory). Built Ansible automation for deployments, log rotation, backups, and monitoring agents; tuned CI/CD on Jenkins and AWS CodeDeploy.",
@@ -108,28 +55,31 @@ const experience = [
       "Improved developer productivity by integrating open-source observability tools — Elastic-APM, Kafka-manager, Kafka-topics-ui",
       "Designed fault-tolerant data infrastructure on multi-broker Apache Kafka clusters and a distributed ELK Stack running on spot instances",
     ],
+    tech: ["ansible", "jenkins", "aws", "haproxy", "kafka", "elk"],
   },
   {
     title: "Technical Mentor",
     company: "Udacity",
     location: "Remote",
-    period: "Apr. 2018 - Present",
+    period: "Apr 2018 — Present",
     current: true,
     summary: "",
     highlights: [
       "Mentor students in Android and Python Development; review project submissions and provide feedback to improve technical depth and code quality",
     ],
+    tech: [],
   },
   {
     title: "Open Source Contributor",
     company: "Utopian.io",
     location: "Remote",
-    period: "Jun. 2018 - Jan. 2019",
+    period: "Jun 2018 — Jan 2019",
     current: false,
     summary: "",
     highlights: [
       "Performed bug reviews and QA across multiple open-source projects, contributing to improved reliability and security alongside a global contributor community",
     ],
+    tech: [],
   },
 ];
 
@@ -172,716 +122,343 @@ const certifications = [
 
 const skillCategories = [
   {
-    label: "Cloud Platforms",
-    icon: Globe,
-    color: "text-blue-500",
+    label: "Cloud platforms",
     skills: ["AWS", "Azure", "GCP", "Terraform", "CloudFormation"],
   },
   {
     label: "Containerization",
-    icon: Layers,
-    color: "text-purple-500",
     skills: ["Kubernetes", "Docker", "Helm", "Kustomize", "ArgoCD", "GitOps"],
   },
   {
     label: "Infrastructure",
-    icon: Terminal,
-    color: "text-green-500",
     skills: ["IaC", "Linux", "Ansible", "Jenkins", "GitHub Actions"],
   },
   {
     label: "Networking",
-    icon: Network,
-    color: "text-orange-500",
     skills: ["Istio", "Traefik", "HAProxy", "Load Balancing", "RBAC", "Network Policies", "OpenVPN", "IPv6"],
   },
   {
     label: "Observability",
-    icon: Activity,
-    color: "text-red-500",
     skills: ["Prometheus", "Grafana", "Loki", "VictoriaLogs", "New Relic", "ELK Stack", "Elastic-APM", "Tempo", "Distributed Tracing"],
   },
   {
-    label: "Data Systems",
-    icon: Database,
-    color: "text-cyan-500",
+    label: "Data systems",
     skills: ["Apache Kafka", "Redpanda", "RabbitMQ", "PostgreSQL", "MySQL", "Redis", "Airbyte", "dbt", "Airflow", "Spark"],
   },
   {
     label: "Programming",
-    icon: Code2,
-    color: "text-yellow-500",
     skills: ["Python", "Go", "Bash", "Git", "CI/CD Pipelines"],
   },
 ];
 
 const stats = [
-  { label: "Years Experience", value: "7+", icon: Clock, color: "from-blue-500 to-cyan-500" },
-  { label: "Daily Active Users", value: "4M+", icon: Users, color: "from-purple-500 to-pink-500" },
-  { label: "Uptime SLA", value: "99.99%", icon: TrendingUp, color: "from-green-500 to-emerald-500" },
-  { label: "Cloud Costs Saved", value: "$200K", icon: DollarSign, color: "from-orange-500 to-amber-500" },
+  { label: "Years in production", value: "7+" },
+  { label: "Daily active users", value: "4M+" },
+  { label: "Uptime SLA held", value: "99.99%" },
+  { label: "Cloud spend trimmed", value: "$200K" },
 ];
+
+const contactLinks = [
+  { label: "root@harshit.cloud", href: "mailto:root@harshit.cloud" },
+  { label: "github.com/sachincool", href: "https://github.com/sachincool" },
+  { label: "linkedin/harshit-luthra", href: "https://linkedin.com/in/harshit-luthra/" },
+  { label: "sachin.cool", href: "https://sachin.cool" },
+];
+
+function Eyebrow({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-[0.22em] text-muted-foreground border-b border-border/60 pb-2">
+      <span className="inline-block h-1.5 w-1.5 rounded-full bg-primary" />
+      {children}
+    </div>
+  );
+}
 
 export default function ResumePageClient() {
   return (
-    <div className="space-y-16">
-      {/* Hero Section */}
-      <section className="relative py-16 overflow-hidden">
-        <motion.div
-          className="absolute inset-0 -z-10 rounded-3xl"
-          animate={{
-            background: [
-              "linear-gradient(to bottom right, oklch(0.95 0.05 250), oklch(0.95 0.05 300), oklch(0.95 0.05 350))",
-              "linear-gradient(to bottom right, oklch(0.95 0.05 260), oklch(0.95 0.05 310), oklch(0.95 0.05 340))",
-              "linear-gradient(to bottom right, oklch(0.95 0.05 250), oklch(0.95 0.05 300), oklch(0.95 0.05 350))",
-            ],
-          }}
-          transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
-          style={{
-            background:
-              "linear-gradient(to bottom right, oklch(0.95 0.05 250), oklch(0.95 0.05 300), oklch(0.95 0.05 350))",
-          }}
-        />
-        <div className="absolute inset-0 -z-10 rounded-3xl dark:bg-gradient-to-br dark:from-blue-950/20 dark:via-purple-950/20 dark:to-pink-950/20" />
+    <div className="max-w-4xl mx-auto px-4 py-12 md:py-16 space-y-12 md:space-y-16">
+      {/* Header */}
+      <header className="space-y-6">
+        <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-[0.22em] text-muted-foreground">
+          <span className="inline-block h-1.5 w-1.5 rounded-full bg-primary" />
+          Resume
+        </div>
 
-        <motion.div
-          className="text-center space-y-6"
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-        >
-          <motion.div
-            className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-sm font-medium"
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.2, duration: 0.4 }}
-          >
-            <Terminal className="h-4 w-4" />
-            <span>$ cat resume.txt</span>
-          </motion.div>
+        <div className="space-y-3">
+          <h1 className="font-serif text-5xl md:text-6xl leading-[1.05] tracking-tight">
+            Harshit Luthra
+          </h1>
+          <p className="text-lg text-muted-foreground leading-relaxed max-w-xl">
+            Infrastructure and reliability engineer. A tinkerer with a curious mind.
+          </p>
+        </div>
 
-          <motion.h1
-            className="text-4xl md:text-6xl font-bold"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.6 }}
-          >
-            <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-              Harshit Luthra
-            </span>
-          </motion.h1>
-
-          <motion.p
-            className="text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto font-medium"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4, duration: 0.6 }}
-          >
-            Infrastructure Lead &middot; Security Analyst
-          </motion.p>
-
-          <motion.p
-            className="text-base text-muted-foreground/80 italic max-w-md mx-auto"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5, duration: 0.6 }}
-          >
-            &ldquo;A tinkerer with a curious mind&rdquo;
-          </motion.p>
-
-          {/* Contact Links */}
-          <motion.div
-            className="flex flex-wrap items-center justify-center gap-3 pt-2"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.6, duration: 0.6 }}
-          >
-            {[
-              { icon: Mail, label: "root@harshit.cloud", href: "mailto:root@harshit.cloud" },
-              { icon: Github, label: "sachincool", href: "https://github.com/sachincool" },
-              { icon: Linkedin, label: "harshit-luthra", href: "https://linkedin.com/in/harshit-luthra/" },
-              { icon: Globe, label: "sachin.cool", href: "https://sachin.cool" },
-            ].map((link, index) => (
-              <motion.div
-                key={link.label}
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.7 + index * 0.08, duration: 0.4 }}
+        {/* Contact line */}
+        <div className="flex flex-wrap items-center gap-x-5 gap-y-2 pt-2 font-mono text-xs uppercase tracking-[0.14em] text-muted-foreground">
+          {contactLinks.map((link, i) => (
+            <span key={link.label} className="inline-flex items-center gap-5">
+              <a
+                href={link.href}
+                target={link.href.startsWith("mailto") ? undefined : "_blank"}
+                rel="noopener noreferrer"
+                className="hover:text-primary transition-colors"
               >
-                <a
-                  href={link.href}
-                  target={link.href.startsWith("mailto") ? undefined : "_blank"}
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-full hover:bg-primary/5"
-                >
-                  <link.icon className="h-3.5 w-3.5" />
-                  {link.label}
-                </a>
-              </motion.div>
-            ))}
-          </motion.div>
+                {link.label}
+              </a>
+              {i < contactLinks.length - 1 && (
+                <span aria-hidden className="text-border">/</span>
+              )}
+            </span>
+          ))}
+        </div>
 
-          {/* Action Buttons */}
-          <motion.div
-            className="flex flex-wrap gap-4 justify-center pt-4"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.9, duration: 0.5 }}
+        {/* Action row — quiet outline buttons, no gradients */}
+        <div className="flex flex-wrap items-center gap-x-6 gap-y-2 pt-2 text-base">
+          <a
+            href="/Harshit_Resume.pdf"
+            download
+            className="text-primary underline underline-offset-4 decoration-primary/40 hover:decoration-primary transition-colors"
           >
-            <Button size="lg" asChild className="group relative overflow-hidden">
-              <a href="/Harshit_Resume.pdf" download>
-                <motion.div
-                  className="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-purple-600/20 pointer-events-none"
-                  animate={{ scale: [1, 1.2, 1], opacity: [0.5, 0.8, 0.5] }}
-                  transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                />
-                <Download className="mr-2 h-5 w-5 relative z-10" />
-                <span className="relative z-10">Download PDF</span>
-                <Sparkles className="ml-2 h-4 w-4 group-hover:rotate-12 transition-transform relative z-10" />
-              </a>
-            </Button>
-            <Button size="lg" variant="outline" asChild>
-              <a href="/Harshit_Resume.pdf" target="_blank" rel="noopener noreferrer">
-                <ExternalLink className="mr-2 h-5 w-5" />
-                View PDF
-              </a>
-            </Button>
-            <Button size="lg" variant="outline" asChild>
-              <Link href="/about">
-                <User className="mr-2 h-5 w-5" />
-                About Me
-              </Link>
-            </Button>
-          </motion.div>
-        </motion.div>
+            Download PDF &darr;
+          </a>
+          <a
+            href="/Harshit_Resume.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-foreground/80 underline underline-offset-4 decoration-border hover:decoration-foreground transition-colors"
+          >
+            View in browser &rarr;
+          </a>
+          <Link
+            href="/about"
+            className="text-foreground/80 underline underline-offset-4 decoration-border hover:decoration-foreground transition-colors"
+          >
+            About me &rarr;
+          </Link>
+        </div>
+      </header>
+
+      {/* Numbers — flat, no cards, no gradients */}
+      <section className="space-y-6">
+        <Eyebrow>By the numbers</Eyebrow>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-8">
+          {stats.map((stat) => (
+            <div key={stat.label} className="space-y-1">
+              <p className="font-serif text-3xl md:text-4xl leading-none text-foreground">
+                {stat.value}
+              </p>
+              <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+                {stat.label}
+              </p>
+            </div>
+          ))}
+        </div>
       </section>
 
-      {/* Stats Section */}
-      <motion.section
-        className="max-w-5xl mx-auto"
-        variants={containerVariants}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, margin: "-80px" }}
-      >
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {stats.map((stat) => (
-            <motion.div key={stat.label} variants={itemVariants}>
-              <Card className="text-center hover:shadow-lg transition-all hover:-translate-y-1 group cursor-default relative overflow-hidden">
-                <motion.div
-                  className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-purple-500/5 to-pink-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
-                />
-                <CardContent className="pt-6 pb-4 relative z-10">
-                  <div className={`inline-flex p-3 rounded-xl bg-gradient-to-br ${stat.color} mb-3`}>
-                    <stat.icon className="h-5 w-5 text-white" />
-                  </div>
-                  <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-                    {stat.value}
-                  </div>
-                  <p className="text-sm text-muted-foreground mt-1">{stat.label}</p>
-                </CardContent>
-              </Card>
-            </motion.div>
+      {/* Summary */}
+      <section className="space-y-4">
+        <Eyebrow>Summary</Eyebrow>
+        <p className="text-base sm:text-lg text-muted-foreground leading-relaxed max-w-prose">
+          Infrastructure and reliability engineer with 7+ years building and operating cloud-native
+          platforms. Maintained 99.99% uptime for systems serving 4M+ daily active users while
+          cutting infrastructure spend significantly. Strong background across Kubernetes,
+          AWS/GCP/Azure, observability, and DevSecOps, with hands-on depth in networking,
+          databases, storage, and multi-tenant SaaS operations. Comfortable owning incidents
+          end-to-end and partnering with engineering and customer teams to ship reliable systems.
+        </p>
+      </section>
+
+      {/* Experience */}
+      <section className="space-y-8">
+        <Eyebrow>Experience</Eyebrow>
+        <div className="space-y-12">
+          {experience.map((job, idx) => (
+            <article key={`${job.company}-${idx}`} className="space-y-3">
+              <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-1 sm:gap-6">
+                <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground order-2 sm:order-1 shrink-0">
+                  {job.period.toLowerCase()}
+                  {job.current && (
+                    <span className="ml-2 inline-flex items-center gap-1 text-primary">
+                      <span className="inline-block h-1 w-1 rounded-full bg-primary" />
+                      current
+                    </span>
+                  )}
+                </p>
+              </div>
+
+              <div className="space-y-1">
+                <h3 className="font-serif text-xl md:text-2xl leading-tight tracking-tight">
+                  {job.title}
+                </h3>
+                <p className="text-sm text-foreground/80">
+                  <span className="text-foreground">{job.company}</span>
+                  <span className="text-muted-foreground/50"> · </span>
+                  <span className="text-muted-foreground">{job.location}</span>
+                </p>
+              </div>
+
+              {job.summary && (
+                <p className="text-sm sm:text-base text-muted-foreground leading-relaxed max-w-prose">
+                  {job.summary}
+                </p>
+              )}
+
+              <ul className="space-y-2 pt-1">
+                {job.highlights.map((highlight, hi) => (
+                  <li
+                    key={hi}
+                    className="flex items-start gap-3 text-sm sm:text-base text-muted-foreground leading-relaxed"
+                  >
+                    <span aria-hidden className="text-primary/70 mt-2 shrink-0">—</span>
+                    <span>{highlight}</span>
+                  </li>
+                ))}
+              </ul>
+
+              {job.tech.length > 0 && (
+                <div className="flex flex-wrap gap-x-3 gap-y-1 pt-2">
+                  {job.tech.map((tag) => (
+                    <span
+                      key={tag}
+                      className="text-[11px] font-mono text-muted-foreground hover:text-primary transition-colors"
+                    >
+                      #{tag}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </article>
           ))}
         </div>
-      </motion.section>
+      </section>
 
-      {/* Summary Section */}
-      <motion.section
-        className="max-w-4xl mx-auto"
-        initial={{ opacity: 0, y: 40 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-80px" }}
-        transition={{ duration: 0.6, delay: 0.1 }}
-      >
-        <Card className="relative overflow-hidden">
-          <motion.div
-            className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500"
-            initial={{ scaleX: 0 }}
-            whileInView={{ scaleX: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.3 }}
-            style={{ transformOrigin: "left" }}
-          />
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-2xl">
-              <Shield className="h-6 w-6 text-blue-500" />
-              Professional Summary
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-lg leading-relaxed text-muted-foreground">
-              Infrastructure and reliability engineer with 7+ years building and operating cloud-native
-              platforms. Maintained 99.99% uptime for systems serving 4M+ daily active users while
-              cutting infrastructure spend significantly. Strong background across Kubernetes,
-              AWS/GCP/Azure, observability, and DevSecOps, with hands-on depth in networking,
-              databases, storage, and multi-tenant SaaS operations. Comfortable owning incidents
-              end-to-end and partnering with engineering and customer teams to ship reliable systems.
+      {/* Skills */}
+      <section className="space-y-6">
+        <Eyebrow>Skills</Eyebrow>
+        <dl className="grid sm:grid-cols-2 gap-x-10 gap-y-6">
+          {skillCategories.map((cat) => (
+            <div key={cat.label} className="space-y-2">
+              <dt className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+                {cat.label}
+              </dt>
+              <dd className="font-mono text-sm text-foreground/80 leading-relaxed">
+                {cat.skills.join(" · ")}
+              </dd>
+            </div>
+          ))}
+        </dl>
+      </section>
+
+      {/* Education */}
+      <section className="space-y-6">
+        <Eyebrow>Education</Eyebrow>
+        <div className="space-y-3">
+          <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+            2016 — 2020
+          </p>
+          <div className="space-y-1">
+            <h3 className="font-serif text-xl md:text-2xl leading-tight tracking-tight">
+              B.E. in Computer Science and Engineering
+            </h3>
+            <p className="text-sm text-foreground/80">
+              <span className="text-foreground">Chitkara University, Punjab, India</span>
+              <span className="text-muted-foreground/50"> · </span>
+              <span className="text-muted-foreground">9.29 CGPA (Distinction)</span>
+              <span className="text-muted-foreground/50"> · </span>
+              <span className="text-muted-foreground">Specialization: Cyber-Security</span>
             </p>
-          </CardContent>
-        </Card>
-      </motion.section>
-
-      {/* Experience Section */}
-      <motion.section
-        className="max-w-4xl mx-auto"
-        initial={{ opacity: 0, y: 40 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-80px" }}
-        transition={{ duration: 0.6, delay: 0.1 }}
-      >
-        <h2 className="text-3xl font-bold mb-8 flex items-center gap-3">
-          <Briefcase className="h-7 w-7 text-blue-500" />
-          <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-            Experience
-          </span>
-        </h2>
-
-        <div className="relative">
-          {/* Timeline line */}
-          <div className="absolute left-[19px] top-2 bottom-2 w-[2px] bg-gradient-to-b from-blue-500 via-purple-500 to-pink-500/30 hidden md:block" />
-
-          <div className="space-y-8">
-            {experience.map((job, index) => (
-              <motion.div
-                key={index}
-                className="relative pl-0 md:pl-14"
-                initial={{ opacity: 0, x: -30 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true, margin: "-40px" }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-              >
-                {/* Timeline dot */}
-                <div className="absolute left-[11px] top-8 hidden md:flex items-center justify-center">
-                  <div className={`w-[18px] h-[18px] rounded-full border-[3px] ${
-                    job.current
-                      ? "border-blue-500 bg-blue-500/20"
-                      : "border-purple-500/60 bg-purple-500/10"
-                  }`} />
-                  {job.current && (
-                    <motion.div
-                      className="absolute w-[18px] h-[18px] rounded-full border-2 border-blue-500/50"
-                      animate={{ scale: [1, 1.8, 1], opacity: [0.6, 0, 0.6] }}
-                      transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                    />
-                  )}
-                </div>
-
-                <Card className="hover:shadow-lg transition-all hover:-translate-y-0.5 group overflow-hidden">
-                  <motion.div
-                    className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-purple-500/5 to-pink-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
-                  />
-                  <CardHeader className="relative z-10">
-                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
-                      <div className="space-y-1">
-                        <CardTitle className="text-xl">{job.title}</CardTitle>
-                        <div className="flex flex-wrap items-center gap-2 text-muted-foreground">
-                          <span className="font-medium text-foreground/80">{job.company}</span>
-                          <span className="text-muted-foreground/40">&middot;</span>
-                          <span className="inline-flex items-center gap-1 text-sm">
-                            <MapPin className="h-3.5 w-3.5" />
-                            {job.location}
-                          </span>
-                        </div>
-                      </div>
-                      <Badge
-                        variant={job.current ? "default" : "secondary"}
-                        className={job.current ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white border-0 shrink-0" : "shrink-0"}
-                      >
-                        {job.period}
-                      </Badge>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="relative z-10">
-                    {job.summary && (
-                      <p className="text-sm text-muted-foreground/90 mb-4 leading-relaxed">
-                        {job.summary}
-                      </p>
-                    )}
-                    <ul className="space-y-2.5">
-                      {job.highlights.map((highlight, idx) => (
-                        <motion.li
-                          key={idx}
-                          className="flex items-start gap-2.5 text-muted-foreground"
-                          initial={{ opacity: 0, x: -12 }}
-                          whileInView={{ opacity: 1, x: 0 }}
-                          viewport={{ once: true }}
-                          transition={{ delay: 0.2 + idx * 0.06, duration: 0.4 }}
-                        >
-                          <ChevronRight className="h-4 w-4 mt-0.5 text-blue-500 shrink-0" />
-                          <span>{highlight}</span>
-                        </motion.li>
-                      ))}
-                    </ul>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
+          </div>
+          <div className="pt-2">
+            <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground mb-1">
+              Relevant coursework
+            </p>
+            <p className="font-mono text-sm text-foreground/80">
+              Distributed Systems · Network Security · Cloud Computing · Database Management · Operating Systems
+            </p>
           </div>
         </div>
-      </motion.section>
+      </section>
 
-      {/* Skills Section */}
-      <motion.section
-        className="max-w-5xl mx-auto"
-        initial={{ opacity: 0, y: 40 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-80px" }}
-        transition={{ duration: 0.6, delay: 0.1 }}
-      >
-        <h2 className="text-3xl font-bold mb-8 flex items-center gap-3">
-          <Layers className="h-7 w-7 text-purple-500" />
-          <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-            Technical Skills
-          </span>
-        </h2>
-
-        <motion.div
-          className="grid md:grid-cols-2 gap-5"
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-40px" }}
-        >
-          {skillCategories.map((category) => (
-            <motion.div key={category.label} variants={itemVariants}>
-              <Card className="h-full hover:shadow-lg transition-all hover:-translate-y-0.5 group overflow-hidden">
-                <motion.div
-                  className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-purple-500/5 to-pink-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
-                />
-                <CardHeader className="pb-3 relative z-10">
-                  <CardTitle className="flex items-center gap-2 text-base">
-                    <category.icon className={`h-5 w-5 ${category.color}`} />
-                    <span className="font-semibold text-sm uppercase tracking-wide text-muted-foreground">
-                      {category.label}
-                    </span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="relative z-10">
-                  <div className="flex flex-wrap gap-2">
-                    {category.skills.map((skill) => (
-                      <Badge
-                        key={skill}
-                        variant="secondary"
-                        className="text-sm hover:bg-primary/10 hover:text-primary transition-colors cursor-default"
-                      >
-                        {skill}
-                      </Badge>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          ))}
-        </motion.div>
-      </motion.section>
-
-      {/* Education Section */}
-      <motion.section
-        className="max-w-4xl mx-auto"
-        initial={{ opacity: 0, y: 40 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-80px" }}
-        transition={{ duration: 0.6, delay: 0.1 }}
-      >
-        <h2 className="text-3xl font-bold mb-8 flex items-center gap-3">
-          <GraduationCap className="h-7 w-7 text-green-500" />
-          <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-            Education
-          </span>
-        </h2>
-
-        <Card className="hover:shadow-lg transition-all overflow-hidden relative">
-          <motion.div
-            className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500"
-            initial={{ scaleX: 0 }}
-            whileInView={{ scaleX: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.3 }}
-            style={{ transformOrigin: "left" }}
-          />
-          <CardContent className="pt-8">
-            <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
-              <div className="space-y-2">
-                <h3 className="text-xl font-bold">B.E. in Computer Science and Engineering</h3>
-                <p className="text-muted-foreground font-medium">
-                  Chitkara University, Punjab, India
-                </p>
-                <div className="flex flex-wrap items-center gap-3 pt-1">
-                  <Badge variant="secondary" className="text-sm">
-                    9.29 CGPA (Distinction)
-                  </Badge>
-                  <Badge variant="outline" className="text-sm">
-                    Specialization: Cyber-Security
-                  </Badge>
-                </div>
-              </div>
-              <Badge variant="secondary" className="shrink-0 text-sm">
-                2016 - 2020
-              </Badge>
-            </div>
-
-            <Separator className="my-5" />
-
-            <div>
-              <h4 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground mb-3">
-                Relevant Coursework
-              </h4>
-              <div className="flex flex-wrap gap-2">
-                {[
-                  "Distributed Systems",
-                  "Network Security",
-                  "Cloud Computing",
-                  "Database Management",
-                  "Operating Systems",
-                ].map((course) => (
-                  <Badge
-                    key={course}
-                    variant="outline"
-                    className="text-sm hover:bg-primary/10 hover:text-primary transition-colors cursor-default"
-                  >
-                    {course}
-                  </Badge>
-                ))}
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </motion.section>
-
-      {/* Honors & Awards Section */}
-      <motion.section
-        className="max-w-4xl mx-auto"
-        initial={{ opacity: 0, y: 40 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-80px" }}
-        transition={{ duration: 0.6, delay: 0.1 }}
-      >
-        <h2 className="text-3xl font-bold mb-8 flex items-center gap-3">
-          <Trophy className="h-7 w-7 text-amber-500" />
-          <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-            Honors &amp; Awards
-          </span>
-        </h2>
-
-        <Card className="overflow-hidden relative">
-          <motion.div
-            className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500"
-            initial={{ scaleX: 0 }}
-            whileInView={{ scaleX: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.3 }}
-            style={{ transformOrigin: "left" }}
-          />
-          <CardContent className="pt-8">
-            <ul className="space-y-3">
-              {honors.map((item, idx) => (
-                <motion.li
-                  key={`${item.year}-${item.title}`}
-                  className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 py-2 border-b last:border-b-0 border-border/40"
-                  initial={{ opacity: 0, x: -12 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: idx * 0.05, duration: 0.4 }}
-                >
-                  <div className="flex items-start gap-3">
-                    <Badge variant="outline" className="shrink-0 font-mono">
-                      {item.year}
-                    </Badge>
-                    <span className="text-foreground/90">{item.title}</span>
-                  </div>
-                  <span className="text-sm italic text-muted-foreground inline-flex items-center gap-1 sm:shrink-0">
-                    <MapPin className="h-3.5 w-3.5" />
-                    {item.location}
-                  </span>
-                </motion.li>
-              ))}
-            </ul>
-          </CardContent>
-        </Card>
-      </motion.section>
-
-      {/* Certifications Section */}
-      <motion.section
-        className="max-w-4xl mx-auto"
-        initial={{ opacity: 0, y: 40 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-80px" }}
-        transition={{ duration: 0.6, delay: 0.1 }}
-      >
-        <h2 className="text-3xl font-bold mb-8 flex items-center gap-3">
-          <Award className="h-7 w-7 text-cyan-500" />
-          <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-            Certifications
-          </span>
-        </h2>
-
-        <motion.div
-          className="grid md:grid-cols-2 gap-5"
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-40px" }}
-        >
+      {/* Certifications */}
+      <section className="space-y-6">
+        <Eyebrow>Certifications</Eyebrow>
+        <ul className="space-y-6">
           {certifications.map((cert) => (
-            <motion.div key={cert.title} variants={itemVariants}>
-              <Card className="h-full hover:shadow-lg transition-all hover:-translate-y-0.5 group overflow-hidden">
-                <motion.div
-                  className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 via-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
-                />
-                <CardHeader className="relative z-10">
-                  <CardTitle className="flex items-start gap-2 text-base">
-                    <BadgeCheck className="h-5 w-5 text-cyan-500 shrink-0 mt-0.5" />
-                    <span>{cert.title}</span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="relative z-10">
-                  <div className="flex flex-wrap items-center gap-2 mb-2">
-                    <span className="text-sm font-medium text-foreground/80">{cert.issuer}</span>
-                    <span className="text-muted-foreground/40">&middot;</span>
-                    <Badge variant="secondary" className="text-xs">
-                      {cert.year}
-                    </Badge>
-                  </div>
-                  <p className="text-sm text-muted-foreground">{cert.detail}</p>
-                </CardContent>
-              </Card>
-            </motion.div>
+            <li key={cert.title} className="space-y-1">
+              <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+                {cert.year.toLowerCase()}
+              </p>
+              <h3 className="font-serif text-lg md:text-xl leading-tight tracking-tight">
+                {cert.title}
+              </h3>
+              <p className="text-sm text-foreground/80">
+                <span className="text-foreground">{cert.issuer}</span>
+                <span className="text-muted-foreground/50"> · </span>
+                <span className="text-muted-foreground">{cert.detail}</span>
+              </p>
+            </li>
           ))}
-        </motion.div>
-      </motion.section>
+        </ul>
+      </section>
 
-      {/* PDF Embed Section */}
-      <motion.section
-        className="max-w-5xl mx-auto"
-        initial={{ opacity: 0, y: 40 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-80px" }}
-        transition={{ duration: 0.6, delay: 0.1 }}
-      >
-        <h2 className="text-3xl font-bold mb-8 flex items-center gap-3">
-          <FileText className="h-7 w-7 text-orange-500" />
-          <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-            Full Resume
-          </span>
-        </h2>
+      {/* Honors */}
+      <section className="space-y-6">
+        <Eyebrow>Honors &amp; awards</Eyebrow>
+        <ul className="divide-y divide-border/60">
+          {honors.map((item) => (
+            <li
+              key={`${item.year}-${item.title}`}
+              className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-1 sm:gap-6 py-3 first:pt-0 last:pb-0"
+            >
+              <div className="flex items-baseline gap-4">
+                <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground shrink-0">
+                  {item.year}
+                </span>
+                <span className="text-sm sm:text-base text-foreground/90">{item.title}</span>
+              </div>
+              <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-muted-foreground sm:shrink-0 sm:text-right">
+                {item.location}
+              </span>
+            </li>
+          ))}
+        </ul>
+      </section>
 
-        <Card className="overflow-hidden relative">
-          <motion.div
-            className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-orange-500 via-red-500 to-pink-500"
-            initial={{ scaleX: 0 }}
-            whileInView={{ scaleX: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.3 }}
-            style={{ transformOrigin: "left" }}
+      {/* Full PDF */}
+      <section className="space-y-6">
+        <Eyebrow>Full resume</Eyebrow>
+        <div className="w-full h-[800px] md:h-[1000px] bg-muted/30 border border-border/60 rounded-md overflow-hidden">
+          <iframe
+            src="/Harshit_Resume.pdf"
+            className="w-full h-full"
+            title="Harshit Luthra Resume"
           />
-          <CardContent className="p-2 md:p-4">
-            <div className="w-full h-[1000px] md:h-[1200px] bg-muted/10 rounded-lg overflow-hidden">
-              <iframe
-                src="/Harshit_Resume.pdf"
-                className="w-full h-full rounded-lg"
-                title="Harshit Luthra Resume"
-              />
-            </div>
-          </CardContent>
-        </Card>
-      </motion.section>
+        </div>
+      </section>
 
-      {/* CTA Section */}
-      <motion.section
-        className="max-w-4xl mx-auto"
-        initial={{ opacity: 0, y: 40 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-80px" }}
-        transition={{ duration: 0.6, delay: 0.1 }}
-      >
-        <Card className="bg-gradient-to-br from-blue-500/10 via-purple-500/10 to-pink-500/10 border-2 relative overflow-hidden">
-          {/* Floating decorative elements */}
-          <motion.div
-            className="absolute top-6 right-8 text-5xl text-purple-500/10 font-serif pointer-events-none"
-            animate={{ y: [0, -8, 0], opacity: [0.1, 0.2, 0.1] }}
-            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+      {/* Get in touch — quiet, editorial */}
+      <section className="space-y-4">
+        <Eyebrow>Get in touch</Eyebrow>
+        <p className="text-base text-muted-foreground leading-relaxed max-w-prose">
+          Open to discussing infrastructure work, collaborations, or just geeking
+          out about Kubernetes and observability.{" "}
+          <a
+            href="mailto:root@harshit.cloud"
+            className="text-primary underline underline-offset-4 decoration-primary/40 hover:decoration-primary transition-colors"
           >
-            &gt;_
-          </motion.div>
-
-          <CardContent className="pt-10 pb-10 text-center relative z-10">
-            <motion.div
-              initial={{ scale: 0.8, opacity: 0 }}
-              whileInView={{ scale: 1, opacity: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-            >
-              <Sparkles className="h-10 w-10 mx-auto mb-4 text-purple-500" />
-            </motion.div>
-            <motion.h3
-              className="text-2xl font-bold mb-3"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.1, duration: 0.5 }}
-            >
-              Interested in Working Together?
-            </motion.h3>
-            <motion.p
-              className="text-muted-foreground mb-8 max-w-xl mx-auto"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.2, duration: 0.5 }}
-            >
-              I&apos;m always open to discussing new opportunities, collaborations, or just
-              geeking out about infrastructure and cloud architecture.
-            </motion.p>
-            <div className="flex flex-wrap gap-4 justify-center">
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.3, duration: 0.4 }}
-              >
-                <Button asChild size="lg" className="relative overflow-hidden group">
-                  <a href="mailto:root@harshit.cloud">
-                    <motion.div
-                      className="absolute inset-0 bg-gradient-to-r from-blue-600/30 to-purple-600/30 pointer-events-none"
-                      animate={{ scale: [1, 1.5, 1], opacity: [0.3, 0.6, 0.3] }}
-                      transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                    />
-                    <Mail className="mr-2 h-5 w-5 relative z-10" />
-                    <span className="relative z-10">Get in Touch</span>
-                  </a>
-                </Button>
-              </motion.div>
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.4, duration: 0.4 }}
-              >
-                <Button asChild size="lg" variant="outline">
-                  <a href="https://linkedin.com/in/harshit-luthra/" target="_blank" rel="noopener noreferrer">
-                    <Linkedin className="mr-2 h-5 w-5" />
-                    LinkedIn Profile
-                  </a>
-                </Button>
-              </motion.div>
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.5, duration: 0.4 }}
-              >
-                <Button asChild size="lg" variant="outline">
-                  <Link href="/about">
-                    <BookOpen className="mr-2 h-5 w-5" />
-                    Read About Me
-                  </Link>
-                </Button>
-              </motion.div>
-            </div>
-          </CardContent>
-        </Card>
-      </motion.section>
+            root@harshit.cloud
+          </a>
+          {" · "}
+          <a
+            href="https://linkedin.com/in/harshit-luthra/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-foreground underline underline-offset-4 decoration-border hover:decoration-foreground transition-colors"
+          >
+            LinkedIn &rarr;
+          </a>
+        </p>
+      </section>
     </div>
   );
 }

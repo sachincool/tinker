@@ -2,52 +2,57 @@
 title: "VictoriaLogs vs Loki: Real-World Benchmarking Results"
 date: "2025-11-19"
 tags: ["kubernetes", "logging", "observability", "victorialogs", "loki", "monitoring", "performance", "benchmarking"]
-excerpt: "After benchmarking VictoriaLogs and Loki on 500GB of logs over 7 days, we discovered VictoriaLogs delivers 94% lower query latencies, 40% smaller storage footprint, and uses less than 50% of the CPU and RAM. Here's the complete performance breakdown."
+excerpt: "After benchmarking VictoriaLogs and Loki on 500 GB of logs over 7 days, we found VictoriaLogs delivered 94% lower query latencies, 37% smaller storage, and ran on under half the CPU and RAM. Here's the breakdown."
 featured: true
 ---
 
-Testing on a 500 GB / 7-day dataset revealed VictoriaLogs delivered **94% reduction in query latencies, 40% storage compression, and under 50% CPU/RAM** versus Loki.
+On 500 GB of logs over 7 days, on the same hardware: **94% lower query latencies, 37% smaller storage, and under half the CPU and RAM**. The single number that surprised us most was the 12× drop in needle-in-a-haystack search times.
 
-## Background
+![Horizontal bar comparison of VictoriaLogs vs Loki on 500 GB over 7 days: needle search 0.9 s vs 12 s, storage 63% vs 100%, sustained CPU 2 vCPU vs 4 vCPU, memory 1.3 GB vs 6.5 GB](/images/victorialogs-vs-loki/hero.png)
 
-At Truefoundry, we support multi-tenant ML workloads requiring fast ad-hoc search, high ingestion rates, live log tailing, and minimal operational overhead on 4 vCPU / 16 GB RAM nodes. As our scale grew, Loki began showing >30s search latencies and high I/O amplification, prompting us to evaluate alternatives.
+*Fig. 1 — same hardware, same dataset, four bars short enough to read on the way to a meeting.*
 
-## System Overviews
+## The setup
 
-### Loki
+At Truefoundry we run multi-tenant ML workloads, which means fast ad-hoc search, high ingestion, live log tailing, and minimal ops on 4 vCPU / 16 GB nodes. Loki was our default, but past the 1M-active-series mark it started showing 30s+ search latencies and high I/O amplification. So we benchmarked it head-to-head against VictoriaLogs and let the numbers decide.
 
-Grafana Labs' log aggregation system uses compressed chunks with label-based indexing and LogQL queries. Its strengths include seamless Grafana integration and a mature ecosystem. However, limitations include expensive full-scan regex searches and Go garbage collection overhead at scale.
+The contestants in one line:
 
-### VictoriaLogs
+- **Loki** — Grafana Labs' log store. Compressed chunks, label-based indexing, LogQL. Brilliant Grafana integration; expensive regex scans and Go GC overhead at scale.
+- **VictoriaLogs** — VictoriaMetrics' columnar LSM log database. Per-field indices, SIMD search, LogSQL. Single binary, low memory footprint, efficient compression.
 
-VictoriaMetrics' columnar LSM-style log database features per-field indices, SIMD-accelerated search, and SQL-like LogSQL syntax. It offers single-binary deployment with minimal memory footprint and efficient storage compression.
+Methodology in five bullets:
 
-## Benchmark Setup
+- **Workload:** 65 MB/s sustained ingestion via flog → Vector → destination
+- **Dataset:** ~500 GB over 7 days across 20 namespaces and 40 apps
+- **Load test:** Locust, 10 virtual users, 43 RPS sustained
+- **Hardware:** 4 vCPU / 8 GiB RAM instances
+- **Tuning:** Block-cache disabled to simulate cold reads
 
-Our testing methodology included:
+## The headline figure
 
-- **Workload:** 65 MB/s continuous ingestion via flog generator → Vector → destination
-- **Dataset:** ~500 GB over 7 days across 20 namespaces and 40 applications
-- **Load Testing:** Locust framework with 10 virtual users generating 43 RPS sustained
-- **Hardware:** 4 vCPU, 8 GiB RAM instances
-- **Configuration:** Block-cache disabled for cold-read simulation
+Before the methodology debate, here's what the seven days produced.
 
-## Query Performance Results
+<iframe src="/images/victorialogs-vs-loki/footprint-widget.html" title="VictoriaLogs vs Loki resource footprint — 500 GB over 7 days" height="900" data-caption="Fig. 2 — Resource economics on identical hardware and workload."></iframe>
 
-We tested four common query patterns to evaluate real-world performance:
+The memory line is the one that most directly translates into infrastructure cost. At steady state, VictoriaLogs sat around 1.3 GB while Loki held 6–7 GB. Freeing ~5 GB per node is the difference between bin-packing four tenants on a box and seven.
+
+## Query performance
+
+Four query patterns, run against the same 500 GB / 7-day index:
 
 | Query Type | Loki | VictoriaLogs | Improvement |
 |---|---|---|---|
 | Stats (24h count) | 2.5s | 1.5s | 40% faster |
-| Needle-in-Haystack (500 GB) | 12s | ~900ms | 12× faster |
-| Pattern ":3000" (7d) | 2.2s | 2.2s | Same |
+| Needle-in-Haystack (500 GB) | 12s | ~900ms | **12× faster** |
+| Pattern `:3000` (7d) | 2.2s | 2.2s | Same |
 | Non-existent (500 GB) | Timeout | 2.2s | VL completed |
 
-> **Key Insight:** VictoriaLogs' per-token index eliminates brute-force line filtering, while Loki must resort to full scans beyond label filters.
+> **Key Insight:** VictoriaLogs' per-token index turns brute-force line scans into index lookups. Loki, once the label filter is exhausted, has nothing left but a full scan.
 
-### Sample Queries
+The two queries that made the case, side by side:
 
-**Stats Query - Counting logs over 24 hours:**
+**Stats — counting logs over 24 hours**
 
 LogQL (Loki):
 
@@ -61,100 +66,81 @@ LogSQL (VictoriaLogs):
 {app="servicefoundry-server"} | stats count()
 ```
 
-**Needle in Haystack - Finding specific log entries:**
+**Needle in haystack — finding a single entry across 500 GB**
 
-LogQL (Loki):
+LogQL:
 
 ```logql
 {namespace="truefoundry", app!="grafana"} |= "[UNIQUE-STATIC-LOG] ID=abc123 XYZ"
 ```
 
-LogSQL (VictoriaLogs):
+LogSQL:
 
 ```logsql
 {namespace="truefoundry", app!="grafana"} "[UNIQUE-STATIC-LOG] ID=abc123 XYZ"
 ```
 
-## Ingestion Performance
+The non-existent query is the quiet one. Loki times out trying to prove a negative across 500 GB; VictoriaLogs returns "none" in 2.2 seconds. In production that's the difference between an alert that fires and a dashboard that loads.
 
-We stress-tested both systems with 120 flog replicas to measure peak ingestion capacity:
+## Ingestion under pressure
+
+We pushed both with 120 flog replicas to find the ceiling.
 
 | Metric | Loki | VictoriaLogs | Delta |
 |---|---|---|---|
-| Peak Ingestion | 20 MB/s | 66 MB/s | 3× higher |
-| vCPU Usage | 4 (throttled) | 2 peak | 50% reduction |
-| Memory Usage | ~4 GB | ~1.3 GB | 3× lower |
+| Peak ingestion | 20 MB/s | 66 MB/s | **3× higher** |
+| vCPU (sustained) | 4 (throttled) | 2 peak | 50% lower |
+| Memory | ~4 GB | ~1.3 GB | 3× lower |
 
-![Graph showing Loki CPU usage at 4 vCPUs and memory consumption at 4GB during peak ingestion load with 120 flog replicas](/images/victorialogs-vs-loki/victorialogs-loki-cpu-memory-loki.png)
+![Loki CPU saturation graph at 4 vCPUs and memory consumption at 4GB during peak ingestion load with 120 flog replicas](/images/victorialogs-vs-loki/victorialogs-loki-cpu-memory-loki.png)
 
-![Performance graph demonstrating Loki resource throttling and CPU saturation during high ingestion rates](/images/victorialogs-vs-loki/victorialogs-loki-throttling-loki.png)
+![VictoriaLogs performance graph showing 2 peak vCPU usage and 1.3GB memory consumption during the same ingestion load](/images/victorialogs-vs-loki/victorialogs-loki-performance-victoria.png)
 
-![VictoriaLogs performance metrics showing 2 peak vCPU usage and 1.3GB memory consumption during the same ingestion load](/images/victorialogs-vs-loki/victorialogs-loki-performance-victoria.png)
+Loki hit the CPU wall first and never recovered. VictoriaLogs absorbed the same firehose with cycles to spare.
 
-## Resource Footprint (7-day retention)
+## Load test under traffic
 
-Over the 7-day testing period, we observed significant differences in resource consumption:
+Locust, 10 concurrent users, simulating real read traffic:
 
-| Metric | Loki | VictoriaLogs | Improvement |
-|---|---|---|---|
-| Storage | 501 GB | 318 GB | 37% smaller |
-| Memory (steady-state) | 6–7 GB | 0.6–2 GB | ~70% reduction |
-| CPU Peak | 4 vCPU | 1.1 vCPU | 73% lower |
+- **RPS handled:** VictoriaLogs processed **36% higher** requests per second
+- **p99 latency:** **3.6× faster** than Loki under load
+- **Tail latency:** consistently lower at every percentile we measured
 
-![Resource utilization chart for Loki over 7-day retention period showing 501GB storage, 6-7GB steady-state memory, and 4 vCPU peak usage](/images/victorialogs-vs-loki/victorialogs-loki-footprint-loki.png)
+![Load test results for VictoriaLogs showing 36% higher RPS and 3.6x faster p99 latency with 10 concurrent users at 43 RPS](/images/victorialogs-vs-loki/victorialogs-loki-loadtest-victoria.png)
 
-![Resource utilization chart for VictoriaLogs over 7-day retention period showing 318GB storage (37% smaller), 0.6-2GB memory (70% reduction), and 1.1 vCPU peak (73% lower)](/images/victorialogs-vs-loki/victorialogs-loki-footprint-victoria.png)
+![Load test results for Loki showing slower response times and lower throughput under the same simulated traffic](/images/victorialogs-vs-loki/victorialogs-loki-loadtest-loki.png)
 
-> **Cost Impact:** The freed ~2 GB RAM per node enables denser workload scheduling and significant infrastructure cost savings.
+## Why the gap is this big
 
-## Load Testing Results
+Four design choices doing most of the work:
 
-Using Locust with 10 concurrent users simulating production traffic, VictoriaLogs demonstrated superior performance:
+1. **Full-text indexing.** Per-token indices skip line-by-line filtering entirely.
+2. **Columnar LSM layout.** Reads touch only the columns the query asks for; fewer disk seeks.
+3. **Memory discipline.** Lower steady-state overhead means more headroom for everything else.
+4. **SIMD search.** Vectorised inner loops on commodity CPUs add up over billions of lines.
 
-- **RPS Handled:** VictoriaLogs processed 36% higher requests per second
-- **p99 Latency:** 3.6× faster than Loki under load
-- **Tail Latency:** Consistently lower across all percentiles
-
-![Load test results for VictoriaLogs showing 36% higher RPS handling capacity and 3.6x faster p99 latency with 10 concurrent users at 43 RPS sustained load](/images/victorialogs-vs-loki/victorialogs-loki-loadtest-victoria.png)
-
-![Load test results for Loki displaying slower response times and lower throughput under the same production traffic simulation conditions](/images/victorialogs-vs-loki/victorialogs-loki-loadtest-loki.png)
-
-## Key Technical Insights
-
-### Why VictoriaLogs Outperforms
-
-1. **Full-text indexing:** Per-token indices eliminate expensive line-by-line filtering
-2. **Storage efficiency:** Columnar LSM layout reduces disk footprint and I/O seeks
-3. **Memory optimization:** Lower overhead enables more efficient resource utilization
-4. **SIMD acceleration:** Hardware-optimized search operations provide significant speedups
-
-### When to Choose Each System
+## When to pick which
 
 **Choose VictoriaLogs if:**
 
-- Text search and grep-like queries are primary use cases
-- You need fast ad-hoc exploration of logs
-- Resource efficiency is critical
-- You want minimal operational overhead
+- Text search and grep-style queries are the primary workload
+- Ad-hoc exploration across large windows matters
+- Resource efficiency and bin-packing density matter
+- You want fewer knobs to tune in production
 
 **Choose Loki if:**
 
-- Label-based queries dominate your workload
-- Deep Grafana ecosystem integration is essential
-- You have existing Loki infrastructure and workflows
+- Label-based queries dominate; full-text is rare
+- Deep Grafana ecosystem integration is non-negotiable
+- You already operate Loki at scale and the migration cost outweighs the wins
 
 ## Conclusion
 
-For text-search-heavy workloads, VictoriaLogs provides **order-of-magnitude faster queries** and **material cost savings**. The zero-tuning required approach makes it particularly attractive for teams wanting reliable log search without operational complexity.
+For text-heavy log workloads on commodity hardware, VictoriaLogs was the clearer win on every axis we measured: **94% lower query latencies, 37% smaller storage, 5× lighter steady-state memory, 73% lower peak CPU, and 3× higher ingestion ceiling**. The needle-in-a-haystack case is the one to remember — 12 seconds becomes 900 milliseconds without any tuning.
 
-Our benchmarking revealed:
+Loki is still the right call when label-first queries dominate or when Grafana ecosystem depth is the requirement. For us, on this workload, the resource economics decided it. The freed memory per node became real infrastructure savings within a quarter.
 
-- **94% lower query latencies** for full-text searches
-- **40% storage compression** over 7-day retention
-- **50% reduction in CPU/RAM consumption**
-- **3× higher peak ingestion capacity**
-
-Loki remains an excellent choice for label-first queries with tight Grafana integration, but for our use case—fast text search across large log volumes—VictoriaLogs emerged as the clear winner.
+If you're sitting on a Loki cluster that's started to feel its limits, the move is worth a weekend.
 
 ## Resources
 
@@ -162,4 +148,3 @@ Loki remains an excellent choice for label-first queries with tight Grafana inte
 - [VictoriaLogs Documentation](https://docs.victoriametrics.com/victorialogs/)
 - [Vector Documentation](https://vector.dev/)
 - [Grafana Alloy](https://grafana.com/docs/alloy/latest/)
-

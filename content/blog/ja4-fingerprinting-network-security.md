@@ -12,6 +12,10 @@ Last month I broke production. Blocked 30% of legitimate traffic because I misun
 
 Here's the incident, what I got wrong, and what SREs actually need to know about JA4 fingerprinting.
 
+![Timeline of a JA4 rate-limit deploy that turned a confident 2pm push into a 30 percent revenue drop and a 4pm rollback two hours later.](/images/ja4-fingerprinting-network-security/hero.png)
+
+*Fig. 1 — one fingerprint looked like one attacker. it was a tls stack used by 30% of customers.*
+
 ## The JA3 Problem That Hit Our Monitoring
 
 We'd been using JA3 fingerprinting to track traffic patterns since 2021. Not for blocking, just visibility. Which clients were hitting our APIs, how to correlate requests, that kind of thing.

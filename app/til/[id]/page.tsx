@@ -1,7 +1,4 @@
-import { Card, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Calendar, Clock, ArrowLeft, Lightbulb } from "lucide-react";
+import { ArrowLeft, Calendar, Clock } from "lucide-react";
 import Link from "next/link";
 import { ViewCounter } from "@/components/blog/view-counter";
 
@@ -13,22 +10,22 @@ import type { Metadata } from "next";
 import { siteConfig, getCurrentDomain } from "@/lib/site-config";
 import { headers } from "next/headers";
 
-export async function generateMetadata({ 
-  params 
-}: { 
-  params: Promise<{ id: string }> 
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
 }): Promise<Metadata> {
   const { id } = await params;
-  const til = getPostBySlug(id, 'til');
-  
+  const til = getPostBySlug(id, "til");
+
   if (!til) {
     return {
-      title: '404 - TIL Not Found',
+      title: "404 - TIL Not Found",
     };
   }
 
   const headersList = await headers();
-  const hostname = headersList.get('host') || '';
+  const hostname = headersList.get("host") || "";
   const baseUrl = getCurrentDomain(hostname);
   const tilUrl = `${baseUrl}/til/${id}`;
 
@@ -42,12 +39,12 @@ export async function generateMetadata({
     openGraph: {
       title: til.title,
       description: til.excerpt || til.title,
-      type: 'article',
+      type: "article",
       publishedTime: til.date,
       modifiedTime: til.date,
       url: tilUrl,
       siteName: siteConfig.title,
-      locale: 'en_US',
+      locale: "en_US",
       images: [
         {
           url: `${baseUrl}/til/${id}/opengraph-image`,
@@ -58,11 +55,11 @@ export async function generateMetadata({
       ],
     },
     twitter: {
-      card: 'summary_large_image',
+      card: "summary_large_image",
       title: til.title,
       description: til.excerpt || til.title,
-      creator: '@exploit_sh',
-      site: '@exploit_sh',
+      creator: "@exploit_sh",
+      site: "@exploit_sh",
       images: [`${baseUrl}/til/${id}/opengraph-image`],
     },
     alternates: {
@@ -74,75 +71,73 @@ export async function generateMetadata({
 export default async function TILPost({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
 
-  // Fetch the actual TIL post based on the ID
-  const til = getPostBySlug(id, 'til');
+  const til = getPostBySlug(id, "til");
 
-  // If TIL doesn't exist, show 404
   if (!til) {
     notFound();
   }
 
-  // Calculate reading time
   const stats = readingTime(til.content);
   const readTime = stats.text;
 
-  // Get base URL for structured data
+  const [primaryTag, ...secondaryTags] = til.tags;
+
   const headersList = await headers();
-  const hostname = headersList.get('host') || '';
+  const hostname = headersList.get("host") || "";
   const baseUrl = getCurrentDomain(hostname);
   const tilUrl = `${baseUrl}/til/${id}`;
 
   // JSON-LD structured data
   const jsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'TechArticle',
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
     headline: til.title,
     description: til.excerpt || til.title,
     image: `${baseUrl}/til/${id}/opengraph-image`,
     datePublished: til.date,
     dateModified: til.date,
     author: {
-      '@type': 'Person',
+      "@type": "Person",
       name: siteConfig.author.name,
       url: baseUrl,
     },
     publisher: {
-      '@type': 'Organization',
+      "@type": "Organization",
       name: siteConfig.author.name,
       logo: {
-        '@type': 'ImageObject',
+        "@type": "ImageObject",
         url: `${baseUrl}/logo.png`,
       },
     },
     mainEntityOfPage: {
-      '@type': 'WebPage',
-      '@id': tilUrl,
+      "@type": "WebPage",
+      "@id": tilUrl,
     },
-    keywords: til.tags.join(', '),
+    keywords: til.tags.join(", "),
     articleBody: til.excerpt || til.title,
     wordCount: stats.words,
-    inLanguage: 'en-US',
+    inLanguage: "en-US",
   };
 
   // Breadcrumb structured data
   const breadcrumbJsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'BreadcrumbList',
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
     itemListElement: [
       {
-        '@type': 'ListItem',
+        "@type": "ListItem",
         position: 1,
-        name: 'Home',
+        name: "Home",
         item: baseUrl,
       },
       {
-        '@type': 'ListItem',
+        "@type": "ListItem",
         position: 2,
-        name: 'TIL',
+        name: "TIL",
         item: `${baseUrl}/til`,
       },
       {
-        '@type': 'ListItem',
+        "@type": "ListItem",
         position: 3,
         name: til.title,
         item: tilUrl,
@@ -150,9 +145,12 @@ export default async function TILPost({ params }: { params: Promise<{ id: string
     ],
   };
 
+  const relatedTils = getAllPosts("til")
+    .filter((p) => p.slug !== til.slug && p.tags.some((tag) => til.tags.includes(tag)))
+    .slice(0, 3);
+
   return (
     <>
-      {/* JSON-LD structured data for SEO */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -161,91 +159,123 @@ export default async function TILPost({ params }: { params: Promise<{ id: string
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
-      <div className="max-w-4xl mx-auto px-4 space-y-8">
-        {/* Back button */}
-        <Button variant="ghost" asChild>
-          <Link href="/til">
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to TILs
-          </Link>
-        </Button>
+      <div className="max-w-3xl mx-auto px-4 py-12 md:py-16 space-y-10">
+        {/* Back link */}
+        <Link
+          href="/til"
+          className="inline-flex items-center gap-1.5 text-xs font-mono uppercase tracking-[0.18em] text-muted-foreground hover:text-foreground transition-colors"
+        >
+          <ArrowLeft className="h-3.5 w-3.5" />
+          Back to notes
+        </Link>
 
-        {/* TIL Header */}
-        <header className="space-y-6 pb-8 border-b">
-          <div className="inline-flex items-center gap-2 px-3 py-1 bg-yellow-500/10 rounded-full text-sm font-medium">
-            <Lightbulb className="h-4 w-4 text-yellow-500" />
-            <span>Today I Learned</span>
+        {/* Header */}
+        <header className="space-y-5 pb-8 border-b border-border/60">
+          <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-[0.22em] text-muted-foreground">
+            <span className="inline-block h-1.5 w-1.5 rounded-full bg-primary" />
+            {primaryTag ? (
+              <Link href={`/tags/${primaryTag}`} className="hover:text-foreground transition-colors">
+                {primaryTag}
+              </Link>
+            ) : (
+              <span>Today I learned</span>
+            )}
           </div>
 
-          <h1 className="text-4xl md:text-5xl font-bold leading-tight tracking-tight">
+          <h1 className="font-serif text-4xl md:text-5xl leading-[1.08] tracking-tight text-foreground">
             {til.title}
           </h1>
 
-          <div className="flex flex-wrap items-center gap-4 text-muted-foreground text-sm">
-            <div className="flex items-center gap-1">
-              <Calendar className="h-4 w-4" />
-              <span>{new Date(til.date).toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-              })}</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <Clock className="h-4 w-4" />
-              <span>{readTime}</span>
-            </div>
+          {til.excerpt && (
+            <p className="text-base md:text-lg text-muted-foreground leading-[1.55] max-w-[62ch]">
+              {til.excerpt}
+            </p>
+          )}
+
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-muted-foreground pt-1">
+            <span className="inline-flex items-center gap-1.5">
+              <Calendar className="h-3.5 w-3.5" />
+              <time dateTime={til.date}>
+                {new Date(til.date).toLocaleDateString("en-US", {
+                  year: "numeric",
+                  month: "short",
+                  day: "numeric",
+                })}
+              </time>
+            </span>
+            <span className="inline-flex items-center gap-1.5">
+              <Clock className="h-3.5 w-3.5" />
+              {readTime}
+            </span>
             <ViewCounter slug={til.slug} />
           </div>
 
-          <div className="flex flex-wrap gap-2">
-            {til.tags.map((tag) => (
-              <Link key={tag} href={`/tags/${tag}`}>
-                <Badge variant="secondary" className="hover:bg-yellow-100 dark:hover:bg-yellow-900 hover:text-yellow-800 dark:hover:text-yellow-100 transition-colors">
+          {secondaryTags.length > 0 && (
+            <div className="flex flex-wrap gap-x-3 gap-y-1 pt-1">
+              {secondaryTags.map((tag) => (
+                <Link
+                  key={tag}
+                  href={`/tags/${tag}`}
+                  className="text-[11px] text-muted-foreground hover:text-primary transition-colors"
+                >
                   #{tag}
-                </Badge>
-              </Link>
-            ))}
-          </div>
+                </Link>
+              ))}
+            </div>
+          )}
         </header>
 
-        {/* TIL Content */}
-        <MarkdownContent content={til.content} />
-
-        {/* Actions Section */}
-        <div className="flex items-center justify-end py-6 border-t">
-          <Button variant="outline" size="sm" asChild>
-            <Link href="/til">
-              See More TILs
-            </Link>
-          </Button>
+        {/* Body */}
+        <div id="article-content">
+          <MarkdownContent content={til.content} />
         </div>
 
-        {/* Related TILs */}
-        <section>
-          <h2 className="text-2xl font-bold mb-6">More TILs You Might Like</h2>
-          <div className="grid gap-4">
-            {getAllPosts('til')
-              .filter(p => p.slug !== til.slug && p.tags.some(tag => til.tags.includes(tag)))
-              .slice(0, 2)
-              .map((relatedTil) => (
-                <Card key={relatedTil.slug} className="hover:shadow-md transition-shadow">
-                  <CardHeader>
-                    <CardTitle className="text-lg">
-                      <Link href={`/til/${relatedTil.slug}`} className="hover:text-yellow-600 transition-colors flex items-center gap-2">
-                        <Lightbulb className="h-4 w-4 text-yellow-500" />
+        {/* Related notes */}
+        {relatedTils.length > 0 && (
+          <section className="pt-10 border-t border-border/60 space-y-5">
+            <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-[0.22em] text-muted-foreground border-b border-border/60 pb-2">
+              <span className="inline-block h-1.5 w-1.5 rounded-full bg-primary" />
+              Adjacent notes
+            </div>
+            <ul className="divide-y divide-border/60">
+              {relatedTils.map((relatedTil) => (
+                <li key={relatedTil.slug} className="py-4 first:pt-2">
+                  <article className="space-y-1.5">
+                    <div className="text-[11px] font-mono uppercase tracking-[0.18em] text-muted-foreground">
+                      <time dateTime={relatedTil.date}>
+                        {new Date(relatedTil.date)
+                          .toLocaleDateString("en-US", {
+                            year: "numeric",
+                            month: "short",
+                            day: "numeric",
+                          })
+                          .toLowerCase()}
+                      </time>
+                    </div>
+                    <h3 className="font-serif text-lg leading-tight">
+                      <Link
+                        href={`/til/${relatedTil.slug}`}
+                        className="hover:text-primary transition-colors"
+                      >
                         {relatedTil.title}
                       </Link>
-                    </CardTitle>
-                    <div className="flex gap-2">
-                      {relatedTil.tags.slice(0, 3).map((tag) => (
-                        <Badge key={tag} variant="secondary">{tag}</Badge>
-                      ))}
-                    </div>
-                  </CardHeader>
-                </Card>
+                    </h3>
+                  </article>
+                </li>
               ))}
-          </div>
-        </section>
+            </ul>
+          </section>
+        )}
+
+        {/* Footer link */}
+        <div className="pt-4">
+          <Link
+            href="/til"
+            className="text-xs font-mono uppercase tracking-[0.18em] text-muted-foreground hover:text-foreground transition-colors"
+          >
+            &larr; All notes
+          </Link>
+        </div>
       </div>
     </>
   );

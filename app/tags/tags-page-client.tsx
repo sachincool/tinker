@@ -1,207 +1,128 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, Hash, TrendingUp, Sparkles } from "lucide-react";
+import { Search } from "lucide-react";
 import Link from "next/link";
 import { useDebounce } from "@/hooks/use-debounce";
 
 interface TagData {
   name: string;
   count: number;
-  color: string;
+  description?: string | null;
 }
 
 interface TagsPageClientProps {
   initialTags: TagData[];
 }
 
+const tagBadgeClass =
+  "inline-flex items-center gap-2 rounded-md border border-border/60 bg-muted/60 px-3 py-1.5 text-sm text-foreground transition-colors hover:border-primary hover:text-primary";
+
 export default function TagsPageClient({ initialTags }: TagsPageClientProps) {
   const [searchQuery, setSearchQuery] = useState("");
 
   const debouncedSearchQuery = useDebounce(searchQuery, 300);
 
-  const sortedTags = useMemo(() => {
+  const alphabeticalTags = useMemo(() => {
+    return [...initialTags].sort((a, b) => a.name.localeCompare(b.name));
+  }, [initialTags]);
+
+  const popularTags = useMemo(() => {
     return [...initialTags].sort((a, b) => b.count - a.count);
   }, [initialTags]);
 
   const filteredTags = useMemo(() => {
-    if (!debouncedSearchQuery) return sortedTags;
-    
+    if (!debouncedSearchQuery) return alphabeticalTags;
+
     const query = debouncedSearchQuery.toLowerCase();
-    return sortedTags.filter(tag => 
+    return alphabeticalTags.filter(tag =>
       tag.name.toLowerCase().includes(query)
     );
-  }, [sortedTags, debouncedSearchQuery]);
+  }, [alphabeticalTags, debouncedSearchQuery]);
 
   const totalPosts = initialTags.reduce((sum, tag) => sum + tag.count, 0);
-  const mostPopularTag = sortedTags[0]?.name || 'none';
 
   return (
-    <div className="space-y-8">
-      <div className="text-center space-y-4 relative py-8">
-        <div className="absolute inset-0 -z-10 bg-gradient-to-br from-indigo-50 via-purple-50 to-transparent dark:from-indigo-950/20 dark:via-purple-950/20 rounded-3xl"></div>
-        <div className="inline-flex items-center gap-2 px-4 py-2 bg-purple-500/10 rounded-full text-sm font-medium mb-4">
-          <Hash className="h-4 w-4 text-purple-500" />
-          <span>Explore Topics</span>
-        </div>
-        <h1 className="text-4xl md:text-5xl font-bold">
-          <span className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-            Browse Tags
-          </span>
-        </h1>
-        <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-          Discover content by topics, technologies, and random chaos categories.
+    <div className="space-y-12">
+      <header className="space-y-3 max-w-2xl">
+        <h1>Tags</h1>
+        <p className="text-sm text-muted-foreground">
+          {initialTags.length} tags across {totalPosts} posts.
         </p>
-      </div>
+      </header>
 
-      <div className="max-w-2xl mx-auto">
+      <div className="max-w-xl">
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input 
-            placeholder="Search tags... (try 'kubernetes', 'docker', or 'devops')" 
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Search tags"
             className="pl-10"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
-      </div>
-
-      {debouncedSearchQuery && (
-        <div className="text-sm text-muted-foreground text-center">
-          Found {filteredTags.length} tag{filteredTags.length !== 1 ? 's' : ''} matching "{debouncedSearchQuery}"
-        </div>
-      )}
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-4xl mx-auto">
-        <Card className="hover:shadow-lg transition-all duration-300 hover:-translate-y-1 group cursor-default">
-          <CardContent className="pt-6 text-center">
-            <Hash className="h-6 w-6 mx-auto mb-2 text-indigo-500 group-hover:scale-110 transition-transform" />
-            <div className="text-3xl font-bold bg-gradient-to-r from-indigo-500 to-purple-500 bg-clip-text text-transparent">
-              {initialTags.length}
-            </div>
-            <p className="text-xs text-muted-foreground mt-1">Total Tags</p>
-          </CardContent>
-        </Card>
-        <Card className="hover:shadow-lg transition-all duration-300 hover:-translate-y-1 group cursor-default">
-          <CardContent className="pt-6 text-center">
-            <TrendingUp className="h-6 w-6 mx-auto mb-2 text-purple-500 group-hover:scale-110 transition-transform" />
-            <div className="text-3xl font-bold bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent">
-              {totalPosts}
-            </div>
-            <p className="text-xs text-muted-foreground mt-1">Tagged Posts</p>
-          </CardContent>
-        </Card>
-        <Card className="hover:shadow-lg transition-all duration-300 hover:-translate-y-1 group cursor-default">
-          <CardContent className="pt-6 text-center">
-            <Sparkles className="h-6 w-6 mx-auto mb-2 text-pink-500 group-hover:scale-110 transition-transform" />
-            <div className="text-3xl font-bold bg-gradient-to-r from-pink-500 to-red-500 bg-clip-text text-transparent">
-              {mostPopularTag}
-            </div>
-            <p className="text-xs text-muted-foreground mt-1">Most Popular</p>
-          </CardContent>
-        </Card>
+        {debouncedSearchQuery && (
+          <p className="mt-2 text-xs text-muted-foreground">
+            {filteredTags.length} match{filteredTags.length === 1 ? "" : "es"} for &ldquo;{debouncedSearchQuery}&rdquo;
+          </p>
+        )}
       </div>
 
       {filteredTags.length > 0 ? (
-        <section className="max-w-6xl mx-auto">
-          <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
-            <Hash className="h-6 w-6 text-purple-500" />
-            {debouncedSearchQuery ? 'Matching Tags' : 'All Tags'}
-          </h2>
-          <div className="flex flex-wrap gap-3">
-            {filteredTags.map((tag) => {
-              const sizeClass = tag.count > 5 
-                ? "text-2xl px-6 py-3" 
-                : tag.count > 2 
-                ? "text-xl px-5 py-2.5" 
-                : "text-lg px-4 py-2";
-              
-              return (
-                <Link key={tag.name} href={`/tags/${tag.name}`}>
-                  <Badge 
-                    variant="outline" 
-                    className={`${sizeClass} hover:shadow-lg transition-all duration-300 hover:-translate-y-1 cursor-pointer border-2 group relative overflow-hidden`}
-                  >
-                    <div className={`absolute inset-0 bg-gradient-to-r ${tag.color} opacity-0 group-hover:opacity-10 transition-opacity`}></div>
-                    <span className="relative flex items-center gap-2">
-                      <Hash className="h-4 w-4" />
-                      {tag.name}
-                      <span className={`ml-2 text-xs px-2 py-0.5 rounded-full bg-gradient-to-r ${tag.color} text-white`}>
-                        {tag.count}
-                      </span>
-                    </span>
-                  </Badge>
-                </Link>
-              );
-            })}
+        <section className="space-y-5">
+          <h2>{debouncedSearchQuery ? "Matching tags" : "All tags"}</h2>
+          <div className="flex flex-wrap gap-2.5">
+            {filteredTags.map((tag) => (
+              <Link key={tag.name} href={`/tags/${tag.name}`} className={tagBadgeClass}>
+                <span>#{tag.name}</span>
+                <span className="text-xs text-muted-foreground">·&nbsp;{tag.count}</span>
+              </Link>
+            ))}
           </div>
         </section>
       ) : (
-        <section className="max-w-6xl mx-auto">
-          <Card className="p-12 text-center">
-            <Search className="h-12 w-12 mx-auto text-muted-foreground opacity-50 mb-4" />
-            <h3 className="text-lg font-semibold mb-2">No tags found</h3>
-            <p className="text-muted-foreground mb-4">
-              No tags match "{debouncedSearchQuery}"
-            </p>
-            <Button variant="outline" onClick={() => setSearchQuery("")}>
-              Clear search
-            </Button>
-          </Card>
-        </section>
+        <Card className="p-10 text-center">
+          <Search className="h-8 w-8 mx-auto text-muted-foreground opacity-50 mb-3" />
+          <p className="text-sm text-muted-foreground mb-4">
+            No tags match &ldquo;{debouncedSearchQuery}&rdquo;.
+          </p>
+          <Button variant="outline" onClick={() => setSearchQuery("")}>
+            Clear search
+          </Button>
+        </Card>
       )}
 
-      {!debouncedSearchQuery && sortedTags.length >= 3 && (
-        <section className="max-w-6xl mx-auto">
-          <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
-            <TrendingUp className="h-6 w-6 text-green-500" />
-            Trending Topics
-          </h2>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {sortedTags.slice(0, 6).map((tag, index) => (
-              <Card 
-                key={tag.name}
-                className="hover:shadow-lg transition-all duration-300 hover:-translate-y-1 group cursor-pointer"
-              >
-                <Link href={`/tags/${tag.name}`}>
-                  <CardContent className="pt-6 pb-6">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className={`h-10 w-10 rounded-lg bg-gradient-to-br ${tag.color} flex items-center justify-center text-white font-bold`}>
-                          #{index + 1}
-                        </div>
-                        <div>
-                          <div className="font-semibold group-hover:text-purple-600 transition-colors">
-                            {tag.name}
-                          </div>
-                          <div className="text-sm text-muted-foreground">
-                            {tag.count} post{tag.count !== 1 ? 's' : ''}
-                          </div>
-                        </div>
-                      </div>
-                      <TrendingUp className="h-5 w-5 text-green-500 group-hover:scale-110 transition-transform" />
+      {!debouncedSearchQuery && popularTags.length >= 3 && (
+        <section className="space-y-5">
+          <h2>Most written about</h2>
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {popularTags.slice(0, 6).map((tag) => (
+              <Link key={tag.name} href={`/tags/${tag.name}`} className="group block">
+                <Card className="h-full border-border/60 transition-colors group-hover:border-primary/60">
+                  <CardContent className="space-y-2 pt-6 pb-6">
+                    <div className="flex items-baseline justify-between gap-3">
+                      <h3 className="text-xl group-hover:text-primary transition-colors">
+                        #{tag.name}
+                      </h3>
+                      <span className="text-xs text-muted-foreground whitespace-nowrap">
+                        {tag.count} post{tag.count === 1 ? "" : "s"}
+                      </span>
                     </div>
+                    {tag.description && (
+                      <p className="text-sm italic text-muted-foreground">
+                        {tag.description}
+                      </p>
+                    )}
                   </CardContent>
-                </Link>
-              </Card>
+                </Card>
+              </Link>
             ))}
           </div>
         </section>
       )}
-
-      <Card className="max-w-2xl mx-auto bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-950/20 dark:to-pink-950/20 border-purple-200 dark:border-purple-800">
-        <CardContent className="pt-6 pb-6 text-center">
-          <Sparkles className="h-8 w-8 mx-auto mb-3 text-purple-500" />
-          <p className="text-sm text-muted-foreground">
-            <strong className="text-foreground">Fun Fact:</strong> I have more tags about things 
-            breaking than things working. That&apos;s the chaos engineering way!
-          </p>
-        </CardContent>
-      </Card>
     </div>
   );
 }
