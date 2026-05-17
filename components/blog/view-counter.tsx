@@ -51,19 +51,17 @@ function ViewCounterComponent({ slug, className = "" }: ViewCounterProps) {
     trackView();
   }, [slug]);
 
-  if (isLoading) {
-    return (
-      <div className={`flex items-center gap-1 text-muted-foreground animate-pulse ${className}`}>
-        <Eye className="h-4 w-4" />
-        <span className="text-sm">---</span>
-      </div>
-    );
+  // Hide while loading and for low-view posts — a "0 views" or "7 views" line
+  // under the title reads as undermining. Surface the counter only once the
+  // post has accumulated enough reads to be worth quoting.
+  if (isLoading || views == null || views < 100) {
+    return null;
   }
 
   return (
     <div className={`flex items-center gap-1 text-muted-foreground ${className}`}>
       <Eye className="h-4 w-4" />
-      <span className="text-sm">{views?.toLocaleString()} views</span>
+      <span className="text-sm">{views.toLocaleString()} views</span>
     </div>
   );
 }
