@@ -24,7 +24,7 @@ function renderInlineRich(text: string): React.ReactNode[] {
       if (!part) continue;
       if (part.startsWith('`') && part.endsWith('`') && part.length >= 2) {
         collector.push(
-          <code key={key++} className="bg-muted px-1.5 py-0.5 rounded text-sm font-mono text-blue-600 dark:text-blue-400">
+          <code key={key++} className="bg-muted px-1.5 py-0.5 rounded text-sm font-mono text-foreground">
             {part.slice(1, -1)}
           </code>
         );
@@ -36,7 +36,7 @@ function renderInlineRich(text: string): React.ReactNode[] {
           <a
             key={key++}
             href={linkMatch[2]}
-            className="text-blue-600 dark:text-blue-400 hover:underline"
+            className="text-primary hover:underline"
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -164,7 +164,7 @@ export function MarkdownContent({ content }: MarkdownContentProps) {
           <h3 
             key={index} 
             id={id} 
-            className="text-xl font-semibold mt-12 mb-6 scroll-mt-24 text-blue-600 dark:text-blue-400 flex items-center gap-2 break-words [overflow-wrap:anywhere]"
+            className="text-xl font-semibold mt-12 mb-6 scroll-mt-24 text-foreground flex items-center gap-2 break-words [overflow-wrap:anywhere]"
           >
             <Zap className="h-5 w-5 flex-shrink-0" />
             {text}
@@ -296,7 +296,7 @@ export function MarkdownContent({ content }: MarkdownContentProps) {
                             if (part?.match(/^\*\*[^*]+\*\*$/)) {
                               return <strong key={k} className="font-bold text-foreground">{part.slice(2, -2)}</strong>;
                             } else if (part?.match(/^`[^`]+`$/)) {
-                              return <code key={k} className="bg-muted px-1.5 py-0.5 rounded text-xs font-mono text-blue-600 dark:text-blue-400">{part.slice(1, -1)}</code>;
+                              return <code key={k} className="bg-muted px-1.5 py-0.5 rounded text-xs font-mono text-foreground">{part.slice(1, -1)}</code>;
                             }
                             return <span key={k}>{part}</span>;
                           })}
@@ -411,7 +411,7 @@ export function MarkdownContent({ content }: MarkdownContentProps) {
         if (isLeadParagraph && paragraph.trim()) {
           firstParagraphRendered = true;
           elements.push(
-            <p key={index} className="text-xl md:text-2xl leading-relaxed text-foreground font-semibold first-letter:text-3xl first-letter:font-bold first-letter:text-blue-600 dark:first-letter:text-blue-400 mb-8 pb-6 border-b border-border/30">
+            <p key={index} className="text-xl md:text-2xl leading-relaxed text-foreground font-semibold first-letter:text-3xl first-letter:font-bold first-letter:text-primary mb-8 pb-6 border-b border-border/30">
               {renderInlineRich(paragraph)}
             </p>
           );
@@ -429,7 +429,7 @@ export function MarkdownContent({ content }: MarkdownContentProps) {
   };
 
   return (
-    <article className="prose prose-lg max-w-none dark:prose-invert prose-headings:font-bold prose-headings:tracking-tight prose-p:text-lg prose-p:leading-relaxed prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-a:no-underline hover:prose-a:underline prose-strong:text-foreground prose-ul:my-6 prose-ol:my-6 prose-li:my-2 overflow-x-hidden">
+    <article className="prose prose-lg max-w-none dark:prose-invert prose-headings:font-bold prose-headings:tracking-tight prose-p:text-lg prose-p:leading-relaxed prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-strong:text-foreground prose-ul:my-6 prose-ol:my-6 prose-li:my-2 overflow-x-hidden">
       <div className="space-y-8 max-w-full">
         {renderMarkdown()}
       </div>

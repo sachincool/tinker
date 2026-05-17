@@ -65,7 +65,7 @@ export function CodeBlock({ code, language = "bash", className = "" }: CodeBlock
       <div className="rounded-xl overflow-hidden border border-border/50 shadow-lg hover:shadow-xl transition-shadow duration-300 max-w-full">
         {language && (
           <div className="flex items-center justify-between px-4 py-2.5 bg-gradient-to-r from-muted to-muted/50 border-b border-border/50">
-            <span className="text-xs font-mono font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wider">
+            <span className="text-xs font-mono font-semibold text-primary uppercase tracking-wider">
               {language}
             </span>
             <Button

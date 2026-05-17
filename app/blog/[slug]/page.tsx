@@ -213,7 +213,7 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
               {primaryTag && (
                 <Link
                   href={`/tags/${primaryTag}`}
-                  className="inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
+                  className="inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-primary hover:text-primary/80 transition-colors"
                 >
                   <span className="h-1 w-1 rounded-full bg-current" />
                   {primaryTag}
@@ -254,7 +254,7 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
                     <Link key={tag} href={`/tags/${tag}`}>
                       <Badge
                         variant="secondary"
-                        className="font-normal text-xs bg-muted/60 hover:bg-blue-100 dark:hover:bg-blue-900/40 hover:text-blue-800 dark:hover:text-blue-200"
+                        className="font-normal text-xs bg-muted/60 hover:bg-primary/10 hover:text-primary"
                       >
                         #{tag}
                       </Badge>
@@ -302,7 +302,7 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
                         <CardTitle className="text-lg">
                           <Link
                             href={`/blog/${relatedPost.slug}`}
-                            className="hover:text-blue-600 dark:hover:text-blue-400"
+                            className="hover:text-primary transition-colors"
                           >
                             {relatedPost.title}
                           </Link>
