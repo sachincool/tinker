@@ -39,13 +39,13 @@ Switched from Arc to Chrome. Still blocked. Because I carried over the same 21 e
 
 ![My Extension Arsenal - Part 2](/images/akamai-browser-extensions-blocking/extensions_2.png)
 
-Here's my toolkit: Wappalyzer, Shodan, Trufflehog, DotGit, and a bunch of OSINT/greyhat recon tools. The same extensions I use for security research were making me look like an attacker to Akamai's WAF.
+Here's my toolkit: Wappalyzer, Shodan, Trufflehog, DotGit, and a bunch of OSINT/greyhat recon tools. The same extensions I use for security research were making me look like an attacker to Akamai's Bot Manager.
 
 Turned off all extensions. Instant access to every site.
 
 ## What's Actually Happening
 
-Akamai's WAF isn't counting your requests. It's analyzing payload signatures. Browser extensions inject JavaScript, modify headers, and add tracking parameters to every request. To a WAF, that looks identical to automated scraping tools or injection attempts.
+Akamai's Bot Manager isn't counting your requests. It's fingerprinting the client environment. Browser extensions can inject JavaScript, mutate the DOM, alter request behavior, and add tracking parameters — all things the client-side fingerprint will flag as bot-shaped, the same way it would flag a scraper or an injection probe.
 
 My security toolkit became my own DoS attack vector. Poetic, really.
 

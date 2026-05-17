@@ -23,8 +23,6 @@ After trying CloudWatch, Datadog, and New Relic, we landed on Prometheus and Gra
 For development or small deployments, Docker Compose is perfect:
 
 ```yaml
-version: '3.8'
-
 services:
   prometheus:
     image: prom/prometheus:latest
@@ -330,7 +328,7 @@ groups:
     rules:
       # High CPU
       - alert: HighCPUUsage
-        expr: 100 - (avg(rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
+        expr: 100 - (avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
         for: 5m
         labels:
           severity: warning
@@ -383,20 +381,17 @@ groups:
 
 ### data retention
 
-Prometheus stores data locally. For long-term storage:
+Prometheus stores data locally. Retention is set via command-line flags (which is why the Compose example passes them in `command:`), not in `prometheus.yml`:
 
-```yaml
-# prometheus.yml
-storage:
-  tsdb:
-    retention.time: 30d
-    retention.size: 50GB
+```bash
+--storage.tsdb.retention.time=30d
+--storage.tsdb.retention.size=50GB
 ```
 
 For longer retention, use:
 
 - **Thanos**: Distributed Prometheus
-- **Cortex**: Multi-tenant Prometheus as a service
+- **Grafana Mimir**: Multi-tenant, horizontally scalable Prometheus; the actively-maintained successor to Cortex
 - **VictoriaMetrics**: Drop-in replacement, more efficient
 
 ### high availability

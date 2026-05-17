@@ -30,9 +30,9 @@ I had 15 minutes before my girlfriend woke up. Here's what happened.
 
 ## the €3 solution
 
-Hetzner CX23: 2 vCPUs, 4GB RAM, 40GB SSD. **€2.99/month**.
+Hetzner CX22: 2 vCPUs, 4GB RAM, 40GB SSD. **€3.29/month**.
 
-![Hetzner CX23 pricing](/images/netlify-to-dokploy-migration/dokploy_hetzner.png)
+![Hetzner CX22 pricing](/images/netlify-to-dokploy-migration/dokploy_hetzner.png)
 
 Math was simple:
 

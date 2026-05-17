@@ -224,7 +224,7 @@ Ugly, but it's reality.
 
 ## what's coming that will break this
 
-ECH (Encrypted ClientHello) in TLS 1.3 will encrypt the ClientHello. No more passive fingerprinting. When that rolls out, we'll need a different approach.
+ECH (Encrypted ClientHello) in TLS 1.3 encrypts the inner ClientHello, hiding SNI and ALPN. The outer hello still carries cipher suites and extensions, so JA4 can still be computed on what's visible — the identifying signal just gets weaker. When ECH adoption hits scale, we'll want a different approach.
 
 Keep an eye on your TLS 1.3 ECH adoption metrics. When it hits 20%+, time to rethink your monitoring strategy.
 

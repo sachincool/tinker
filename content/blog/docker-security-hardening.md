@@ -191,7 +191,7 @@ services:
       - no-new-privileges:true
 ```
 
-`no-new-privileges:true` is the sleeper line. It blocks setuid binaries from elevating during a process exec. Without it, dropping caps is partial protection. With it, it's actual.
+`no-new-privileges:true` is the sleeper line. It blocks setuid binaries from elevating during a process exec, closing the residual escalation path that capability drops leave open if a setuid binary is still inside the image.
 
 ## a writable root for no reason
 

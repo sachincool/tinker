@@ -16,10 +16,10 @@ The thesis from Part 1 stands. Future You at 3am will not patch a VPN concentrat
 
 The Ivanti CVEs are not a unique event. They're the most recent member of a class. The same year (2024) saw:
 
-- **Cisco ASA / FTD**: CVE-2024-20353 + CVE-2024-20359. An authentication bypass and a persistent implant exploited by the ArcaneDoor campaign, attributed by Cisco Talos to state-sponsored actors. April 2024.
+- **Cisco ASA / FTD**: CVE-2024-20353 + CVE-2024-20359. A web-services DoS and a persistent local code-execution flaw used together by the ArcaneDoor campaign (Line Dancer / Line Runner implants), attributed by Cisco Talos to state-sponsored actors. April 2024.
 - **Citrix NetScaler "CitrixBleed"**: CVE-2023-4966. A session-token leak via memory disclosure, exploited by LockBit and others, used in the Boeing and Comcast breaches.
 - **Fortinet FortiOS SSL VPN**: CVE-2024-21762. Out-of-bounds write in February 2024, exploited in the wild before patches were widely deployed.
-- **Palo Alto Networks GlobalProtect**: CVE-2024-3400. Command injection in April 2024, exploited by a cluster Mandiant tracked as MidnightEclipse.
+- **Palo Alto Networks GlobalProtect**: CVE-2024-3400. Command injection in April 2024, exploited in a campaign Palo Alto Networks Unit 42 named Operation MidnightEclipse (Volexity tracks the actor as UTA0218).
 
 ![A wide editorial system diagram on deep navy ground. Center: a large rectangular box labeled 'YOUR VPN APPLIANCE — internet-facing HTTPS portal' with five sub-labels (login UI, session manager, tunnel termination, admin panel, OS). Five red curved arrows from the outside converge on it, each labeled with a real 2023-2024 CVE: CVE-2023-46805 (Ivanti), CVE-2024-21887 (Ivanti), CVE-2024-20353 (Cisco), CVE-2023-4966 (CitrixBleed), CVE-2024-3400 (Palo Alto). Behind the appliance, a smaller cluster of internal services labeled 'prod database', 'admin panel', 'engineer SSH'. The cluster is all reachable once the appliance is compromised. The whole assembly sits inside a coral-tinted boundary labeled 'the attack surface you can't shrink'. A small inset on the right shows the mesh alternative as a dotted hexagon of peers with no central appliance, captioned 'no concentrator, no portal, no inbound port'.](/images/lazy-security-part-6-network-plane/vpn-appliance-attack-surface.png)
 
@@ -62,7 +62,7 @@ The ACL itself, in HuJSON (JSON with comments, native to Tailscale):
 
 Twenty lines of declarative policy. Each change is a PR. Each merge is reviewed. Each rule is a sentence a human can read in three seconds. The version of this living in iptables is two hundred lines that nobody touches because nobody knows whether the bottom forty are still load-bearing.
 
-Cost: Tailscale Free covers 100 devices and 3 users. Personal Pro is $5/month. Teams is $5/user/month. Enterprise is $18/user/month. For a 15-person team, $75/month buys the Teams plan with SSO, audit logs, and ACL change history.
+Cost: under Tailscale Pricing v4 (April 2026), Free covers up to 6 users and 100 devices. Paid plans are Standard at $6/user/month, Premium at $18/user/month, and Enterprise above that. For a 15-person team, $90/month on Standard buys SSO, audit logs, and ACL change history.
 
 ## Cloudflare Tunnel for inbound
 
@@ -115,7 +115,7 @@ PersistentKeepalive = 25
 
 The pain at scale is peer management. Twenty engineers means twenty keypairs, twenty `AllowedIPs` blocks on the server, and a manual re-deploy each time someone joins or leaves. Two OSS tools fix that: **Headscale**, which is a Tailscale-protocol-compatible control plane you self-host (same Tailscale clients on each device, but the coordination server is yours); and **wg-easy**, a small web UI for adding and removing peers. Both give you the Tailscale UX with none of the SaaS dependency.
 
-When to pick this path over Tailscale: your contract forbids data-plane traffic transiting a U.S. SaaS, you operate in a region where Tailscale can't legally provide service, or you're regulatory-bound to run the full stack yourself. Otherwise, Tailscale Teams at $5/user/month is a better use of a platform engineer's time than peer management cron jobs.
+When to pick this path over Tailscale: your contract forbids data-plane traffic transiting a U.S. SaaS, you operate in a region where Tailscale can't legally provide service, or you're regulatory-bound to run the full stack yourself. Otherwise, Tailscale Standard at $6/user/month is a better use of a platform engineer's time than peer management cron jobs.
 
 ## the ACLs you can actually read
 
@@ -138,16 +138,16 @@ If the only person who can read your firewall rules is the person who wrote them
 
 For 15 engineers, the network-in-front-of-everything bill:
 
-- **Tailscale Teams** at $5/user/month: $75/month for 15 engineers. Covers SSH-to-bastion, internal HTTP access, prod database access, MagicDNS, ACL audit logs. The primary line item.
+- **Tailscale Standard** at $6/user/month: $90/month for 15 engineers. Covers SSH-to-bastion, internal HTTP access, prod database access, MagicDNS, ACL audit logs. The primary line item.
 - **Cloudflare Zero Trust Free** (<50 users): $0. Replaces public-internet vendor portals, internal-with-SSO web apps, customer-facing internal tools.
 - **Self-hosted WireGuard or Headscale**: $0, plus a small VPS for the control plane if needed (~$5/month). For the use case Tailscale can't legally cover.
 - **The retired VPN appliance contract**: somewhere between $5K and $50K per year, depending on vendor and seat count, going back into your budget when the contract ends.
 
-![An animated horizontal bar chart in a dark editorial palette comparing the annual access-plane cost for a 15-engineer team across four configurations. Top bar: legacy SSL VPN appliance (Pulse Secure / Ivanti / GlobalProtect at small-business pricing) at roughly $600/year plus the CVE risk; subtitle 'plus appliance ops time'. Middle-top bar (accented, brighter cyan, coral tip): Tailscale Teams at $900/year (15 × $5/mo × 12); subtitle 'recommended default'. Middle-bottom bar: Tailscale Free + Cloudflare Zero Trust Free at $0; subtitle 'works up to 3 users / 50 seats'. Bottom bar: self-hosted Headscale + WireGuard at $60/year (just a small VPS); subtitle 'for the air-gapped or contract-bound case'. Annotation strip notes the appliance bar's true cost is dominated by patch/CVE response and is undercounted at $600.](/images/lazy-security-part-6-network-plane/access-plane-cost-stack.gif)
+![An animated horizontal bar chart in a dark editorial palette comparing the annual access-plane cost for a 15-engineer team across four configurations. Top bar: legacy SSL VPN appliance (Pulse Secure / Ivanti / GlobalProtect at small-business pricing) at roughly $600/year plus the CVE risk; subtitle 'plus appliance ops time'. Middle-top bar (accented, brighter cyan, coral tip): Tailscale Standard at $1,080/year (15 × $6/mo × 12); subtitle 'recommended default'. Middle-bottom bar: Tailscale Free + Cloudflare Zero Trust Free at $0; subtitle 'works up to 6 users / 50 seats'. Bottom bar: self-hosted Headscale + WireGuard at $60/year (just a small VPS); subtitle 'for the air-gapped or contract-bound case'. Annotation strip notes the appliance bar's true cost is dominated by patch/CVE response and is undercounted at $600.](/images/lazy-security-part-6-network-plane/access-plane-cost-stack.gif)
 
 *Fig. 3 — the bottom two bars are not an emergency, the top bar is.*
 
-Net cost: $75/month for the access plane covering most of the surface, with optional fallbacks at near-zero cost. For comparison, the median per-seat price of a legacy SSL VPN appliance (Pulse Secure / Ivanti, GlobalProtect, AnyConnect) at small-business pricing is around $40/seat/year, or roughly the same number, without the CVE risk and without the iptables ruleset.
+Net cost: $90/month for the access plane covering most of the surface, with optional fallbacks at near-zero cost. For comparison, the median per-seat price of a legacy SSL VPN appliance (Pulse Secure / Ivanti, GlobalProtect, AnyConnect) at small-business pricing is around $40/seat/year, or roughly the same number, without the CVE risk and without the iptables ruleset.
 
 What this catches: every internet-facing VPN appliance CVE, because you don't have one. Every "the bastion's security group was opened to 0.0.0.0/0 to debug a contractor's IP last summer and never closed" incident, because the bastion isn't reachable. Every "the static VPN certificate leaked from a contractor's laptop" incident, because the credential is a short-lived OIDC session, not a long-lived cert.
 

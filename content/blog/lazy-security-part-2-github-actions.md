@@ -6,7 +6,7 @@ excerpt: "Hardening GitHub Actions for small teams. SHA pinning, OIDC, cooldowns
 featured: false
 ---
 
-Last March, someone with write access to the `trivy-action` repo rewrote 75 of its 76 version tags in place. The tags still resolved to `aquasecurity/trivy-action` — they just resolved to different commits than they did the week before. Every pipeline that ran `aquasecurity/trivy-action@0.20.0` (and every other tagged version) ran the attacker's commit instead. Secrets exfiltrated. The stolen credentials chained into PyPI and took down LiteLLM. Nobody noticed for hours, because the workflow file diff was still clean.
+Last March, someone with write access to the `trivy-action` repo rewrote 76 of its 77 version tags in place. The tags still resolved to `aquasecurity/trivy-action` — they just resolved to different commits than they did the week before. Every pipeline that ran `aquasecurity/trivy-action@0.20.0` (and every other tagged version) ran the attacker's commit instead. Secrets exfiltrated. The stolen credentials chained into PyPI and took down LiteLLM. Nobody noticed for hours, because the workflow file diff was still clean.
 
 This is part 2. [Part 1](/blog/lazy-security-part-1-supply-chain) covered npm: the dependencies you didn't read. Part 2 is the same problem one level up: the workflows you didn't pin. Part 3 is the unsexy list — Tailscale, PrivateLink, IAP, the PAT you forgot.
 
@@ -22,7 +22,7 @@ The first thing the trivy-action incident proves: hash-pinning to `@0.20.0` is n
 
 Full forty-character SHA. Immutable. The version comment is so the next reader knows what they're looking at; the SHA is so the workflow runs the code you reviewed.
 
-![A horizontal editorial timeline of the trivy-action force-push attack of March 2026 on a deep navy ground. Six stages along a single line, from a maintainer credential phish at T-30d through 75 of 76 tags force-pushed at T-0, first CI pipelines picking up the rewritten tag at T+1h, secrets exfiltrated minutes later, a trojanized LiteLLM published to PyPI at T+6h, and detection at T+9d. Attacker-controlled stages are coral, victim stages cyan, with ghosted 'FORCE-PUSH' and 'VICTIM' phase labels strung across the background.](/images/lazy-security-part-2-github-actions/trivy-action-timeline.png)
+![A horizontal editorial timeline of the trivy-action force-push attack of March 2026 on a deep navy ground. Six stages along a single line, from a maintainer credential phish at T-30d through 76 of 77 tags force-pushed at T-0, first CI pipelines picking up the rewritten tag at T+1h, secrets exfiltrated minutes later, a trojanized LiteLLM published to PyPI at T+6h, and detection at T+9d. Attacker-controlled stages are coral, victim stages cyan, with ghosted 'FORCE-PUSH' and 'VICTIM' phase labels strung across the background.](/images/lazy-security-part-2-github-actions/trivy-action-timeline.png)
 
 *Fig. 1 — nine days from force-push to advisory. The workflow files never changed.*
 
@@ -122,7 +122,7 @@ The trivy-action exfiltration worked partly because secrets were workflow-scoped
 
 Part 1 ended on "the next-tier defenses are real, Part 3 names them." OIDC is the part of that conversation that lives here.
 
-The trade: instead of storing an `AWS_ACCESS_KEY_ID` in repo secrets and praying nobody exfiltrates it, you configure AWS to trust GitHub's OIDC issuer for a specific repo, branch, and workflow. GitHub mints a short-lived (fifteen-minute) identity token for the workflow run. The workflow trades that token for STS credentials. Nothing long-lived ever sits in the env.
+The trade: instead of storing an `AWS_ACCESS_KEY_ID` in repo secrets and praying nobody exfiltrates it, you configure AWS to trust GitHub's OIDC issuer for a specific repo, branch, and workflow. GitHub mints a short-lived (five-minute) OIDC identity token for the workflow run. The workflow trades that for STS credentials whose lifetime you set (default one hour). Nothing long-lived ever sits in the env.
 
 ```yaml
 permissions:
@@ -140,7 +140,7 @@ jobs:
       - run: aws s3 sync ./dist s3://my-bucket
 ```
 
-The role's trust policy restricts the OIDC subject to your exact repo and (ideally) branch. An attacker who compromises a fork PR can't assume the role, because they don't match the trust condition. The minted token lasts fifteen minutes. Even an exfiltrated token gets the attacker fifteen minutes of scoped STS access, not a permanent IAM user.
+The role's trust policy restricts the OIDC subject to your exact repo and (ideally) branch. An attacker who compromises a fork PR can't assume the role, because they don't match the trust condition. The OIDC JWT itself lasts five minutes and the STS credential is scoped to whatever you configure (default one hour). Even an exfiltrated credential gets the attacker a bounded window of scoped access, not a permanent IAM user.
 
 For Google Cloud, the equivalent is Workload Identity Federation. For HashiCorp Vault, the JWT auth backend. Same shape across providers.
 

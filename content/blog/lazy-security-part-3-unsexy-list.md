@@ -30,7 +30,7 @@ That's five, not four, which is on-brand for this section.
 
 The fix isn't "rotate them all." It's "make the next leak useless." Three configs at the org level do the work.
 
-First, require expiration on all PATs. GitHub org settings → Personal access tokens → Require an expiration date; set the max to 90 days. Tokens issued before the setting keep working until their original expiry, so old tokens die naturally as they age out. No big-bang migration.
+First, require expiration on all PATs. GitHub org settings → Personal access tokens → Require an expiration date; set the org max to 90 days (GitHub's platform ceiling is 366, but 90 is the right org default). Tokens issued before the setting keep working until their original expiry, so old tokens die naturally as they age out. No big-bang migration.
 
 Second, enforce SSO on the org. A leaked PAT without an active SSO session can't reach SSO-protected repos. Most SaaS git-hosted orgs should have this on already; if yours doesn't, that is the highest-yield ten minutes in this post.
 
@@ -91,7 +91,7 @@ The anti-pattern is the "we'll just rotate the bastion IP" security group. We wo
 
 ## the helm chart that ships with admin/admin
 
-Every operator-installed thing in the cluster has a default password. Argo CD's `admin` with auto-generated password is fine, because the password isn't `admin`. Grafana's chart that ships with `admin/admin` is not fine. Jenkins has no password on first install. Half the database charts have `password: changeme` in `values.yaml` and the README says "you should change this," which is not the same as the chart changing it.
+Every operator-installed thing in the cluster has a default password. Argo CD's `admin` with auto-generated password is fine, because the password isn't `admin`. Grafana's chart that ships with `admin/admin` is not fine. Jenkins ships with a random initial password printed to `initialAdminPassword` that most operators copy in once and never rotate. Half the database charts have `password: changeme` in `values.yaml` and the README says "you should change this," which is not the same as the chart changing it.
 
 The lazy fix is two configs.
 
@@ -105,7 +105,7 @@ nuclei -t http/default-logins/ -l services.txt -severity critical,high
 
 If it finds something, that's a real incident. If it doesn't, you have evidence, which is the audit-log argument postponed by one section.
 
-One honest aside in parentheses: the rate at which Helm chart maintainers have moved away from default passwords is encouraging. The official Postgres chart no longer ships with `changeme` as a default. The Grafana chart now generates a random password by default in recent versions. The chart that ships with `admin/admin` today is more likely to be a private internal chart someone wrote three years ago than something current from Bitnami. Check those first.
+One honest aside in parentheses: the rate at which Helm chart maintainers have moved away from default passwords is encouraging. Bitnami's PostgreSQL chart now generates a random password by default instead of `changeme`. The chart that ships with `admin/admin` today is more likely to be a private internal chart someone wrote three years ago than something current from Bitnami. (Note: the official Grafana chart still defaults to `admin/admin` — override it via Helm values before first install; "I'll change it later" is the part nobody does.) Check the internal charts first.
 
 ## sigstore, provenance, and reproducible builds
 

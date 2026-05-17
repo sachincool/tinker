@@ -24,7 +24,7 @@ Add `-c <container>` if it's a multi-container pod, because the default containe
 
 ## ephemeral debug containers
 
-There used to be a ritual: edit the Dockerfile, add `curl` and `dig` and `tcpdump`, push, wait for CI, redeploy, exec in, debug, then forget to take any of it back out and ship a 900 MB image to prod. As of 1.23 you don't have to. `kubectl debug` attaches a sidecar to a running pod with whatever image you want, in the same network and PID namespace, without touching the original container.
+There used to be a ritual: edit the Dockerfile, add `curl` and `dig` and `tcpdump`, push, wait for CI, redeploy, exec in, debug, then forget to take any of it back out and ship a 900 MB image to prod. As of 1.25 (beta-default since 1.23) you don't have to. `kubectl debug` attaches an ephemeral container to a running pod with whatever image you want — sharing the network namespace, and the PID namespace when you pass `--target` or the pod has `shareProcessNamespace: true` — without touching the original container.
 
 ```bash
 kubectl debug -it <pod-name> --image=nicolaka/netshoot

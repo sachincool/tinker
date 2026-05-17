@@ -30,7 +30,7 @@ Credit where it's due. Cloudflare Email Routing is genuinely great for what it d
 - **5-minute setup.** Add MX records, create routes, done
 - **Reliable inbound forwarding.** Never lost an email
 
-But the moment you need to reply from an alias or send a new email as your alias, you're stuck. Cloudflare introduced Email Workers in March 2025, which lets you programmatically process and reply to emails. But it's a developer tool for automated responses, not a "hit reply in Gmail" solution.
+But the moment you need to reply from an alias or send a new email as your alias, you're stuck. Cloudflare loosened Email Workers' reply restrictions in March 2025 to let you programmatically process and reply to emails. But it's a developer tool for automated responses, not a "hit reply in Gmail" solution.
 
 | Feature | Cloudflare Email Routing | SimpleLogin (Self-Hosted) |
 |---------|--------------------------|---------------------------|
@@ -109,10 +109,10 @@ Priority: 10
 ```
 Type: TXT
 Name: sl.example.com
-Value: v=spf1 mx a ip4:203.0.113.50 include:sendinblue.com ~all
+Value: v=spf1 mx a ip4:203.0.113.50 include:spf.sendinblue.com ~all
 ```
 
-The `include:sendinblue.com` is critical — Brevo (formerly Sendinblue) sends your outbound mail.
+The `include:spf.sendinblue.com` is critical — Brevo (formerly Sendinblue) sends your outbound mail through that SPF record.
 
 ### DKIM Record
 
@@ -155,7 +155,7 @@ dig MX sl.example.com +short
 
 # SPF record
 dig TXT sl.example.com +short
-# Should include: v=spf1 mx a ip4:203.0.113.50 include:sendinblue.com ~all
+# Should include: v=spf1 mx a ip4:203.0.113.50 include:spf.sendinblue.com ~all
 
 # A record
 dig A sl.example.com +short

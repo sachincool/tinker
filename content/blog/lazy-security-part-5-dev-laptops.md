@@ -2,13 +2,13 @@
 title: "Lazy SRE's guide to secure systems, part 5: the dev laptop is the perimeter"
 date: "2026-05-03"
 tags: ["security", "devsecops", "lazy-sre", "endpoint", "mdm", "macos"]
-excerpt: "Snowflake taught everyone what happens when a cracked Logic Pro torrent runs on a contractor's Mac. The laptop is the perimeter."
+excerpt: "Snowflake taught everyone what happens when an infostealer runs on a contractor's personal Mac. The laptop is the perimeter."
 featured: false
 ---
 
-In April 2024, Mandiant published the writeup for the Snowflake mass-extortion campaign. Ticketmaster, Santander, AT&T, LendingTree, Advance Auto Parts — roughly 165 Snowflake tenants in total had data extracted from their warehouses. The defining detail wasn't sophistication. It was the laptop.
+In June 2024, Mandiant published the writeup for the Snowflake mass-extortion campaign. Ticketmaster, Santander, AT&T, LendingTree, Advance Auto Parts — roughly 165 Snowflake tenants in total had data extracted from their warehouses. The defining detail wasn't sophistication. It was the laptop.
 
-Mandiant traced the entry point to infostealer malware (Lumma, RedLine, Vidar variants) running on contractor and developer machines. Several of the compromised devices were personal Macs also used for, among other things, downloading cracked copies of Logic Pro and Microsoft Office. A torrent containing Lumma harvested every credential the browser had ever saved, including the Snowflake login that didn't have MFA enforced. The attackers walked through the front door of a Fortune 500's data warehouse.
+Mandiant traced the entry point to infostealer malware (Lumma, RedLine, Vidar variants) running on contractor and developer machines. Their report described the affected devices as personal systems also used for gaming and downloading pirated software. The infostealer harvested every credential the browser had ever saved, including the Snowflake login that didn't have MFA enforced. The attackers walked through the front door of a Fortune 500's data warehouse.
 
 This is part 5. Earlier parts covered npm ([Part 1](/blog/lazy-security-part-1-supply-chain)), GitHub Actions ([Part 2](/blog/lazy-security-part-2-github-actions)), the unsexy infrastructure list ([Part 3](/blog/lazy-security-part-3-unsexy-list)), and DNS auth records ([Part 4](/blog/lazy-security-part-4-dns-records)). Part 5 is about the laptop. The piece of hardware on an engineer's desk that has every SSH key, AWS profile, kubeconfig, GitHub PAT, Slack token, and Stripe key they have ever used to do their job.
 
@@ -66,7 +66,7 @@ The lazy stance: Defender for Business if you're on Microsoft 365 already. Falco
 
 ## the password manager and browser hygiene argument
 
-1Password Teams at $8/user/month. Bitwarden Teams at $4. Apple Passwords (or 1Password Families) if you're Mac-only and don't need shared vaults. Pick one and stop arguing about it on the team's `#tools` channel.
+1Password Business at ~$8/user/month. Bitwarden Teams at $4. Apple Passwords (or 1Password Families) if you're Mac-only and don't need shared vaults. Pick one and stop arguing about it on the team's `#tools` channel.
 
 The point of the password manager isn't strong passwords. The point is:
 
@@ -82,13 +82,13 @@ Browser hygiene matters because the Snowflake infostealer harvested credentials 
 - Block "developer mode" extension installs. Force extensions to come from the Chrome Web Store; force the Web Store to honor the org's allowlist via the `ExtensionInstallAllowlist` policy.
 - Disable browser password saving entirely. Everything routes through the password manager.
 
-Total: $1,440/year for 15 engineers on 1Password Teams. $720 on Bitwarden Teams. $0 on Apple Passwords if it covers your needs. Pick a line and walk it.
+Total: $1,440/year for 15 engineers on 1Password Business. $720 on Bitwarden Teams. $0 on Apple Passwords if it covers your needs. Pick a line and walk it.
 
 ## the personal device problem
 
 The Snowflake breach was about contractors using personal Macs for work. The lazy answer at a 15-person startup might surprise: corp-issue every contractor a laptop. Yes, including the four-hour-a-week consultant.
 
-A refurbished MacBook Air with 16GB RAM is roughly $700 from Apple's Education store. The cost of a Snowflake-scale breach starts at $370K (the reported AT&T ransom) and ends in the customer-churn and legal-exposure column. The break-even point on hardware-for-contractors is under three serious incidents, ever.
+A refurbished MacBook Air with 16GB RAM is roughly $700 from Apple's Certified Refurbished store. The cost of a Snowflake-scale breach starts at $370K (the reported AT&T ransom) and ends in the customer-churn and legal-exposure column. The break-even point on hardware-for-contractors is under three serious incidents, ever.
 
 ![An editorial side-by-side system diagram on a dark navy ground. Left panel labeled 'personal device, BYOD' shows a laptop with chaotic state: unenforced FileVault status, a personal iCloud sign-in, a Mac App Store with personal Apple ID, a Chrome browser synced to a personal Google account, a Slack web app session that's been logged in for nine months, a folder labeled 'pirated software' with a red warning. Right panel labeled 'corp-issued, MDM enrolled' shows the same laptop with each item enforced: FileVault ON, MDM-managed Apple ID, App Store restricted, Chrome work profile only, Slack session expires daily, no third-party software installs. Each enforced item has a green check; each unenforced item on the left has a coral X. A title above reads 'where the Snowflake breach lived'.](/images/lazy-security-part-5-dev-laptops/personal-vs-corp-laptop.png)
 
@@ -111,13 +111,13 @@ For 15 engineers, the first-year laptop security budget:
 - YubiKey 5 × 30 keys (two per engineer): $1,500, one-time.
 - Fleet (OSS self-hosted on a small VPS): $240/year.
 - Microsoft Defender for Business: $540/year. Substitute Falcon Go at $900 if not on M365, or osquery+Wazuh at $0 if you have a security engineer.
-- 1Password Teams: $1,440/year. Or Bitwarden Teams at $720. Or Apple Passwords at $0.
+- 1Password Business: $1,440/year. Or Bitwarden Teams at $720. Or Apple Passwords at $0.
 - Refurbished corp laptops for non-employee contractors: ~$700 per, as needed.
 
 Total recurring: roughly $1,020–$2,220/year for 15 engineers, depending on the EDR and password-manager line. Add the one-time YubiKey spend and the first year lands at $2,520–$3,720. Call it $14–$21 per engineer per month.
 
 What it catches: every infostealer that hits a managed laptop (Defender flags it), every credential that lives in the browser (replaced by the password manager), every login that doesn't have phishing-resistant MFA (the YubiKey is required), every personal device touching production (blocked by the no-BYOD policy).
 
-What it doesn't catch: a determined adversary with physical access and unlimited time. A laptop in a hotel room with no FileVault is owned. A laptop with FileVault and a YubiKey left in the USB-A port overnight is owned slower. Neither situation is what this stack is built for; it is built for the cracked-Logic-Pro torrent on the contractor's personal Mac.
+What it doesn't catch: a determined adversary with physical access and unlimited time. A laptop in a hotel room with no FileVault is owned. A laptop with FileVault and a YubiKey left in the USB-A port overnight is owned slower. Neither situation is what this stack is built for; it is built for the infostealer that landed on the contractor's personal Mac.
 
 If you do one thing this week, buy two YubiKeys for yourself, enroll them on GitHub, Google, and Okta, and turn off SMS-based MFA on each. Total cost: $100, one hour. Then do the rest of the team next quarter.

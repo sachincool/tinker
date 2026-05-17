@@ -45,6 +45,8 @@ The detail that matters: managed-settings.json is the same config layer your `~/
 
 ## the cleanup script
 
+One thing worth flagging before you run this. On macOS, the `schg` flag is normally clearable by root for files outside SIP-protected paths — and `/Library/Application Support/ClaudeCode/` is not SIP-protected. So `sudo chflags noschg` works as written. If your MDM also writes its config into a SIP-protected location (rare for application config, more common for system extensions), you'd need Recovery Mode Terminal to clear those, which is a different conversation. The script's `2>/dev/null` will silently swallow that failure, so if reruns don't seem to take, that's where to look.
+
 Save this as `/usr/local/sbin/claudecode-cleanup.sh`, make it executable, run with `sudo`:
 
 ```zsh

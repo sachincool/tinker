@@ -211,7 +211,7 @@ $5,000 a month. The complaints about staging being slow on the first request aft
 
 ## CloudWatch logs, kept forever
 
-CloudWatch logs default to "never expire," which is fine if you want to be the company paying $0.03 per GB ingested for a stack trace from 2021.
+CloudWatch logs default to "never expire," which is fine if you want to be the company paying $0.50 per GB to ingest and $0.03 per GB-month to keep a stack trace from 2021.
 
 A short script set retention on every log group in the account:
 

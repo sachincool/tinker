@@ -206,7 +206,7 @@ I use both. GitHub Actions for open-source and frontend, GitLab CI for infrastru
 
 ## common pitfalls
 
-GitHub Actions has a 3-hour job timeout, a 90-day artifact retention cap, and tight concurrent-job limits on the free tier. Plan around them or pay.
+GitHub Actions has a 6-hour hosted-runner job timeout, a 90-day artifact retention default (configurable up to 400 days for public repos, 90 for private), and tight concurrent-job limits on the free tier. Plan around them or pay.
 
 GitLab's shared runners get sluggish at peak, Docker builds need `docker:dind` as a service container, and CI/CD variable precedence has at least six rules you will need to read twice. The one that bites me most: project-level variables silently override group-level ones with the same name.
 

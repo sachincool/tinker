@@ -152,7 +152,6 @@ claude plugin details <name>   # the actual skills, hooks, MCP servers this plug
                                # plus its projected token cost
 claude plugin disable <name>   # turn it off
 claude plugin enable  <name>   # bring it back
-claude plugin disable -a       # disable everything (start fresh)
 ```
 
 The one I'd specifically call out is `details`. It tells you exactly what a plugin pulls into your session, and the rough token cost of having it loaded. If you feel like your context budget vanishes before you've done much, this is where to look first.
@@ -163,12 +162,12 @@ The setup is two commands per plugin:
 
 ```bash
 # globally disabled
-claude plugin disable -s user diagram-design
-claude plugin disable -s user frontend-design-pro
+claude plugin disable --scope user diagram-design
+claude plugin disable --scope user frontend-design-pro
 
 # from inside the blog repo
-claude plugin install -s project diagram-design@diagram-design
-claude plugin install -s project frontend-design-pro@frontend-design-pro
+claude plugin install --scope project diagram-design@diagram-design
+claude plugin install --scope project frontend-design-pro@frontend-design-pro
 ```
 
 After that, only sessions started inside the blog directory see those skills. Everywhere else, they're not loaded, not adding to the prompt, not costing me tokens. When I want them back globally I can enable them again.

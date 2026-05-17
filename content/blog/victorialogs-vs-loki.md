@@ -19,7 +19,7 @@ At Truefoundry we run multi-tenant ML workloads, which means fast ad-hoc search,
 The contestants in one line:
 
 - **Loki:** Grafana Labs' log store. Compressed chunks, label-based indexing, LogQL. Brilliant Grafana integration; expensive regex scans and Go GC overhead at scale.
-- **VictoriaLogs:** VictoriaMetrics' columnar LSM log database. Per-field indices, SIMD search, LogSQL. Single binary, low memory footprint, efficient compression.
+- **VictoriaLogs:** VictoriaMetrics' columnar LSM log database. Per-field indices, SIMD search, LogsQL. Single binary, low memory footprint, efficient compression.
 
 Methodology in five bullets:
 
@@ -60,7 +60,7 @@ LogQL (Loki):
 sum(count_over_time({app="servicefoundry-server"}[24h]))
 ```
 
-LogSQL (VictoriaLogs):
+LogsQL (VictoriaLogs):
 
 ```logsql
 {app="servicefoundry-server"} | stats count()
@@ -74,7 +74,7 @@ LogQL:
 {namespace="truefoundry", app!="grafana"} |= "[UNIQUE-STATIC-LOG] ID=abc123 XYZ"
 ```
 
-LogSQL:
+LogsQL:
 
 ```logsql
 {namespace="truefoundry", app!="grafana"} "[UNIQUE-STATIC-LOG] ID=abc123 XYZ"

@@ -22,7 +22,7 @@ The job is not to read all 1,995. The job is to make sure that when one of them 
 
 ## chainjacking
 
-Chainjacking is the umbrella term for "someone got control of a package you depend on and pushed a bad version." The attacker doesn't break npm. They get the credentials of the human who publishes the package, ship a patch version, and semver puts it on your machine the next time anyone runs `npm install`. `event-stream` (2018), `ua-parser-js` (2021), `coa`, `rc`, `lottie-player` (2024), the shai-hulud worm (2024) that self-replicated by stealing npm tokens from packages the infected packages were installed by. The economics still work for the attacker. It is going to keep happening.
+Chainjacking is the umbrella term for "someone got control of a package you depend on and pushed a bad version." The attacker doesn't break npm. They get the credentials of the human who publishes the package, ship a patch version, and semver puts it on your machine the next time anyone runs `npm install`. `event-stream` (2018), `ua-parser-js` / `coa` / `rc` (2021), `lottie-player` (2024), and the shai-hulud worm (Sept 2025, with a 2.0 wave in Nov 2025) that self-replicated by stealing tokens from compromised maintainer machines via TruffleHog-style secret scans and then republishing every other package that maintainer owned. The economics still work for the attacker. It is going to keep happening.
 
 ![A magazine-infographic-style timeline on a dark navy background. Six stages from left to right: T-7d maintainer account targeted, T-0 malicious version published, T+12m first CI installs it, T+12m02s secrets exfiltrated, T+1h backdoor in artifacts, T+24h credentials for sale. Stages 1-2 highlighted in coral as 'compromise' stages; stages 3-6 in cyan as 'victim' stages.](/images/lazy-security-part-1-supply-chain/chainjacking-timeline.png)
 
@@ -45,7 +45,7 @@ Scope everything internal. Register your scope on public npm as a parked placeho
 
 ## postinstall
 
-Every npm supply-chain incident I have read the postmortem on shipped its malicious code in a `postinstall` script — not in runtime code. The install hook runs before your tests, before your linter, as part of the install. Default is enabled. The one-line change with the highest blast-radius reduction:
+Most install-time npm supply-chain incidents I have read the postmortem on shipped their malicious code in a `postinstall` script — not in runtime code. (Some recent ones, like the chalk/debug compromise of Sept 2025, activate at runtime in the browser or on first import; the switch below doesn't help against those. It does help against the install-time class, which is still the majority.) The install hook runs before your tests, before your linter, as part of the install. Default is enabled. The one-line change with the highest blast-radius reduction:
 
 ```
 # .npmrc
