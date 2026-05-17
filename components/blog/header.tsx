@@ -6,7 +6,6 @@ import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { SearchDialog } from "@/components/blog/search-dialog";
-import { LogoMark } from "@/components/blog/logo-mark";
 import {
   Moon,
   Sun,
@@ -18,6 +17,8 @@ import {
   Tags,
   Github,
   Twitter,
+  Server,
+  Zap,
   Network
 } from "lucide-react";
 
@@ -53,8 +54,14 @@ export function Header() {
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-3 group">
-            <div className="relative h-12 w-12 transition-transform group-hover:scale-105 flex items-center justify-center">
-              <LogoMark className="h-12 w-12" />
+            <div className="relative h-12 w-12 transition-transform group-hover:scale-105 rounded-full overflow-hidden ring-1 ring-border/60 dark:ring-0 bg-background">
+              <img
+                src="/logo/infra-magician-clean.webp"
+                alt="Infra Magician Logo"
+                className="h-full w-full object-cover scale-[1.55] dark:drop-shadow-[0_0_10px_rgba(139,92,246,0.5)]"
+                width={48}
+                height={48}
+              />
             </div>
             <div className="flex flex-col">
               <span className="font-bold text-lg leading-none">
@@ -130,10 +137,15 @@ export function Header() {
               <SheetContent side="right" className="w-[85vw] max-w-[320px] px-6">
                 <div className="flex flex-col space-y-4 mt-8">
                   <div className="flex items-center space-x-3 mb-6">
-                    <LogoMark className="h-10 w-10" />
+                    <div className="relative">
+                      <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-blue-600 via-purple-600 to-blue-800 flex items-center justify-center">
+                        <Server className="h-4 w-4 text-white" />
+                      </div>
+                      <Zap className="absolute -top-1 -right-1 h-3 w-3 text-yellow-500" />
+                    </div>
                     <div className="flex flex-col">
-                      <span className="font-bold leading-none">harshit.cloud</span>
-                      <span className="text-xs text-muted-foreground leading-none mt-1">Sénior SRE</span>
+                      <span className="font-bold">Infra Magician</span>
+                      <span className="text-xs text-muted-foreground">Level 99 Chaos Engineer</span>
                     </div>
                   </div>
                   {navigation.map((item) => {
