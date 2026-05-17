@@ -54,11 +54,11 @@ export function Header() {
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-3 group">
-            <div className="relative h-12 w-12 transition-transform group-hover:scale-105 rounded-full overflow-hidden">
+            <div className="relative h-12 w-12 transition-transform group-hover:scale-105 rounded-full overflow-hidden ring-1 ring-border/60 dark:ring-0 bg-background">
               <img
                 src="/logo/infra-magician-clean.webp"
                 alt="Infra Magician Logo"
-                className="h-full w-full object-cover scale-[1.55] drop-shadow-[0_0_10px_rgba(139,92,246,0.5)]"
+                className="h-full w-full object-cover scale-[1.55] dark:drop-shadow-[0_0_10px_rgba(139,92,246,0.5)]"
                 width={48}
                 height={48}
               />

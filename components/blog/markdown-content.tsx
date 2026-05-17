@@ -3,7 +3,7 @@
 import React from "react";
 import { CodeBlock } from "./code-block";
 import { ImageLightbox } from "./image-lightbox";
-import { Zap, Info, AlertCircle } from "lucide-react";
+import { Info, AlertCircle } from "lucide-react";
 
 interface MarkdownContentProps {
   content: string;
@@ -161,12 +161,11 @@ export function MarkdownContent({ content }: MarkdownContentProps) {
         const text = paragraph.substring(4);
         const id = text.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '');
         elements.push(
-          <h3 
-            key={index} 
-            id={id} 
-            className="text-xl font-semibold mt-12 mb-6 scroll-mt-24 text-foreground flex items-center gap-2 break-words [overflow-wrap:anywhere]"
+          <h3
+            key={index}
+            id={id}
+            className="text-xl font-semibold mt-12 mb-6 scroll-mt-24 text-foreground break-words [overflow-wrap:anywhere]"
           >
-            <Zap className="h-5 w-5 flex-shrink-0" />
             {text}
           </h3>
         );
