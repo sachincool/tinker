@@ -51,3 +51,6 @@ Thumbs.db
 
 # serena
 .serena/
+
+# claude code local config and skills
+.claude/

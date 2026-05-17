@@ -16,7 +16,7 @@ Here's the incident, what I got wrong, and what SREs actually need to know about
 
 *Fig. 1 — one fingerprint looked like one attacker. it was a tls stack used by 30% of customers.*
 
-## The JA3 Problem That Hit Our Monitoring
+## the JA3 problem that hit our monitoring
 
 We'd been using JA3 fingerprinting to track traffic patterns since 2021. Not for blocking, just visibility. Which clients were hitting our APIs, how to correlate requests, that kind of thing.
 
@@ -26,7 +26,7 @@ Then in early 2024, all our Go-based internal services health checks started sho
 
 Our traffic classification was completely broken.
 
-## Why JA4 Exists
+## why JA4 exists
 
 JA3 hashes the TLS ClientHello fields in order. Change the order, change the hash. Chrome randomizes extension ordering. Go randomizes cipher suites. JA3 falls apart.
 
@@ -49,7 +49,7 @@ This fixed our monitoring. Could actually track client types again. Go clients s
 
 Then I got clever.
 
-## The Mistake That Cost Us $50K
+## the mistake that cost us $50K
 
 We noticed some fingerprints showing up in suspicious traffic patterns. High request rates, weird timing. Looked like abuse.
 
@@ -67,7 +67,7 @@ The suspicious traffic I saw? One bad actor using Chrome 119. My rule caught the
 
 That was 30% of our traffic.
 
-## What JA4 Actually Tells You
+## what JA4 actually tells you
 
 JA4 fingerprints map to:
 
@@ -83,7 +83,7 @@ Not to:
 
 This seems obvious now, but in the moment, tracking "suspicious fingerprint X" felt like tracking a specific attacker. It wasn't. It was tracking everyone using Chrome 119 on Windows.
 
-## How We Fixed Our Monitoring
+## how we fixed our monitoring
 
 After the incident, here's how we actually use JA4:
 
@@ -121,7 +121,7 @@ Now we can see in Grafana:
 
 It's a classification dimension, not an identity.
 
-## The a_b_c Format Actually Matters
+## the a_b_c format actually matters
 
 JA4 uses `a_b_c` format for a reason. The sections are:
 
@@ -148,25 +148,25 @@ normalized = normalize_fingerprint('t13d190900_5d65cb28da5c_02713d6af862')
 
 Fixed our cardinality explosion problem.
 
-## Weird Edge Cases We Hit
+## weird edge cases we hit
 
-**Case 1: Corporate Proxies**
+**Case 1: corporate proxies**
 
 Some enterprises terminate TLS at their proxy. All internal traffic from that company shows the same fingerprint. One fingerprint, thousands of users.
 
 Can't use it for any kind of per-client logic. Had to maintain a list of known corporate proxy fingerprints and handle them differently.
 
-**Case 2: Windows XP Clients**
+**Case 2: Windows XP clients**
 
 Yes, in 2024. Ancient TLS 1.0 fingerprint we'd never seen before. Took two weeks to figure out it was legitimate users in a developing country on old machines.
 
 Almost blocked them as "suspicious" before we investigated.
 
-**Case 3: Go Library Version Drift**
+**Case 3: Go library version drift**
 
 Our microservices were on different Go versions. Go 1.20 and Go 1.21 have different TLS fingerprints. This broke our service mesh traffic analysis until we grouped them properly.
 
-## Performance Characteristics
+## performance characteristics
 
 Parse time: 0.3 microseconds per fingerprint. Not milliseconds. Microseconds.
 
@@ -174,9 +174,9 @@ We process 50M requests/day. Total JA4 overhead: ~15ms per day.
 
 The implementation is Rust with zero heap allocations. Stack-allocated, no GC. I benchmarked it myself when evaluating whether to deploy it.
 
-For infrastructure at scale, this matters. Adding 0.3μs per request is essentially free. Adding 1ms per request is a P0 incident.
+For infrastructure at scale, this matters. Adding 0.3μs per request is free in any honest accounting. Adding 1ms per request is a P0 incident.
 
-## How to Actually Use This in Production
+## how to actually use this in production
 
 **For traffic visibility**: yes. It's great for understanding client distribution, detecting anomalies, tracking deployments.
 
@@ -188,7 +188,7 @@ For infrastructure at scale, this matters. Adding 0.3μs per request is essentia
 
 **For debugging**: yes. "Why is this service getting weird traffic?" Check the fingerprints. Might be a misconfigured client.
 
-## The Logging Strategy
+## the logging strategy
 
 We log fingerprints with every request now. Adds about 45 bytes per log line.
 
@@ -205,7 +205,7 @@ We log fingerprints with every request now. Adds about 45 bytes per log line.
 
 Costs us about 2GB/day extra in log storage. Worth every penny. We've debugged three production issues with this data in the last month.
 
-## When Corporate Proxies Break Everything
+## when corporate proxies break everything
 
 If you're behind enterprise proxies that terminate TLS, JA4 is useless for per-client anything. You'll see the proxy's fingerprint for thousands of users.
 
@@ -220,15 +220,15 @@ proxy_fingerprints:
     disable_per_client_logic: true
 ```
 
-Not elegant, but it's reality.
+Ugly, but it's reality.
 
-## What's Coming That Will Break This
+## what's coming that will break this
 
 ECH (Encrypted ClientHello) in TLS 1.3 will encrypt the ClientHello. No more passive fingerprinting. When that rolls out, we'll need a different approach.
 
 Keep an eye on your TLS 1.3 ECH adoption metrics. When it hits 20%+, time to rethink your monitoring strategy.
 
-## The Incident Postmortem Takeaways
+## the incident postmortem takeaways
 
 1. **Test in staging with production traffic patterns**. I tested with synthetic traffic. Missed that real users would match the "bad" fingerprint.
 
@@ -240,7 +240,7 @@ Keep an eye on your TLS 1.3 ECH adoption metrics. When it hits 20%+, time to ret
 
 5. **Fingerprints are dimensions, not identities**. Use them for grouping and classification, not for targeting individuals.
 
-## Should SREs Care About JA4?
+## should SREs care about JA4?
 
 Yes, but not for the reasons you might think.
 

@@ -9,7 +9,7 @@ type: "til"
 
 Learned that Bash has built-in string manipulation that's way faster than calling `sed`, `awk`, or `cut`.
 
-## The Old Way (Slow)
+## the old way (slow)
 
 ```bash
 filename="document.pdf"
@@ -19,7 +19,7 @@ ext=$(echo "$filename" | sed 's/^.*\.//')      # pdf
 
 Each `echo | sed` spawns a new process. Slow in loops.
 
-## The New Way (Fast)
+## the new way (fast)
 
 ```bash
 filename="document.pdf"
@@ -29,9 +29,9 @@ ext="${filename##*.}"    # pdf
 
 No external processes. Pure Bash.
 
-## Common Patterns
+## common patterns
 
-### Remove File Extension
+### remove file extension
 
 ```bash
 file="archive.tar.gz"
@@ -42,7 +42,7 @@ echo "${file%%.*}"      # archive (remove all extensions)
 `%` = remove from end (shortest match)
 `%%` = remove from end (longest match)
 
-### Get File Extension
+### get file extension
 
 ```bash
 file="archive.tar.gz"
@@ -53,7 +53,7 @@ echo "${file##*.}"      # gz (last extension only)
 `#` = remove from start (shortest match)
 `##` = remove from start (longest match)
 
-### String Replacement
+### string replacement
 
 ```bash
 path="/home/user/documents/file.txt"
@@ -71,7 +71,7 @@ echo "${path/#\/home/\/root}"    # /root/user/documents/file.txt
 echo "${path/%.txt/.md}"         # /home/user/documents/file.md
 ```
 
-### Default Values
+### default values
 
 ```bash
 # Use default if variable is unset or empty
@@ -87,7 +87,7 @@ echo "${VAR:?Variable is required}"
 echo "${VAR:+value_if_set}"
 ```
 
-### Substring Extraction
+### substring extraction
 
 ```bash
 text="Hello World"
@@ -97,14 +97,14 @@ echo "${text: -5}"       # World (last 5 chars, note the space!)
 echo "${text::-6}"       # Hello (remove last 6 chars)
 ```
 
-### String Length
+### string length
 
 ```bash
 text="Hello World"
 echo "${#text}"          # 11
 ```
 
-### Case Conversion
+### case conversion
 
 ```bash
 text="Hello World"
@@ -114,7 +114,7 @@ echo "${text^}"          # Hello World (first char uppercase)
 echo "${text,}"          # hello World (first char lowercase)
 ```
 
-## Real-World Example
+## real-world example
 
 Before (slow with multiple processes):
 
@@ -140,7 +140,7 @@ for file in *.log; do
 done
 ```
 
-## Cheat Sheet
+## cheat sheet
 
 | Pattern | Effect | Example |
 |---------|--------|---------|
@@ -155,16 +155,16 @@ done
 | `${var^^}` | Uppercase | `${text^^}` |
 | `${var,,}` | Lowercase | `${text,,}` |
 
-## Why This Matters
+## why this matters
 
 In a script processing 10,000 files:
 
 - **With external commands**: ~5 minutes
 - **With parameter expansion**: ~10 seconds
 
-That's a 30x speedup!
+That's a 30x speedup.
 
-## One Gotcha
+## one gotcha
 
 Be careful with spaces in substring extraction:
 
@@ -174,5 +174,5 @@ echo "${text: -3}"    # llo (CORRECT - note the space)
 echo "${text:-3}"     # Hello (WRONG - default value syntax!)
 ```
 
-This simple trick has made my shell scripts so much faster. No more unnecessary `sed`/`awk`/`cut` calls!
+This simple trick has made my shell scripts so much faster. No more unnecessary `sed`/`awk`/`cut` calls.
 

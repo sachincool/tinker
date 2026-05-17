@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>access plane cost — lazy sre part 6</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  html, body { margin: 0; padding: 0; background: #0d1320; }
+  body { display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+  canvas { display: block; }
+  /* preload fonts so headless captures see them */
+  .preload-serif { font-family: 'Instrument Serif', serif; position: absolute; visibility: hidden; }
+  .preload-mono { font-family: 'Geist Mono', monospace; position: absolute; visibility: hidden; }
+</style>
+</head>
+<body>
+<span class="preload-serif">preload</span>
+<span class="preload-mono">preload</span>
+<canvas id="c" width="1600" height="900"></canvas>
+<script>
+const WIDTH = 1600;
+const HEIGHT = 900;
+const FPS = 20;
+
+// palette — locked to Part 2 / Part 4 / Part 5
+const COLORS = {
+  bg: '#0d1320',
+  bgDeeper: '#080d18',
+  cream: '#f3ede2',
+  creamMute: '#cfc7b8',
+  mono: '#8a93a6',
+  monoDim: '#5a6275',
+  rule: '#1b2436',
+  ruleSoft: '#141a2a',
+  barTrack: '#13192a',
+  barDefault: '#3f8fa3',     // muted cyan
+  barAccent: '#5bc0d9',      // brighter cyan
+  tipCoral: '#e07a5f',       // recommended tip / risk edge
+};
+
+const BARS = [
+  {
+    label: 'legacy ssl vpn appliance',
+    sub1: 'ivanti / pulse secure / globalprotect',
+    sub2: '$40/seat/year × 15 engineers, ignoring patch ops time and cve risk.',
+    value: 600,
+    accent: false,
+    riskEdge: true,            // coral border, no fill change
+  },
+  {
+    label: 'tailscale teams',
+    sub1: '$5/user/month × 15',
+    sub2: 'sso, acl audit logs, magicdns.',
+    value: 900,
+    accent: true,
+  },
+  {
+    label: 'tailscale free + cf zero trust free',
+    sub1: 'free up to 3 users / 50 access seats',
+    sub2: 'covers small teams entirely.',
+    value: 0,
+    accent: false,
+  },
+  {
+    label: 'self-hosted headscale + wireguard',
+    sub1: '$5/month vps for the control plane',
+    sub2: 'for the air-gapped or contract-bound case.',
+    value: 60,
+    accent: false,
+  },
+];
+
+const MAX_VALUE = 1000;          // axis ceiling
+const TICKS = [0, 250, 500, 750, 1000];
+
+// timing
+const BAR_DURATION_S = 0.9;      // fill time per bar
+const BAR_STAGGER_S = 0.4;       // start offset between bars
+const TOTAL_FILL_S = BAR_STAGGER_S * (BARS.length - 1) + BAR_DURATION_S; // 0.4*3 + 0.9 = 2.1s
+const HOLD_S = 2.6;
+const TOTAL_S = TOTAL_FILL_S + HOLD_S;
+const TOTAL_FRAMES = Math.round(TOTAL_S * FPS);
+
+// easing — easeOutQuart, matches Part 2 feel
+function ease(t) {
+  return 1 - Math.pow(1 - t, 4);
+}
+
+function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+
+// layout constants
+const PADX = 88;
+const TOP = 80;          // eyebrow band
+const TITLE_Y = 152;     // serif title baseline-ish anchor
+const AXIS_Y = 230;      // axis tick row
+const RULE_Y = 200;      // rule under title
+const BARS_START_Y = 280;
+const BARS_GAP = 138;    // vertical spacing per bar block (4 bars fit between 280 and ~770)
+const BAR_HEIGHT = 58;
+const LEGEND_X = PADX;
+const LEGEND_W = 380;
+const BAR_X = LEGEND_X + LEGEND_W + 30;    // bar start x
+const BAR_W = WIDTH - BAR_X - PADX;          // bar track width
+
+function valueToWidth(v) {
+  return (v / MAX_VALUE) * BAR_W;
+}
+
+function drawFrame(ctx, frameIdx) {
+  const t = frameIdx / FPS;
+  // background
+  ctx.fillStyle = COLORS.bg;
+  ctx.fillRect(0, 0, WIDTH, HEIGHT);
+
+  // eyebrow mono
+  ctx.fillStyle = COLORS.mono;
+  ctx.font = '500 16px "Geist Mono", ui-monospace, monospace';
+  ctx.textBaseline = 'alphabetic';
+  ctx.textAlign = 'left';
+  ctx.fillText('FIGURE 3  ·  ACCESS PLANE COST (15 ENGINEERS)  ·  LAZY SRE’S GUIDE', PADX, TOP);
+
+  // serif title
+  ctx.fillStyle = COLORS.cream;
+  ctx.font = '400 54px "Instrument Serif", "Times New Roman", serif';
+  ctx.fillText('four access planes, annual cost for fifteen engineers', PADX, TITLE_Y);
+
+  // top rule under title
+  ctx.strokeStyle = COLORS.rule;
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(PADX, RULE_Y);
+  ctx.lineTo(WIDTH - PADX, RULE_Y);
+  ctx.stroke();
+
+  // axis tick labels (above bars)
+  ctx.fillStyle = COLORS.monoDim;
+  ctx.font = '500 14px "Geist Mono", ui-monospace, monospace';
+  ctx.textAlign = 'center';
+  for (const v of TICKS) {
+    const x = BAR_X + valueToWidth(v);
+    ctx.fillText('$' + v, x, AXIS_Y);
+  }
+
+  // faint vertical gridlines spanning bar region
+  ctx.strokeStyle = COLORS.ruleSoft;
+  ctx.lineWidth = 1;
+  for (const v of TICKS) {
+    const x = BAR_X + valueToWidth(v);
+    ctx.beginPath();
+    ctx.moveTo(x, AXIS_Y + 12);
+    ctx.lineTo(x, BARS_START_Y + BARS_GAP * BARS.length - 30);
+    ctx.stroke();
+  }
+
+  // bars
+  for (let i = 0; i < BARS.length; i++) {
+    const bar = BARS[i];
+    const rowY = BARS_START_Y + i * BARS_GAP;
+    const barY = rowY + 20;
+    const startT = i * BAR_STAGGER_S;
+    const localT = clamp((t - startT) / BAR_DURATION_S, 0, 1);
+    const filled = ease(localT);
+    const fullW = valueToWidth(bar.value);
+    const curW = fullW * filled;
+
+    // left legend block
+    ctx.textAlign = 'left';
+    ctx.fillStyle = COLORS.cream;
+    ctx.font = '400 30px "Instrument Serif", serif';
+    ctx.fillText(bar.label, LEGEND_X, barY + 4);
+
+    ctx.fillStyle = COLORS.creamMute;
+    ctx.font = '500 12px "Geist Mono", ui-monospace, monospace';
+    ctx.fillText(bar.sub1, LEGEND_X, barY + 24);
+
+    ctx.fillStyle = COLORS.monoDim;
+    ctx.font = '400 11px "Geist Mono", ui-monospace, monospace';
+    ctx.fillText(bar.sub2, LEGEND_X, barY + 42);
+
+    // bar track (very subtle)
+    ctx.fillStyle = COLORS.barTrack;
+    ctx.fillRect(BAR_X, barY - BAR_HEIGHT / 2, BAR_W, BAR_HEIGHT);
+
+    // bar fill (only if value > 0)
+    if (bar.value > 0) {
+      const fillColor = bar.accent ? COLORS.barAccent : COLORS.barDefault;
+      ctx.fillStyle = fillColor;
+      ctx.fillRect(BAR_X, barY - BAR_HEIGHT / 2, curW, BAR_HEIGHT);
+    }
+
+    // coral tip cap on accented bar
+    if (bar.accent && curW > 6) {
+      const tipW = 8;
+      ctx.fillStyle = COLORS.tipCoral;
+      ctx.fillRect(BAR_X + curW - tipW, barY - BAR_HEIGHT / 2, tipW, BAR_HEIGHT);
+    }
+
+    // leading edge indicator (thin bright line on left of bar) — matches Part 4/5
+    if (bar.value > 0) {
+      ctx.fillStyle = bar.accent ? COLORS.barAccent : COLORS.barDefault;
+      ctx.fillRect(BAR_X, barY - BAR_HEIGHT / 2, 3, BAR_HEIGHT);
+    }
+
+    // coral edge on the risky bar (border around the filled portion)
+    if (bar.riskEdge && curW > 0) {
+      ctx.strokeStyle = COLORS.tipCoral;
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(BAR_X + 0.75, barY - BAR_HEIGHT / 2 + 0.75, curW - 1.5, BAR_HEIGHT - 1.5);
+    }
+
+    // value label — counts up with the bar, fades in slightly after fill starts
+    if (bar.value === 0) {
+      // for the free bar, render label only at and after this bar's start time
+      if (t >= startT) {
+        const introT = clamp((t - startT) / 0.3, 0, 1);
+        ctx.save();
+        ctx.globalAlpha = introT;
+        ctx.fillStyle = COLORS.creamMute;
+        ctx.font = '400 30px "Instrument Serif", serif';
+        ctx.textAlign = 'left';
+        ctx.fillText('$0/yr', BAR_X + 14, barY + 5);
+        ctx.restore();
+      }
+    } else if (filled > 0.02) {
+      const animValue = Math.round(bar.value * filled);
+      const labelText = '$' + animValue.toLocaleString() + '/yr';
+      const labelAlpha = clamp((filled - 0.02) / 0.15, 0, 1);
+      ctx.save();
+      ctx.globalAlpha = labelAlpha;
+      ctx.fillStyle = bar.accent ? COLORS.cream : COLORS.creamMute;
+      ctx.font = '400 30px "Instrument Serif", serif';
+      ctx.textAlign = 'left';
+      if (curW > 130) {
+        ctx.fillText(labelText, BAR_X + 16, barY + 5);
+      } else {
+        ctx.fillStyle = COLORS.creamMute;
+        ctx.fillText(labelText, BAR_X + curW + 14, barY + 5);
+      }
+      ctx.restore();
+    }
+
+    // tag for the recommended bar
+    if (bar.accent) {
+      // small coral pill at far right of legend block
+      const pillX = BAR_X - 12;
+      const pillY = barY - BAR_HEIGHT / 2 + 4;
+      const pillW = 8;
+      const pillH = BAR_HEIGHT - 8;
+      ctx.fillStyle = COLORS.tipCoral;
+      ctx.fillRect(pillX - pillW, pillY, pillW, pillH);
+
+      // small "recommended" mono tag above the bar
+      const tagOpacity = clamp((t - (startT + BAR_DURATION_S * 0.5)) / 0.4, 0, 1);
+      if (tagOpacity > 0) {
+        ctx.save();
+        ctx.globalAlpha = tagOpacity;
+        ctx.fillStyle = COLORS.tipCoral;
+        ctx.font = '500 12px "Geist Mono", ui-monospace, monospace';
+        ctx.textAlign = 'left';
+        ctx.fillText('RECOMMENDED DEFAULT', BAR_X, barY - BAR_HEIGHT / 2 - 12);
+        ctx.restore();
+      }
+    }
+
+    // tag for the risk-edged bar (mono caption above the bar, coral)
+    if (bar.riskEdge) {
+      const tagOpacity = clamp((t - (startT + BAR_DURATION_S * 0.5)) / 0.4, 0, 1);
+      if (tagOpacity > 0) {
+        ctx.save();
+        ctx.globalAlpha = tagOpacity;
+        ctx.fillStyle = COLORS.tipCoral;
+        ctx.font = '500 12px "Geist Mono", ui-monospace, monospace';
+        ctx.textAlign = 'left';
+        ctx.fillText('HIDDEN COSTS · PATCH / CVE / OPS', BAR_X, barY - BAR_HEIGHT / 2 - 12);
+        ctx.restore();
+      }
+    }
+  }
+
+  // bottom annotation strip
+  const bottomY = HEIGHT - 70;
+  ctx.strokeStyle = COLORS.rule;
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(PADX, bottomY - 22);
+  ctx.lineTo(WIDTH - PADX, bottomY - 22);
+  ctx.stroke();
+
+  ctx.fillStyle = COLORS.tipCoral;
+  ctx.font = '500 12px "Geist Mono", ui-monospace, monospace';
+  ctx.textAlign = 'left';
+  ctx.fillText('NOTE', PADX, bottomY);
+
+  ctx.fillStyle = COLORS.creamMute;
+  ctx.font = '400 13px "Geist Mono", ui-monospace, monospace';
+  const annot = 'the legacy-vpn bar undercounts true cost. patch / cve response, appliance ops, and seat-license breakage are not priced in.';
+  ctx.fillText(annot, PADX + 60, bottomY);
+
+  // right side: source-style mono on the right
+  ctx.fillStyle = COLORS.monoDim;
+  ctx.font = '400 12px "Geist Mono", ui-monospace, monospace';
+  ctx.textAlign = 'right';
+  ctx.fillText('source: vendor public pricing, july 2026', WIDTH - PADX, bottomY + 18);
+}
+
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+
+// allow frame=N URL param for headless screenshotting
+function getFrameParam() {
+  const u = new URL(window.location.href);
+  const f = u.searchParams.get('frame');
+  if (f === null) return null;
+  const n = parseInt(f, 10);
+  if (Number.isNaN(n)) return null;
+  return clamp(n, 0, TOTAL_FRAMES - 1);
+}
+
+async function waitFonts() {
+  if (document.fonts && document.fonts.ready) {
+    await document.fonts.ready;
+  }
+  // double tick to let layout settle
+  await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+}
+
+async function main() {
+  await waitFonts();
+  const fp = getFrameParam();
+  if (fp !== null) {
+    drawFrame(ctx, fp);
+    // signal ready for headless capture
+    document.title = 'ready-frame-' + fp;
+    return;
+  }
+  // interactive preview loop
+  const start = performance.now();
+  function loop() {
+    const elapsed = (performance.now() - start) / 1000;
+    let f = Math.floor(elapsed * FPS);
+    if (f >= TOTAL_FRAMES) f = TOTAL_FRAMES - 1;
+    drawFrame(ctx, f);
+    if (elapsed < TOTAL_S + 1.0) {
+      requestAnimationFrame(loop);
+    } else {
+      // restart
+      setTimeout(() => { window.location.reload(); }, 200);
+    }
+  }
+  requestAnimationFrame(loop);
+}
+
+main();
+
+// expose meta for the headless driver
+window.__META__ = { FPS, TOTAL_FRAMES, TOTAL_S, WIDTH, HEIGHT };
+</script>
+</body>
+</html>

@@ -1,24 +1,20 @@
 ---
-title: "GitHub Actions vs GitLab CI: A Practical Comparison"
+title: "GitHub Actions vs GitLab CI: a practical comparison"
 date: "2024-12-20"
 tags: ["ci-cd", "github", "gitlab", "devops", "automation"]
-excerpt: "After using both GitHub Actions and GitLab CI in production, here's my honest comparison of their strengths, weaknesses, and when to use each."
+excerpt: "After two years of running both GitHub Actions and GitLab CI across 50 microservices, here is which one I'd reach for and when."
 featured: true
 ---
 
-# GitHub Actions vs GitLab CI: A Practical Comparison
+# GitHub Actions vs GitLab CI: a practical comparison
 
-I've spent the last two years working with both GitHub Actions and GitLab CI across multiple projects. Here's what I've learned about each platform, minus the marketing fluff.
+Two years, 50 microservices, two CI platforms running side by side. Some repos on GitHub, some on GitLab, same team writing the YAML for both. Here is what stuck after the marketing slides wore off.
 
 ![A six-row comparison of GitHub Actions and GitLab CI across syntax, runners, caching, secrets, ecosystem, and pricing at fifty microservices, with the pricing row marked focal.](/images/github-actions-gitlab-ci-comparison/hero.png)
 
 *Fig. 1 — six rows, two YAMLs, one billing model that ended the debate.*
 
-## The Context
-
-Our team manages about 50 microservices across different repositories. Some are on GitHub, some on GitLab. This gave me a unique perspective on both platforms under real production workloads.
-
-## Syntax & Configuration
+## syntax and configuration
 
 ### GitHub Actions
 
@@ -41,16 +37,7 @@ jobs:
       - run: npm test
 ```
 
-**Pros:**
-
-- YAML is straightforward and readable
-- Reusable actions from marketplace
-- Matrix builds are elegant
-
-**Cons:**
-
-- Nested structure can get verbose
-- Environment variables handling is quirky
+The YAML is readable, the marketplace has an action for almost everything, and matrix builds are a single block. The nesting gets verbose once you have reusable workflows, and environment variable precedence is its own small religion.
 
 ### GitLab CI
 
@@ -70,29 +57,15 @@ test:
     - merge_requests
 ```
 
-**Pros:**
+Flatter than GitHub's nesting, Docker is a first-class citizen, and the stages concept maps cleanly to how you think about a pipeline. There is no marketplace, so reusable components come from `include:` files and Docker images you assemble yourself.
 
-- Flatter YAML structure
-- Built-in Docker support
-- Stages concept is intuitive
+## performance and speed
 
-**Cons:**
+### build times
 
-- Less reusable components
-- Needs more manual configuration
+A typical Node.js app on our setup builds in 3 to 5 minutes on GitHub Actions and 4 to 6 minutes on GitLab CI. Close enough that I never picked a platform on speed alone.
 
-## Performance & Speed
-
-### Build Times
-
-In my experience:
-
-- **GitHub Actions**: ~3-5 minutes for typical Node.js app
-- **GitLab CI**: ~4-6 minutes for same app
-
-GitHub Actions edges ahead slightly, but the difference is marginal.
-
-### Parallelization
+### parallelization
 
 Both handle parallel jobs well. GitHub Actions has cleaner syntax for matrix builds:
 
@@ -105,11 +78,11 @@ strategy:
 
 GitLab requires more manual setup for the same result.
 
-## Ecosystem & Marketplace
+## ecosystem and marketplace
 
-### GitHub Actions Marketplace
+### GitHub Actions marketplace
 
-This is where GitHub shines. Over 20,000 actions available:
+Over 20,000 actions, and the caching one is the example I keep coming back to:
 
 ```yaml
 - uses: actions/cache@v4
@@ -118,11 +91,11 @@ This is where GitHub shines. Over 20,000 actions available:
     key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
 ```
 
-One line, and you have intelligent caching. Beautiful.
+One block, content-addressed cache keyed off the lockfile. The first time you delete the manual cache logic you wrote for GitLab and replace it with this, you feel it.
 
-### GitLab's Approach
+### GitLab's approach
 
-GitLab doesn't have a marketplace. Instead, you write more scripts or use Docker images:
+GitLab does not have a marketplace. You write scripts or use Docker images:
 
 ```yaml
 test:
@@ -138,9 +111,9 @@ test:
 
 More control, but more work.
 
-## Docker Integration
+## docker integration
 
-### GitLab CI Wins Here
+### GitLab CI wins here
 
 GitLab CI was built with Docker in mind:
 
@@ -158,7 +131,7 @@ It just works. No weird permissions issues.
 
 ### GitHub Actions
 
-Needs more setup for Docker:
+Needs more setup for Docker.
 
 ```yaml
 - name: Set up Docker Buildx
@@ -173,7 +146,7 @@ Needs more setup for Docker:
 
 Works fine, but requires more marketplace actions.
 
-## Secrets Management
+## secrets management
 
 ### GitHub
 
@@ -193,23 +166,11 @@ variables:
 
 More flexible with group-level variables and environments. Better for complex setups.
 
-## Cost
+## cost
 
-### GitHub Actions
+GitHub Actions gives private repos 2,000 minutes/month on the free tier, public repos are unlimited, and overage is $0.008/minute. GitLab SaaS gives 400 minutes/month free and charges $10 per 1,000 additional minutes, but self-hosted runners are unlimited. If you can run your own runners, GitLab gets cheaper fast at scale. If you can't, GitHub's free tier outlasts it.
 
-- 2,000 minutes/month free for private repos
-- Public repos: unlimited
-- Additional minutes: $0.008/minute
-
-### GitLab CI
-
-- 400 minutes/month free (SaaS)
-- Self-hosted runners: unlimited
-- Additional minutes: $10/1000 minutes
-
-**Winner:** If you can self-host, GitLab CI is cheaper at scale.
-
-## Self-Hosted Runners
+## self-hosted runners
 
 ### GitHub
 
@@ -229,64 +190,29 @@ gitlab-runner run
 
 More flexible. Can be project, group, or instance-wide. Better for large organizations.
 
-## Debugging Experience
+## debugging experience
 
-### GitHub Actions
+GitHub Actions has clear, searchable logs, lets you re-run individual jobs, and exposes a debug mode behind two secrets. You can SSH into a runner via a third-party action, but it is not a native feature.
 
-- Logs are clear and searchable
-- Re-run individual jobs
-- Debug mode available with secrets
-- Can SSH into runners (with action)
+GitLab is the one I reach for when a pipeline is genuinely stuck. The log viewer is good, individual job retries are good, but the real difference is interactive debugging. SSH into the runner mid-job, or open a web terminal from the failed job in your browser, and poke at the filesystem while the build is still alive. The first time you do this on a Docker-in-Docker failure that only repros on CI, you stop missing it everywhere else.
 
-### GitLab CI
+## when to pick which
 
-- Excellent log viewer
-- Can retry individual jobs
-- **Interactive debugging**: SSH or web terminal
-- Artifacts browsing is superior
+GitHub Actions wins when you are already on GitHub, want the marketplace, and your pipelines are small to medium. GitLab CI wins when your Docker workflows are non-trivial, your runner fleet is large, your deployment strategies are gnarly, or you need to debug pipelines without a redeploy loop.
 
-**Winner:** GitLab's interactive debugging is a game-changer.
+## my setup
 
-## Real World Decision Matrix
+I use both. GitHub Actions for open-source and frontend, GitLab CI for infrastructure code and the deployments that involve five stages and a manual approval.
 
-**Choose GitHub Actions if:**
+## common pitfalls
 
-- You're already on GitHub
-- You want extensive marketplace integrations
-- You prefer minimal configuration
-- Your team is small to medium
+GitHub Actions has a 3-hour job timeout, a 90-day artifact retention cap, and tight concurrent-job limits on the free tier. Plan around them or pay.
 
-**Choose GitLab CI if:**
+GitLab's shared runners get sluggish at peak, Docker builds need `docker:dind` as a service container, and CI/CD variable precedence has at least six rules you will need to read twice. The one that bites me most: project-level variables silently override group-level ones with the same name.
 
-- You need advanced Docker workflows
-- You want self-hosted runners at scale
-- You need complex deployment strategies
-- You require better debugging tools
+## migration tips
 
-## My Setup
-
-I use both:
-
-- **GitHub Actions** for open-source projects and frontend apps
-- **GitLab CI** for infrastructure code and complex deployments
-
-## Common Pitfalls
-
-### GitHub Actions
-
-1. **Workflow file limits**: Max 3 hours per job
-2. **Artifact retention**: Only 90 days
-3. **Concurrent jobs**: Limited on free tier
-
-### GitLab CI
-
-1. **Shared runners**: Can be slow during peak times
-2. **Docker socket**: Needs `docker:dind` service
-3. **Variables**: Complex precedence rules
-
-## Migration Tips
-
-### GitHub → GitLab
+### GitHub to GitLab
 
 ```yaml
 # GitHub
@@ -297,16 +223,8 @@ git clone $CI_REPOSITORY_URL
 cd $CI_PROJECT_NAME
 ```
 
-### GitLab → GitHub
+### GitLab to GitHub
 
-Most scripts translate directly, but marketplace actions can simplify a lot.
+Most scripts translate directly. The win is collapsing a few of them into marketplace actions you no longer have to maintain.
 
-## Final Thoughts
-
-Both are excellent CI/CD platforms. GitHub Actions wins on simplicity and ecosystem. GitLab CI wins on flexibility and debugging.
-
-My advice? If you're starting fresh, go with your git platform. The integration is seamless, and you avoid context switching.
-
-**Pro tip:** Regardless of choice, invest time in making your pipelines fast. A slow CI/CD is worse than no CI/CD.
-
-What's your experience? Any gotchas I missed? Let me know!
+Starting fresh, pick whichever platform already hosts your code. The integration tax of running CI on the other vendor outweighs every syntax preference in this post. Whichever one you pick, the only investment that pays back is making the pipeline fast. A slow CI is worse than no CI; it just costs more to ignore.

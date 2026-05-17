@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>where the snowflake breach lived</title>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --color-paper:   #11141c;
+      --color-paper-2: #161a24;
+      --color-ink:     #ecedf0;
+      --color-muted:   #8a93a6;
+      --color-soft:    #5c6478;
+      --color-rule:    rgba(236,237,240,0.10);
+      --color-coral:   #ff6b5a;
+      --color-cyan:    #5bc0d9;
+      --color-green:   #7ec98f;
+      --font-sans:     'Geist', system-ui, sans-serif;
+      --font-serif:    'Instrument Serif', serif;
+      --font-mono:     'Geist Mono', ui-monospace, monospace;
+    }
+
+    html, body { background: var(--color-paper); }
+
+    body {
+      font-family: var(--font-sans);
+      color: var(--color-ink);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2.5rem 2rem;
+    }
+
+    .frame { max-width: 1520px; width: 100%; }
+
+    .eyebrow {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--color-muted);
+      margin-bottom: 0.6rem;
+    }
+
+    h1 {
+      font-family: var(--font-serif);
+      font-size: clamp(1.8rem, 2.8vw + 0.75rem, 2.6rem);
+      font-weight: 400;
+      letter-spacing: -0.015em;
+      line-height: 1.15;
+      color: var(--color-ink);
+      margin-bottom: 2rem;
+    }
+
+    figcaption {
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-size: 1.05rem;
+      color: var(--color-muted);
+      margin-top: 1.25rem;
+      letter-spacing: -0.005em;
+    }
+
+    svg { width: 100%; display: block; }
+  </style>
+</head>
+<body>
+  <div class="frame">
+    <p class="eyebrow">Figure · device boundary contrast</p>
+    <h1>where the snowflake breach lived</h1>
+
+    <svg viewBox="0 0 1600 920" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Side-by-side comparison of a personal BYOD MacBook and a corp-issued MDM-enrolled MacBook across seven configuration rows">
+      <defs>
+        <pattern id="dots" width="24" height="24" patternUnits="userSpaceOnUse">
+          <circle cx="1" cy="1" r="0.9" fill="rgba(236,237,240,0.05)"/>
+        </pattern>
+      </defs>
+
+      <!-- Background -->
+      <rect width="100%" height="100%" fill="#11141c"/>
+      <rect width="100%" height="100%" fill="url(#dots)" opacity="0.7"/>
+
+      <!--
+        Layout:
+          frame padding 40px each side
+          left panel:  x = 80,  w = 700  (80..780)
+          divider at x = 800
+          right panel: x = 820, w = 700  (820..1520)
+          panel y = 80, panel h = 720
+          legend strip below at y = 836..880
+      -->
+
+      <!-- =====================================
+           PANEL BACKGROUNDS (coral / green tint)
+           ===================================== -->
+
+      <!-- Left panel: coral tint -->
+      <rect x="80" y="80" width="700" height="720" rx="8" fill="rgba(255,107,90,0.05)" stroke="rgba(255,107,90,0.25)" stroke-width="1"/>
+      <!-- Right panel: green tint -->
+      <rect x="820" y="80" width="700" height="720" rx="8" fill="rgba(126,201,143,0.05)" stroke="rgba(126,201,143,0.25)" stroke-width="1"/>
+
+      <!-- Faint divider between panels -->
+      <line x1="800" y1="120" x2="800" y2="780" stroke="rgba(236,237,240,0.10)" stroke-width="1" stroke-dasharray="3,4"/>
+
+      <!-- =====================================
+           PANEL HEADERS
+           ===================================== -->
+
+      <!-- LEFT header -->
+      <rect x="104" y="108" width="208" height="20" rx="2" fill="transparent" stroke="rgba(255,107,90,0.55)" stroke-width="0.8"/>
+      <text x="208" y="122" fill="#ff6b5a" font-size="10" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.22em" font-weight="500">PERSONAL DEVICE, BYOD</text>
+
+      <!-- RIGHT header -->
+      <rect x="844" y="108" width="252" height="20" rx="2" fill="transparent" stroke="rgba(126,201,143,0.55)" stroke-width="0.8"/>
+      <text x="970" y="122" fill="#7ec98f" font-size="10" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.22em" font-weight="500">CORP-ISSUED, MDM ENROLLED</text>
+
+      <!-- =====================================
+           MACBOOK SILHOUETTES (at top of each panel)
+           ===================================== -->
+
+      <!-- LEFT MacBook: centered at x=180 (in column space) -->
+      <!-- Screen body -->
+      <rect x="592" y="148" width="160" height="100" rx="4" fill="rgba(236,237,240,0.04)" stroke="rgba(255,107,90,0.45)" stroke-width="1"/>
+      <!-- Screen inner -->
+      <rect x="600" y="156" width="144" height="84" rx="2" fill="#11141c" stroke="rgba(255,107,90,0.20)" stroke-width="0.8"/>
+      <!-- Camera notch -->
+      <circle cx="672" cy="153" r="1.2" fill="rgba(255,107,90,0.50)"/>
+      <!-- "Skull / warning" on screen -->
+      <g transform="translate(672, 198)">
+        <circle r="14" fill="none" stroke="rgba(255,107,90,0.55)" stroke-width="1.2"/>
+        <line x1="-5" y1="-3" x2="5" y2="-3" stroke="#ff6b5a" stroke-width="1.4" stroke-linecap="round"/>
+        <line x1="-5" y1="3" x2="5" y2="3" stroke="#ff6b5a" stroke-width="1.4" stroke-linecap="round"/>
+      </g>
+      <!-- Base / hinge -->
+      <path d="M 580 248 L 764 248 L 760 256 L 584 256 Z" fill="rgba(236,237,240,0.06)" stroke="rgba(255,107,90,0.45)" stroke-width="1"/>
+      <!-- Trackpad indicator -->
+      <line x1="660" y1="252" x2="684" y2="252" stroke="rgba(255,107,90,0.50)" stroke-width="0.8"/>
+      <!-- MacBook label -->
+      <text x="672" y="284" fill="#ecedf0" font-size="13" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">macbook · personal</text>
+      <text x="672" y="300" fill="#8a93a6" font-size="9.5" font-family="'Geist Mono', monospace" text-anchor="middle">@me.com · no mdm profile</text>
+
+      <!-- RIGHT MacBook: centered in right panel -->
+      <rect x="1332" y="148" width="160" height="100" rx="4" fill="rgba(236,237,240,0.04)" stroke="rgba(126,201,143,0.45)" stroke-width="1"/>
+      <rect x="1340" y="156" width="144" height="84" rx="2" fill="#11141c" stroke="rgba(126,201,143,0.20)" stroke-width="0.8"/>
+      <circle cx="1412" cy="153" r="1.2" fill="rgba(126,201,143,0.50)"/>
+      <!-- "Lock / shield" on screen -->
+      <g transform="translate(1412, 198)">
+        <path d="M -10 -4 L -10 6 Q -10 14 0 16 Q 10 14 10 6 L 10 -4 Q 0 -10 -10 -4 Z" fill="none" stroke="rgba(126,201,143,0.55)" stroke-width="1.2"/>
+        <path d="M -4 3 L -1 6 L 5 -1" fill="none" stroke="#7ec98f" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+      </g>
+      <path d="M 1320 248 L 1504 248 L 1500 256 L 1324 256 Z" fill="rgba(236,237,240,0.06)" stroke="rgba(126,201,143,0.45)" stroke-width="1"/>
+      <line x1="1400" y1="252" x2="1424" y2="252" stroke="rgba(126,201,143,0.50)" stroke-width="0.8"/>
+      <text x="1412" y="284" fill="#ecedf0" font-size="13" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">macbook · corp</text>
+      <text x="1412" y="300" fill="#8a93a6" font-size="9.5" font-family="'Geist Mono', monospace" text-anchor="middle">@yourorg.com · mdm enrolled</text>
+
+      <!-- =====================================
+           CONFIG TABLE HEADERS
+           ===================================== -->
+
+      <!-- LEFT: headers sit just above row 1 (y=336) -->
+      <text x="144" y="328" fill="#5c6478" font-size="9" font-family="'Geist Mono', monospace" letter-spacing="0.18em">SETTING / STATE</text>
+      <text x="372" y="328" fill="#5c6478" font-size="9" font-family="'Geist Mono', monospace" letter-spacing="0.18em">WHY IT MATTERS</text>
+      <line x1="104" y1="334" x2="756" y2="334" stroke="rgba(255,107,90,0.22)" stroke-width="0.8"/>
+
+      <!-- RIGHT -->
+      <text x="884" y="328" fill="#5c6478" font-size="9" font-family="'Geist Mono', monospace" letter-spacing="0.18em">SETTING / STATE</text>
+      <text x="1112" y="328" fill="#5c6478" font-size="9" font-family="'Geist Mono', monospace" letter-spacing="0.18em">WHY IT MATTERS</text>
+      <line x1="844" y1="334" x2="1496" y2="334" stroke="rgba(126,201,143,0.22)" stroke-width="0.8"/>
+
+      <!-- =====================================
+           CONFIG ROWS — 7 rows on each side
+           Row layout:
+             rows start at y=336, row height 56
+             row 1: y=336, row 2: 392, row 3: 448, row 4: 504, row 5: 560, row 6: 616, row 7: 672
+           Each row:
+             status icon at x=120 (left) / 860 (right), centered y
+             setting label at x=148 (left) / 888 (right), top
+             state value (bold) at x=148 / 888, mid
+             status sublabel (italic mono) at x=372 / 1112, mid
+        ===================================== -->
+
+      <!-- ============ LEFT PANEL ROWS ============ -->
+
+      <!-- ROW 1 — FileVault -->
+      <g transform="translate(0, 336)">
+        <line x1="104" y1="44" x2="760" y2="44" stroke="rgba(255,107,90,0.12)" stroke-width="0.6"/>
+        <!-- X icon -->
+        <circle cx="120" cy="20" r="9" fill="rgba(255,107,90,0.10)" stroke="#ff6b5a" stroke-width="1.2"/>
+        <line x1="116" y1="16" x2="124" y2="24" stroke="#ff6b5a" stroke-width="1.4" stroke-linecap="round"/>
+        <line x1="124" y1="16" x2="116" y2="24" stroke="#ff6b5a" stroke-width="1.4" stroke-linecap="round"/>
+        <!-- setting + state -->
+        <text x="144" y="10" fill="#8a93a6" font-size="10" font-family="'Geist Mono', monospace" letter-spacing="0.06em">FILEVAULT</text>
+        <text x="144" y="28" fill="#ecedf0" font-size="14" font-weight="600" font-family="'Geist', sans-serif">unenforced</text>
+        <!-- status sublabel -->
+        <text x="372" y="22" fill="#5c6478" font-size="11" font-family="'Instrument Serif', serif" font-style="italic">"no MDM to check"</text>
+      </g>
+
+      <!-- ROW 2 — Apple ID -->
+      <g transform="translate(0, 392)">
+        <line x1="104" y1="44" x2="760" y2="44" stroke="rgba(255,107,90,0.12)" stroke-width="0.6"/>
+        <circle cx="120" cy="20" r="9" fill="rgba(255,107,90,0.10)" stroke="#ff6b5a" stroke-width="1.2"/>
+        <line x1="116" y1="16" x2="124" y2="24" stroke="#ff6b5a" stroke-width="1.4" stroke-linecap="round"/>
+        <line x1="124" y1="16" x2="116" y2="24" stroke="#ff6b5a" stroke-width="1.4" stroke-linecap="round"/>
+        <text x="144" y="10" fill="#8a93a6" font-size="10" font-family="'Geist Mono', monospace" letter-spacing="0.06em">APPLE ID</text>
+        <text x="144" y="28" fill="#ecedf0" font-size="14" font-weight="600" font-family="'Geist', sans-serif">personal iCloud signed in</text>
+        <text x="372" y="22" fill="#5c6478" font-size="11" font-family="'Instrument Serif', serif" font-style="italic">"@me.com"</text>
+      </g>
+
+      <!-- ROW 3 — App Store -->
+      <g transform="translate(0, 448)">
+        <line x1="104" y1="44" x2="760" y2="44" stroke="rgba(255,107,90,0.12)" stroke-width="0.6"/>
+        <circle cx="120" cy="20" r="9" fill="rgba(255,107,90,0.10)" stroke="#ff6b5a" stroke-width="1.2"/>
+        <line x1="116" y1="16" x2="124" y2="24" stroke="#ff6b5a" stroke-width="1.4" stroke-linecap="round"/>
+        <line x1="124" y1="16" x2="116" y2="24" stroke="#ff6b5a" stroke-width="1.4" stroke-linecap="round"/>
+        <text x="144" y="10" fill="#8a93a6" font-size="10" font-family="'Geist Mono', monospace" letter-spacing="0.06em">APP STORE</text>
+        <text x="144" y="28" fill="#ecedf0" font-size="14" font-weight="600" font-family="'Geist', sans-serif">personal apps installed</text>
+        <text x="372" y="22" fill="#5c6478" font-size="11" font-family="'Instrument Serif', serif" font-style="italic">"Logic Pro, Final Cut, third-party"</text>
+      </g>
+
+      <!-- ROW 4 — Browser sync -->
+      <g transform="translate(0, 504)">
+        <line x1="104" y1="44" x2="760" y2="44" stroke="rgba(255,107,90,0.12)" stroke-width="0.6"/>
+        <circle cx="120" cy="20" r="9" fill="rgba(255,107,90,0.10)" stroke="#ff6b5a" stroke-width="1.2"/>
+        <line x1="116" y1="16" x2="124" y2="24" stroke="#ff6b5a" stroke-width="1.4" stroke-linecap="round"/>
+        <line x1="124" y1="16" x2="116" y2="24" stroke="#ff6b5a" stroke-width="1.4" stroke-linecap="round"/>
+        <text x="144" y="10" fill="#8a93a6" font-size="10" font-family="'Geist Mono', monospace" letter-spacing="0.06em">BROWSER SYNC</text>
+        <text x="144" y="28" fill="#ecedf0" font-size="14" font-weight="600" font-family="'Geist', sans-serif">personal Google profile</text>
+        <text x="372" y="22" fill="#5c6478" font-size="11" font-family="'Instrument Serif', serif" font-style="italic">"bookmarks → personal account"</text>
+      </g>
+
+      <!-- ROW 5 — Slack web session -->
+      <g transform="translate(0, 560)">
+        <line x1="104" y1="44" x2="760" y2="44" stroke="rgba(255,107,90,0.12)" stroke-width="0.6"/>
+        <circle cx="120" cy="20" r="9" fill="rgba(255,107,90,0.10)" stroke="#ff6b5a" stroke-width="1.2"/>
+        <line x1="116" y1="16" x2="124" y2="24" stroke="#ff6b5a" stroke-width="1.4" stroke-linecap="round"/>
+        <line x1="124" y1="16" x2="116" y2="24" stroke="#ff6b5a" stroke-width="1.4" stroke-linecap="round"/>
+        <text x="144" y="10" fill="#8a93a6" font-size="10" font-family="'Geist Mono', monospace" letter-spacing="0.06em">SLACK WEB SESSION</text>
+        <text x="144" y="28" fill="#ecedf0" font-size="14" font-weight="600" font-family="'Geist', sans-serif">9 months old</text>
+        <text x="372" y="22" fill="#5c6478" font-size="11" font-family="'Instrument Serif', serif" font-style="italic">"no session expiry"</text>
+      </g>
+
+      <!-- ROW 6 — Software -->
+      <g transform="translate(0, 616)">
+        <line x1="104" y1="44" x2="760" y2="44" stroke="rgba(255,107,90,0.12)" stroke-width="0.6"/>
+        <circle cx="120" cy="20" r="9" fill="rgba(255,107,90,0.10)" stroke="#ff6b5a" stroke-width="1.2"/>
+        <line x1="116" y1="16" x2="124" y2="24" stroke="#ff6b5a" stroke-width="1.4" stroke-linecap="round"/>
+        <line x1="124" y1="16" x2="116" y2="24" stroke="#ff6b5a" stroke-width="1.4" stroke-linecap="round"/>
+        <text x="144" y="10" fill="#8a93a6" font-size="10" font-family="'Geist Mono', monospace" letter-spacing="0.06em">SOFTWARE</text>
+        <text x="144" y="28" fill="#ecedf0" font-size="14" font-weight="600" font-family="'Geist', sans-serif">pirated installs present</text>
+        <text x="372" y="22" fill="#5c6478" font-size="11" font-family="'Instrument Serif', serif" font-style="italic">"via torrent, Lumma stealer detected"</text>
+      </g>
+
+      <!-- ROW 7 — Updates -->
+      <g transform="translate(0, 672)">
+        <line x1="104" y1="44" x2="760" y2="44" stroke="rgba(255,107,90,0.12)" stroke-width="0.6"/>
+        <circle cx="120" cy="20" r="9" fill="rgba(255,107,90,0.10)" stroke="#ff6b5a" stroke-width="1.2"/>
+        <line x1="116" y1="16" x2="124" y2="24" stroke="#ff6b5a" stroke-width="1.4" stroke-linecap="round"/>
+        <line x1="124" y1="16" x2="116" y2="24" stroke="#ff6b5a" stroke-width="1.4" stroke-linecap="round"/>
+        <text x="144" y="10" fill="#8a93a6" font-size="10" font-family="'Geist Mono', monospace" letter-spacing="0.06em">UPDATES</text>
+        <text x="144" y="28" fill="#ecedf0" font-size="14" font-weight="600" font-family="'Geist', sans-serif">6 versions behind</text>
+        <text x="372" y="22" fill="#5c6478" font-size="11" font-family="'Instrument Serif', serif" font-style="italic">"macOS 14.2 (Dec 2023)"</text>
+      </g>
+
+      <!-- ============ RIGHT PANEL ROWS ============ -->
+
+      <!-- ROW 1 — FileVault -->
+      <g transform="translate(740, 336)">
+        <line x1="104" y1="44" x2="760" y2="44" stroke="rgba(126,201,143,0.12)" stroke-width="0.6"/>
+        <circle cx="120" cy="20" r="9" fill="rgba(126,201,143,0.10)" stroke="#7ec98f" stroke-width="1.2"/>
+        <path d="M 115 20 l 4 4 l 7 -7" fill="none" stroke="#7ec98f" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        <text x="144" y="10" fill="#8a93a6" font-size="10" font-family="'Geist Mono', monospace" letter-spacing="0.06em">FILEVAULT</text>
+        <text x="144" y="28" fill="#ecedf0" font-size="14" font-weight="600" font-family="'Geist', sans-serif">enforced</text>
+        <text x="372" y="22" fill="#5c6478" font-size="11" font-family="'Instrument Serif', serif" font-style="italic">"recovery key escrowed to MDM"</text>
+      </g>
+
+      <!-- ROW 2 — Apple ID -->
+      <g transform="translate(740, 392)">
+        <line x1="104" y1="44" x2="760" y2="44" stroke="rgba(126,201,143,0.12)" stroke-width="0.6"/>
+        <circle cx="120" cy="20" r="9" fill="rgba(126,201,143,0.10)" stroke="#7ec98f" stroke-width="1.2"/>
+        <path d="M 115 20 l 4 4 l 7 -7" fill="none" stroke="#7ec98f" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        <text x="144" y="10" fill="#8a93a6" font-size="10" font-family="'Geist Mono', monospace" letter-spacing="0.06em">APPLE ID</text>
+        <text x="144" y="28" fill="#ecedf0" font-size="14" font-weight="600" font-family="'Geist', sans-serif">managed Apple ID only</text>
+        <text x="372" y="22" fill="#5c6478" font-size="11" font-family="'Instrument Serif', serif" font-style="italic">"@yourorg.com"</text>
+      </g>
+
+      <!-- ROW 3 — App Store -->
+      <g transform="translate(740, 448)">
+        <line x1="104" y1="44" x2="760" y2="44" stroke="rgba(126,201,143,0.12)" stroke-width="0.6"/>
+        <circle cx="120" cy="20" r="9" fill="rgba(126,201,143,0.10)" stroke="#7ec98f" stroke-width="1.2"/>
+        <path d="M 115 20 l 4 4 l 7 -7" fill="none" stroke="#7ec98f" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        <text x="144" y="10" fill="#8a93a6" font-size="10" font-family="'Geist Mono', monospace" letter-spacing="0.06em">APP STORE</text>
+        <text x="144" y="28" fill="#ecedf0" font-size="14" font-weight="600" font-family="'Geist', sans-serif">org-managed allowlist</text>
+        <text x="372" y="22" fill="#5c6478" font-size="11" font-family="'Instrument Serif', serif" font-style="italic">"no personal installs"</text>
+      </g>
+
+      <!-- ROW 4 — Browser sync -->
+      <g transform="translate(740, 504)">
+        <line x1="104" y1="44" x2="760" y2="44" stroke="rgba(126,201,143,0.12)" stroke-width="0.6"/>
+        <circle cx="120" cy="20" r="9" fill="rgba(126,201,143,0.10)" stroke="#7ec98f" stroke-width="1.2"/>
+        <path d="M 115 20 l 4 4 l 7 -7" fill="none" stroke="#7ec98f" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        <text x="144" y="10" fill="#8a93a6" font-size="10" font-family="'Geist Mono', monospace" letter-spacing="0.06em">BROWSER SYNC</text>
+        <text x="144" y="28" fill="#ecedf0" font-size="14" font-weight="600" font-family="'Geist', sans-serif">work profile only</text>
+        <text x="372" y="22" fill="#5c6478" font-size="11" font-family="'Instrument Serif', serif" font-style="italic">"personal sync blocked via policy"</text>
+      </g>
+
+      <!-- ROW 5 — Slack web session -->
+      <g transform="translate(740, 560)">
+        <line x1="104" y1="44" x2="760" y2="44" stroke="rgba(126,201,143,0.12)" stroke-width="0.6"/>
+        <circle cx="120" cy="20" r="9" fill="rgba(126,201,143,0.10)" stroke="#7ec98f" stroke-width="1.2"/>
+        <path d="M 115 20 l 4 4 l 7 -7" fill="none" stroke="#7ec98f" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        <text x="144" y="10" fill="#8a93a6" font-size="10" font-family="'Geist Mono', monospace" letter-spacing="0.06em">SLACK WEB SESSION</text>
+        <text x="144" y="28" fill="#ecedf0" font-size="14" font-weight="600" font-family="'Geist', sans-serif">daily expiry</text>
+        <text x="372" y="22" fill="#5c6478" font-size="11" font-family="'Instrument Serif', serif" font-style="italic">"SSO re-auth required"</text>
+      </g>
+
+      <!-- ROW 6 — Software -->
+      <g transform="translate(740, 616)">
+        <line x1="104" y1="44" x2="760" y2="44" stroke="rgba(126,201,143,0.12)" stroke-width="0.6"/>
+        <circle cx="120" cy="20" r="9" fill="rgba(126,201,143,0.10)" stroke="#7ec98f" stroke-width="1.2"/>
+        <path d="M 115 20 l 4 4 l 7 -7" fill="none" stroke="#7ec98f" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        <text x="144" y="10" fill="#8a93a6" font-size="10" font-family="'Geist Mono', monospace" letter-spacing="0.06em">SOFTWARE</text>
+        <text x="144" y="28" fill="#ecedf0" font-size="14" font-weight="600" font-family="'Geist', sans-serif">MDM allowlist</text>
+        <text x="372" y="22" fill="#5c6478" font-size="11" font-family="'Instrument Serif', serif" font-style="italic">"no third-party installs without approval"</text>
+      </g>
+
+      <!-- ROW 7 — Updates -->
+      <g transform="translate(740, 672)">
+        <line x1="104" y1="44" x2="760" y2="44" stroke="rgba(126,201,143,0.12)" stroke-width="0.6"/>
+        <circle cx="120" cy="20" r="9" fill="rgba(126,201,143,0.10)" stroke="#7ec98f" stroke-width="1.2"/>
+        <path d="M 115 20 l 4 4 l 7 -7" fill="none" stroke="#7ec98f" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        <text x="144" y="10" fill="#8a93a6" font-size="10" font-family="'Geist Mono', monospace" letter-spacing="0.06em">UPDATES</text>
+        <text x="144" y="28" fill="#ecedf0" font-size="14" font-weight="600" font-family="'Geist', sans-serif">within 14 days of release</text>
+        <text x="372" y="22" fill="#5c6478" font-size="11" font-family="'Instrument Serif', serif" font-style="italic">"macOS 15.3 (current)"</text>
+      </g>
+
+      <!-- =====================================
+           BOTTOM CHIPS — verdict per panel
+           ===================================== -->
+
+      <!-- LEFT chip — coral, "the snowflake breach entry point" -->
+      <rect x="104" y="744" width="652" height="36" rx="4" fill="rgba(255,107,90,0.14)" stroke="#ff6b5a" stroke-width="1.2"/>
+      <circle cx="124" cy="762" r="4" fill="#ff6b5a"/>
+      <text x="140" y="767" fill="#ff6b5a" font-size="11" font-family="'Geist Mono', monospace" letter-spacing="0.22em" font-weight="500">THE SNOWFLAKE BREACH ENTRY POINT</text>
+
+      <!-- RIGHT chip — green, "what the corp laptop looks like" -->
+      <rect x="844" y="744" width="652" height="36" rx="4" fill="rgba(126,201,143,0.14)" stroke="#7ec98f" stroke-width="1.2"/>
+      <circle cx="864" cy="762" r="4" fill="#7ec98f"/>
+      <text x="880" y="767" fill="#7ec98f" font-size="11" font-family="'Geist Mono', monospace" letter-spacing="0.22em" font-weight="500">WHAT THE CORP LAPTOP LOOKS LIKE</text>
+
+      <!-- =====================================
+           LEGEND STRIP — spans both panels
+           ===================================== -->
+      <line x1="80" y1="836" x2="1520" y2="836" stroke="rgba(236,237,240,0.10)" stroke-width="0.8"/>
+      <text x="80" y="858" fill="#8a93a6" font-size="9" font-family="'Geist Mono', monospace" letter-spacing="0.22em">LEGEND</text>
+      <text x="156" y="860" fill="#bfc4cf" font-size="13" font-family="'Instrument Serif', serif" font-style="italic">same hardware, same engineer, two different boundaries. the right column is what an afternoon of MDM enrollment buys you.</text>
+    </svg>
+
+    <figcaption>same hardware, same engineer. the only delta is enrollment.</figcaption>
+  </div>
+</body>
+</html>

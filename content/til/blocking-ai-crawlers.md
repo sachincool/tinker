@@ -9,14 +9,14 @@ type: "til"
 
 If you're blocking GPTBot, Anthropic, Perplexity, Gemini — you're trading future reach for short-term control.
 
-## The Math
+## the math
 
 AI search traffic today: ~1%
 AI search traffic tomorrow: 25–35%
 
 Let them crawl. Train the discovery layer. Be early.
 
-## Common AI Crawler User Agents
+## common AI crawler user agents
 
 | Crawler | Company |
 |---------|---------|
@@ -25,7 +25,7 @@ Let them crawl. Train the discovery layer. Be early.
 | `PerplexityBot` | Perplexity |
 | `Google-Extended` | Google (Gemini) |
 
-## The Robots.txt Decision
+## the robots.txt decision
 
 Blocking these crawlers:
 
@@ -39,7 +39,7 @@ Disallow: /
 
 Feels like control. Actually it's invisibility.
 
-## Why This Matters
+## why this matters
 
 When someone asks an AI "how do I do X" and your content isn't in the training data, you don't exist in that conversation.
 

@@ -9,6 +9,72 @@ interface MarkdownContentProps {
   content: string;
 }
 
+// Inline markdown renderer for paragraphs, list items, and table cells.
+// Handles bold (**...**), italic (*...*), inline code (`...`), and links.
+// Code spans and links are valid inside emphasis — the previous parser split
+// on code first, which made every **strong with `code`** render as literal **.
+function renderInlineRich(text: string): React.ReactNode[] {
+  const nodes: React.ReactNode[] = [];
+  let key = 0;
+
+  const pushLeafInto = (collector: React.ReactNode[], segment: string): void => {
+    if (!segment) return;
+    const parts = segment.split(/(`[^`]+`|\[[^\]]+\]\([^)]+\))/g);
+    for (const part of parts) {
+      if (!part) continue;
+      if (part.startsWith('`') && part.endsWith('`') && part.length >= 2) {
+        collector.push(
+          <code key={key++} className="bg-muted px-1.5 py-0.5 rounded text-sm font-mono text-blue-600 dark:text-blue-400">
+            {part.slice(1, -1)}
+          </code>
+        );
+        continue;
+      }
+      const linkMatch = part.match(/^\[([^\]]+)\]\(([^)]+)\)$/);
+      if (linkMatch) {
+        collector.push(
+          <a
+            key={key++}
+            href={linkMatch[2]}
+            className="text-blue-600 dark:text-blue-400 hover:underline"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {linkMatch[1]}
+          </a>
+        );
+        continue;
+      }
+      collector.push(<span key={key++}>{part}</span>);
+    }
+  };
+
+  const pattern = /(\*\*[^*]+\*\*)|(\*[^*]+\*)|(\[[^\]]+\]\([^)]+\))/g;
+  let cursor = 0;
+  let match: RegExpExecArray | null;
+  while ((match = pattern.exec(text)) !== null) {
+    if (match.index > cursor) {
+      pushLeafInto(nodes, text.slice(cursor, match.index));
+    }
+    if (match[1]) {
+      const inner: React.ReactNode[] = [];
+      pushLeafInto(inner, match[1].slice(2, -2));
+      nodes.push(<strong key={key++} className="font-bold text-foreground">{inner}</strong>);
+    } else if (match[2]) {
+      const inner: React.ReactNode[] = [];
+      pushLeafInto(inner, match[2].slice(1, -1));
+      nodes.push(<em key={key++} className="italic">{inner}</em>);
+    } else if (match[3]) {
+      pushLeafInto(nodes, match[3]);
+    }
+    cursor = match.index + match[0].length;
+  }
+  if (cursor < text.length) {
+    pushLeafInto(nodes, text.slice(cursor));
+  }
+  return nodes;
+}
+
 // Self-sizing iframe embed for blog widgets.
 // Widget pages can postMessage({type:'iframe-height', height:N}) to resize.
 function EmbedFrame({ src, title, initialHeight, caption }: { src: string; title: string; initialHeight: number; caption?: string }) {
@@ -308,59 +374,7 @@ export function MarkdownContent({ content }: MarkdownContentProps) {
         const items = paragraph.split('\n').filter(line => line.trim());
         const isOrdered = items[0]?.match(/^\d+\./);
         const ListTag = isOrdered ? 'ol' : 'ul';
-        
-        // Helper function to parse inline formatting in list items
-        const parseListItemContent = (text: string) => {
-          const parts: React.ReactElement[] = [];
-          let keyCounter = 0;
-          const codeSplit = text.split(/(`[^`]+`)/g);
-          
-          codeSplit.forEach((segment) => {
-            if (segment.startsWith('`') && segment.endsWith('`')) {
-              parts.push(
-                <code key={keyCounter++} className="bg-muted px-1.5 py-0.5 rounded text-sm font-mono text-blue-600 dark:text-blue-400">
-                  {segment.slice(1, -1)}
-                </code>
-              );
-            } else {
-              const formatted = segment.split(/(\*\*[^*]+\*\*|\*[^*]+\*|\[(?:[^\]]+)\]\((?:[^)]+)\))/g);
-              formatted.forEach((part) => {
-                if (part?.match(/^\*\*[^*]+\*\*$/)) {
-                  parts.push(
-                    <strong key={keyCounter++} className="font-bold text-foreground">
-                      {part.slice(2, -2)}
-                    </strong>
-                  );
-                } else if (part?.match(/^\*[^*]+\*$/)) {
-                  parts.push(
-                    <em key={keyCounter++} className="italic">
-                      {part.slice(1, -1)}
-                    </em>
-                  );
-                } else if (part?.match(/^\[([^\]]+)\]\(([^)]+)\)$/)) {
-                  const linkMatch = part.match(/^\[([^\]]+)\]\(([^)]+)\)$/);
-                  if (linkMatch) {
-                    parts.push(
-                      <a
-                        key={keyCounter++}
-                        href={linkMatch[2]}
-                        className="text-blue-600 dark:text-blue-400 hover:underline"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        {linkMatch[1]}
-                      </a>
-                    );
-                  }
-                } else if (part) {
-                  parts.push(<span key={keyCounter++}>{part}</span>);
-                }
-              });
-            }
-          });
-          return parts;
-        };
-        
+
         elements.push(
           <ListTag 
             key={index} 
@@ -381,7 +395,7 @@ export function MarkdownContent({ content }: MarkdownContentProps) {
                       : "text-lg leading-relaxed pl-2 text-foreground/90 hover:text-foreground transition-colors relative before:content-['→'] before:absolute before:-left-6 before:text-blue-500 before:font-bold"
                   }
                 >
-                  {parseListItemContent(cleanedItem)}
+                  {renderInlineRich(cleanedItem)}
                 </li>
               );
             })}
@@ -392,82 +406,19 @@ export function MarkdownContent({ content }: MarkdownContentProps) {
 
       // Regular paragraphs
       if (paragraph.trim()) {
-        // Parse inline formatting: bold, italic, inline code, links
-        const renderInlineContent = (text: string) => {
-          const parts: React.ReactElement[] = [];
-          let currentText = text;
-          let keyCounter = 0;
-
-          // Split by inline code first
-          const codeSplit = currentText.split(/(`[^`]+`)/g);
-          
-          codeSplit.forEach((segment) => {
-            if (segment.startsWith('`') && segment.endsWith('`')) {
-              // Inline code
-              parts.push(
-                <code key={keyCounter++} className="bg-muted px-1.5 py-0.5 rounded text-sm font-mono text-blue-600 dark:text-blue-400">
-                  {segment.slice(1, -1)}
-                </code>
-              );
-            } else {
-              // Handle bold, italic, links
-              const formatted = segment.split(/(\*\*[^*]+\*\*|\*[^*]+\*|\[(?:[^\]]+)\]\((?:[^)]+)\))/g);
-              
-              formatted.forEach((part, idx) => {
-                if (part?.match(/^\*\*[^*]+\*\*$/)) {
-                  // Bold text
-                  parts.push(
-                    <strong key={keyCounter++} className="font-bold text-foreground">
-                      {part.slice(2, -2)}
-                    </strong>
-                  );
-                } else if (part?.match(/^\*[^*]+\*$/)) {
-                  // Italic text
-                  parts.push(
-                    <em key={keyCounter++} className="italic">
-                      {part.slice(1, -1)}
-                    </em>
-                  );
-                } else if (part?.match(/^\[([^\]]+)\]\(([^)]+)\)$/)) {
-                  // Link
-                  const linkMatch = part.match(/^\[([^\]]+)\]\(([^)]+)\)$/);
-                  if (linkMatch) {
-                    parts.push(
-                      <a
-                        key={keyCounter++}
-                        href={linkMatch[2]}
-                        className="text-blue-600 dark:text-blue-400 hover:underline"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        {linkMatch[1]}
-                      </a>
-                    );
-                  }
-                } else if (part) {
-                  // Regular text
-                  parts.push(<span key={keyCounter++}>{part}</span>);
-                }
-              });
-            }
-          });
-
-          return parts;
-        };
-
         // Check if it's a special "lead" paragraph (first substantial paragraph OR starts with bold)
         const isLeadParagraph = !firstParagraphRendered && (paragraph.length > 100 || paragraph.match(/^\*\*/));
         if (isLeadParagraph && paragraph.trim()) {
           firstParagraphRendered = true;
           elements.push(
             <p key={index} className="text-xl md:text-2xl leading-relaxed text-foreground font-semibold first-letter:text-3xl first-letter:font-bold first-letter:text-blue-600 dark:first-letter:text-blue-400 mb-8 pb-6 border-b border-border/30">
-              {renderInlineContent(paragraph)}
+              {renderInlineRich(paragraph)}
             </p>
           );
         } else {
           elements.push(
             <p key={index} className="text-lg leading-relaxed text-foreground/90">
-              {renderInlineContent(paragraph)}
+              {renderInlineRich(paragraph)}
             </p>
           );
         }

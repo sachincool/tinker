@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>subdomailing, in six steps</title>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --color-paper:   #11141c;
+      --color-paper-2: #161a24;
+      --color-ink:     #ecedf0;
+      --color-muted:   #8a93a6;
+      --color-soft:    #5c6478;
+      --color-rule:    rgba(236,237,240,0.10);
+      --color-compromise: #ff6b5a;
+      --color-victim:     #5bc0d9;
+      --font-sans:     'Geist', system-ui, sans-serif;
+      --font-serif:    'Instrument Serif', serif;
+      --font-mono:     'Geist Mono', ui-monospace, monospace;
+    }
+
+    html, body { background: var(--color-paper); }
+
+    body {
+      font-family: var(--font-sans);
+      color: var(--color-ink);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2.5rem 2rem;
+    }
+
+    .frame { max-width: 1520px; width: 100%; }
+
+    .eyebrow {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--color-muted);
+      margin-bottom: 0.6rem;
+    }
+
+    h1 {
+      font-family: var(--font-serif);
+      font-size: clamp(1.8rem, 2.8vw + 0.75rem, 2.6rem);
+      font-weight: 400;
+      letter-spacing: -0.015em;
+      line-height: 1.15;
+      color: var(--color-ink);
+      margin-bottom: 2rem;
+    }
+
+    figcaption {
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-size: 1.05rem;
+      color: var(--color-muted);
+      margin-top: 1.25rem;
+      letter-spacing: -0.005em;
+    }
+
+    svg { width: 100%; display: block; }
+  </style>
+</head>
+<body>
+  <div class="frame">
+    <p class="eyebrow">Figure · dns auth attack timeline</p>
+    <h1>subdomailing, in six steps</h1>
+
+    <svg viewBox="0 0 1600 760" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Six-stage timeline of the SubdoMailing campaign disclosed by Guardio Labs in February 2024">
+      <defs>
+        <pattern id="dots" width="24" height="24" patternUnits="userSpaceOnUse">
+          <circle cx="1" cy="1" r="0.9" fill="rgba(236,237,240,0.05)"/>
+        </pattern>
+        <marker id="arrow-soft" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+          <polygon points="0 0, 8 3, 0 6" fill="#5c6478"/>
+        </marker>
+      </defs>
+
+      <rect width="100%" height="100%" fill="#11141c"/>
+      <rect width="100%" height="100%" fill="url(#dots)" opacity="0.7"/>
+
+      <!-- Phase labels (background, ghosted) -->
+      <text x="80" y="120" fill="rgba(91,192,217,0.10)" font-size="68" font-weight="600" font-family="'Geist Mono', monospace" letter-spacing="0.04em">ORPHAN</text>
+      <text x="780" y="120" fill="rgba(255,107,90,0.10)" font-size="68" font-weight="600" font-family="'Geist Mono', monospace" letter-spacing="0.04em">INHERITED TRUST</text>
+
+      <!-- Phase divider (between stage 3 and stage 4) -->
+      <line x1="660" y1="320" x2="660" y2="500" stroke="rgba(236,237,240,0.10)" stroke-width="1" stroke-dasharray="3,4"/>
+      <text x="660" y="312" fill="#5c6478" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.18em">RE-REGISTER</text>
+
+      <!-- Timeline baseline -->
+      <line x1="120" y1="410" x2="1480" y2="410" stroke="rgba(236,237,240,0.18)" stroke-width="1"/>
+
+      <!-- Start / end caps -->
+      <line x1="120" y1="402" x2="120" y2="418" stroke="rgba(236,237,240,0.25)" stroke-width="1"/>
+      <line x1="1480" y1="402" x2="1480" y2="418" stroke="rgba(236,237,240,0.25)" stroke-width="1"/>
+
+      <!-- Connector segments — colored by phase. Drawn first so nodes overlap them. -->
+      <line x1="140" y1="410" x2="380" y2="410" stroke="#5bc0d9" stroke-width="1.4" opacity="0.65"/>
+      <line x1="400" y1="410" x2="640" y2="410" stroke="#5bc0d9" stroke-width="1.4" opacity="0.65"/>
+      <line x1="660" y1="410" x2="900" y2="410" stroke="#5bc0d9" stroke-width="1.4" opacity="0.65"/>
+      <line x1="920" y1="410" x2="1160" y2="410" stroke="#ff6b5a" stroke-width="1.4" opacity="0.65"/>
+      <line x1="1180" y1="410" x2="1420" y2="410" stroke="#ff6b5a" stroke-width="1.4" opacity="0.65"/>
+
+      <!-- ============ STAGE 1 · ~2021 · SPF include published (victim) ============ -->
+      <text x="260" y="248" fill="#5bc0d9" font-size="10" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.22em" font-weight="500">~2021</text>
+      <line x1="260" y1="264" x2="260" y2="392" stroke="rgba(91,192,217,0.30)" stroke-width="1" stroke-dasharray="2,3"/>
+      <text x="260" y="296" fill="#ecedf0" font-size="16" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">spf include</text>
+      <text x="260" y="316" fill="#ecedf0" font-size="16" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">published</text>
+      <circle cx="260" cy="410" r="14" fill="#11141c" stroke="#5bc0d9" stroke-width="2"/>
+      <circle cx="260" cy="410" r="5" fill="#5bc0d9"/>
+      <text x="260" y="364" fill="#5bc0d9" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.18em">01</text>
+      <text x="260" y="464" fill="#8a93a6" font-size="11" font-family="'Geist', sans-serif" text-anchor="middle">victim adds an spf include for</text>
+      <text x="260" y="480" fill="#8a93a6" font-size="11" font-family="'Geist', sans-serif" text-anchor="middle">a third-party email vendor.</text>
+      <text x="260" y="504" fill="#5c6478" font-size="10" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.02em">v=spf1</text>
+      <text x="260" y="518" fill="#5c6478" font-size="10" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.02em">include:contractor.com ~all</text>
+
+      <!-- ============ STAGE 2 · 2022 · Contractor winds down (victim — orphan forming) ============ -->
+      <text x="520" y="248" fill="#5bc0d9" font-size="10" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.22em" font-weight="500">2022</text>
+      <line x1="520" y1="264" x2="520" y2="392" stroke="rgba(91,192,217,0.30)" stroke-width="1" stroke-dasharray="2,3"/>
+      <text x="520" y="296" fill="#ecedf0" font-size="16" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">contractor business</text>
+      <text x="520" y="316" fill="#ecedf0" font-size="16" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">winds down</text>
+      <circle cx="520" cy="410" r="14" fill="#11141c" stroke="#5bc0d9" stroke-width="2"/>
+      <circle cx="520" cy="410" r="5" fill="#5bc0d9"/>
+      <text x="520" y="364" fill="#5bc0d9" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.18em">02</text>
+      <text x="520" y="464" fill="#8a93a6" font-size="11" font-family="'Geist', sans-serif" text-anchor="middle">vendor stops sending mail;</text>
+      <text x="520" y="480" fill="#8a93a6" font-size="11" font-family="'Geist', sans-serif" text-anchor="middle">spf include still points there.</text>
+      <text x="520" y="504" fill="#5c6478" font-size="10" font-family="'Geist Mono', monospace" text-anchor="middle" font-style="italic" letter-spacing="0.02em">nobody removes the record.</text>
+      <text x="520" y="518" fill="#5c6478" font-size="10" font-family="'Geist Mono', monospace" text-anchor="middle" font-style="italic" letter-spacing="0.02em">dns has no ttl for trust.</text>
+
+      <!-- ============ STAGE 3 · late 2023 · Domain registration expires (victim — orphan live) ============ -->
+      <text x="780" y="248" fill="#5bc0d9" font-size="10" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.22em" font-weight="500">LATE 2023</text>
+      <line x1="780" y1="264" x2="780" y2="392" stroke="rgba(91,192,217,0.30)" stroke-width="1" stroke-dasharray="2,3"/>
+      <text x="780" y="296" fill="#ecedf0" font-size="16" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">domain registration</text>
+      <text x="780" y="316" fill="#ecedf0" font-size="16" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">expires</text>
+      <circle cx="780" cy="410" r="14" fill="#11141c" stroke="#5bc0d9" stroke-width="2"/>
+      <circle cx="780" cy="410" r="5" fill="#5bc0d9"/>
+      <text x="780" y="364" fill="#5bc0d9" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.18em">03</text>
+      <text x="780" y="464" fill="#8a93a6" font-size="11" font-family="'Geist', sans-serif" text-anchor="middle">no one renews it.</text>
+      <text x="780" y="480" fill="#8a93a6" font-size="11" font-family="'Geist', sans-serif" text-anchor="middle">the orphan goes live.</text>
+      <text x="780" y="504" fill="#5c6478" font-size="10" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.02em">contractor.com</text>
+      <text x="780" y="518" fill="#5c6478" font-size="10" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.02em">status: AVAILABLE</text>
+
+      <!-- ============ STAGE 4 · late 2023 · Attacker re-registers (attacker) ============ -->
+      <text x="1040" y="248" fill="#ff6b5a" font-size="10" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.22em" font-weight="500">LATE 2023</text>
+      <line x1="1040" y1="264" x2="1040" y2="392" stroke="rgba(255,107,90,0.30)" stroke-width="1" stroke-dasharray="2,3"/>
+      <text x="1040" y="296" fill="#ecedf0" font-size="16" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">attacker re-registers</text>
+      <text x="1040" y="316" fill="#ecedf0" font-size="16" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">the orphan</text>
+      <circle cx="1040" cy="410" r="14" fill="#11141c" stroke="#ff6b5a" stroke-width="2"/>
+      <circle cx="1040" cy="410" r="5" fill="#ff6b5a"/>
+      <text x="1040" y="364" fill="#ff6b5a" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.18em">04</text>
+      <text x="1040" y="464" fill="#8a93a6" font-size="11" font-family="'Geist', sans-serif" text-anchor="middle">nine dollars on namecheap.</text>
+      <text x="1040" y="480" fill="#8a93a6" font-size="11" font-family="'Geist', sans-serif" text-anchor="middle">the spf trust comes with it.</text>
+      <text x="1040" y="504" fill="#5c6478" font-size="10" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.02em">whois: new owner</text>
+      <text x="1040" y="518" fill="#5c6478" font-size="10" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.02em">spf chain: unchanged</text>
+
+      <!-- ============ STAGE 5 · Feb 2024 · 5M phishing emails/day (attacker) ============ -->
+      <text x="1300" y="248" fill="#ff6b5a" font-size="10" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.22em" font-weight="500">FEB 2024</text>
+      <line x1="1300" y1="264" x2="1300" y2="392" stroke="rgba(255,107,90,0.30)" stroke-width="1" stroke-dasharray="2,3"/>
+      <text x="1300" y="296" fill="#ecedf0" font-size="16" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">5m phishing emails</text>
+      <text x="1300" y="316" fill="#ecedf0" font-size="16" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">per day, all signed off</text>
+      <circle cx="1300" cy="410" r="14" fill="#11141c" stroke="#ff6b5a" stroke-width="2"/>
+      <circle cx="1300" cy="410" r="5" fill="#ff6b5a"/>
+      <text x="1300" y="364" fill="#ff6b5a" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.18em">05</text>
+      <text x="1300" y="464" fill="#8a93a6" font-size="11" font-family="'Geist', sans-serif" text-anchor="middle">8000 subdomains across msn,</text>
+      <text x="1300" y="480" fill="#8a93a6" font-size="11" font-family="'Geist', sans-serif" text-anchor="middle">ebay, vmware, nyc.gov, unicef.</text>
+      <text x="1300" y="504" fill="#5c6478" font-size="10" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.02em">spf=pass · dmarc=pass</text>
+      <text x="1300" y="518" fill="#5c6478" font-size="10" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.02em">inbox places it in primary</text>
+
+      <!-- ============ STAGE 6 · Feb 26 2024 · Guardio Labs publishes (victim — focal) ============ -->
+      <text x="1480" y="248" fill="#5bc0d9" font-size="10" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.22em" font-weight="500">FEB 26 2024</text>
+      <line x1="1480" y1="264" x2="1480" y2="388" stroke="rgba(91,192,217,0.40)" stroke-width="1" stroke-dasharray="2,3"/>
+      <text x="1480" y="296" fill="#ecedf0" font-size="16" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">guardio labs</text>
+      <text x="1480" y="316" fill="#ecedf0" font-size="16" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">publishes the writeup</text>
+      <circle cx="1480" cy="410" r="18" fill="#11141c" stroke="#5bc0d9" stroke-width="2"/>
+      <circle cx="1480" cy="410" r="7" fill="#5bc0d9"/>
+      <text x="1480" y="362" fill="#5bc0d9" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.18em">06</text>
+      <text x="1480" y="468" fill="#8a93a6" font-size="11" font-family="'Geist', sans-serif" text-anchor="middle">the victims learn about it</text>
+      <text x="1480" y="484" fill="#8a93a6" font-size="11" font-family="'Geist', sans-serif" text-anchor="middle">from a third party.</text>
+      <text x="1480" y="508" fill="#5c6478" font-size="10" font-family="'Geist Mono', monospace" text-anchor="middle" font-style="italic" letter-spacing="0.02em">two years in the dark.</text>
+      <text x="1480" y="522" fill="#5c6478" font-size="10" font-family="'Geist Mono', monospace" text-anchor="middle" font-style="italic" letter-spacing="0.02em">disclosure ends the silence.</text>
+
+      <!-- Legend strip -->
+      <line x1="80" y1="616" x2="1520" y2="616" stroke="rgba(236,237,240,0.10)" stroke-width="0.8"/>
+      <text x="80" y="636" fill="#8a93a6" font-size="9" font-family="'Geist Mono', monospace" letter-spacing="0.22em">LEGEND</text>
+
+      <circle cx="92" cy="664" r="6" fill="#11141c" stroke="#ff6b5a" stroke-width="2"/>
+      <circle cx="92" cy="664" r="2.5" fill="#ff6b5a"/>
+      <text x="108" y="668" fill="#bfc4cf" font-size="10.5" font-family="'Geist', sans-serif">attacker stage — re-registration and phishing at scale</text>
+
+      <circle cx="492" cy="664" r="6" fill="#11141c" stroke="#5bc0d9" stroke-width="2"/>
+      <circle cx="492" cy="664" r="2.5" fill="#5bc0d9"/>
+      <text x="508" y="668" fill="#bfc4cf" font-size="10.5" font-family="'Geist', sans-serif">victim stage — orphan trust accumulating, disclosure at the end</text>
+
+      <text x="952" y="668" fill="#8a93a6" font-size="10.5" font-family="'Geist', sans-serif" font-style="italic">timestamps are approximate — spacing is sequential, not proportional to elapsed time.</text>
+    </svg>
+
+    <figcaption>two years from forgotten record to five million phish a day. the dns never told anyone.</figcaption>
+  </div>
+</body>
+</html>

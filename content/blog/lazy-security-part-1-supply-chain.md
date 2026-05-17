@@ -1,6 +1,6 @@
 ---
-title: "Lazy security, part 1: the dependencies you didn't read"
-date: "2026-05-22"
+title: "Lazy SRE's guide to secure systems, part 1: the dependencies you didn't read"
+date: "2026-04-05"
 tags: ["security", "supply-chain", "npm", "devsecops", "lazy-sre"]
 excerpt: "A startup-grade defense against npm supply-chain attacks, written for Future You at 3am. Chainjacking, postinstall scripts, and the smallest install that buys the most."
 featured: true
@@ -8,7 +8,7 @@ featured: true
 
 A few months ago a friend's CI pipeline tried to install a package none of us had heard of. The build failed. The error wasn't a missing dep. The error was a local proxy saying *this is malware, I'm not letting it touch disk*. The package was a transitive dependency, six levels deep, that had been published to npm 38 minutes earlier. Nobody on the team had asked for it.
 
-I do platform work at a startup. The job is: keep production up, keep the bill down, keep the kind of person who reads HN comments from getting a free shell on the cluster. The thesis for the series is short. The best security work for a small team is the work *Future You at 3am* will actually execute. The lazy answer is also, almost always, the right one: the configuration that makes the wrong thing impossible, rather than only discouraged. This is part 1 of three. Part 2 is GitHub (`tj-actions`, OIDC, fork PRs). Part 3 is the unsexy list (IAP, Tailscale, PrivateLink, Okta, default helm creds, the PAT you forgot).
+I do platform work at a startup. The job is: keep production up, keep the bill down, keep the kind of person who reads HN comments from getting a free shell on the cluster. The thesis for the series is short. The best security work for a small team is the work *Future You at 3am* will actually execute. The lazy answer is also, almost always, the right one: the configuration that makes the wrong thing impossible, rather than only discouraged. This is part 1. Part 2 is GitHub (`tj-actions`, OIDC, fork PRs). Part 3 is the unsexy list (IAP, Tailscale, PrivateLink, Okta, default helm creds, the PAT you forgot).
 
 ## the picture
 

@@ -18,8 +18,8 @@ At Truefoundry we run multi-tenant ML workloads, which means fast ad-hoc search,
 
 The contestants in one line:
 
-- **Loki** — Grafana Labs' log store. Compressed chunks, label-based indexing, LogQL. Brilliant Grafana integration; expensive regex scans and Go GC overhead at scale.
-- **VictoriaLogs** — VictoriaMetrics' columnar LSM log database. Per-field indices, SIMD search, LogSQL. Single binary, low memory footprint, efficient compression.
+- **Loki:** Grafana Labs' log store. Compressed chunks, label-based indexing, LogQL. Brilliant Grafana integration; expensive regex scans and Go GC overhead at scale.
+- **VictoriaLogs:** VictoriaMetrics' columnar LSM log database. Per-field indices, SIMD search, LogSQL. Single binary, low memory footprint, efficient compression.
 
 Methodology in five bullets:
 
@@ -33,7 +33,7 @@ Methodology in five bullets:
 
 Before the methodology debate, here's what the seven days produced.
 
-<iframe src="/images/victorialogs-vs-loki/footprint-widget.html" title="VictoriaLogs vs Loki resource footprint — 500 GB over 7 days" height="900" data-caption="Fig. 2 — Resource economics on identical hardware and workload."></iframe>
+<iframe src="/images/victorialogs-vs-loki/footprint-widget.html" title="VictoriaLogs vs Loki resource footprint: 500 GB over 7 days" height="900" data-caption="Fig. 2 — Resource economics on identical hardware and workload."></iframe>
 
 The memory line is the one that most directly translates into infrastructure cost. At steady state, VictoriaLogs sat around 1.3 GB while Loki held 6–7 GB. Freeing ~5 GB per node is the difference between bin-packing four tenants on a box and seven.
 
@@ -52,7 +52,7 @@ Four query patterns, run against the same 500 GB / 7-day index:
 
 The two queries that made the case, side by side:
 
-**Stats — counting logs over 24 hours**
+**Stats: counting logs over 24 hours**
 
 LogQL (Loki):
 
@@ -66,7 +66,7 @@ LogSQL (VictoriaLogs):
 {app="servicefoundry-server"} | stats count()
 ```
 
-**Needle in haystack — finding a single entry across 500 GB**
+**Needle in haystack: finding a single entry across 500 GB**
 
 LogQL:
 
@@ -134,13 +134,7 @@ Four design choices doing most of the work:
 - Deep Grafana ecosystem integration is non-negotiable
 - You already operate Loki at scale and the migration cost outweighs the wins
 
-## Conclusion
-
-For text-heavy log workloads on commodity hardware, VictoriaLogs was the clearer win on every axis we measured: **94% lower query latencies, 37% smaller storage, 5× lighter steady-state memory, 73% lower peak CPU, and 3× higher ingestion ceiling**. The needle-in-a-haystack case is the one to remember — 12 seconds becomes 900 milliseconds without any tuning.
-
-Loki is still the right call when label-first queries dominate or when Grafana ecosystem depth is the requirement. For us, on this workload, the resource economics decided it. The freed memory per node became real infrastructure savings within a quarter.
-
-If you're sitting on a Loki cluster that's started to feel its limits, the move is worth a weekend.
+For us, on this workload, the resource economics decided it. The freed memory per node became real infrastructure savings within a quarter. 12 seconds turned into 900 milliseconds with no tuning, and that's the number I keep quoting six months later.
 
 ## Resources
 

@@ -84,6 +84,13 @@ export function getPostBySlug(slug: string, type: 'blog' | 'til' = 'blog'): Post
     const fileContents = fs.readFileSync(filePath, 'utf8');
     const { data, content } = matter(fileContents);
 
+    // Future-dated posts are hidden in production. Dev shows everything so drafts
+    // can be previewed. Set BLOG_SHOW_DRAFTS=1 to override in production.
+    const date = data.date || new Date().toISOString();
+    const isFuture = new Date(date).getTime() > Date.now();
+    const showDrafts = process.env.NODE_ENV !== 'production' || process.env.BLOG_SHOW_DRAFTS === '1';
+    if (isFuture && !showDrafts) return null;
+
     const title = data.title || 'Untitled';
     const rawExcerpt = (data.excerpt || '').trim();
     const excerpt = rawExcerpt
@@ -95,7 +102,7 @@ export function getPostBySlug(slug: string, type: 'blog' | 'til' = 'blog'): Post
     return {
       slug,
       title,
-      date: data.date || new Date().toISOString(),
+      date,
       tags: data.tags || [],
       excerpt,
       content,

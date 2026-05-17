@@ -7,9 +7,9 @@ type: "til"
 
 # TIL: Docker Volume Debugging: Finding Where Your Data Actually Lives
 
-Spent 2 hours debugging why data wasn't persisting. Turns out, understanding Docker volumes is crucial.
+Spent 2 hours debugging why data wasn't persisting. Turns out, understanding Docker volumes is the actual job.
 
-## The Problem
+## the problem
 
 I had a container with a volume mount, but couldn't figure out where the data was actually stored on the host:
 
@@ -19,9 +19,9 @@ docker run -v mydata:/data myapp
 
 Where is `mydata`? What's inside it?
 
-## The Solution
+## the solution
 
-### Find Volume Location
+### find volume location
 
 ```bash
 # List all volumes
@@ -46,9 +46,9 @@ Output:
 ]
 ```
 
-The `Mountpoint` tells you exactly where the data lives!
+The `Mountpoint` tells you exactly where the data lives.
 
-### View Volume Contents (The Trick)
+### view volume contents (the trick)
 
 You can't just `cd` to that path (permission denied). Instead, use a temporary container:
 
@@ -64,7 +64,7 @@ cd /data
 ls -la
 ```
 
-## Better: Named Volume Inspection
+## a better named-volume workflow
 
 Create a simple alias:
 
@@ -88,7 +88,7 @@ dvol mydata:/data alpine cat /data/config.json
 docker run --rm -v mydata:/data -v $(pwd):/backup alpine cp /data/important.txt /backup/
 ```
 
-## Debugging Bind Mounts
+## debugging bind mounts
 
 For bind mounts (host path to container):
 
@@ -102,9 +102,9 @@ To see what the container actually sees:
 docker exec -it container_name ls -la /container/path
 ```
 
-## Common Volume Issues
+## common volume issues
 
-### Issue 1: Volume Not Mounting
+### issue 1, volume not mounting
 
 ```bash
 # Check if volume exists
@@ -114,7 +114,7 @@ docker volume ls | grep mydata
 docker volume create mydata
 ```
 
-### Issue 2: Wrong Permissions
+### issue 2, wrong permissions
 
 ```bash
 # Check ownership in volume
@@ -124,7 +124,7 @@ docker run --rm -v mydata:/data alpine ls -ln /data
 docker run --rm -v mydata:/data alpine chown -R 1000:1000 /data
 ```
 
-### Issue 3: Dangling Volumes
+### issue 3, dangling volumes
 
 ```bash
 # List dangling volumes (not used by any container)
@@ -136,7 +136,7 @@ docker volume prune
 # Be careful! This deletes data!
 ```
 
-### Issue 4: Volume vs Bind Mount Confusion
+### issue 4, volume vs bind mount confusion
 
 ```bash
 # Named volume (managed by Docker)
@@ -150,9 +150,9 @@ docker volume prune
 -v /data
 ```
 
-## Pro Tips
+## pro tips
 
-### 1. Backup a Volume
+### 1. backup a volume
 
 ```bash
 # Backup volume to tar file
@@ -162,7 +162,7 @@ docker run --rm \
   alpine tar czf /backup/mydata-backup.tar.gz -C /data .
 ```
 
-### 2. Restore a Volume
+### 2. restore a volume
 
 ```bash
 # Restore from backup
@@ -172,7 +172,7 @@ docker run --rm \
   alpine tar xzf /backup/mydata-backup.tar.gz -C /data
 ```
 
-### 3. Copy Volume to Another
+### 3. copy volume to another
 
 ```bash
 # Copy all data from vol1 to vol2
@@ -182,7 +182,7 @@ docker run --rm \
   alpine sh -c "cp -av /source/. /dest/"
 ```
 
-### 4. Clone a Volume
+### 4. clone a volume
 
 ```bash
 # Create new volume as copy of existing
@@ -193,7 +193,7 @@ docker run --rm \
   alpine cp -av /source/. /dest/
 ```
 
-## Real-World Example
+## real-world example
 
 I was debugging a database that wasn't persisting data:
 
@@ -221,7 +221,7 @@ docker run --rm \
 docker volume rm postgress_data
 ```
 
-## Useful One-Liners
+## useful one-liners
 
 ```bash
 # Find which containers use a volume
@@ -237,7 +237,7 @@ docker system df -v
 docker system df -v | awk '$4 > 1000'
 ```
 
-## The Gotcha I Learned
+## the gotcha I learned
 
 Docker Compose creates volumes with prefixes:
 
@@ -257,5 +257,5 @@ volumes:
     name: mydata
 ```
 
-This one trick would have saved me those 2 hours. Now you know!
+This one trick would have saved me those 2 hours.
 

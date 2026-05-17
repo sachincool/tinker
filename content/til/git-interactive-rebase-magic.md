@@ -7,9 +7,9 @@ type: "til"
 
 # TIL: Git Interactive Rebase: Clean Up Your Commit History
 
-Discovered `git rebase -i` today and it's a game-changer for cleaning up messy commit history before PR reviews.
+Discovered `git rebase -i` today. Turns five "fix typo" commits into one clean commit before the PR review notices.
 
-## The Problem
+## the problem
 
 My commit history looked like this:
 
@@ -23,7 +23,7 @@ remove console.log
 
 Not exactly professional for a PR review.
 
-## The Solution
+## the solution
 
 Interactive rebase lets you edit, squash, and reorder commits:
 
@@ -53,7 +53,7 @@ pick 7m8n9o0 remove console.log
 # d, drop = remove commit
 ```
 
-## My Workflow
+## my workflow
 
 Change it to:
 
@@ -65,9 +65,9 @@ fixup 3j4k5l6 actually fixed it
 fixup 7m8n9o0 remove console.log
 ```
 
-Result: One clean commit!
+Result: one clean commit.
 
-## Pro Tips
+## pro tips
 
 **Reword commit messages:**
 ```
@@ -96,7 +96,7 @@ git commit -m "feat: add feature B"
 git rebase --continue
 ```
 
-## Warning
+## warning
 
 **Never rebase commits that have been pushed to a shared branch!** You'll rewrite history and cause conflicts for your team.
 
@@ -113,7 +113,7 @@ git checkout main
 git rebase -i HEAD~5  # DON'T DO THIS!
 ```
 
-## Useful Aliases
+## useful aliases
 
 Add to your `~/.gitconfig`:
 
@@ -132,5 +132,5 @@ git rb 5        # Rebase last 5 commits
 git rbm         # Rebase on main
 ```
 
-This has saved me so much embarrassment in code reviews!
+This has saved me so much embarrassment in code reviews.
 

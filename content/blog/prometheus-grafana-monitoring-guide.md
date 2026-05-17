@@ -1,34 +1,24 @@
 ---
-title: "Prometheus & Grafana: From Zero to Production Monitoring"
+title: "Prometheus and Grafana: from zero to production monitoring"
 date: "2024-12-18"
 tags: ["monitoring", "prometheus", "grafana", "observability", "devops"]
-excerpt: "A practical guide to setting up Prometheus and Grafana for production monitoring. No theory, just battle-tested configurations that actually work."
+excerpt: "A practical guide to setting up Prometheus and Grafana for production monitoring. No theory, just battle-tested configurations that work."
 featured: true
 ---
 
-# Prometheus & Grafana: From Zero to Production Monitoring
+# Prometheus and Grafana: from zero to production monitoring
 
-Setting up monitoring shouldn't require a PhD. Here's how I set up Prometheus and Grafana for our production infrastructure, explained like you're implementing it tomorrow.
+We started shipping monitoring after a string of outages where customers paged us before our own dashboards did. This is the stack we landed on, written like you're standing it up tomorrow.
 
 ![Prometheus pulls metrics from exporters running next to each service, stores them in its TSDB, then fans out to Alertmanager for paging and Grafana for dashboards.](/images/prometheus-grafana-monitoring-guide/hero.png)
 
 *Fig. 1 — five boxes do most of the work; the other ten you'll add later are mostly for taste.*
 
-## The Problem
+## why Prometheus and Grafana
 
-Our services kept having mystery outages. By the time we noticed, customers were already complaining. We needed visibility, fast.
+After trying CloudWatch, Datadog, and New Relic, we landed on Prometheus and Grafana for the same reason most teams do. Prometheus is open source, pull-based, and fits Kubernetes without protest. Grafana puts the dashboards on top, talks to almost anything, and costs nothing. Self-hosted, the bill is server time. The commercial options were running us $500 a month and climbing.
 
-## Why Prometheus + Grafana?
-
-After trying CloudWatch, Datadog, and New Relic:
-
-- **Prometheus**: Open source, pull-based, perfect for Kubernetes
-- **Grafana**: Beautiful dashboards, free, integrates with everything
-- **Cost**: ~$0 (self-hosted) vs $500+/month for commercial solutions
-
-Let's build this.
-
-## Setup: The Docker Compose Way
+## setup with Docker Compose
 
 For development or small deployments, Docker Compose is perfect:
 
@@ -85,7 +75,7 @@ volumes:
   grafana_data:
 ```
 
-**Run it:**
+Run it:
 
 ```bash
 docker-compose up -d
@@ -93,7 +83,7 @@ docker-compose up -d
 
 Done. Prometheus is on `:9090`, Grafana on `:3000`.
 
-## Prometheus Configuration
+## prometheus configuration
 
 Create `prometheus.yml`:
 
@@ -136,9 +126,9 @@ scrape_configs:
     metrics_path: '/metrics'
 ```
 
-## Instrumenting Your Application
+## instrumenting your application
 
-### Node.js/Express Example
+### Node.js / Express example
 
 ```javascript
 const express = require('express');
@@ -198,7 +188,7 @@ app.listen(8080, () => {
 });
 ```
 
-### Python/Flask Example
+### Python / Flask example
 
 ```python
 from flask import Flask, request
@@ -249,9 +239,9 @@ if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080)
 ```
 
-## Essential Queries
+## the queries you'll actually use
 
-### CPU Usage
+### CPU usage
 
 ```promql
 # CPU usage percentage
@@ -261,7 +251,7 @@ if __name__ == '__main__':
 rate(node_cpu_seconds_total{mode!="idle"}[5m])
 ```
 
-### Memory Usage
+### memory usage
 
 ```promql
 # Memory usage percentage
@@ -271,7 +261,7 @@ rate(node_cpu_seconds_total{mode!="idle"}[5m])
 node_memory_MemAvailable_bytes / 1024 / 1024 / 1024
 ```
 
-### Disk Usage
+### disk usage
 
 ```promql
 # Disk usage percentage
@@ -281,7 +271,7 @@ node_memory_MemAvailable_bytes / 1024 / 1024 / 1024
 (1 - (node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"})) * 100
 ```
 
-### HTTP Request Rate
+### HTTP request rate
 
 ```promql
 # Requests per second
@@ -291,7 +281,7 @@ rate(http_requests_total[5m])
 sum by (status_code) (rate(http_requests_total[5m]))
 ```
 
-### HTTP Latency
+### HTTP latency
 
 ```promql
 # 95th percentile latency
@@ -301,9 +291,9 @@ histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m]))
 rate(http_request_duration_seconds_sum[5m]) / rate(http_request_duration_seconds_count[5m])
 ```
 
-## Grafana Dashboards
+## grafana dashboards
 
-### Import Community Dashboards
+### import community dashboards
 
 1. Go to Grafana → Dashboards → Import
 2. Use these IDs:
@@ -313,7 +303,7 @@ rate(http_request_duration_seconds_sum[5m]) / rate(http_request_duration_seconds
 
 Or create custom dashboards with the queries above.
 
-### Auto-Provisioning Datasource
+### auto-provisioning the datasource
 
 Create `grafana/provisioning/datasources/prometheus.yml`:
 
@@ -329,7 +319,7 @@ datasources:
     editable: false
 ```
 
-## Alerting That Actually Works
+## alerting that actually works
 
 Create `alerts/rules.yml`:
 
@@ -389,9 +379,9 @@ groups:
           description: "Error rate is {{ $value }}%"
 ```
 
-## Production Considerations
+## production considerations
 
-### Data Retention
+### data retention
 
 Prometheus stores data locally. For long-term storage:
 
@@ -409,11 +399,11 @@ For longer retention, use:
 - **Cortex**: Multi-tenant Prometheus as a service
 - **VictoriaMetrics**: Drop-in replacement, more efficient
 
-### High Availability
+### high availability
 
 Run multiple Prometheus instances with identical configs. Use a load balancer or Thanos for deduplication.
 
-### Security
+### security
 
 ```yaml
 # Add basic auth
@@ -429,40 +419,15 @@ basicAuthPassword: supersecret
 
 Better: Put behind VPN or use mutual TLS.
 
-## Common Gotchas
+## common gotchas
 
-1. **Scrape interval too low**: Don't go below 10s unless you need it
-2. **Too many labels**: Increases cardinality, slows queries
-3. **Wrong metric types**: Use Counter for cumulative, Gauge for point-in-time
-4. **No alerts**: Monitoring without alerting is useless
-5. **Alert fatigue**: Too many alerts = ignored alerts
+Five things bite people in production. Scrape interval below 10s is almost never what you want and quietly burns disk. Too many labels balloon cardinality and your queries get slow before you notice. Pick the right metric type: Counter for monotonic, Gauge for point-in-time, Histogram for distributions, and not the other way around. Monitoring without alerting is a screensaver. And the inverse: too many alerts and the on-call learns to ignore them, which is worse than no alerts at all.
 
-## What to Monitor
+## the golden signals
 
-### The Golden Signals (Google SRE)
+If you only monitor four things, monitor Google's golden signals: latency, traffic, errors, saturation. Latency is how long requests take. Traffic is request rate. Errors is the rate of failed requests. Saturation is how full the system is on CPU, memory, and disk. Everything else is a refinement on these four.
 
-1. **Latency**: How long requests take
-2. **Traffic**: Request rate
-3. **Errors**: Error rate
-4. **Saturation**: Resource usage (CPU, memory, disk)
+## what to add next
 
-If you only monitor four things, monitor these.
-
-## Next Steps
-
-1. Add more exporters (MySQL, Redis, etc.)
-2. Set up Alertmanager with Slack/PagerDuty
-3. Create runbooks for each alert
-4. Configure backup for Prometheus data
-5. Explore Grafana plugins
-
-## Conclusion
-
-This setup has saved our bacon multiple times. We now know about issues before customers do.
-
-The best monitoring is monitoring you actually use. Start simple, iterate, and add complexity only when needed.
-
-**Remember**: A dashboard you never look at is just pretty graphs wasting electricity.
-
-Got questions? Run into issues? Drop a comment below!
+Add exporters for the data stores you actually use: MySQL, Redis, Postgres, whichever queue you're on. Wire Alertmanager to Slack and PagerDuty so the alerts land somewhere a human reads. Write a one-line runbook link in every alert annotation so the page tells the on-call what to do. Back up the Prometheus data directory; the whole point of long retention is gone if a disk failure wipes it. A dashboard you never look at is graphs heating the data center.
 

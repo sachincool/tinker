@@ -1,12 +1,12 @@
 ---
-title: "Self-Hosting SimpleLogin: Own Your Email Aliases for $3/Month"
+title: "Self-hosting SimpleLogin: own your email aliases for $3 a month"
 date: "2026-02-07"
 tags: ["self-hosting", "docker", "security", "devops", "email"]
-excerpt: "I got tired of trusting third parties with my email privacy. Here's how I self-hosted SimpleLogin with Docker, Postfix, and Brevo — including the TLS gotcha that cost me two hours."
+excerpt: "I got tired of trusting third parties with my email privacy. Here's how I self-hosted SimpleLogin with Docker, Postfix, and Brevo, plus the TLS gotcha that cost me two hours."
 featured: true
 ---
 
-# Self-Hosting SimpleLogin: Own Your Email Aliases for $3/Month
+# Self-hosting SimpleLogin: own your email aliases for $3 a month
 
 I'd been running Cloudflare Email Routing for months. Free. Dead simple. Emails hit my custom domain, forwarded to Gmail. Privacy-friendly aliases without paying a dime.
 
@@ -22,7 +22,7 @@ Two hours later, I had full bidirectional email aliases running on SimpleLogin. 
 
 *Fig. 1 — Cloudflare can hand you the letter. It just can't post one back without signing your real name.*
 
-## Why Cloudflare Email Routing Wasn't Enough
+## why Cloudflare email routing wasn't enough
 
 Credit where it's due. Cloudflare Email Routing is genuinely great for what it does:
 
@@ -44,9 +44,9 @@ But the moment you need to reply from an alias or send a new email as your alias
 | PGP encryption | No | Yes |
 | Self-hosted option | No | Yes |
 
-If all you need is inbound forwarding, stick with Cloudflare. It's free and it works. But if you want actual email aliases — where you can reply, send, and nobody ever sees your real address — you need SimpleLogin.
+If all you need is inbound forwarding, stick with Cloudflare. It's free and it works. But if you want actual email aliases, where you can reply and send and nobody ever sees your real address, you need SimpleLogin.
 
-## What You'll Need
+## what you'll need
 
 Before diving in:
 
@@ -57,7 +57,7 @@ Before diving in:
 
 > **Key Insight:** Most residential ISPs and some cloud providers block port 25. Hetzner doesn't by default, but you might need to request it. Check before you start — no port 25, no self-hosted email.
 
-## Architecture Overview
+## architecture overview
 
 Here's how the pieces fit together:
 
@@ -80,7 +80,7 @@ Four containers plus Postfix on the host:
 
 Plus Postfix running directly on the host, listening on port 25.
 
-## The DNS Gauntlet
+## the DNS gauntlet
 
 DNS is where most people give up. Don't. It's just a lot of records. Set them all up at once and verify later.
 
@@ -166,7 +166,7 @@ dig -x 203.0.113.50 +short
 # Should return: sl.example.com.
 ```
 
-## Why Brevo? IP Reputation Is Everything
+## why Brevo? IP reputation is everything
 
 Why not send directly from Postfix? You can. Gmail, Outlook, and Yahoo will just spam-folder it — or reject it outright.
 
@@ -174,7 +174,7 @@ Email deliverability depends on IP reputation. A fresh VPS IP has none. To the b
 
 Brevo's SMTP relay solves this. Your Postfix hands mail to Brevo, and Brevo sends it from IPs with years of established reputation. Your email lands in inboxes, not spam. Free tier: 300 emails/day.
 
-## Setting Up Brevo
+## setting up Brevo
 
 Sign up at [brevo.com](https://www.brevo.com). Then:
 
@@ -187,7 +187,7 @@ Sign up at [brevo.com](https://www.brevo.com). Then:
 
 Save the SMTP key. You'll need it for both the SimpleLogin env file and Postfix config.
 
-## Docker Setup
+## docker setup
 
 SSH into your server. Let's build this.
 
@@ -342,7 +342,7 @@ docker run -d \
 
 Four containers. All running. But we're not done — Postfix is the piece that actually handles SMTP.
 
-## The Postfix Config (And the TLS Trap)
+## the Postfix config (and the TLS trap)
 
 This is where I lost two hours. The setup itself is straightforward. The bug that follows is not.
 
@@ -519,7 +519,7 @@ systemctl restart postfix
 systemctl enable postfix
 ```
 
-## Nginx Reverse Proxy
+## nginx reverse proxy
 
 SimpleLogin's web UI runs on port 7777. Put Nginx in front for HTTPS.
 
@@ -546,9 +546,9 @@ certbot --nginx -d sl.example.com
 
 Certbot rewrites the Nginx config to add SSL and sets up auto-renewal. Done.
 
-## First Login and Lockdown
+## first login and lockdown
 
-Navigate to `https://sl.example.com`. Register your admin account. Use the email you set as `ADMIN_EMAIL` in the env file.
+Go to `https://sl.example.com` and register your admin account using the email you set as `ADMIN_EMAIL` in the env file.
 
 Now make yourself premium and lock the door:
 
@@ -579,7 +579,7 @@ docker restart sl-app
 
 Your instance. Your aliases. Your data.
 
-## Persistence Across Reboots
+## persistence across reboots
 
 Make sure everything survives a server restart:
 
@@ -605,7 +605,7 @@ systemctl status postfix
 systemctl status nginx
 ```
 
-## Lessons Learned
+## lessons learned
 
 Six things I wish I'd known before starting:
 
@@ -621,7 +621,7 @@ Six things I wish I'd known before starting:
 
 6. **Use the app image, not app-ci.** SimpleLogin publishes both `simplelogin/app` and `simplelogin/app-ci`. The `app-ci` image is for their CI/CD pipeline. Use `simplelogin/app` with a specific version tag.
 
-## The Proof
+## the proof
 
 Here's what the full flow looks like in practice. Send a test email to your alias:
 
@@ -643,7 +643,7 @@ SimpleLogin's dashboard confirms the reply went through:
 
 ![SimpleLogin dashboard showing successful reply activity on the alias](/images/self-hosting-simplelogin/sl-reply-confirmed.png)
 
-### Browser Extension Bonus
+### browser extension bonus
 
 SimpleLogin also ships a browser extension. Visit any site, click the icon, and create an alias on the fly — no need to open the dashboard:
 
@@ -651,12 +651,4 @@ SimpleLogin also ships a browser extension. Visit any site, click the icon, and 
 
 ![Browser extension showing existing aliases for the current site](/images/self-hosting-simplelogin/sl-extension-aliases.png)
 
-## Closing Thoughts
-
-This took me two hours. One of those hours was the TLS trap. If you follow this guide, you're looking at about an hour from zero to working aliases.
-
-The real value isn't the money saved over SimpleLogin's hosted plan. It's the control. Every email alias I create lives on my server, in my database. No third party decides to sunset a feature, raise prices, or mine my data for ad targeting.
-
-Between this and the [Dokploy migration](/blog/netlify-to-dokploy-migration), my entire personal infrastructure runs on a single Hetzner box for under $5/month. Email aliases, five websites, monitoring, backups. All mine.
-
-What's your email aliasing setup? Still forwarding through Gmail, paying for a hosted service, or running something else entirely? I'd love to hear what works for you.
+Between this and the [Dokploy migration](/blog/netlify-to-dokploy-migration), my entire personal infrastructure runs on a single Hetzner box for under $5 a month. Email aliases, five websites, monitoring, backups. All mine. Two hours of setup, one of which was the TLS trap above.

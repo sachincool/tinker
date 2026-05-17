@@ -1,6 +1,6 @@
 ---
 title: "Seven visual tools, one diagram"
-date: "2026-05-29"
+date: "2026-05-15"
 tags: ["claude-code", "ai-tooling", "blogging", "design"]
 excerpt: "Excalidraw is fast, but everything I make in it ends up looking the same. I tried seven tools that promise blog visuals with attitude — on a single diagram — and kept the three I'd actually use."
 featured: true

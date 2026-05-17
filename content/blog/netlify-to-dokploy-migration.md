@@ -1,12 +1,12 @@
 ---
-title: "When Netlify Killed My Free Tier: A 15-Minute Migration to Dokploy"
+title: "When Netlify killed my free tier: a 15-minute migration to Dokploy"
 date: "2025-10-24"
 tags: ["devops", "hosting", "cost-optimization", "self-hosting", "dokploy"]
 excerpt: "Woke up to Netlify suspending 5 sites I'd run free for years. Had 15 minutes before my girlfriend noticed her appreciation site was down. Here's how I migrated everything to Dokploy for €3/month."
 featured: true
 ---
 
-# When Netlify Killed My Free Tier: A 15-Minute Migration to Dokploy
+# When Netlify killed my free tier: a 15-minute migration to Dokploy
 
 Late night. Got this email: **"[Netlify] Your projects have been suspended due to credit limit exceeded."**
 
@@ -28,7 +28,7 @@ New option: $9/month for 1000 credits, or figure something else out.
 
 I had 15 minutes before my girlfriend woke up. Here's what happened.
 
-## The €3 Solution
+## the €3 solution
 
 Hetzner CX23: 2 vCPUs, 4GB RAM, 40GB SSD. **€2.99/month**.
 
@@ -43,7 +43,7 @@ Math was simple:
 
 I'd been [watching this Dokploy video](https://www.youtube.com/watch?v=RoANBROvUeE) the week before. Perfect timing.
 
-## The 15-Minute Panic Deploy
+## the 15-minute panic deploy
 
 **Minutes 0-5**: Spun up Hetzner in Helsinki. Got the IP. Updated DNS.
 
@@ -65,7 +65,7 @@ One command. Dokploy installed Docker, Traefik, PostgreSQL, everything.
 
 The Fiance woke up. dilharia.love was live. Crisis averted.
 
-## What Surprised Me
+## what surprised me
 
 SSL just works. Traefik + Let's Encrypt provision certificates automatically. I'm running Cloudflare Full (Strict) mode - zero warnings.
 
@@ -75,7 +75,7 @@ Logs and monitoring built-in. No Datadog bill. No "$500/month observability plat
 
 ![Dokploy projects dashboard](/images/netlify-to-dokploy-migration/dokploy_projects.png)
 
-## The Catch
+## the catch
 
 You own the ops. Server goes down? That's on you. No 99.9% SLA.
 
@@ -83,7 +83,7 @@ You handle security: OS updates, SSH keys, backups. I run `apt upgrade` weekly a
 
 For personal projects? Worth it. For business-critical stuff? Pay for managed services.
 
-## One Month Later
+## one month later
 
 Server load: 8% CPU. Zero downtime. SSL renewals automatic.
 
@@ -95,7 +95,7 @@ Total maintenance time: 10 minutes/week.
 
 Best infrastructure decision I've made this year.
 
-## The Real Lesson
+## the real lesson
 
 Free tiers aren't free. They're bait.
 
@@ -107,7 +107,7 @@ Owning your infrastructure: predictable costs, no surprises, freedom to experime
 
 More work? Yes. Worth it for personal projects? Absolutely.
 
-## Related Posts
+## related posts
 
 - [AWS Cost Optimization: How We Cut Our Bill by 60%](/blog/aws-cost-optimization-tricks)
 - [How I Took Down 30% of Production with One TLS Fingerprinting Rule](/blog/ja4-fingerprinting-network-security)

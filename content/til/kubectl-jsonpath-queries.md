@@ -9,15 +9,15 @@ type: "til"
 
 Stop piping kubectl output to `grep`, `awk`, and `sed`. JSONPath can get you exactly what you need in one command.
 
-## The Basic Pattern
+## the basic pattern
 
 ```bash
 kubectl get <resource> -o jsonpath='{<jsonpath-expression>}'
 ```
 
-## Simple Examples
+## simple examples
 
-### Get Pod IPs
+### get pod IPs
 
 Instead of:
 ```bash
@@ -29,13 +29,13 @@ Do:
 kubectl get pods -o jsonpath='{.items[*].status.podIP}'
 ```
 
-### Get Pod Names Only
+### get pod names only
 
 ```bash
 kubectl get pods -o jsonpath='{.items[*].metadata.name}'
 ```
 
-### Get Pod Name + IP
+### get pod name + IP
 
 ```bash
 kubectl get pods -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.status.podIP}{"\n"}{end}'
@@ -47,45 +47,45 @@ nginx-abc123    10.244.1.5
 redis-xyz789    10.244.1.6
 ```
 
-## Real-World Use Cases
+## real-world use cases
 
-### 1. Find All Container Images
+### 1. find all container images
 
 ```bash
 kubectl get pods -o jsonpath='{.items[*].spec.containers[*].image}' | tr ' ' '\n' | sort -u
 ```
 
-### 2. Get Pods Not Running
+### 2. get pods not running
 
 ```bash
 kubectl get pods -o jsonpath='{range .items[?(@.status.phase!="Running")]}{.metadata.name}{"\t"}{.status.phase}{"\n"}{end}'
 ```
 
-### 3. Find Pods Using Most Memory
+### 3. find pods using most memory
 
 ```bash
 kubectl top pods -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.usage.memory}{"\n"}{end}' | sort -k2 -h
 ```
 
-### 4. Get All Node Capacities
+### 4. get all node capacities
 
 ```bash
 kubectl get nodes -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.status.capacity.cpu}{" CPU\t"}{.status.capacity.memory}{" RAM\n"}{end}'
 ```
 
-### 5. Find Secrets in a Namespace
+### 5. find secrets in a namespace
 
 ```bash
 kubectl get pods -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.spec.volumes[?(@.secret)].secret.secretName}{"\n"}{end}'
 ```
 
-### 6. Get All Services and Their Type
+### 6. get all services and their type
 
 ```bash
 kubectl get svc -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.spec.type}{"\n"}{end}'
 ```
 
-## JSONPath Syntax Cheat Sheet
+## JSONPath syntax cheat sheet
 
 | Pattern | Description | Example |
 |---------|-------------|---------|
@@ -98,33 +98,33 @@ kubectl get svc -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.spec.type}
 | `{"\n"}` | Newline | Format output |
 | `{"\t"}` | Tab | Format output |
 
-## Advanced Filtering
+## advanced filtering
 
-### Pods with Specific Label
+### pods with specific label
 
 ```bash
 kubectl get pods -l app=nginx -o jsonpath='{.items[*].metadata.name}'
 ```
 
-### Pods in Running State
+### pods in Running state
 
 ```bash
 kubectl get pods -o jsonpath='{.items[?(@.status.phase=="Running")].metadata.name}'
 ```
 
-### Containers in Waiting State
+### containers in Waiting state
 
 ```bash
 kubectl get pods -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.status.containerStatuses[?(@.state.waiting)].name}{"\n"}{end}'
 ```
 
-### Pods with Restart Count > 0
+### pods with restart count > 0
 
 ```bash
 kubectl get pods -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.status.containerStatuses[0].restartCount}{"\n"}{end}' | awk '$2 > 0'
 ```
 
-## Useful Aliases
+## useful aliases
 
 Add to your `~/.bashrc` or `~/.zshrc`:
 
@@ -142,7 +142,7 @@ alias krestart='kubectl get pods -o jsonpath='\''{range .items[*]}{.metadata.nam
 alias knotready='kubectl get pods -o jsonpath='\''{range .items[?(@.status.phase!="Running")]}{.metadata.name}{"\t"}{.status.phase}{"\n"}{end}'\'''
 ```
 
-## Custom Columns (Even Better)
+## custom columns (even better)
 
 Sometimes custom columns are cleaner than JSONPath:
 
@@ -157,39 +157,39 @@ kubectl get nodes -o custom-columns=NAME:.metadata.name,CPU:.status.capacity.cpu
 kubectl get svc -o custom-columns=NAME:.metadata.name,TYPE:.spec.type,CLUSTER-IP:.spec.clusterIP
 ```
 
-## Common Patterns I Use Daily
+## common patterns I use daily
 
-### 1. Quick Debug: Get All Pod Info
+### 1. quick debug — get all pod info
 
 ```bash
 kubectl get pod nginx-abc123 -o jsonpath='{range .spec.containers[*]}Name: {.name}{"\n"}Image: {.image}{"\n"}Ports: {.ports[*].containerPort}{"\n\n"}{end}'
 ```
 
-### 2. Get All Environment Variables
+### 2. get all environment variables
 
 ```bash
 kubectl get pod nginx-abc123 -o jsonpath='{range .spec.containers[*].env[*]}{.name}={.value}{"\n"}{end}'
 ```
 
-### 3. Find Pods on a Specific Node
+### 3. find pods on a specific node
 
 ```bash
 kubectl get pods --all-namespaces -o jsonpath='{range .items[?(@.spec.nodeName=="node-1")]}{.metadata.name}{"\t"}{.metadata.namespace}{"\n"}{end}'
 ```
 
-### 4. Get ConfigMaps Used by Pods
+### 4. get ConfigMaps used by pods
 
 ```bash
 kubectl get pods -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.spec.volumes[?(@.configMap)].configMap.name}{"\n"}{end}'
 ```
 
-### 5. Network Policies Applied to Pods
+### 5. network policies applied to pods
 
 ```bash
 kubectl get netpol -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.spec.podSelector.matchLabels}{"\n"}{end}'
 ```
 
-## The Power Move
+## the live-updates move
 
 Combine JSONPath with watch for live updates:
 
@@ -197,7 +197,7 @@ Combine JSONPath with watch for live updates:
 watch -n 2 'kubectl get pods -o jsonpath='\''{range .items[*]}{.metadata.name}{"\t"}{.status.phase}{"\n"}{end}'\'''
 ```
 
-## Debugging JSONPath
+## debugging JSONPath
 
 If your JSONPath isn't working, test it step by step:
 
@@ -212,13 +212,13 @@ kubectl get pod nginx-abc123 -o jsonpath='{.status}'
 kubectl get pod nginx-abc123 -o jsonpath='{.status.phase}'
 ```
 
-## The Gotcha
+## the gotcha
 
 JSONPath in kubectl has some quirks:
 
 1. **Filters must use `@`**: `.items[?(@.field=="value")]` not `.items[?(.field=="value")]`
 2. **Arrays need `[*]`**: `.items[*]` not `.items[]`
-3. **Quotes matter**: Use single quotes outside, double inside: `'{.items[?(@.name=="value")]}'`
+3. **Quotes matter**: use single quotes outside, double inside: `'{.items[?(@.name=="value")]}'`
 
-This has eliminated so much `grep | awk | sed` pipeline complexity from my daily kubectl commands. One-liner power!
+This has eliminated so much `grep | awk | sed` pipeline complexity from my daily kubectl commands.
 

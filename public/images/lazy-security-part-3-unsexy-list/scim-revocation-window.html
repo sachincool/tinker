@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>scim revocation window — lazy sre part 3</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  html, body { margin: 0; padding: 0; background: #0d1320; }
+  body { display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+  canvas { display: block; }
+  .preload-serif { font-family: 'Instrument Serif', serif; position: absolute; visibility: hidden; }
+  .preload-mono { font-family: 'Geist Mono', monospace; position: absolute; visibility: hidden; }
+</style>
+</head>
+<body>
+<span class="preload-serif">preload</span>
+<span class="preload-mono">preload</span>
+<canvas id="c" width="1600" height="900"></canvas>
+<script>
+const WIDTH = 1600;
+const HEIGHT = 900;
+const FPS = 20;
+
+// palette — locked to series (parts 2, 4, 5, 6)
+const COLORS = {
+  bg: '#0d1320',
+  bgDeeper: '#080d18',
+  cream: '#f3ede2',
+  creamMute: '#cfc7b8',
+  mono: '#8a93a6',
+  monoDim: '#5a6275',
+  rule: '#1b2436',
+  ruleSoft: '#141a2a',
+  barTrack: '#13192a',
+  barDefault: '#3f8fa3',     // muted cyan
+  barAccent: '#5bc0d9',      // brighter cyan
+  tipCoral: '#e07a5f',       // accent tip + risk marker
+};
+
+// values are expressed in seconds so the scale is honest.
+// 4 days = 345,600 s. 45 s is what it is.
+const SEC_PER_DAY = 86400;
+
+const BARS = [
+  {
+    label: 'without scim',
+    sub1: 'manual offboarding, ticket per system',
+    sub2: 'someone files a jira, someone forgets, someone is on pto.',
+    valueSec: 4 * SEC_PER_DAY,        // ~345,600 seconds
+    valueDisplay: '~4 days',
+    valueSub: '≈ 345,600 seconds',
+    accent: true,
+    pill: 'WINDOW OF COMPROMISE',
+  },
+  {
+    label: 'with scim',
+    sub1: 'one saml attribute push from the idp',
+    sub2: 'one attribute change in the idp, every connected system revokes in lockstep.',
+    valueSec: 45,                      // 45 seconds
+    valueDisplay: '~45 seconds',
+    valueSub: 'one push, every system',
+    accent: false,
+    pill: null,
+  },
+];
+
+const MAX_SEC = 4 * SEC_PER_DAY;   // ceiling = 4 days exactly
+// honest ticks across 4 days
+const TICKS = [
+  { v: 0, label: '0' },
+  { v: 1 * SEC_PER_DAY, label: '1 day' },
+  { v: 2 * SEC_PER_DAY, label: '2 days' },
+  { v: 3 * SEC_PER_DAY, label: '3 days' },
+  { v: 4 * SEC_PER_DAY, label: '4 days' },
+];
+
+// timing — slightly slower for two-bar comparison so the gap registers
+const BAR_DURATION_S = 1.1;
+const BAR_STAGGER_S = 0.55;
+const TOTAL_FILL_S = BAR_STAGGER_S * (BARS.length - 1) + BAR_DURATION_S; // ~1.65s
+const HOLD_S = 2.9;
+const TOTAL_S = TOTAL_FILL_S + HOLD_S;
+const TOTAL_FRAMES = Math.round(TOTAL_S * FPS);
+
+// easing — easeOutQuart, matches series feel
+function ease(t) { return 1 - Math.pow(1 - t, 4); }
+function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+
+// layout
+const PADX = 88;
+const TOP_EYEBROW_Y = 80;
+const TITLE_Y = 152;
+const RULE_Y = 220;
+const AXIS_Y = 270;
+const BARS_START_Y = 360;
+const BARS_GAP = 220;     // generous spacing — only two bars
+const BAR_HEIGHT = 78;
+const LEGEND_X = PADX;
+const LEGEND_W = 360;
+const BAR_X = LEGEND_X + LEGEND_W + 30;
+const BAR_W = WIDTH - BAR_X - PADX;
+
+function valueToWidth(secs) {
+  return (secs / MAX_SEC) * BAR_W;
+}
+
+// format counting seconds nicely — switch to days/hours past thresholds
+function formatCount(secs) {
+  if (secs >= SEC_PER_DAY) {
+    const days = secs / SEC_PER_DAY;
+    if (days >= 1.5) {
+      return '~' + days.toFixed(1) + ' days';
+    }
+    return '~' + days.toFixed(2) + ' days';
+  }
+  if (secs >= 3600) {
+    const h = secs / 3600;
+    return '~' + Math.round(h) + ' hours';
+  }
+  if (secs >= 60) {
+    const m = secs / 60;
+    return '~' + Math.round(m) + ' min';
+  }
+  return '~' + Math.round(secs) + ' sec';
+}
+
+function drawFrame(ctx, frameIdx) {
+  const t = frameIdx / FPS;
+
+  // background
+  ctx.fillStyle = COLORS.bg;
+  ctx.fillRect(0, 0, WIDTH, HEIGHT);
+
+  // eyebrow mono
+  ctx.fillStyle = COLORS.mono;
+  ctx.font = '500 16px "Geist Mono", ui-monospace, monospace';
+  ctx.textBaseline = 'alphabetic';
+  ctx.textAlign = 'left';
+  ctx.fillText('FIGURE 2  ·  TIME TO REVOKE ACCESS  ·  LAZY SRE’S GUIDE', PADX, TOP_EYEBROW_Y);
+
+  // serif title — lowercase
+  ctx.fillStyle = COLORS.cream;
+  ctx.font = '400 54px "Instrument Serif", "Times New Roman", serif';
+  ctx.fillText('time to fully revoke access after offboarding', PADX, TITLE_Y);
+
+  // rule under title
+  ctx.strokeStyle = COLORS.rule;
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(PADX, RULE_Y);
+  ctx.lineTo(WIDTH - PADX, RULE_Y);
+  ctx.stroke();
+
+  // axis tick labels (above bars)
+  ctx.fillStyle = COLORS.monoDim;
+  ctx.font = '500 14px "Geist Mono", ui-monospace, monospace';
+  ctx.textAlign = 'center';
+  for (const tk of TICKS) {
+    const x = BAR_X + valueToWidth(tk.v);
+    ctx.fillText(tk.label, x, AXIS_Y);
+  }
+
+  // faint vertical gridlines across bar zone
+  ctx.strokeStyle = COLORS.ruleSoft;
+  ctx.lineWidth = 1;
+  for (const tk of TICKS) {
+    const x = BAR_X + valueToWidth(tk.v);
+    ctx.beginPath();
+    ctx.moveTo(x, AXIS_Y + 14);
+    ctx.lineTo(x, BARS_START_Y + BARS_GAP * BARS.length - 80);
+    ctx.stroke();
+  }
+
+  // bars
+  for (let i = 0; i < BARS.length; i++) {
+    const bar = BARS[i];
+    const rowY = BARS_START_Y + i * BARS_GAP;
+    const barY = rowY + 20;
+    const startT = i * BAR_STAGGER_S;
+    const localT = clamp((t - startT) / BAR_DURATION_S, 0, 1);
+    const filled = ease(localT);
+    const fullW = valueToWidth(bar.valueSec);
+    const curW = fullW * filled;
+
+    // left legend block
+    ctx.textAlign = 'left';
+    ctx.fillStyle = COLORS.cream;
+    ctx.font = '400 38px "Instrument Serif", serif';
+    ctx.fillText(bar.label, LEGEND_X, barY + 2);
+
+    ctx.fillStyle = COLORS.creamMute;
+    ctx.font = '500 12px "Geist Mono", ui-monospace, monospace';
+    ctx.fillText(bar.sub1, LEGEND_X, barY + 28);
+
+    ctx.fillStyle = COLORS.monoDim;
+    ctx.font = '400 11px "Geist Mono", ui-monospace, monospace';
+    ctx.fillText(bar.sub2, LEGEND_X, barY + 50);
+
+    // bar track
+    ctx.fillStyle = COLORS.barTrack;
+    ctx.fillRect(BAR_X, barY - BAR_HEIGHT / 2, BAR_W, BAR_HEIGHT);
+
+    // bar fill (honest scale — the small bar will be a sliver)
+    const fillColor = bar.accent ? COLORS.barAccent : COLORS.barDefault;
+    ctx.fillStyle = fillColor;
+    ctx.fillRect(BAR_X, barY - BAR_HEIGHT / 2, curW, BAR_HEIGHT);
+
+    // coral tip cap on accented bar
+    if (bar.accent && curW > 6) {
+      const tipW = 10;
+      ctx.fillStyle = COLORS.tipCoral;
+      ctx.fillRect(BAR_X + curW - tipW, barY - BAR_HEIGHT / 2, tipW, BAR_HEIGHT);
+    }
+
+    // leading edge indicator (thin bright line on left of bar) — guarantees the small bar is locatable
+    ctx.fillStyle = bar.accent ? COLORS.barAccent : COLORS.barDefault;
+    ctx.fillRect(BAR_X, barY - BAR_HEIGHT / 2, 3, BAR_HEIGHT);
+
+    // coral side marker for the accented (risk) bar — matches Part 5 RECOMMENDED pattern but inverted in meaning
+    if (bar.accent) {
+      const pillW = 8;
+      const pillH = BAR_HEIGHT - 8;
+      const pillX = BAR_X - 20;
+      const pillY = barY - BAR_HEIGHT / 2 + 4;
+      ctx.fillStyle = COLORS.tipCoral;
+      ctx.fillRect(pillX, pillY, pillW, pillH);
+    }
+
+    // WINDOW OF COMPROMISE pill above the accent bar
+    if (bar.pill) {
+      const pillOpacity = clamp((t - (startT + BAR_DURATION_S * 0.35)) / 0.45, 0, 1);
+      if (pillOpacity > 0) {
+        ctx.save();
+        ctx.globalAlpha = pillOpacity;
+        ctx.fillStyle = COLORS.tipCoral;
+        ctx.font = '500 13px "Geist Mono", ui-monospace, monospace';
+        ctx.textAlign = 'left';
+        ctx.fillText(bar.pill, BAR_X, barY - BAR_HEIGHT / 2 - 14);
+        ctx.restore();
+      }
+    }
+
+    // value label — counts up, two-tier (big serif + mono subline)
+    if (filled > 0.02) {
+      const animSec = bar.valueSec * filled;
+      const countText = (i === 0) ? formatCount(animSec) : null;
+      const labelText = (filled >= 0.985) ? bar.valueDisplay : (countText || bar.valueDisplay);
+      const subText = (filled >= 0.985) ? bar.valueSub : '';
+      const labelAlpha = clamp((filled - 0.02) / 0.15, 0, 1);
+
+      ctx.save();
+      ctx.globalAlpha = labelAlpha;
+      ctx.textAlign = 'left';
+
+      // big serif value
+      ctx.fillStyle = bar.accent ? COLORS.cream : COLORS.creamMute;
+      ctx.font = '400 34px "Instrument Serif", serif';
+
+      let labelX, subX;
+      // for the accent bar (huge), text sits inside the bar
+      if (bar.accent && curW > 220) {
+        labelX = BAR_X + 18;
+      } else {
+        // small bar — label floats to the right of the sliver
+        labelX = BAR_X + Math.max(curW, 4) + 14;
+        ctx.fillStyle = COLORS.cream;
+      }
+      ctx.fillText(labelText, labelX, barY + 4);
+
+      // mono subline showing the underlying unit
+      if (subText) {
+        ctx.fillStyle = COLORS.monoDim;
+        ctx.font = '500 12px "Geist Mono", ui-monospace, monospace';
+        // measure the label so subline lines up under it
+        ctx.fillText(subText, labelX, barY + 24);
+      }
+      ctx.restore();
+    }
+  }
+
+  // arrow/annotation pointing at the tiny "with scim" sliver — only shows after fill completes.
+  // pushed below the legend sub2 line so it doesn't overlap the description text.
+  {
+    const sliverRowY = BARS_START_Y + 1 * BARS_GAP;
+    const sliverBarY = sliverRowY + 20;
+    const fadeIn = clamp((t - (TOTAL_FILL_S - 0.2)) / 0.5, 0, 1);
+    if (fadeIn > 0) {
+      ctx.save();
+      ctx.globalAlpha = fadeIn;
+
+      // tip-of-sliver dot
+      const tipX = BAR_X + 3;
+      const tipY = sliverBarY;
+
+      // angled call-out: down + right past legend gutter
+      const elbowY = sliverBarY + BAR_HEIGHT / 2 + 28;
+      const labelX = BAR_X + 26;
+      ctx.strokeStyle = COLORS.tipCoral;
+      ctx.lineWidth = 1.25;
+      ctx.beginPath();
+      ctx.moveTo(tipX + 1, tipY);
+      ctx.lineTo(tipX + 1, elbowY);
+      ctx.lineTo(labelX, elbowY);
+      ctx.stroke();
+
+      // small coral terminator dot at tip
+      ctx.fillStyle = COLORS.tipCoral;
+      ctx.beginPath();
+      ctx.arc(tipX + 1, tipY, 2.5, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = COLORS.tipCoral;
+      ctx.font = '500 12px "Geist Mono", ui-monospace, monospace';
+      ctx.textAlign = 'left';
+      ctx.fillText('THIS SLIVER IS 45 SECONDS', labelX + 8, elbowY + 4);
+      ctx.restore();
+    }
+  }
+
+  // bottom annotation strip
+  const bottomY = HEIGHT - 70;
+  ctx.strokeStyle = COLORS.rule;
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(PADX, bottomY - 22);
+  ctx.lineTo(WIDTH - PADX, bottomY - 22);
+  ctx.stroke();
+
+  // left: NOTE pill
+  ctx.fillStyle = COLORS.tipCoral;
+  ctx.font = '500 12px "Geist Mono", ui-monospace, monospace';
+  ctx.textAlign = 'left';
+  ctx.fillText('NOTE', PADX, bottomY);
+
+  ctx.fillStyle = COLORS.creamMute;
+  ctx.font = '400 13px "Geist Mono", ui-monospace, monospace';
+  const annot = 'the no-scim figure varies by org; surveys 2024-2025 put median small-startup full-revocation at 3-7 days. attacker uses any of that time.';
+  ctx.fillText(annot, PADX + 56, bottomY);
+
+  // right: source label
+  ctx.fillStyle = COLORS.monoDim;
+  ctx.font = '400 12px "Geist Mono", ui-monospace, monospace';
+  ctx.textAlign = 'right';
+  ctx.fillText('source: identity defined security alliance + okta workforce surveys, 2024-2025', WIDTH - PADX, bottomY + 22);
+}
+
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+
+function getFrameParam() {
+  const u = new URL(window.location.href);
+  const f = u.searchParams.get('frame');
+  if (f === null) return null;
+  const n = parseInt(f, 10);
+  if (Number.isNaN(n)) return null;
+  return clamp(n, 0, TOTAL_FRAMES - 1);
+}
+
+async function waitFonts() {
+  if (document.fonts && document.fonts.ready) {
+    await document.fonts.ready;
+  }
+  await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+}
+
+async function main() {
+  await waitFonts();
+  const fp = getFrameParam();
+  if (fp !== null) {
+    drawFrame(ctx, fp);
+    document.title = 'ready-frame-' + fp;
+    return;
+  }
+  const start = performance.now();
+  function loop() {
+    const elapsed = (performance.now() - start) / 1000;
+    let f = Math.floor(elapsed * FPS);
+    if (f >= TOTAL_FRAMES) f = TOTAL_FRAMES - 1;
+    drawFrame(ctx, f);
+    if (elapsed < TOTAL_S + 1.0) {
+      requestAnimationFrame(loop);
+    } else {
+      setTimeout(() => { window.location.reload(); }, 200);
+    }
+  }
+  requestAnimationFrame(loop);
+}
+
+main();
+
+window.__META__ = { FPS, TOTAL_FRAMES, TOTAL_S, WIDTH, HEIGHT };
+</script>
+</body>
+</html>

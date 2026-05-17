@@ -9,7 +9,7 @@ type: "til"
 
 `jq` is like `sed` for JSON. Once you learn it, you'll wonder how you ever lived without it.
 
-## Installation
+## installation
 
 ```bash
 # Mac
@@ -22,18 +22,18 @@ apt-get install jq
 yum install jq
 ```
 
-## Basic Usage
+## basic usage
 
-### Pretty Print JSON
+### pretty print JSON
 
 ```bash
 # Ugly JSON from API
 curl https://api.example.com/data | jq '.'
 ```
 
-Output is now colored and formatted!
+Output is now colored and formatted.
 
-### Extract a Field
+### extract a field
 
 ```bash
 echo '{"name": "John", "age": 30}' | jq '.name'
@@ -46,30 +46,30 @@ echo '{"name": "John", "age": 30}' | jq -r '.name'
 
 `-r` = raw output (no quotes)
 
-## Array Operations
+## array operations
 
-### Get First Element
+### get first element
 
 ```bash
 echo '[1, 2, 3, 4, 5]' | jq '.[0]'
 # 1
 ```
 
-### Get Last Element
+### get last element
 
 ```bash
 echo '[1, 2, 3, 4, 5]' | jq '.[-1]'
 # 5
 ```
 
-### Get Array Length
+### get array length
 
 ```bash
 echo '[1, 2, 3, 4, 5]' | jq 'length'
 # 5
 ```
 
-### Extract Field from All Array Items
+### extract field from all array items
 
 ```bash
 echo '[{"name": "Alice", "age": 25}, {"name": "Bob", "age": 30}]' | jq '.[].name'
@@ -81,48 +81,48 @@ echo '[{"name": "Alice", "age": 25}, {"name": "Bob", "age": 30}]' | jq 'map(.nam
 # ["Alice", "Bob"]
 ```
 
-## Real-World Examples
+## real-world examples
 
-### 1. Parse Docker Images
+### 1. parse docker images
 
 ```bash
 docker images --format='{{json .}}' | jq -r '.Repository + ":" + .Tag + "\t" + .Size'
 ```
 
-### 2. Get All Pod Names in Kubernetes
+### 2. get all pod names in kubernetes
 
 ```bash
 kubectl get pods -o json | jq -r '.items[].metadata.name'
 ```
 
-### 3. Extract Specific AWS EC2 Info
+### 3. extract specific AWS EC2 info
 
 ```bash
 aws ec2 describe-instances | jq -r '.Reservations[].Instances[] | "\(.InstanceId)\t\(.State.Name)\t\(.PrivateIpAddress)"'
 ```
 
-### 4. Parse Package.json Dependencies
+### 4. parse package.json dependencies
 
 ```bash
 cat package.json | jq -r '.dependencies | keys[]'
 ```
 
-### 5. Get GitHub API Data
+### 5. get GitHub API data
 
 ```bash
 curl -s https://api.github.com/users/torvalds | jq '{name, bio, public_repos, followers}'
 ```
 
-## Filtering
+## filtering
 
-### Filter Array Items
+### filter array items
 
 ```bash
 # Get users older than 25
 echo '[{"name": "Alice", "age": 25}, {"name": "Bob", "age": 30}]' | jq '.[] | select(.age > 25)'
 ```
 
-### Multiple Conditions
+### multiple conditions
 
 ```bash
 # AND condition
@@ -132,15 +132,15 @@ jq '.[] | select(.age > 25 and .name == "Bob")'
 jq '.[] | select(.age > 25 or .name == "Alice")'
 ```
 
-### Check if Field Exists
+### check if field exists
 
 ```bash
 jq '.[] | select(.email != null)'
 ```
 
-## Transforming Data
+## transforming data
 
-### Create New Object
+### create new object
 
 ```bash
 echo '{"first": "John", "last": "Doe", "age": 30}' | jq '{fullname: (.first + " " + .last), age}'
@@ -150,13 +150,13 @@ echo '{"first": "John", "last": "Doe", "age": 30}' | jq '{fullname: (.first + " 
 # }
 ```
 
-### Rename Fields
+### rename fields
 
 ```bash
 echo '{"old_name": "value"}' | jq '{new_name: .old_name}'
 ```
 
-### Add Field
+### add field
 
 ```bash
 echo '{"name": "John"}' | jq '. + {age: 30}'
@@ -166,7 +166,7 @@ echo '{"name": "John"}' | jq '. + {age: 30}'
 # }
 ```
 
-## Sorting
+## sorting
 
 ```bash
 # Sort array of objects by field
@@ -176,36 +176,36 @@ echo '[{"name": "Bob", "age": 30}, {"name": "Alice", "age": 25}]' | jq 'sort_by(
 jq 'sort_by(.age) | reverse'
 ```
 
-## Grouping
+## grouping
 
 ```bash
 # Group by field
 echo '[{"type": "A", "value": 1}, {"type": "B", "value": 2}, {"type": "A", "value": 3}]' | jq 'group_by(.type)'
 ```
 
-## Useful One-Liners
+## useful one-liners
 
-### Count Items by Type
+### count items by type
 
 ```bash
 jq 'group_by(.type) | map({type: .[0].type, count: length})'
 ```
 
-### Sum Values
+### sum values
 
 ```bash
 echo '[{"value": 10}, {"value": 20}, {"value": 30}]' | jq '[.[].value] | add'
 # 60
 ```
 
-### Get Unique Values
+### get unique values
 
 ```bash
 echo '[1, 2, 2, 3, 3, 3]' | jq 'unique'
 # [1, 2, 3]
 ```
 
-### Find Min/Max
+### find min/max
 
 ```bash
 echo '[10, 5, 20, 15]' | jq 'min'
@@ -215,7 +215,7 @@ echo '[10, 5, 20, 15]' | jq 'max'
 # 20
 ```
 
-## Advanced: CSV Output
+## advanced — CSV output
 
 ```bash
 # Convert JSON to CSV
@@ -224,7 +224,7 @@ echo '[{"name": "Alice", "age": 25}, {"name": "Bob", "age": 30}]' | jq -r '.[] |
 # "Bob",30
 ```
 
-## Advanced: Nested Data
+## advanced — nested data
 
 ```bash
 # Deep extraction
@@ -236,9 +236,9 @@ echo '{"user": {}}' | jq '.user.profile.name // "N/A"'
 # "N/A"
 ```
 
-## Practical Scripts
+## practical scripts
 
-### Check All Service Status
+### check all service status
 
 ```bash
 #!/bin/bash
@@ -250,7 +250,7 @@ curl -s http://api/services | jq -r '.[] |
   end'
 ```
 
-### Parse AWS Cost Report
+### parse AWS cost report
 
 ```bash
 #!/bin/bash
@@ -261,14 +261,14 @@ aws ce get-cost-and-usage \
   jq -r '.ResultsByTime[] | .TimePeriod.Start + "\t$" + .Total.BlendedCost.Amount'
 ```
 
-### Monitor Log Errors
+### monitor log errors
 
 ```bash
 #!/bin/bash
 kubectl logs -f pod-name | jq -r 'select(.level == "error") | "\(.timestamp): \(.message)"'
 ```
 
-## Debug jq Expressions
+## debug jq expressions
 
 Use `jq` playground: https://jqplay.org/
 
@@ -288,15 +288,15 @@ echo '{"a": {"b": {"c": 1}}}' | jq '.a.b'
 echo '{"a": {"b": {"c": 1}}}' | jq '.a.b.c'
 ```
 
-## Common Patterns I Use
+## common patterns I use
 
-### 1. Pretty Print and Save
+### 1. pretty print and save
 
 ```bash
 curl -s api.example.com/data | jq '.' > formatted.json
 ```
 
-### 2. Extract and Process
+### 2. extract and process
 
 ```bash
 curl -s api | jq -r '.items[] | select(.active) | .id' | while read id; do
@@ -305,13 +305,13 @@ curl -s api | jq -r '.items[] | select(.active) | .id' | while read id; do
 done
 ```
 
-### 3. Combine Multiple JSON Files
+### 3. combine multiple JSON files
 
 ```bash
 jq -s '.' file1.json file2.json file3.json > combined.json
 ```
 
-### 4. Update JSON File In-Place
+### 4. update JSON file in-place
 
 ```bash
 # Add a field
@@ -321,7 +321,7 @@ jq '.version = "2.0"' package.json > temp.json && mv temp.json package.json
 jq '.version = "2.0"' package.json | sponge package.json
 ```
 
-## The Gotcha
+## the gotcha
 
 Remember to use `-r` for raw output when you want to use the result in bash:
 
@@ -337,9 +337,9 @@ echo $NAME
 # John
 ```
 
-`jq` has completely changed how I interact with APIs and JSON data. No more manual parsing or Python scripts for simple tasks!
+`jq` has completely changed how I interact with APIs and JSON data. No more manual parsing or Python scripts for simple tasks.
 
-## Cheat Sheet
+## cheat sheet
 
 ```bash
 jq '.'                      # Pretty print
@@ -358,5 +358,5 @@ jq 'unique'                # Unique values
 jq -s '.'                  # Slurp (combine files)
 ```
 
-Go forth and parse JSON like a wizard! 🧙‍♂️
+Go forth and parse JSON.
 

@@ -9,7 +9,7 @@ type: "til"
 
 We had a service that rotated TLS ciphers on every connection. Our client classification metrics exploded to 50k unique fingerprints. Prometheus cardinality alert fired.
 
-## The Problem
+## the problem
 
 JA3 gives you one hash. When ciphers rotate, you get a new hash:
 
@@ -21,7 +21,7 @@ Request 3: 7f2e4a8c3b9d1f6e5a2c8d4b7e9f3a1c
 
 Each one looks like a different client in your metrics. Cardinality explosion.
 
-## JA4's Solution
+## JA4's solution
 
 JA4 splits the fingerprint into three parts:
 
@@ -37,7 +37,7 @@ c = extension hash
 
 When the service rotates ciphers, only `b` changes. `a` and `c` stay constant.
 
-## The Fix
+## the fix
 
 Instead of grouping by full fingerprint, group by `ac`:
 
@@ -52,7 +52,7 @@ def normalize_fingerprint(fp):
 
 Cardinality back to normal. Metrics useful again.
 
-## When This Matters
+## when this matters
 
 If you track client types in metrics and see unexplained cardinality spikes, check if they're rotating ciphers. The `a_b_c` format lets you ignore the changing parts.
 

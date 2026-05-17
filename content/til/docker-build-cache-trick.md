@@ -9,15 +9,15 @@ type: "til"
 
 Spent 2 hours debugging why my Docker builds were slow despite using multi-stage builds and proper layer ordering.
 
-## The Issue
+## the issue
 
 Every single build was invalidating the cache at the `COPY . .` step, even when I hadn't changed any code.
 
-## The Culprit
+## the culprit
 
 My editor was creating `.swp` files and updating file timestamps. Docker saw these changes and invalidated the cache.
 
-## The Fix
+## the fix
 
 Add a proper `.dockerignore`:
 
@@ -37,5 +37,5 @@ npm-debug.log
 
 Build time went from 5 minutes to 30 seconds.
 
-**Pro tip:** Treat `.dockerignore` like `.gitignore` - be aggressive about what you exclude!
+**Pro tip:** treat `.dockerignore` like `.gitignore`. Be aggressive about what you exclude.
 

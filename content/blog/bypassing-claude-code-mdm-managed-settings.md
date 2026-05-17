@@ -1,6 +1,6 @@
 ---
 title: "How to bypass corporate MDM and AI gateways on Claude Code"
-date: "2026-06-05"
+date: "2026-05-08"
 tags: ["claude-code", "mdm", "ai-gateway", "macos", "managed-settings"]
 excerpt: "Your company's MDM dropped managed-settings.json and the network team wedged Claude through an AI gateway. Here's how each leash works."
 featured: false
@@ -41,7 +41,7 @@ ls -lO "/Library/Application Support/ClaudeCode/managed-settings.json"
 
 `schg` in column five is the marker.
 
-> **Key Insight:** managed-settings.json is the same config layer your `~/.claude/settings.json` uses. The IT copy just lives under `/Library`, is owned by root, and has the schg flag set. The merge logic doesn't know which file came from a human.
+The detail that matters: managed-settings.json is the same config layer your `~/.claude/settings.json` uses. The IT copy just lives under `/Library`, is owned by root, and has the schg flag set. The merge logic doesn't know which file came from a human.
 
 ## the cleanup script
 
@@ -77,8 +77,8 @@ MDM agents sync on a schedule. Every 15 minutes, every hour, on login, depending
 
 A few options, in increasing order of trouble you're inviting:
 
-- **Run the script on a `launchd` LaunchAgent that fires at login.** Once per session. Low impact, low effectiveness, but if your MDM only syncs at login this is enough.
-- **Run it on a `launchd` timer with a 60-second interval.** Now you're in an arms race with the sync schedule. Works until someone in IT notices a config-drift alert for your hostname.
+- **Run the script on a launchd LaunchAgent that fires at login.** Once per session. Low impact, low effectiveness, but if your MDM only syncs at login this is enough.
+- **Run it on a launchd timer with a 60-second interval.** Now you're in an arms race with the sync schedule. Works until someone in IT notices a config-drift alert for your hostname.
 - **Block the MDM agent's outbound DNS.** Effective, loud, and the kind of thing that gets your laptop wiped on the next compliance audit.
 
 I run the first one. The MDM gets its login telemetry, my dev environment isn't broken for the hour or so between syncs, nobody opens a ticket. Pick the option that matches how much you actually want to fight this.
@@ -110,8 +110,8 @@ The other leash sits at the network layer. Companies route Claude API traffic th
 
 Two routing patterns to recognize:
 
-- **`env` block in managed-settings.json.** IT sets `ANTHROPIC_BASE_URL=https://ai-gw.corp.example.com/v1` inside the env section of the managed file. Claude Code reads it on startup. Same fix as the MCP file. The cleanup script above already kills this.
-- **System proxy plus a corporate root CA.** Your laptop has a `Corporate Root CA` in keychain, and either `https.proxy` or transparent network interception routes `api.anthropic.com` traffic through the gateway. Deleting managed-settings.json does nothing here. The interception lives below the application layer.
+- **The env block in managed-settings.json.** IT sets `ANTHROPIC_BASE_URL=https://ai-gw.corp.example.com/v1` inside the env section of the managed file. Claude Code reads it on startup. Same fix as the MCP file. The cleanup script above already kills this.
+- **System proxy plus a corporate root CA.** Your laptop has a "Corporate Root CA" in keychain, and either an `https.proxy` setting or transparent network interception routes api.anthropic.com traffic through the gateway. Deleting managed-settings.json does nothing here. The interception lives below the application layer.
 
 To tell which one you have, run this in a fresh shell:
 

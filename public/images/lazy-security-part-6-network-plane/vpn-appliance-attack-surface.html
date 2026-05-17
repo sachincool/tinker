@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>the vpn appliance is the attack surface</title>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --color-paper:   #11141c;
+      --color-paper-2: #161a24;
+      --color-ink:     #ecedf0;
+      --color-muted:   #8a93a6;
+      --color-soft:    #5c6478;
+      --color-rule:    rgba(236,237,240,0.10);
+      --color-coral:   #ff6b5a;
+      --color-cyan:    #5bc0d9;
+      --color-green:   #7ec98f;
+      --font-sans:     'Geist', system-ui, sans-serif;
+      --font-serif:    'Instrument Serif', serif;
+      --font-mono:     'Geist Mono', ui-monospace, monospace;
+    }
+
+    html, body { background: var(--color-paper); }
+
+    body {
+      font-family: var(--font-sans);
+      color: var(--color-ink);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2.5rem 2rem;
+    }
+
+    .frame { max-width: 1520px; width: 100%; }
+
+    .eyebrow {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--color-muted);
+      margin-bottom: 0.6rem;
+    }
+
+    h1 {
+      font-family: var(--font-serif);
+      font-size: clamp(1.8rem, 2.8vw + 0.75rem, 2.6rem);
+      font-weight: 400;
+      letter-spacing: -0.015em;
+      line-height: 1.15;
+      color: var(--color-ink);
+      margin-bottom: 2rem;
+    }
+
+    figcaption {
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-size: 1.05rem;
+      color: var(--color-muted);
+      margin-top: 1.25rem;
+      letter-spacing: -0.005em;
+    }
+
+    svg { width: 100%; display: block; }
+  </style>
+</head>
+<body>
+  <div class="frame">
+    <p class="eyebrow">Figure 1  ·  why the concentrator has to go  ·  lazy sre's guide</p>
+    <h1>the vpn appliance is the attack surface</h1>
+
+    <svg viewBox="0 0 1600 900" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Single-panel system diagram showing five CVE arrows converging on a centralized VPN appliance, with internal services behind it, and a mesh-network inset on the right with no central concentrator">
+      <defs>
+        <pattern id="dots" width="24" height="24" patternUnits="userSpaceOnUse">
+          <circle cx="1" cy="1" r="0.9" fill="rgba(236,237,240,0.05)"/>
+        </pattern>
+
+        <!-- Coral arrowhead for CVE arrows -->
+        <marker id="cve-arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+          <polygon points="0 0, 10 4, 0 8" fill="#ff6b5a"/>
+        </marker>
+
+        <!-- Faint cyan arrowhead for internal links -->
+        <marker id="cyan-arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+          <polygon points="0 0, 8 3, 0 6" fill="rgba(91,192,217,0.55)"/>
+        </marker>
+      </defs>
+
+      <!-- Background -->
+      <rect width="100%" height="100%" fill="#11141c"/>
+      <rect width="100%" height="100%" fill="url(#dots)" opacity="0.7"/>
+
+      <!--
+        Layout:
+          frame x=40..1560
+          left composition (CVEs + appliance + internal): x=40..1120
+          inset (mesh): x=1140..1560
+          panel y=72..836
+      -->
+
+      <!-- =====================================
+           CORAL ATTACK-SURFACE BOUNDARY (chip top-left)
+           ===================================== -->
+      <rect x="40" y="72" width="1080" height="764" rx="10" fill="rgba(255,107,90,0.04)" stroke="rgba(255,107,90,0.32)" stroke-width="1" stroke-dasharray="6,5"/>
+      <rect x="60" y="56" width="412" height="28" rx="4" fill="#11141c" stroke="#ff6b5a" stroke-width="1.2"/>
+      <text x="266" y="74" fill="#ff6b5a" font-size="10" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.22em" font-weight="500">THE ATTACK SURFACE YOU CAN'T SHRINK</text>
+
+      <!-- =====================================
+           MESH INSET PANEL (right)
+           ===================================== -->
+      <rect x="1140" y="72" width="420" height="764" rx="10" fill="rgba(126,201,143,0.04)" stroke="rgba(126,201,143,0.30)" stroke-width="1" stroke-dasharray="6,5"/>
+      <rect x="1160" y="56" width="216" height="28" rx="4" fill="#11141c" stroke="#7ec98f" stroke-width="1.2"/>
+      <text x="1268" y="74" fill="#7ec98f" font-size="10" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.22em" font-weight="500">THE MESH ALTERNATIVE</text>
+
+      <!-- =====================================
+           CVE ARROWS — five curved coral arrows from left edge to appliance
+           Appliance is at x=480..760 (width 280), the arrows aim at its left edge x=480
+           Origins at x=72 (just inside the boundary), evenly spaced y
+           ===================================== -->
+
+      <!-- Vendor origin column header -->
+      <text x="72" y="120" fill="#5c6478" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.22em">CVE  ·  VENDOR</text>
+
+      <!-- ARROW 1 — CVE-2023-46805 / Ivanti -->
+      <g>
+        <!-- vendor tag (origin) -->
+        <text x="72" y="184" fill="#ff6b5a" font-size="11" font-family="'Geist Mono', monospace" letter-spacing="0.10em" font-weight="500">CVE-2023-46805</text>
+        <text x="72" y="200" fill="#8a93a6" font-size="9" font-family="'Geist Mono', monospace" letter-spacing="0.16em">IVANTI · CONNECT SECURE</text>
+        <!-- curve from (88, 208) to appliance row 1 left edge (480, 296) -->
+        <path d="M 220 196 C 320 196, 380 244, 480 296" fill="none" stroke="#ff6b5a" stroke-width="1.4" marker-end="url(#cve-arrow)" opacity="0.95"/>
+      </g>
+
+      <!-- ARROW 2 — CVE-2024-21887 / Ivanti -->
+      <g>
+        <text x="72" y="280" fill="#ff6b5a" font-size="11" font-family="'Geist Mono', monospace" letter-spacing="0.10em" font-weight="500">CVE-2024-21887</text>
+        <text x="72" y="296" fill="#8a93a6" font-size="9" font-family="'Geist Mono', monospace" letter-spacing="0.16em">IVANTI · COMMAND INJECTION</text>
+        <!-- aim at row 2 left edge -->
+        <path d="M 232 292 C 332 292, 392 340, 480 372" fill="none" stroke="#ff6b5a" stroke-width="1.4" marker-end="url(#cve-arrow)" opacity="0.95"/>
+      </g>
+
+      <!-- ARROW 3 — CVE-2024-20353 / Cisco ASA -->
+      <g>
+        <text x="72" y="408" fill="#ff6b5a" font-size="11" font-family="'Geist Mono', monospace" letter-spacing="0.10em" font-weight="500">CVE-2024-20353</text>
+        <text x="72" y="424" fill="#8a93a6" font-size="9" font-family="'Geist Mono', monospace" letter-spacing="0.16em">CISCO · ASA / FTD</text>
+        <!-- straight-ish to row 3 -->
+        <path d="M 232 420 C 340 420, 400 444, 480 448" fill="none" stroke="#ff6b5a" stroke-width="1.4" marker-end="url(#cve-arrow)" opacity="0.95"/>
+      </g>
+
+      <!-- ARROW 4 — CVE-2023-4966 / CitrixBleed -->
+      <g>
+        <text x="72" y="532" fill="#ff6b5a" font-size="11" font-family="'Geist Mono', monospace" letter-spacing="0.10em" font-weight="500">CVE-2023-4966</text>
+        <text x="72" y="548" fill="#8a93a6" font-size="9" font-family="'Geist Mono', monospace" letter-spacing="0.16em">CITRIX · NETSCALER (BLEED)</text>
+        <!-- curve up to row 4 -->
+        <path d="M 224 540 C 332 540, 392 500, 480 524" fill="none" stroke="#ff6b5a" stroke-width="1.4" marker-end="url(#cve-arrow)" opacity="0.95"/>
+      </g>
+
+      <!-- ARROW 5 — CVE-2024-3400 / Palo Alto -->
+      <g>
+        <text x="72" y="640" fill="#ff6b5a" font-size="11" font-family="'Geist Mono', monospace" letter-spacing="0.10em" font-weight="500">CVE-2024-3400</text>
+        <text x="72" y="656" fill="#8a93a6" font-size="9" font-family="'Geist Mono', monospace" letter-spacing="0.16em">PALO ALTO · GLOBALPROTECT</text>
+        <!-- curve up to row 5 -->
+        <path d="M 220 648 C 332 648, 396 612, 480 600" fill="none" stroke="#ff6b5a" stroke-width="1.4" marker-end="url(#cve-arrow)" opacity="0.95"/>
+      </g>
+
+      <!-- =====================================
+           VPN APPLIANCE BOX (center)
+           x=480, y=240, w=280, h=420
+           ===================================== -->
+
+      <!-- Opaque mask -->
+      <rect x="480" y="240" width="280" height="420" rx="8" fill="#11141c"/>
+      <!-- Box -->
+      <rect x="480" y="240" width="280" height="420" rx="8" fill="rgba(255,107,90,0.06)" stroke="#ff6b5a" stroke-width="1.4"/>
+
+      <!-- Title row -->
+      <text x="620" y="270" fill="#ff6b5a" font-size="11" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.22em" font-weight="600">YOUR VPN APPLIANCE</text>
+      <text x="620" y="294" fill="#bfc4cf" font-size="13" font-family="'Instrument Serif', serif" font-style="italic" text-anchor="middle">internet-facing https portal</text>
+
+      <!-- Separator under title -->
+      <line x1="500" y1="312" x2="740" y2="312" stroke="rgba(255,107,90,0.30)" stroke-width="0.8"/>
+
+      <!--
+        Five sub-component rows inside the appliance.
+        Rows: y=320..656 (336 tall, 5 rows of ~64 with 16 gap from top)
+        Each row x=500..740, h=56
+        Row centers: 348, 412, 476, 540, 604
+        Left-edge anchor points for CVE arrows correspond to these centers
+      -->
+
+      <!-- ROW A — LOGIN UI -->
+      <g>
+        <rect x="500" y="324" width="240" height="52" rx="4" fill="rgba(236,237,240,0.025)" stroke="rgba(255,107,90,0.18)" stroke-width="0.8"/>
+        <text x="516" y="346" fill="#8a93a6" font-size="9" font-family="'Geist Mono', monospace" letter-spacing="0.18em">01</text>
+        <text x="544" y="354" fill="#ecedf0" font-size="13" font-weight="600" font-family="'Geist', sans-serif">login ui</text>
+        <text x="544" y="370" fill="#5c6478" font-size="9" font-family="'Geist Mono', monospace" letter-spacing="0.06em">/dana-na/auth</text>
+      </g>
+
+      <!-- ROW B — SESSION MANAGER -->
+      <g>
+        <rect x="500" y="384" width="240" height="52" rx="4" fill="rgba(236,237,240,0.025)" stroke="rgba(255,107,90,0.18)" stroke-width="0.8"/>
+        <text x="516" y="406" fill="#8a93a6" font-size="9" font-family="'Geist Mono', monospace" letter-spacing="0.18em">02</text>
+        <text x="544" y="414" fill="#ecedf0" font-size="13" font-weight="600" font-family="'Geist', sans-serif">session manager</text>
+        <text x="544" y="430" fill="#5c6478" font-size="9" font-family="'Geist Mono', monospace" letter-spacing="0.06em">cookies, tokens, sso state</text>
+      </g>
+
+      <!-- ROW C — TUNNEL TERMINATION -->
+      <g>
+        <rect x="500" y="444" width="240" height="52" rx="4" fill="rgba(236,237,240,0.025)" stroke="rgba(255,107,90,0.18)" stroke-width="0.8"/>
+        <text x="516" y="466" fill="#8a93a6" font-size="9" font-family="'Geist Mono', monospace" letter-spacing="0.18em">03</text>
+        <text x="544" y="474" fill="#ecedf0" font-size="13" font-weight="600" font-family="'Geist', sans-serif">tunnel termination</text>
+        <text x="544" y="490" fill="#5c6478" font-size="9" font-family="'Geist Mono', monospace" letter-spacing="0.06em">ssl-vpn, ipsec, esp</text>
+      </g>
+
+      <!-- ROW D — ADMIN PANEL -->
+      <g>
+        <rect x="500" y="504" width="240" height="52" rx="4" fill="rgba(236,237,240,0.025)" stroke="rgba(255,107,90,0.18)" stroke-width="0.8"/>
+        <text x="516" y="526" fill="#8a93a6" font-size="9" font-family="'Geist Mono', monospace" letter-spacing="0.18em">04</text>
+        <text x="544" y="534" fill="#ecedf0" font-size="13" font-weight="600" font-family="'Geist', sans-serif">admin panel</text>
+        <text x="544" y="550" fill="#5c6478" font-size="9" font-family="'Geist Mono', monospace" letter-spacing="0.06em">/admin · same tcp/443</text>
+      </g>
+
+      <!-- ROW E — HOST OS -->
+      <g>
+        <rect x="500" y="564" width="240" height="52" rx="4" fill="rgba(236,237,240,0.025)" stroke="rgba(255,107,90,0.18)" stroke-width="0.8"/>
+        <text x="516" y="586" fill="#8a93a6" font-size="9" font-family="'Geist Mono', monospace" letter-spacing="0.18em">05</text>
+        <text x="544" y="594" fill="#ecedf0" font-size="13" font-weight="600" font-family="'Geist', sans-serif">host os</text>
+        <text x="544" y="610" fill="#5c6478" font-size="9" font-family="'Geist Mono', monospace" letter-spacing="0.06em">unpatched bsd / linux base</text>
+      </g>
+
+      <!-- Footer tag under the appliance -->
+      <text x="620" y="640" fill="#8a93a6" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.18em">ONE BOX · ONE TCP/443 · FIVE WAYS IN</text>
+
+      <!-- =====================================
+           INTERNAL SERVICES (right of appliance, inside coral boundary)
+           Boxes at x=864, y=296..624, w=224
+           ===================================== -->
+
+      <text x="976" y="280" fill="#5c6478" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.22em">WHAT'S BEHIND IT</text>
+
+      <!-- Service 1: prod database -->
+      <g>
+        <rect x="864" y="304" width="224" height="72" rx="6" fill="#11141c"/>
+        <rect x="864" y="304" width="224" height="72" rx="6" fill="rgba(91,192,217,0.04)" stroke="rgba(91,192,217,0.40)" stroke-width="1"/>
+        <rect x="876" y="316" width="56" height="14" rx="2" fill="transparent" stroke="rgba(91,192,217,0.55)" stroke-width="0.8"/>
+        <text x="904" y="326" fill="#5bc0d9" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.18em">DATA</text>
+        <text x="876" y="354" fill="#ecedf0" font-size="13" font-weight="600" font-family="'Geist', sans-serif">prod database</text>
+        <text x="876" y="370" fill="#8a93a6" font-size="9" font-family="'Geist Mono', monospace" letter-spacing="0.06em">postgres · port 5432</text>
+      </g>
+
+      <!-- Service 2: admin panel (internal) -->
+      <g>
+        <rect x="864" y="416" width="224" height="72" rx="6" fill="#11141c"/>
+        <rect x="864" y="416" width="224" height="72" rx="6" fill="rgba(91,192,217,0.04)" stroke="rgba(91,192,217,0.40)" stroke-width="1"/>
+        <rect x="876" y="428" width="56" height="14" rx="2" fill="transparent" stroke="rgba(91,192,217,0.55)" stroke-width="0.8"/>
+        <text x="904" y="438" fill="#5bc0d9" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.18em">APP</text>
+        <text x="876" y="466" fill="#ecedf0" font-size="13" font-weight="600" font-family="'Geist', sans-serif">admin panel</text>
+        <text x="876" y="482" fill="#8a93a6" font-size="9" font-family="'Geist Mono', monospace" letter-spacing="0.06em">internal-only, no auth at edge</text>
+      </g>
+
+      <!-- Service 3: engineer SSH -->
+      <g>
+        <rect x="864" y="528" width="224" height="72" rx="6" fill="#11141c"/>
+        <rect x="864" y="528" width="224" height="72" rx="6" fill="rgba(91,192,217,0.04)" stroke="rgba(91,192,217,0.40)" stroke-width="1"/>
+        <rect x="876" y="540" width="56" height="14" rx="2" fill="transparent" stroke="rgba(91,192,217,0.55)" stroke-width="0.8"/>
+        <text x="904" y="550" fill="#5bc0d9" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.18em">SHELL</text>
+        <text x="876" y="578" fill="#ecedf0" font-size="13" font-weight="600" font-family="'Geist', sans-serif">engineer ssh</text>
+        <text x="876" y="594" fill="#8a93a6" font-size="9" font-family="'Geist Mono', monospace" letter-spacing="0.06em">bastion · tcp/22</text>
+      </g>
+
+      <!-- Connecting lines from appliance right edge (760) to services -->
+      <!-- Drawn BEFORE the service boxes would put them under, but service boxes already drawn — keep these subtle and behind text by drawing as faint cyan -->
+      <path d="M 760 340 C 808 340, 824 340, 864 340" fill="none" stroke="rgba(91,192,217,0.45)" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#cyan-arrow)"/>
+      <path d="M 760 452 C 808 452, 824 452, 864 452" fill="none" stroke="rgba(91,192,217,0.45)" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#cyan-arrow)"/>
+      <path d="M 760 564 C 808 564, 824 564, 864 564" fill="none" stroke="rgba(91,192,217,0.45)" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#cyan-arrow)"/>
+
+      <!-- Label on connecting lines -->
+      <rect x="784" y="394" width="56" height="14" rx="2" fill="#11141c"/>
+      <text x="812" y="404" fill="#5bc0d9" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.18em" opacity="0.85">FLAT LAN</text>
+
+      <!-- Bottom caption inside coral boundary -->
+      <text x="580" y="788" fill="#bfc4cf" font-size="14" font-family="'Instrument Serif', serif" font-style="italic" text-anchor="middle">one shape. five front doors. and a flat network on the other side.</text>
+
+      <!-- =====================================
+           MESH INSET (right panel content)
+           Center at (1350, 360), radius 140
+           Six peer nodes around a dotted hexagon
+           ===================================== -->
+
+      <text x="1350" y="124" fill="#7ec98f" font-size="10" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.22em" font-weight="500">MESH NETWORK</text>
+      <text x="1350" y="148" fill="#bfc4cf" font-size="14" font-family="'Instrument Serif', serif" font-style="italic" text-anchor="middle">peer-to-peer, no concentrator</text>
+
+      <!--
+        Hexagon vertex positions around center (1350, 380), radius 124
+        angles (deg, starting top): -90, -30, 30, 90, 150, 210
+        x = cx + r * cos, y = cy + r * sin
+        -90: ( 1350,    256)
+        -30: ( 1457.4, 318)   ~ 1456, 318
+         30: ( 1457.4, 442)   ~ 1456, 442
+         90: ( 1350,    504)
+        150: ( 1242.6, 442)   ~ 1244, 442
+        210: ( 1242.6, 318)   ~ 1244, 318
+      -->
+
+      <!-- Dotted hexagon outline (ring) -->
+      <polygon points="1350,256 1456,318 1456,442 1350,504 1244,442 1244,318"
+               fill="none" stroke="rgba(126,201,143,0.35)" stroke-width="1" stroke-dasharray="3,4"/>
+
+      <!-- Mesh peer-to-peer connections (every node to every other) -->
+      <g stroke="rgba(126,201,143,0.45)" stroke-width="0.8" fill="none">
+        <!-- ring edges already implied by polygon, draw cross-links -->
+        <line x1="1350" y1="256" x2="1456" y2="442"/>
+        <line x1="1350" y1="256" x2="1244" y2="442"/>
+        <line x1="1350" y1="256" x2="1350" y2="504"/>
+        <line x1="1456" y1="318" x2="1244" y2="442"/>
+        <line x1="1456" y1="318" x2="1350" y2="504"/>
+        <line x1="1456" y1="318" x2="1244" y2="318"/>
+        <line x1="1456" y1="442" x2="1244" y2="318"/>
+        <line x1="1456" y1="442" x2="1244" y2="442"/>
+        <line x1="1244" y1="318" x2="1350" y2="504"/>
+        <line x1="1244" y1="442" x2="1350" y2="256"/>
+      </g>
+
+      <!-- Peer nodes -->
+      <g>
+        <!-- Top -->
+        <circle cx="1350" cy="256" r="14" fill="#11141c" stroke="#7ec98f" stroke-width="1.4"/>
+        <circle cx="1350" cy="256" r="4" fill="#7ec98f"/>
+        <!-- Upper right -->
+        <circle cx="1456" cy="318" r="14" fill="#11141c" stroke="#7ec98f" stroke-width="1.4"/>
+        <circle cx="1456" cy="318" r="4" fill="#7ec98f"/>
+        <!-- Lower right -->
+        <circle cx="1456" cy="442" r="14" fill="#11141c" stroke="#7ec98f" stroke-width="1.4"/>
+        <circle cx="1456" cy="442" r="4" fill="#7ec98f"/>
+        <!-- Bottom -->
+        <circle cx="1350" cy="504" r="14" fill="#11141c" stroke="#7ec98f" stroke-width="1.4"/>
+        <circle cx="1350" cy="504" r="4" fill="#7ec98f"/>
+        <!-- Lower left -->
+        <circle cx="1244" cy="442" r="14" fill="#11141c" stroke="#7ec98f" stroke-width="1.4"/>
+        <circle cx="1244" cy="442" r="4" fill="#7ec98f"/>
+        <!-- Upper left -->
+        <circle cx="1244" cy="318" r="14" fill="#11141c" stroke="#7ec98f" stroke-width="1.4"/>
+        <circle cx="1244" cy="318" r="4" fill="#7ec98f"/>
+      </g>
+
+      <!-- Tiny peer labels -->
+      <text x="1350" y="232" fill="#8a93a6" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.14em">LAPTOP</text>
+      <text x="1484" y="322" fill="#8a93a6" font-size="8" font-family="'Geist Mono', monospace" text-anchor="start" letter-spacing="0.14em">SERVER</text>
+      <text x="1484" y="446" fill="#8a93a6" font-size="8" font-family="'Geist Mono', monospace" text-anchor="start" letter-spacing="0.14em">DB</text>
+      <text x="1350" y="532" fill="#8a93a6" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.14em">LAPTOP</text>
+      <text x="1216" y="446" fill="#8a93a6" font-size="8" font-family="'Geist Mono', monospace" text-anchor="end" letter-spacing="0.14em">CI RUNNER</text>
+      <text x="1216" y="322" fill="#8a93a6" font-size="8" font-family="'Geist Mono', monospace" text-anchor="end" letter-spacing="0.14em">LAPTOP</text>
+
+      <!-- "mesh" label in center -->
+      <text x="1350" y="384" fill="#7ec98f" font-size="14" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle" letter-spacing="0.04em">mesh</text>
+
+      <!-- Mesh inset caption -->
+      <text x="1350" y="592" fill="#bfc4cf" font-size="13" font-family="'Instrument Serif', serif" font-style="italic" text-anchor="middle">no concentrator. no portal.</text>
+      <text x="1350" y="614" fill="#bfc4cf" font-size="13" font-family="'Instrument Serif', serif" font-style="italic" text-anchor="middle">no inbound port.</text>
+
+      <!-- Mesh stat strip -->
+      <line x1="1180" y1="668" x2="1520" y2="668" stroke="rgba(126,201,143,0.18)" stroke-width="0.8"/>
+
+      <g transform="translate(1180, 688)">
+        <text x="0" y="0" fill="#5c6478" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.22em">OPEN PORTS</text>
+        <text x="0" y="22" fill="#7ec98f" font-size="22" font-weight="600" font-family="'Geist', sans-serif">0</text>
+      </g>
+      <g transform="translate(1296, 688)">
+        <text x="0" y="0" fill="#5c6478" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.22em">PUBLIC FQDNS</text>
+        <text x="0" y="22" fill="#7ec98f" font-size="22" font-weight="600" font-family="'Geist', sans-serif">0</text>
+      </g>
+      <g transform="translate(1420, 688)">
+        <text x="0" y="0" fill="#5c6478" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.22em">CVES TO PATCH</text>
+        <text x="0" y="22" fill="#7ec98f" font-size="22" font-weight="600" font-family="'Geist', sans-serif">0</text>
+      </g>
+
+      <!-- Mesh footer note -->
+      <text x="1350" y="780" fill="#8a93a6" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.18em">WIREGUARD · TAILSCALE · NETBIRD</text>
+
+      <!-- =====================================
+           LEGEND STRIP — across full bottom
+           ===================================== -->
+      <line x1="40" y1="860" x2="1560" y2="860" stroke="rgba(236,237,240,0.10)" stroke-width="0.8"/>
+      <text x="40" y="884" fill="#8a93a6" font-size="9" font-family="'Geist Mono', monospace" letter-spacing="0.22em">LEGEND</text>
+
+      <!-- coral arrow swatch -->
+      <line x1="124" y1="881" x2="160" y2="881" stroke="#ff6b5a" stroke-width="1.4" marker-end="url(#cve-arrow)"/>
+      <text x="172" y="885" fill="#bfc4cf" font-size="10" font-family="'Geist Mono', monospace" letter-spacing="0.10em">CVE EXPLOITED IN THE WILD</text>
+
+      <!-- cyan dashed swatch -->
+      <line x1="420" y1="881" x2="456" y2="881" stroke="rgba(91,192,217,0.55)" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#cyan-arrow)"/>
+      <text x="468" y="885" fill="#bfc4cf" font-size="10" font-family="'Geist Mono', monospace" letter-spacing="0.10em">INTERNAL TRUST PATH</text>
+
+      <!-- coral dashed boundary -->
+      <line x1="668" y1="881" x2="704" y2="881" stroke="#ff6b5a" stroke-width="1" stroke-dasharray="4,3"/>
+      <text x="716" y="885" fill="#bfc4cf" font-size="10" font-family="'Geist Mono', monospace" letter-spacing="0.10em">EXTERNAL ATTACK SURFACE</text>
+
+      <!-- green dashed boundary -->
+      <line x1="956" y1="881" x2="992" y2="881" stroke="#7ec98f" stroke-width="1" stroke-dasharray="4,3"/>
+      <text x="1004" y="885" fill="#bfc4cf" font-size="10" font-family="'Geist Mono', monospace" letter-spacing="0.10em">MESH · NO INBOUND SHAPE</text>
+    </svg>
+
+    <figcaption>five cves, one shape. the mesh on the right has no shape to hit.</figcaption>
+  </div>
+</body>
+</html>
