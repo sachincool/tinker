@@ -1,24 +1,25 @@
-// Medium import helper — paste this into DevTools console at https://medium.com/p/import
+// Medium import helper — paste into DevTools console at https://medium.com/me/stories/drafts
 //
 // Why this exists:
 //   Medium's importer rejects programmatic typing into its contenteditable URL field,
 //   so the normal sync script can't drive it. ClipboardEvent('paste') gets through.
-//   Medium also rate-limits at ~9 imports per ~10 minutes (silently — no error, just
-//   stops responding), so this snippet paces itself with a long delay between posts.
+//   Medium also rate-limits silently (no error, just stops accepting imports), so
+//   this snippet paces itself.
+//
+// Why an iframe:
+//   A previous version drove the top window directly. The first navigation killed
+//   the pasted script before any log line fired. An iframe stays embedded in the
+//   drafts page; the parent JS survives across the iframe's internal navigations.
 //
 // Usage:
-//   1. Open https://medium.com/p/import in Chrome, signed in.
-//   2. Open DevTools (Cmd+Option+I), Console tab.
-//   3. Paste the whole file. It will start importing and log progress.
-//   4. Let it run unattended — each import takes ~30s due to throttling.
-//   5. When done, results array is in window.__importResults.
-//
-// To resume after a partial run: edit URLS below to skip the ones already drafted.
+//   1. Open https://medium.com/me/stories/drafts in Chrome, signed in.
+//   2. DevTools (Cmd+Option+I) → Console.
+//   3. Paste this entire file. The iframe appears bottom-right (you can resize).
+//   4. Watch the console — green ✓ or red ✗ lines log as each import completes.
+//   5. Results land in window.__importResults at the end.
 
 const URLS = [
-  // 20 remaining as of 2026-05-18 (the 10 already-drafted are excluded)
-  'https://harshit.cloud/til/bash-parameter-expansion',
-  'https://harshit.cloud/blog/prometheus-grafana-monitoring-guide',
+  // 18 remaining as of 2026-05-18 (12 already-drafted are excluded)
   'https://harshit.cloud/til/git-interactive-rebase-magic',
   'https://harshit.cloud/blog/github-actions-gitlab-ci-comparison',
   'https://harshit.cloud/blog/favorite-shows-sitcoms-detective',
@@ -39,74 +40,93 @@ const URLS = [
   'https://harshit.cloud/blog/lazy-security-part-6-network-plane',
 ];
 
-// Delay between imports. Medium's silent rate-limit kicks in around 9 imports per
-// ~10 minutes, so 75s/post means ~5 imports per cycle — well under the threshold.
-const DELAY_MS = 75_000;
+const DELAY_MS = 75_000;   // pause between imports
+const LOAD_MS = 5_000;     // time to let /p/import hydrate
+const SUBMIT_MS = 12_000;  // time to wait for editor URL after clicking Import
 
 (async () => {
   const results = (window.__importResults = []);
   const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
-  // Strip the editor's beforeunload prompt so we can navigate freely.
-  window.onbeforeunload = null;
+  // (Re-)create the iframe
+  let iframe = document.getElementById('__medium_import_iframe');
+  if (iframe) iframe.remove();
+  iframe = document.createElement('iframe');
+  iframe.id = '__medium_import_iframe';
+  iframe.style.cssText =
+    'position:fixed;bottom:10px;right:10px;width:600px;height:420px;z-index:9999;border:2px solid #B7410E;background:white;box-shadow:0 4px 24px rgba(0,0,0,0.3);';
+  document.body.appendChild(iframe);
+  console.log('[medium-import] iframe attached. Starting in 3s…');
+  await sleep(3000);
+
+  const loadIframe = (url) =>
+    new Promise((resolve) => {
+      const onLoad = () => {
+        iframe.removeEventListener('load', onLoad);
+        resolve();
+      };
+      iframe.addEventListener('load', onLoad);
+      iframe.src = url;
+    });
 
   for (let i = 0; i < URLS.length; i++) {
     const url = URLS[i];
     const tag = `[${i + 1}/${URLS.length}] ${url}`;
 
     try {
-      // Always start from /p/import. Medium navigates to /p/<id>/edit on success.
-      if (location.pathname !== '/p/import') {
-        window.onbeforeunload = null;
-        location.href = 'https://medium.com/p/import';
-        // Wait for navigation + page hydration.
-        await sleep(5000);
-      } else {
-        // Reload to clear any stuck state.
-        location.reload();
-        await sleep(5000);
-      }
+      await loadIframe('https://medium.com/p/import');
+      await sleep(LOAD_MS);
 
-      // Paste the URL via a synthetic ClipboardEvent — Medium accepts this even
-      // when it ignores typing.
-      const div = document.querySelectorAll('[contenteditable]')[0];
-      if (!div) throw new Error('contenteditable not found — are you on /p/import?');
+      const idoc = iframe.contentDocument;
+      const iwin = iframe.contentWindow;
+      if (!idoc || !iwin) throw new Error('iframe blocked (cross-origin?)');
+
+      // Suppress beforeunload in the iframe so editor → import navigation is clean
+      iwin.onbeforeunload = null;
+
+      const div = idoc.querySelectorAll('[contenteditable]')[0];
+      if (!div) throw new Error('no contenteditable in iframe — Medium may have updated');
+
       div.focus();
       div.textContent = '';
-      const dt = new DataTransfer();
+      const dt = new iwin.DataTransfer();
       dt.setData('text/plain', url);
-      div.dispatchEvent(new ClipboardEvent('paste', { clipboardData: dt, bubbles: true, cancelable: true }));
+      div.dispatchEvent(
+        new iwin.ClipboardEvent('paste', { clipboardData: dt, bubbles: true, cancelable: true })
+      );
 
-      // Tiny pause so Medium's React internals settle.
       await sleep(800);
 
-      // Click Import.
-      const btn = Array.from(document.querySelectorAll('button')).find((b) => b.textContent.trim() === 'Import');
-      if (!btn) throw new Error('Import button not found');
+      const btn = Array.from(idoc.querySelectorAll('button')).find(
+        (b) => b.textContent.trim() === 'Import'
+      );
+      if (!btn) throw new Error('Import button not found in iframe');
       btn.click();
 
-      // Wait for navigation to /p/<id>/edit.
-      await sleep(10_000);
+      await sleep(SUBMIT_MS);
 
-      if (location.pathname.match(/^\/p\/[a-f0-9]+\/edit$/)) {
-        const id = location.pathname.split('/')[2];
-        results.push({ url, ok: true, mediumId: id, editUrl: location.href });
-        console.log(`✓ ${tag}  →  ${id}`);
+      const finalPath = iwin.location.pathname;
+      if (/^\/p\/[a-f0-9]+\/edit$/.test(finalPath)) {
+        const id = finalPath.split('/')[2];
+        results.push({ url, ok: true, mediumId: id, editUrl: iwin.location.href });
+        console.log('%c✓ ' + tag + ' → ' + id, 'color: green');
       } else {
-        results.push({ url, ok: false, finalUrl: location.href });
-        console.warn(`✗ ${tag}  →  rate-limited or failed (still at ${location.pathname})`);
+        results.push({ url, ok: false, finalPath });
+        console.warn('✗ ' + tag + ' → stuck at ' + finalPath + ' (rate-limited?)');
       }
     } catch (e) {
       results.push({ url, ok: false, error: e.message });
-      console.error(`✗ ${tag}  →  ${e.message}`);
+      console.error('✗ ' + tag + ' → ' + e.message);
     }
 
-    // Pace ourselves so Medium doesn't blanket-rate-limit us.
-    if (i < URLS.length - 1) await sleep(DELAY_MS);
+    if (i < URLS.length - 1) {
+      console.log('[medium-import] sleeping ' + DELAY_MS / 1000 + 's before next…');
+      await sleep(DELAY_MS);
+    }
   }
 
-  console.log('\n=== Done ===');
+  console.log('%c=== Done ===', 'color: green; font-weight: bold');
   console.table(results);
-  console.log('Full results in window.__importResults');
-  console.log('Copy as JSON:  copy(JSON.stringify(window.__importResults, null, 2))');
+  console.log('Full results: window.__importResults');
+  console.log("Copy as JSON:  copy(JSON.stringify(window.__importResults, null, 2))");
 })();
