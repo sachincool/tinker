@@ -167,7 +167,9 @@
     "til/docker-build-cache-trick": {
       "mediumId": "772271631a9f",
       "editUrl": "https://medium.com/p/772271631a9f/edit",
-      "at": "2026-05-18T17:23:08.410Z"
+      "at": "2026-05-18T17:23:08.410Z",
+      "status": "draft_held",
+      "note": "too short for Medium (95 words), leaving as draft"
     },
     "til/jq-for-json-parsing": {
       "mediumId": "8c0548c7d777",
@@ -182,7 +184,9 @@
     "til/kubectl-neat-trick": {
       "mediumId": "73c99574b44c",
       "editUrl": "https://medium.com/p/73c99574b44c/edit",
-      "at": "2026-05-18T17:23:08.410Z"
+      "at": "2026-05-18T17:23:08.410Z",
+      "status": "draft_held",
+      "note": "too short for Medium (115 words), leaving as draft"
     },
     "til/kubectl-jsonpath-queries": {
       "mediumId": "9574209ec72b",
@@ -193,12 +197,6 @@
       "mediumId": "4729efb9e453",
       "editUrl": "https://medium.com/p/4729efb9e453/edit",
       "at": "2026-05-18T17:23:08.410Z"
-    },
-    "blog/six-visual-tools-one-diagram": {
-      "mediumId": "unknown",
-      "editUrl": "unknown — check drafts panel",
-      "note": "imported via initial 503 attempt; ID not captured",
-      "at": "2026-05-18T17:23:39.017Z"
     },
     "blog/kubernetes-debugging-tips": {
       "mediumId": "8b7ccedfe726",
