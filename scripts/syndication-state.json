@@ -165,11 +165,9 @@
       "at": "2026-05-18T17:23:08.410Z"
     },
     "til/docker-build-cache-trick": {
-      "mediumId": "772271631a9f",
-      "editUrl": "https://medium.com/p/772271631a9f/edit",
-      "at": "2026-05-18T17:23:08.410Z",
-      "status": "draft_held",
-      "note": "too short for Medium (95 words), leaving as draft"
+      "status": "deleted",
+      "reason": "too short for Medium (86 words), deleted from drafts",
+      "at": "2026-05-18T19:15:05.131Z"
     },
     "til/jq-for-json-parsing": {
       "mediumId": "8c0548c7d777",
@@ -182,11 +180,9 @@
       "at": "2026-05-18T17:23:08.410Z"
     },
     "til/kubectl-neat-trick": {
-      "mediumId": "73c99574b44c",
-      "editUrl": "https://medium.com/p/73c99574b44c/edit",
-      "at": "2026-05-18T17:23:08.410Z",
-      "status": "draft_held",
-      "note": "too short for Medium (115 words), leaving as draft"
+      "status": "deleted",
+      "reason": "too short for Medium (92 words), deleted from drafts",
+      "at": "2026-05-18T19:15:05.131Z"
     },
     "til/kubectl-jsonpath-queries": {
       "mediumId": "9574209ec72b",
