@@ -199,6 +199,11 @@
       "editUrl": "unknown — check drafts panel",
       "note": "imported via initial 503 attempt; ID not captured",
       "at": "2026-05-18T17:23:39.017Z"
+    },
+    "blog/kubernetes-debugging-tips": {
+      "mediumId": "8b7ccedfe726",
+      "editUrl": "https://medium.com/p/8b7ccedfe726/edit",
+      "at": "2026-05-18T17:49:31.713Z"
     }
   }
 }

@@ -16,8 +16,7 @@
 // To resume after a partial run: edit URLS below to skip the ones already drafted.
 
 const URLS = [
-  // 21 remaining as of 2026-05-18 (the 9 already-drafted are excluded)
-  'https://harshit.cloud/blog/kubernetes-debugging-tips',
+  // 20 remaining as of 2026-05-18 (the 10 already-drafted are excluded)
   'https://harshit.cloud/til/bash-parameter-expansion',
   'https://harshit.cloud/blog/prometheus-grafana-monitoring-guide',
   'https://harshit.cloud/til/git-interactive-rebase-magic',
