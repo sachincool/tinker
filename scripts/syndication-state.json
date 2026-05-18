@@ -304,6 +304,21 @@
       "mediumId": "unknown",
       "at": "2026-05-18T18:24:58.316Z",
       "note": "published manually by user via Medium UI"
+    },
+    "til/blocking-ai-crawlers": {
+      "status": "skipped",
+      "reason": "short TIL, not cross-posted to Medium",
+      "at": "2026-05-18T19:01:00.351Z"
+    },
+    "til/delivery-social-engineering": {
+      "status": "skipped",
+      "reason": "short TIL, not cross-posted to Medium",
+      "at": "2026-05-18T19:01:00.351Z"
+    },
+    "til/ja4-fingerprint-bot-detection": {
+      "status": "skipped",
+      "reason": "short TIL, not cross-posted to Medium",
+      "at": "2026-05-18T19:01:00.351Z"
     }
   }
 }
