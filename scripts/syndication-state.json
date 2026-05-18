@@ -1,0 +1,204 @@
+{
+  "devto": {
+    "blog/six-visual-tools-one-diagram": {
+      "id": 3694898,
+      "url": "https://dev.to/sachincool/seven-visual-tools-one-diagram-2j4i",
+      "at": "2026-05-18T16:48:41.587Z"
+    },
+    "blog/infrastructure-as-code-mistakes": {
+      "id": 3694901,
+      "url": "https://dev.to/sachincool/infrastructure-as-code-mistakes-i-made-so-you-dont-have-to-4o5i",
+      "at": "2026-05-18T16:49:13.066Z"
+    },
+    "blog/aws-cost-optimization-tricks": {
+      "id": 3694902,
+      "url": "https://dev.to/sachincool/aws-cost-optimization-how-we-cut-our-bill-by-60-30nj",
+      "at": "2026-05-18T16:49:17.933Z"
+    },
+    "til/docker-volume-inspect-trick": {
+      "id": 3694904,
+      "url": "https://dev.to/sachincool/docker-volume-debugging-finding-where-your-data-actually-lives-2plm",
+      "at": "2026-05-18T16:49:46.429Z"
+    },
+    "blog/kubernetes-debugging-tips": {
+      "id": 3694905,
+      "url": "https://dev.to/sachincool/5-kubernetes-debugging-tricks-that-saved-my-production-45ol",
+      "at": "2026-05-18T16:49:51.255Z"
+    },
+    "blog/ja4-fingerprinting-network-security": {
+      "id": 3694906,
+      "url": "https://dev.to/sachincool/how-i-took-down-30-of-production-with-one-tls-fingerprinting-rule-1ila",
+      "at": "2026-05-18T16:50:18.948Z"
+    },
+    "til/ja4-fingerprint-bot-detection": {
+      "id": 3694907,
+      "url": "https://dev.to/sachincool/ja4s-split-format-saved-our-metrics-cardinality-25cf",
+      "at": "2026-05-18T16:50:24.035Z"
+    },
+    "blog/self-hosting-simplelogin": {
+      "id": 3694910,
+      "url": "https://dev.to/sachincool/self-hosting-simplelogin-own-your-email-aliases-for-3-a-month-3cfp",
+      "at": "2026-05-18T16:50:53.436Z"
+    },
+    "blog/lazy-security-part-1-supply-chain": {
+      "id": 3694911,
+      "url": "https://dev.to/sachincool/lazy-sres-guide-to-secure-systems-part-1-the-dependencies-you-didnt-read-2eck",
+      "at": "2026-05-18T16:50:58.146Z"
+    },
+    "blog/lazy-security-part-6-network-plane": {
+      "id": 3694914,
+      "url": "https://dev.to/sachincool/lazy-sres-guide-to-secure-systems-part-6-the-network-in-front-of-everything-480g",
+      "at": "2026-05-18T16:51:26.602Z"
+    },
+    "til/docker-build-cache-trick": {
+      "id": 3694919,
+      "url": "https://dev.to/sachincool/docker-build-cache-the-dockerignore-gotcha-3m30",
+      "at": "2026-05-18T16:52:36.195Z"
+    },
+    "til/jq-for-json-parsing": {
+      "id": 3694920,
+      "url": "https://dev.to/sachincool/jq-magic-parse-json-like-a-pro-4lpc",
+      "at": "2026-05-18T16:52:52.101Z"
+    },
+    "blog/docker-security-hardening": {
+      "id": 3694925,
+      "url": "https://dev.to/sachincool/docker-security-stop-running-everything-as-root-3iak",
+      "at": "2026-05-18T16:53:08.460Z"
+    },
+    "til/kubectl-neat-trick": {
+      "id": 3694927,
+      "url": "https://dev.to/sachincool/kubectl-neat-remove-kubernetes-yaml-clutter-13i9",
+      "at": "2026-05-18T16:53:24.486Z"
+    },
+    "til/kubectl-jsonpath-queries": {
+      "id": 3694928,
+      "url": "https://dev.to/sachincool/kubectl-jsonpath-extract-exactly-what-you-need-2hg4",
+      "at": "2026-05-18T16:53:41.058Z"
+    },
+    "til/bash-parameter-expansion": {
+      "id": 3694929,
+      "url": "https://dev.to/sachincool/bash-parameter-expansion-string-manipulation-without-external-commands-8fp",
+      "at": "2026-05-18T16:54:27.265Z"
+    },
+    "blog/prometheus-grafana-monitoring-guide": {
+      "id": 3694932,
+      "url": "https://dev.to/sachincool/prometheus-and-grafana-from-zero-to-production-monitoring-4lgm",
+      "at": "2026-05-18T16:54:43.730Z"
+    },
+    "til/git-interactive-rebase-magic": {
+      "id": 3694934,
+      "url": "https://dev.to/sachincool/git-interactive-rebase-clean-up-your-commit-history-2k2o",
+      "at": "2026-05-18T16:54:59.408Z"
+    },
+    "blog/github-actions-gitlab-ci-comparison": {
+      "id": 3694935,
+      "url": "https://dev.to/sachincool/github-actions-vs-gitlab-ci-a-practical-comparison-b81",
+      "at": "2026-05-18T16:55:15.197Z"
+    },
+    "blog/favorite-shows-sitcoms-detective": {
+      "id": 3694936,
+      "url": "https://dev.to/sachincool/my-watchlist-from-70s-basements-to-victorian-crime-scenes-43b2",
+      "at": "2026-05-18T16:55:30.941Z"
+    },
+    "til/delivery-social-engineering": {
+      "id": 3694939,
+      "url": "https://dev.to/sachincool/delivery-service-impersonation-is-an-alarmingly-effective-social-engineering-vector-52bj",
+      "at": "2026-05-18T16:56:16.584Z"
+    },
+    "blog/netlify-to-dokploy-migration": {
+      "id": 3694940,
+      "url": "https://dev.to/sachincool/when-netlify-killed-my-free-tier-a-15-minute-migration-to-dokploy-54k1",
+      "at": "2026-05-18T16:56:32.650Z"
+    },
+    "blog/victorialogs-vs-loki": {
+      "id": 3694946,
+      "url": "https://dev.to/sachincool/victorialogs-vs-loki-real-world-benchmarking-results-26bg",
+      "at": "2026-05-18T16:56:48.535Z"
+    },
+    "blog/akamai-browser-extensions-blocking": {
+      "id": 3694948,
+      "url": "https://dev.to/sachincool/access-denied-edgesuite-edition-when-your-browser-extensions-become-attack-vectors-2h0c",
+      "at": "2026-05-18T16:57:04.115Z"
+    },
+    "til/blocking-ai-crawlers": {
+      "id": 3694950,
+      "url": "https://dev.to/sachincool/blocking-ai-crawlers-is-the-new-noindex-4lig",
+      "at": "2026-05-18T16:57:19.867Z"
+    },
+    "blog/lazy-security-part-2-github-actions": {
+      "id": 3694955,
+      "url": "https://dev.to/sachincool/lazy-sres-guide-to-secure-systems-part-2-the-actions-you-didnt-pin-428g",
+      "at": "2026-05-18T16:58:05.640Z"
+    },
+    "blog/lazy-security-part-3-unsexy-list": {
+      "id": 3694958,
+      "url": "https://dev.to/sachincool/lazy-sres-guide-to-secure-systems-part-3-the-unsexy-list-4e8n",
+      "at": "2026-05-18T16:58:21.423Z"
+    },
+    "blog/lazy-security-part-4-dns-records": {
+      "id": 3694961,
+      "url": "https://dev.to/sachincool/lazy-sres-guide-to-secure-systems-part-4-the-four-dns-records-4eh4",
+      "at": "2026-05-18T16:58:37.112Z"
+    },
+    "blog/lazy-security-part-5-dev-laptops": {
+      "id": 3694966,
+      "url": "https://dev.to/sachincool/lazy-sres-guide-to-secure-systems-part-5-the-dev-laptop-is-the-perimeter-3109",
+      "at": "2026-05-18T16:58:53.235Z"
+    },
+    "blog/bypassing-claude-code-mdm-managed-settings": {
+      "id": 3694967,
+      "url": "https://dev.to/sachincool/how-to-bypass-corporate-mdm-and-ai-gateways-on-claude-code-27de",
+      "at": "2026-05-18T16:59:08.930Z"
+    }
+  },
+  "hashnode": {},
+  "hashnode_publication_id": null,
+  "medium": {
+    "blog/infrastructure-as-code-mistakes": {
+      "mediumId": "94a164e5a1e7",
+      "editUrl": "https://medium.com/p/94a164e5a1e7/edit",
+      "at": "2026-05-18T17:23:08.410Z"
+    },
+    "blog/aws-cost-optimization-tricks": {
+      "mediumId": "43ac18925c37",
+      "editUrl": "https://medium.com/p/43ac18925c37/edit",
+      "at": "2026-05-18T17:23:08.410Z"
+    },
+    "til/docker-build-cache-trick": {
+      "mediumId": "772271631a9f",
+      "editUrl": "https://medium.com/p/772271631a9f/edit",
+      "at": "2026-05-18T17:23:08.410Z"
+    },
+    "til/jq-for-json-parsing": {
+      "mediumId": "8c0548c7d777",
+      "editUrl": "https://medium.com/p/8c0548c7d777/edit",
+      "at": "2026-05-18T17:23:08.410Z"
+    },
+    "blog/docker-security-hardening": {
+      "mediumId": "92fa55fcd30d",
+      "editUrl": "https://medium.com/p/92fa55fcd30d/edit",
+      "at": "2026-05-18T17:23:08.410Z"
+    },
+    "til/kubectl-neat-trick": {
+      "mediumId": "73c99574b44c",
+      "editUrl": "https://medium.com/p/73c99574b44c/edit",
+      "at": "2026-05-18T17:23:08.410Z"
+    },
+    "til/kubectl-jsonpath-queries": {
+      "mediumId": "9574209ec72b",
+      "editUrl": "https://medium.com/p/9574209ec72b/edit",
+      "at": "2026-05-18T17:23:08.410Z"
+    },
+    "til/docker-volume-inspect-trick": {
+      "mediumId": "4729efb9e453",
+      "editUrl": "https://medium.com/p/4729efb9e453/edit",
+      "at": "2026-05-18T17:23:08.410Z"
+    },
+    "blog/six-visual-tools-one-diagram": {
+      "mediumId": "unknown",
+      "editUrl": "unknown — check drafts panel",
+      "note": "imported via initial 503 attempt; ID not captured",
+      "at": "2026-05-18T17:23:39.017Z"
+    }
+  }
+}
