@@ -107,7 +107,7 @@ export default function BlogPageClient({ initialPosts }: BlogPageClientProps) {
           <h1 className="font-serif font-normal text-6xl md:text-8xl leading-[0.95] tracking-[-0.02em] text-foreground">
             The Blog
           </h1>
-          <p className="font-serif italic text-lg md:text-xl text-muted-foreground max-w-2xl leading-snug">
+          <p className="font-serif text-lg md:text-xl text-foreground/80 max-w-2xl leading-snug">
             I tinker with infrastructure and write about what broke. The good stuff is at the top; the rest is in the archive.
           </p>
         </div>

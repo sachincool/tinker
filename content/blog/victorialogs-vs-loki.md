@@ -12,12 +12,6 @@ On 500 GB of logs over 7 days, on the same hardware: **94% lower query latencies
 
 *Fig. 1 — same hardware, same dataset, four bars short enough to read on the way to a meeting.*
 
-> **TL;DR**
-> - **Search:** 12× faster on needle-in-a-haystack across 500 GB
-> - **Storage:** 37% smaller on disk at the same retention
-> - **Compute:** Half the vCPU, a fifth of the memory at steady state
-> - **Verdict:** VictoriaLogs is our default for high-ingestion, search-heavy clusters. Loki keeps its place for label-first, Grafana-native workloads.
-
 ## The setup
 
 At Truefoundry we run multi-tenant ML workloads on Kubernetes. The log layer has to deliver:
