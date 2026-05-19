@@ -8,7 +8,7 @@ featured: true
 
 On 500 GB of logs over 7 days, on the same hardware: **94% lower query latencies, 37% smaller storage, and under half the CPU and RAM**. The single number that surprised us most was the 12× drop in needle-in-a-haystack search times.
 
-<iframe src="/images/victorialogs-vs-loki/hero-widget.html" title="VictoriaLogs vs Loki headline metrics: needle search 0.9 s vs 12 s, storage 318 GB vs 501 GB, sustained CPU 2 vCPU vs 4 vCPU, memory 1.3 GB vs 6.5 GB" height="780" data-caption="Fig. 1 — same hardware, same dataset, four numbers."></iframe>
+![VictoriaLogs vs Loki — neon-styled cover illustration with VictoriaLogs (cyan, throughput chart, database icon) and Loki (magenta, bar chart, gauge) presented as benchmark contenders](/images/victorialogs-vs-loki/hero.webp)
 
 ## The setup
 
