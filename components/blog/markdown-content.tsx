@@ -265,8 +265,8 @@ export function MarkdownContent({ content }: MarkdownContentProps) {
             a === 'right' ? 'text-right tabular-nums' : a === 'center' ? 'text-center' : 'text-left';
 
           elements.push(
-            <div key={index} className="my-10 overflow-x-auto rounded-xl border border-border/50 shadow-xl">
-              <table className="w-full border-collapse min-w-full">
+            <div key={index} className="my-10 mx-auto w-fit max-w-full overflow-x-auto rounded-xl border border-border/50 shadow-xl">
+              <table className="border-collapse">
                 <thead>
                   <tr className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 border-b-2 border-blue-500/30">
                     {headers.map((header, i) => (

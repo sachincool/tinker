@@ -74,10 +74,13 @@ Three query patterns, run against the same 500 GB / 7-day index. Result sets wer
 
 **Purpose:** Total log lines from `app="servicefoundry-server"`.
 
-| System | Query | Latency |
-|---|---|---:|
-| Loki | `sum(count_over_time({app="servicefoundry-server"}[24h]))` | 2.5s |
-| VictoriaLogs | `{app="servicefoundry-server"} \| stats count()` | 1.5s |
+- **LogQL:** `sum(count_over_time({app="servicefoundry-server"}[24h]))`
+- **LogsQL:** `{app="servicefoundry-server"} | stats count()`
+
+| System | Latency |
+|---|---:|
+| Loki | 2.5s |
+| VictoriaLogs | 1.5s |
 
 Aggregate counts hit Loki's strength — label-anchored, no text scan — and Loki still loses by 40% on the wall clock. VictoriaLogs holds its own on label queries; Loki has no answer for the others.
 
@@ -85,10 +88,13 @@ Aggregate counts hit Loki's strength — label-anchored, no text scan — and Lo
 
 **Purpose:** Locate a single static log entry `[UNIQUE-STATIC-LOG] ID=abc123 XYZ` in the `truefoundry` namespace over 7 days.
 
-| System | Query | Latency |
-|---|---|---:|
-| Loki | `{namespace="truefoundry", app!="grafana"} \|= "[UNIQUE-STATIC-LOG] ID=abc123 XYZ"` | 12s |
-| VictoriaLogs | `{namespace="truefoundry", app!="grafana"} "[UNIQUE-STATIC-LOG] ID=abc123 XYZ"` | ~900ms |
+- **LogQL:** `{namespace="truefoundry", app!="grafana"} |= "[UNIQUE-STATIC-LOG] ID=abc123 XYZ"`
+- **LogsQL:** `{namespace="truefoundry", app!="grafana"} "[UNIQUE-STATIC-LOG] ID=abc123 XYZ"`
+
+| System | Latency |
+|---|---:|
+| Loki | 12s |
+| VictoriaLogs | ~900ms |
 
 The single-character difference in syntax — `|=` vs nothing — hides the architectural one. Loki's `|=` is a substring filter run line-by-line over decompressed chunks. VictoriaLogs treats the same string as an index probe. 12 seconds turns into 900 milliseconds on identical hardware.
 
