@@ -96,12 +96,13 @@ The single-character difference in syntax — `|=` vs nothing — hides the arch
 
 **Purpose:** Search for a string that doesn't appear anywhere in the dataset. Forces a full scan in both systems.
 
-| System | Dataset | Query | Latency |
-|---|---|---|---|
-| Loki | 500 GB | `{namespace="truefoundry"} \|= "non-existent log line"` | **Timeout** |
-| VictoriaLogs | 500 GB | `{namespace="truefoundry"} "non-existent log line"` | 2.2s |
-| Loki | 300 GB | `{namespace="truefoundry"} \|= "non-existent log line"` | 2.6s |
-| VictoriaLogs | 300 GB | `{namespace="truefoundry"} "non-existent log line"` | 266ms |
+- **LogQL:** `{namespace="truefoundry"} |= "non-existent log line"`
+- **LogsQL:** `{namespace="truefoundry"} "non-existent log line"`
+
+| Dataset | Loki | VictoriaLogs |
+|---|---|---|
+| 500 GB | **Timeout** | 2.2s |
+| 300 GB | 2.6s | 266ms |
 
 The negative query is the quiet one. At 300 GB Loki handles it in 2.6 seconds. At 500 GB the resources choke and the query halts — never returns. In production that's the difference between an alert that fires and a dashboard that loads.
 
@@ -112,14 +113,14 @@ We pushed both with 120 flog replicas to find the ceiling.
 | Metric | Loki | VictoriaLogs | Delta |
 |---|---|---|---|
 | Peak ingestion | 20 MB/s | 66 MB/s | **3× higher** |
-| vCPU (sustained) | 4 (throttled) | 2 peak | 50% lower |
-| Memory | ~4 GB | ~1.3 GB | 3× lower |
+| vCPU (sustained) | 4 vCPU, 100% throttled | 2 vCPU peak | 50% lower |
+| Memory | ~4 GiB | ~1.3 GiB | 3× lower |
 
 ![Loki CPU saturation graph at 4 vCPUs and memory consumption at 4GB during peak ingestion load with 120 flog replicas](/images/victorialogs-vs-loki/victorialogs-loki-cpu-memory-loki.png)
 
 ![VictoriaLogs performance graph showing 2 peak vCPU usage and 1.3GB memory consumption during the same ingestion load](/images/victorialogs-vs-loki/victorialogs-loki-performance-victoria.png)
 
-Loki hit the CPU wall first and never recovered. VictoriaLogs absorbed the same firehose with cycles to spare.
+Loki hit the CPU wall first and never recovered — pinned at 100% throttled while still topping out at 20 MB/s. VictoriaLogs absorbed the same firehose at 3× the throughput, on **72% less CPU and 87% less memory**.
 
 ## Load test under traffic
 
