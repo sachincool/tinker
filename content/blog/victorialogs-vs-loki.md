@@ -8,26 +8,43 @@ featured: true
 
 On 500 GB of logs over 7 days, on the same hardware: **94% lower query latencies, 37% smaller storage, and under half the CPU and RAM**. The single number that surprised us most was the 12× drop in needle-in-a-haystack search times.
 
-![Horizontal bar comparison of VictoriaLogs vs Loki on 500 GB over 7 days: needle search 0.9 s vs 12 s, storage 63% vs 100%, sustained CPU 2 vCPU vs 4 vCPU, memory 1.3 GB vs 6.5 GB](/images/victorialogs-vs-loki/hero.png)
+<iframe src="/images/victorialogs-vs-loki/hero-widget.html" title="VictoriaLogs vs Loki headline metrics: needle search 0.9 s vs 12 s, storage 318 GB vs 501 GB, sustained CPU 2 vCPU vs 4 vCPU, memory 1.3 GB vs 6.5 GB" height="780" data-caption="Fig. 1 — same hardware, same dataset, four numbers."></iframe>
 
-*Fig. 1 — same hardware, same dataset, four bars short enough to read on the way to a meeting.*
+> **TL;DR**
+> - **Search:** 12× faster on needle-in-a-haystack across 500 GB
+> - **Storage:** 37% smaller on disk at the same retention
+> - **Compute:** Half the vCPU, a fifth of the memory at steady state
+> - **Verdict:** VictoriaLogs is our default for high-ingestion, search-heavy clusters. Loki keeps its place for label-first, Grafana-native workloads.
 
 ## The setup
 
-At Truefoundry we run multi-tenant ML workloads, which means fast ad-hoc search, high ingestion, live log tailing, and minimal ops on 4 vCPU / 16 GB nodes. Loki was our default, but past the 1M-active-series mark it started showing 30s+ search latencies and high I/O amplification. So we benchmarked it head-to-head against VictoriaLogs and let the numbers decide.
+At Truefoundry we run multi-tenant ML workloads on Kubernetes. The log layer has to deliver:
 
-The contestants in one line:
+- **Fast ad-hoc search** across mixed namespaces, often with no good labels to anchor on
+- **Sustained 60+ MB/s ingestion** during deploys and incidents
+- **Live tailing** that doesn't fall behind during a noisy crash loop
+- **Single-binary ops** — we don't want a six-component log stack
+- **4 vCPU / 16 GiB node ceiling**, shared with everything else
+
+Loki was our default. Past the 1M-active-series mark it started showing 30s+ search latencies and high I/O amplification. So we benchmarked it head-to-head against VictoriaLogs and let the numbers decide.
+
+### The contestants
 
 - **Loki:** Grafana Labs' log store. Compressed chunks, label-based indexing, LogQL. Brilliant Grafana integration; expensive regex scans and Go GC overhead at scale.
 - **VictoriaLogs:** VictoriaMetrics' columnar LSM log database. Per-field indices, SIMD search, LogsQL. Single binary, low memory footprint, efficient compression.
 
-Methodology in five bullets:
+### Benchmark methodology
 
-- **Workload:** 65 MB/s sustained ingestion via flog → Vector → destination
-- **Dataset:** ~500 GB over 7 days across 20 namespaces and 40 apps
-- **Load test:** Locust, 10 virtual users, 43 RPS sustained
-- **Hardware:** 4 vCPU / 8 GiB RAM instances
-- **Tuning:** Block-cache disabled to simulate cold reads
+| Category | Details |
+|---|---|
+| Hardware | 4 vCPU / 8 GiB RAM, identical for both, QoS: Guaranteed |
+| Log generator | flog → Vector → Loki / VictoriaLogs at 65 MB/s sustained |
+| Dataset | ~500 GB over 7 days; mix of unique and duplicated lines across 20 namespaces, 40 apps |
+| Retention | 7 days |
+| Load test | Locust 2.27.1, 10 virtual users, sustained 43 RPS via `/select/logsql/query` and the Grafana datasource |
+| Queries | Stats, Needle in a Haystack, Negative — detailed below |
+| Caching | Block cache disabled on both; pods restarted before each run to simulate cold reads |
+| Index tweaks | Defaults on both |
 
 ## The headline figure
 
@@ -37,50 +54,52 @@ Before the methodology debate, here's what the seven days produced.
 
 The memory line is the one that most directly translates into infrastructure cost. At steady state, VictoriaLogs sat around 1.3 GB while Loki held 6–7 GB. Freeing ~5 GB per node is the difference between bin-packing four tenants on a box and seven.
 
+## Storage on disk
+
+Same logs, same 7-day retention, identical ingestion path. Loki landed at **501 GB**; VictoriaLogs at **318 GB** — **37% smaller** with no tuning on either side.
+
+The difference is partly the codec — VictoriaLogs uses zstd, Loki defaults to snappy — but mostly the layout. Columnar storage finds redundancy that stream-chunked LSMs don't see; values from the same field compress together far better than values stitched in by line order.
+
+At fleet scale this is a 1 TB volume holding what used to need 1.5 TB.
+
 ## Query performance
 
-Four query patterns, run against the same 500 GB / 7-day index:
+Three query patterns, run against the same 500 GB / 7-day index. Result sets were verified to be identical between the two systems.
 
-| Query Type | Loki | VictoriaLogs | Improvement |
+### 1. Stats — log count over 24 hours
+
+**Purpose:** Total log lines from `app="servicefoundry-server"`.
+
+| System | Query | Latency |
+|---|---|---|
+| Loki | `sum(count_over_time({app="servicefoundry-server"}[24h]))` | 2.5s |
+| VictoriaLogs | `{app="servicefoundry-server"} \| stats count()` | 1.5s |
+
+Aggregate counts hit Loki's strength — label-anchored, no text scan — and Loki still loses by 40% on the wall clock. VictoriaLogs holds its own on label queries; Loki has no answer for the others.
+
+### 2. Needle in a haystack — finding one line in 500 GB
+
+**Purpose:** Locate a single static log entry `[UNIQUE-STATIC-LOG] ID=abc123 XYZ` in the `truefoundry` namespace over 7 days.
+
+| System | Query | Latency |
+|---|---|---|
+| Loki | `{namespace="truefoundry", app!="grafana"} \|= "[UNIQUE-STATIC-LOG] ID=abc123 XYZ"` | 12s |
+| VictoriaLogs | `{namespace="truefoundry", app!="grafana"} "[UNIQUE-STATIC-LOG] ID=abc123 XYZ"` | ~900ms |
+
+The single-character difference in syntax — `|=` vs nothing — hides the architectural one. Loki's `|=` is a substring filter run line-by-line over decompressed chunks. VictoriaLogs treats the same string as an index probe. 12 seconds turns into 900 milliseconds on identical hardware.
+
+### 3. Negative — proving a string doesn't exist
+
+**Purpose:** Search for a string that doesn't appear anywhere in the dataset. Forces a full scan in both systems.
+
+| System | Dataset | Query | Latency |
 |---|---|---|---|
-| Stats (24h count) | 2.5s | 1.5s | 40% faster |
-| Needle-in-Haystack (500 GB) | 12s | ~900ms | **12× faster** |
-| Pattern `:3000` (7d) | 2.2s | 2.2s | Same |
-| Non-existent (500 GB) | Timeout | 2.2s | VL completed |
+| Loki | 500 GB | `{namespace="truefoundry"} \|= "non-existent log line"` | **Timeout** |
+| VictoriaLogs | 500 GB | `{namespace="truefoundry"} "non-existent log line"` | 2.2s |
+| Loki | 300 GB | `{namespace="truefoundry"} \|= "non-existent log line"` | 2.6s |
+| VictoriaLogs | 300 GB | `{namespace="truefoundry"} "non-existent log line"` | 266ms |
 
-> **Key Insight:** VictoriaLogs' per-token index turns brute-force line scans into index lookups. Loki, once the label filter is exhausted, has nothing left but a full scan.
-
-The two queries that made the case, side by side:
-
-**Stats: counting logs over 24 hours**
-
-LogQL (Loki):
-
-```logql
-sum(count_over_time({app="servicefoundry-server"}[24h]))
-```
-
-LogsQL (VictoriaLogs):
-
-```logsql
-{app="servicefoundry-server"} | stats count()
-```
-
-**Needle in haystack: finding a single entry across 500 GB**
-
-LogQL:
-
-```logql
-{namespace="truefoundry", app!="grafana"} |= "[UNIQUE-STATIC-LOG] ID=abc123 XYZ"
-```
-
-LogsQL:
-
-```logsql
-{namespace="truefoundry", app!="grafana"} "[UNIQUE-STATIC-LOG] ID=abc123 XYZ"
-```
-
-The non-existent query is the quiet one. Loki times out trying to prove a negative across 500 GB; VictoriaLogs returns "none" in 2.2 seconds. In production that's the difference between an alert that fires and a dashboard that loads.
+The negative query is the quiet one. At 300 GB Loki handles it in 2.6 seconds. At 500 GB the resources choke and the query halts — never returns. In production that's the difference between an alert that fires and a dashboard that loads.
 
 ## Ingestion under pressure
 
