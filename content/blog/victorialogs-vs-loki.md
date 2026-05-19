@@ -8,7 +8,9 @@ featured: true
 
 On 500 GB of logs over 7 days, on the same hardware: **94% lower query latencies, 37% smaller storage, and under half the CPU and RAM**. The single number that surprised us most was the 12× drop in needle-in-a-haystack search times.
 
-<iframe src="/images/victorialogs-vs-loki/hero-widget.html" title="VictoriaLogs vs Loki headline metrics: needle search 0.9 s vs 12 s, storage 318 GB vs 501 GB, sustained CPU 2 vCPU vs 4 vCPU, memory 1.3 GB vs 6.5 GB" height="780" data-caption="Fig. 1 — same hardware, same dataset, four numbers."></iframe>
+![Horizontal bar comparison of VictoriaLogs vs Loki on 500 GB over 7 days: needle search 0.9 s vs 12 s, storage 63% vs 100%, sustained CPU 2 vCPU vs 4 vCPU, memory 1.3 GB vs 6.5 GB](/images/victorialogs-vs-loki/hero.png)
+
+*Fig. 1 — same hardware, same dataset, four bars short enough to read on the way to a meeting.*
 
 > **TL;DR**
 > - **Search:** 12× faster on needle-in-a-haystack across 500 GB
@@ -50,7 +52,15 @@ Loki was our default. Past the 1M-active-series mark it started showing 30s+ sea
 
 Before the methodology debate, here's what the seven days produced.
 
-<iframe src="/images/victorialogs-vs-loki/footprint-widget.html" title="VictoriaLogs vs Loki resource footprint: 500 GB over 7 days" height="900" data-caption="Fig. 2 — Resource economics on identical hardware and workload."></iframe>
+**Loki:**
+
+![Loki Grafana dashboard: CPU usage pinned near 4 vCPU limit, memory holding around 6–7 GB, regular throttling spikes hitting 40–50% during the benchmark window](/images/victorialogs-vs-loki/victorialogs-loki-footprint-loki.png)
+
+**VictoriaLogs:**
+
+![VictoriaLogs Grafana dashboard over the same period: CPU near zero baseline with brief spikes to 1 vCPU, memory flat around 1.3 GB, no throttling visible](/images/victorialogs-vs-loki/victorialogs-loki-footprint-victoria.png)
+
+*Fig. 2 — Resource economics on identical hardware and workload. Same six Grafana panels, two very different shapes.*
 
 The memory line is the one that most directly translates into infrastructure cost. At steady state, VictoriaLogs sat around 1.3 GB while Loki held 6–7 GB. Freeing ~5 GB per node is the difference between bin-packing four tenants on a box and seven.
 
