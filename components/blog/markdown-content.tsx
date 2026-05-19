@@ -368,10 +368,11 @@ export function MarkdownContent({ content }: MarkdownContentProps) {
         }
       }
 
-      // List items (unordered and ordered)
-      if (paragraph.match(/^[\d]+\./m) || paragraph.match(/^[-*]/m)) {
+      // List items (unordered and ordered).
+      // Require whitespace after the marker so "**bold**" paragraphs don't match.
+      if (paragraph.match(/^\d+\.\s/m) || paragraph.match(/^[-*]\s/m)) {
         const items = paragraph.split('\n').filter(line => line.trim());
-        const isOrdered = items[0]?.match(/^\d+\./);
+        const isOrdered = items[0]?.match(/^\d+\.\s/);
         const ListTag = isOrdered ? 'ol' : 'ul';
 
         elements.push(
@@ -384,7 +385,7 @@ export function MarkdownContent({ content }: MarkdownContentProps) {
             }
           >
             {items.map((item, i) => {
-              const cleanedItem = item.replace(/^[\d]+\.\s*|^[-*]\s*/, '');
+              const cleanedItem = item.replace(/^\d+\.\s+|^[-*]\s+/, '');
               return (
                 <li 
                   key={i} 
