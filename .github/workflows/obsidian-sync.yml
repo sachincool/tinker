@@ -14,12 +14,12 @@ jobs:
     
     steps:
       - name: Checkout blog repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           
       - name: Checkout Obsidian vault
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: ${{ secrets.OBSIDIAN_REPO }} # e.g., "username/obsidian-vault"
           token: ${{ secrets.OBSIDIAN_TOKEN }}
