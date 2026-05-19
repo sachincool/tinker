@@ -378,29 +378,9 @@ a {
   @apply rounded-md my-8;
 }
 
-.prose table {
-  @apply w-full border-collapse my-8 text-sm md:text-base;
-}
-
-.prose thead {
-  @apply border-b-2 border-border;
-}
-
-.prose th {
-  @apply font-semibold text-left px-4 py-3 text-foreground;
-}
-
-.prose tr {
-  @apply border-b border-border/50;
-}
-
-.prose tbody tr:last-child {
-  @apply border-b-0;
-}
-
-.prose td {
-  @apply px-4 py-3 align-top text-foreground/90;
-}
+/* Tables are styled by the custom MarkdownContent component
+   (components/blog/markdown-content.tsx) — keep .prose out of the way so its
+   class-level specificity doesn't beat the component's inline Tailwind utilities. */
 
 /* Animations used by home page only */
 @keyframes float {

@@ -265,48 +265,46 @@ export function MarkdownContent({ content }: MarkdownContentProps) {
             a === 'right' ? 'text-right tabular-nums' : a === 'center' ? 'text-center' : 'text-left';
 
           elements.push(
-            <div key={index} className="my-10 mx-auto w-fit max-w-full overflow-x-auto rounded-xl border border-border/50 shadow-xl">
-              <table className="border-collapse">
-                <thead>
-                  <tr className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 border-b-2 border-blue-500/30">
-                    {headers.map((header, i) => (
-                      <th
-                        key={i}
-                        scope="col"
-                        className={`px-4 md:px-6 py-4 text-sm font-bold text-foreground uppercase tracking-wider ${alignClass(alignments[i] || 'left')}`}
-                      >
-                        {header}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border/30 bg-card">
-                  {rows.map((row, i) => (
-                    <tr
-                      key={i}
-                      className="hover:bg-muted/40 transition-colors duration-200"
-                    >
-                      {row.map((cell, j) => (
-                        <td
-                          key={j}
-                          className={`px-4 md:px-6 py-4 text-sm text-foreground/90 ${j === 0 ? 'font-medium' : ''} ${alignClass(alignments[j] || 'left')} align-top`}
+            <figure key={index} className="my-10 not-prose">
+              <div className="overflow-x-auto">
+                <table className="border-collapse text-sm md:text-base">
+                  <thead>
+                    <tr className="border-y-2 border-foreground/80">
+                      {headers.map((header, i) => (
+                        <th
+                          key={i}
+                          scope="col"
+                          className={`py-3 px-4 md:px-5 text-[11px] md:text-xs font-mono uppercase tracking-[0.14em] text-muted-foreground font-medium whitespace-nowrap ${alignClass(alignments[i] || 'left')}`}
                         >
-                          {/* Parse inline formatting in table cells */}
-                          {cell.split(/(\*\*[^*]+\*\*|`[^`]+`)/).map((part, k) => {
-                            if (part?.match(/^\*\*[^*]+\*\*$/)) {
-                              return <strong key={k} className="font-bold text-foreground">{part.slice(2, -2)}</strong>;
-                            } else if (part?.match(/^`[^`]+`$/)) {
-                              return <code key={k} className="bg-muted px-1.5 py-0.5 rounded text-xs font-mono text-foreground">{part.slice(1, -1)}</code>;
-                            }
-                            return <span key={k}>{part}</span>;
-                          })}
-                        </td>
+                          {header}
+                        </th>
                       ))}
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody>
+                    {rows.map((row, i) => (
+                      <tr key={i} className="border-b border-border/40 last:border-b-0">
+                        {row.map((cell, j) => (
+                          <td
+                            key={j}
+                            className={`py-3 px-4 md:px-5 align-top ${j === 0 ? 'text-foreground font-medium' : 'text-foreground/85'} ${alignClass(alignments[j] || 'left')}`}
+                          >
+                            {cell.split(/(\*\*[^*]+\*\*|`[^`]+`)/).map((part, k) => {
+                              if (part?.match(/^\*\*[^*]+\*\*$/)) {
+                                return <strong key={k} className="font-semibold text-foreground">{part.slice(2, -2)}</strong>;
+                              } else if (part?.match(/^`[^`]+`$/)) {
+                                return <code key={k} className="bg-muted/60 px-1.5 py-0.5 rounded text-xs font-mono text-foreground">{part.slice(1, -1)}</code>;
+                              }
+                              return <span key={k}>{part}</span>;
+                            })}
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </figure>
           );
           return;
         }
