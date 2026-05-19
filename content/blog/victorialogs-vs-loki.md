@@ -75,7 +75,7 @@ Three query patterns, run against the same 500 GB / 7-day index. Result sets wer
 **Purpose:** Total log lines from `app="servicefoundry-server"`.
 
 | System | Query | Latency |
-|---|---|---|
+|---|---|---:|
 | Loki | `sum(count_over_time({app="servicefoundry-server"}[24h]))` | 2.5s |
 | VictoriaLogs | `{app="servicefoundry-server"} \| stats count()` | 1.5s |
 
@@ -86,7 +86,7 @@ Aggregate counts hit Loki's strength — label-anchored, no text scan — and Lo
 **Purpose:** Locate a single static log entry `[UNIQUE-STATIC-LOG] ID=abc123 XYZ` in the `truefoundry` namespace over 7 days.
 
 | System | Query | Latency |
-|---|---|---|
+|---|---|---:|
 | Loki | `{namespace="truefoundry", app!="grafana"} \|= "[UNIQUE-STATIC-LOG] ID=abc123 XYZ"` | 12s |
 | VictoriaLogs | `{namespace="truefoundry", app!="grafana"} "[UNIQUE-STATIC-LOG] ID=abc123 XYZ"` | ~900ms |
 
@@ -100,7 +100,7 @@ The single-character difference in syntax — `|=` vs nothing — hides the arch
 - **LogsQL:** `{namespace="truefoundry"} "non-existent log line"`
 
 | Dataset | Loki | VictoriaLogs |
-|---|---|---|
+|---|---:|---:|
 | 500 GB | **Timeout** | 2.2s |
 | 300 GB | 2.6s | 266ms |
 
@@ -111,7 +111,7 @@ The negative query is the quiet one. At 300 GB Loki handles it in 2.6 seconds. A
 We pushed both with 120 flog replicas to find the ceiling.
 
 | Metric | Loki | VictoriaLogs | Delta |
-|---|---|---|---|
+|---|---:|---:|---:|
 | Peak ingestion | 20 MB/s | 66 MB/s | **3× higher** |
 | vCPU (sustained) | 4 vCPU, 100% throttled | 2 vCPU peak | 50% lower |
 | Memory | ~4 GiB | ~1.3 GiB | 3× lower |

@@ -237,27 +237,32 @@ export function MarkdownContent({ content }: MarkdownContentProps) {
         const lines = paragraph.split('\n').filter(line => line.trim());
         // Check if it's a valid table (has separator row)
         if (lines.length > 1 && lines[1]?.match(/^\|?[\s:-]+\|/)) {
-          const headers = lines[0]!.split('|').map(h => h.trim()).filter(h => h);
-          const rows = lines.slice(2).map(row =>
-            row.split('|').map(cell => cell.trim()).filter(cell => cell)
-          );
+          // Splitter that respects escaped pipes (\|) inside cells.
+          const PIPE = ' ';
+          const splitRow = (row: string) =>
+            row
+              .replace(/\\\|/g, PIPE)
+              .split('|')
+              .map(cell => cell.trim().replace(new RegExp(PIPE, 'g'), '|'))
+              .filter(cell => cell);
 
-          // Detect numeric columns for right alignment
-          const isNumericColumn = headers.map((_, colIndex) => {
-            const samples = rows.slice(0, 3).map(row => row[colIndex] || '');
-            return samples.some(cell =>
-              cell.match(/^\d+(\.\d+)?[%xsX]?$/) ||
-              cell.match(/^\d+/) ||
-              cell.includes('MB') ||
-              cell.includes('GB') ||
-              cell.includes('vCPU') ||
-              cell.includes('faster') ||
-              cell.includes('higher') ||
-              cell.includes('lower') ||
-              cell.includes('reduction') ||
-              cell.includes('smaller')
-            );
+          const headers = splitRow(lines[0]!);
+
+          // Per-column alignment from the separator row: ":---", "---:", ":---:".
+          const sepCells = lines[1]!.replace(/\\\|/g, PIPE).split('|').map(c => c.trim()).filter(c => c);
+          const alignments = headers.map((_, i) => {
+            const sep = sepCells[i] || '';
+            const l = sep.startsWith(':');
+            const r = sep.endsWith(':');
+            if (l && r) return 'center';
+            if (r) return 'right';
+            return 'left';
           });
+
+          const rows = lines.slice(2).map(splitRow);
+
+          const alignClass = (a: string) =>
+            a === 'right' ? 'text-right tabular-nums' : a === 'center' ? 'text-center' : 'text-left';
 
           elements.push(
             <div key={index} className="my-10 overflow-x-auto rounded-xl border border-border/50 shadow-xl">
@@ -268,9 +273,7 @@ export function MarkdownContent({ content }: MarkdownContentProps) {
                       <th
                         key={i}
                         scope="col"
-                        className={`px-4 md:px-6 py-4 text-sm font-bold text-foreground uppercase tracking-wider ${
-                          isNumericColumn[i] ? 'text-right' : 'text-left'
-                        }`}
+                        className={`px-4 md:px-6 py-4 text-sm font-bold text-foreground uppercase tracking-wider ${alignClass(alignments[i] || 'left')}`}
                       >
                         {header}
                       </th>
@@ -286,9 +289,7 @@ export function MarkdownContent({ content }: MarkdownContentProps) {
                       {row.map((cell, j) => (
                         <td
                           key={j}
-                          className={`px-4 md:px-6 py-4 text-sm text-foreground/90 ${
-                            j === 0 ? 'font-medium' : ''
-                          } ${isNumericColumn[j] ? 'text-right tabular-nums' : 'text-left'}`}
+                          className={`px-4 md:px-6 py-4 text-sm text-foreground/90 ${j === 0 ? 'font-medium' : ''} ${alignClass(alignments[j] || 'left')} align-top`}
                         >
                           {/* Parse inline formatting in table cells */}
                           {cell.split(/(\*\*[^*]+\*\*|`[^`]+`)/).map((part, k) => {
