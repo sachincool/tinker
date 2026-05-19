@@ -1,0 +1,73 @@
+name: Syndicate to dev.to
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'content/blog/**'
+      - 'content/til/**'
+  workflow_dispatch:
+    inputs:
+      post:
+        description: 'Single slug to syndicate (leave blank to sync everything)'
+        required: false
+        type: string
+      dry_run:
+        description: 'Dry run only — no API writes'
+        required: false
+        type: boolean
+        default: false
+
+concurrency:
+  group: syndicate-devto
+  cancel-in-progress: false
+
+jobs:
+  syndicate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Syndicate to dev.to
+        env:
+          DEVTO_API_KEY: ${{ secrets.DEVTO_API_KEY }}
+        run: |
+          ARGS="--platform=devto --update --throttle=4000"
+          if [ -n "${{ github.event.inputs.post }}" ]; then
+            ARGS="$ARGS --post=${{ github.event.inputs.post }}"
+          else
+            ARGS="$ARGS --all"
+          fi
+          if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then
+            ARGS="$ARGS --dry-run"
+          fi
+          echo "Running: node scripts/syndicate.mjs $ARGS"
+          node scripts/syndicate.mjs $ARGS
+
+      - name: Commit updated syndication-state.json
+        if: github.event.inputs.dry_run != 'true'
+        run: |
+          if git diff --quiet scripts/syndication-state.json; then
+            echo "No state changes to commit."
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add scripts/syndication-state.json
+          # [skip ci] prevents the state-file commit from re-triggering the workflow.
+          git commit -m "chore(syndicate): refresh dev.to state [skip ci]"
+          git push
