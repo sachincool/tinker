@@ -375,19 +375,31 @@ a {
 }
 
 .prose img {
-  @apply rounded-md my-8 border border-border/60;
+  @apply rounded-md my-8;
 }
 
 .prose table {
-  @apply w-full border-collapse my-8;
+  @apply w-full border-collapse my-8 text-sm md:text-base;
+}
+
+.prose thead {
+  @apply border-b-2 border-border;
 }
 
 .prose th {
-  @apply bg-muted font-semibold text-left p-3 border border-border;
+  @apply font-semibold text-left px-4 py-3 text-foreground;
+}
+
+.prose tr {
+  @apply border-b border-border/50;
+}
+
+.prose tbody tr:last-child {
+  @apply border-b-0;
 }
 
 .prose td {
-  @apply p-3 border border-border;
+  @apply px-4 py-3 align-top text-foreground/90;
 }
 
 /* Animations used by home page only */

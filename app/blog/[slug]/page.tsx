@@ -271,7 +271,7 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
 
             {post.heroImage && (
               <figure className="-mx-4 sm:mx-0 my-8 sm:my-10">
-                <div className="relative aspect-[16/9] overflow-hidden sm:rounded-lg border-y sm:border border-border/60 bg-muted/40">
+                <div className="relative aspect-[3/2] overflow-hidden sm:rounded-lg border-y sm:border border-border/60 bg-muted/40">
                   <Image
                     src={post.heroImage}
                     alt={post.heroAlt || post.title}
