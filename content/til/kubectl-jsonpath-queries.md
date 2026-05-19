@@ -1,11 +1,9 @@
 ---
-title: "kubectl JSONPath: Extract Exactly What You Need"
+title: "kubectl JSONPath: extract exactly what you need"
 date: "2024-12-12"
 tags: ["kubernetes", "kubectl", "jsonpath", "devops"]
-type: "til"
+excerpt: "kubectl can return exactly the field you want without a grep-awk-sed pipeline. JSONPath queries that replaced my entire stash of one-liners."
 ---
-
-# TIL: kubectl JSONPath: Extract Exactly What You Need
 
 Stop piping kubectl output to `grep`, `awk`, and `sed`. JSONPath can get you exactly what you need in one command.
 
@@ -219,6 +217,3 @@ JSONPath in kubectl has some quirks:
 1. **Filters must use `@`**: `.items[?(@.field=="value")]` not `.items[?(.field=="value")]`
 2. **Arrays need `[*]`**: `.items[*]` not `.items[]`
 3. **Quotes matter**: use single quotes outside, double inside: `'{.items[?(@.name=="value")]}'`
-
-This has eliminated so much `grep | awk | sed` pipeline complexity from my daily kubectl commands.
-

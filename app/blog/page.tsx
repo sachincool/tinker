@@ -40,14 +40,43 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default function BlogPage() {
+export default async function BlogPage() {
   const posts = getAllPosts('blog');
+  const headersList = await headers();
+  const hostname = headersList.get('host') || '';
+  const baseUrl = getCurrentDomain(hostname);
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Blog",
+    name: `${siteConfig.title} — Blog`,
+    description: siteConfig.description,
+    url: `${baseUrl}/blog`,
+    author: {
+      "@type": "Person",
+      name: siteConfig.author.name,
+      url: baseUrl,
+    },
+    blogPost: posts.slice(0, 20).map(post => ({
+      "@type": "BlogPosting",
+      headline: post.title,
+      url: `${baseUrl}/blog/${post.slug}`,
+      datePublished: post.date,
+      keywords: post.tags.join(", "),
+    })),
+  };
 
   // Suspense boundary required because BlogPageClient calls useSearchParams()
   // for ?q= deep-link sync — Next 15 bails out of prerender otherwise.
   return (
-    <Suspense fallback={null}>
-      <BlogPageClient initialPosts={posts} />
-    </Suspense>
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <Suspense fallback={null}>
+        <BlogPageClient initialPosts={posts} />
+      </Suspense>
+    </>
   );
 }

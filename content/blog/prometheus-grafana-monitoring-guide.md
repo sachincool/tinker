@@ -6,8 +6,6 @@ excerpt: "A practical guide to setting up Prometheus and Grafana for production 
 featured: true
 ---
 
-# Prometheus and Grafana: from zero to production monitoring
-
 We started shipping monitoring after a string of outages where customers paged us before our own dashboards did. This is the stack we landed on, written like you're standing it up tomorrow.
 
 ![Prometheus pulls metrics from exporters running next to each service, stores them in its TSDB, then fans out to Alertmanager for paging and Grafana for dashboards.](/images/prometheus-grafana-monitoring-guide/hero.png)

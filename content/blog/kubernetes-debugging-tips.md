@@ -1,5 +1,5 @@
 ---
-title: "5 Kubernetes Debugging Tricks That Saved My Production"
+title: "Five Kubernetes debugging tricks that saved my production"
 date: "2024-12-15"
 tags: ["kubernetes", "devops", "debugging", "production"]
 excerpt: "Hard-learned lessons from debugging Kubernetes issues at 3 AM. These tricks will save you hours of frustration."

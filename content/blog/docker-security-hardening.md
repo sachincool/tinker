@@ -1,12 +1,10 @@
 ---
-title: "Docker Security: Stop Running Everything as Root"
+title: "Docker security: stop running everything as root"
 date: "2024-12-10"
 tags: ["docker", "security", "containers", "devops", "best-practices"]
 excerpt: "Your containers are probably insecure. Here's how I learned to harden Docker containers the hard way, and the security mistakes that almost cost us."
 featured: false
 ---
-
-# Docker Security: Stop Running Everything as Root
 
 The audit came back with 47 critical issues, 129 highs, 156 containers running as root, and 300-plus unpatched CVEs. We had been shipping the same Node Dockerfile for two years. It was the one from the official `node` image's README, with our app dropped on top. Nobody had ever questioned it. The auditor wrote one line in the summary: *one RCE in any of these and you own the cluster.*
 

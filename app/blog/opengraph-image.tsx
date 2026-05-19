@@ -2,14 +2,38 @@ import { ImageResponse } from 'next/og';
 
 export const runtime = 'edge';
 
-export const alt = "Blog - Infra Magician's Digital Garden";
+export const alt = 'Blog — harshit.cloud';
 export const size = {
   width: 1200,
   height: 630,
 };
 export const contentType = 'image/png';
 
+const PAPER = '#f7f1e6';
+const INK = '#1a1a1a';
+const RUST = '#b94d2f';
+const MUTED = '#6e6259';
+const BORDER = 'rgba(26,26,26,0.12)';
+
+async function loadSerif(): Promise<ArrayBuffer | null> {
+  try {
+    const cssRes = await fetch(
+      'https://fonts.googleapis.com/css2?family=Instrument+Serif&display=swap',
+      { headers: { 'User-Agent': 'Mozilla/5.0' } }
+    );
+    const css = await cssRes.text();
+    const match = css.match(/src:\s*url\(([^)]+)\)\s*format\('(truetype|woff2)'\)/);
+    if (!match) return null;
+    const fontRes = await fetch(match[1]);
+    return await fontRes.arrayBuffer();
+  } catch {
+    return null;
+  }
+}
+
 export default async function Image() {
+  const serifData = await loadSerif();
+
   return new ImageResponse(
     (
       <div
@@ -18,102 +42,103 @@ export default async function Image() {
           width: '100%',
           display: 'flex',
           flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          backgroundColor: '#0a0a0a',
-          backgroundImage: 'radial-gradient(circle at 25px 25px, #1a1a1a 2%, transparent 0%), radial-gradient(circle at 75px 75px, #1a1a1a 2%, transparent 0%)',
-          backgroundSize: '100px 100px',
+          backgroundColor: PAPER,
+          padding: '72px 88px',
+          fontFamily: 'monospace',
         }}
       >
         <div
           style={{
             display: 'flex',
-            flexDirection: 'column',
             alignItems: 'center',
-            justifyContent: 'center',
-            padding: '80px',
+            justifyContent: 'space-between',
+            borderBottom: `1px solid ${BORDER}`,
+            paddingBottom: '20px',
           }}
         >
-          {/* Icon */}
           <div
             style={{
-              fontSize: 80,
-              marginBottom: '20px',
+              fontSize: 20,
+              letterSpacing: '0.24em',
+              textTransform: 'uppercase',
+              color: RUST,
             }}
           >
-            📝
+            Section · Blog
           </div>
+          <div style={{ fontSize: 20, color: MUTED, letterSpacing: '0.12em' }}>
+            harshit.cloud
+          </div>
+        </div>
 
-          {/* Main Title */}
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            flex: 1,
+            justifyContent: 'center',
+          }}
+        >
           <div
             style={{
-              fontSize: 72,
-              fontWeight: 'bold',
-              background: 'linear-gradient(to right, #3b82f6, #8b5cf6)',
-              backgroundClip: 'text',
-              color: 'transparent',
-              marginBottom: '20px',
-              textAlign: 'center',
+              fontSize: 22,
+              letterSpacing: '0.24em',
+              textTransform: 'uppercase',
+              color: MUTED,
+              marginBottom: '24px',
             }}
           >
-            Blog
+            BLOG
           </div>
-
-          {/* Subtitle */}
           <div
             style={{
-              fontSize: 32,
-              color: '#9ca3af',
-              textAlign: 'center',
-              marginBottom: '40px',
+              fontSize: 200,
+              lineHeight: 0.9,
+              color: INK,
+              fontFamily: serifData ? 'InstrumentSerif' : 'serif',
+              letterSpacing: '-0.02em',
+            }}
+          >
+            Posts
+          </div>
+          <div
+            style={{
+              fontSize: 30,
+              color: MUTED,
+              marginTop: '32px',
               maxWidth: '900px',
+              lineHeight: 1.35,
+              fontFamily: serifData ? 'InstrumentSerif' : 'serif',
+              fontStyle: 'italic',
             }}
           >
-            Deep dives into web development, infrastructure chaos, and the art of tinkering with technology
+            Long-form notes on infrastructure, security, and the things that break.
           </div>
+        </div>
 
-          {/* Tags */}
-          <div
-            style={{
-              display: 'flex',
-              gap: '16px',
-              flexWrap: 'wrap',
-              justifyContent: 'center',
-            }}
-          >
-            {['DevOps', 'Infrastructure', 'Cloud', 'Security'].map((tag) => (
-              <div
-                key={tag}
-                style={{
-                  padding: '8px 20px',
-                  backgroundColor: '#1f2937',
-                  color: '#3b82f6',
-                  borderRadius: '8px',
-                  fontSize: 24,
-                  border: '2px solid #374151',
-                }}
-              >
-                {tag}
-              </div>
-            ))}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            borderTop: `1px solid ${BORDER}`,
+            paddingTop: '20px',
+          }}
+        >
+          <div style={{ fontSize: 22, color: INK, letterSpacing: '0.08em' }}>
+            harshit.cloud/blog
           </div>
-
-          {/* Footer */}
-          <div
-            style={{
-              position: 'absolute',
-              bottom: '40px',
-              fontSize: 28,
-              color: '#6b7280',
-            }}
-          >
-            tinker.expert/blog
+          <div style={{ fontSize: 22, color: MUTED, letterSpacing: '0.16em' }}>
+            BY HARSHIT LUTHRA
           </div>
         </div>
       </div>
     ),
     {
       ...size,
+      fonts: serifData
+        ? [{ name: 'InstrumentSerif', data: serifData, style: 'normal', weight: 400 }]
+        : undefined,
     }
   );
 }

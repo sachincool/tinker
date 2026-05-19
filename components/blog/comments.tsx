@@ -62,6 +62,7 @@ export function Comments({ slug, shareButton }: CommentsProps) {
   }
 
   if (error) {
+    const isDev = process.env.NODE_ENV !== "production";
     return (
       <div className="mt-12 pt-8 border-t">
         <div className="flex items-center justify-between mb-6">
@@ -69,32 +70,26 @@ export function Comments({ slug, shareButton }: CommentsProps) {
           {shareButton}
         </div>
         <div className="p-6 bg-muted/50 rounded-lg border border-border/50">
-          <p className="text-muted-foreground mb-4">
+          <p className="text-muted-foreground">
             Comments are temporarily unavailable.
           </p>
-          {error && (
-            <div className="mt-4 p-4 bg-destructive/10 border border-destructive/20 rounded-md">
-              <p className="text-sm font-semibold text-destructive mb-2">Error:</p>
-              <p className="text-sm text-destructive/90 font-mono break-all">{error}</p>
+          {isDev && (
+            <details className="mt-4 text-xs text-muted-foreground">
+              <summary className="cursor-pointer">debug</summary>
+              <p className="mt-2 font-mono break-all">{error}</p>
               {errorDetails && (
-                <details className="mt-2">
-                  <summary className="text-xs text-muted-foreground cursor-pointer">Show details</summary>
-                  <pre className="mt-2 text-xs bg-muted p-2 rounded overflow-auto">
-                    {JSON.stringify(errorDetails, null, 2)}
-                  </pre>
-                </details>
+                <pre className="mt-2 bg-muted p-2 rounded overflow-auto">
+                  {JSON.stringify(errorDetails, null, 2)}
+                </pre>
               )}
-            </div>
+              <ul className="mt-2 list-disc list-inside space-y-1">
+                <li>Repo: {giscusRepo}</li>
+                <li>Repo ID: {giscusRepoId}</li>
+                <li>Category ID: {giscusCategoryId}</li>
+                <li>Term: /blog/{slug}</li>
+              </ul>
+            </details>
           )}
-          <div className="mt-4 text-sm text-muted-foreground">
-            <p className="mb-2">Configuration:</p>
-            <ul className="list-disc list-inside space-y-1 text-xs">
-              <li>Repo: {giscusRepo}</li>
-              <li>Repo ID: {giscusRepoId}</li>
-              <li>Category ID: {giscusCategoryId}</li>
-              <li>Term: /blog/{slug}</li>
-            </ul>
-          </div>
         </div>
       </div>
     );

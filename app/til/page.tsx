@@ -39,10 +39,38 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default function TILPage() {
-  // Fetch TILs on server side
+export default async function TILPage() {
   const tils = getAllPosts('til');
+  const headersList = await headers();
+  const hostname = headersList.get('host') || '';
+  const baseUrl = getCurrentDomain(hostname);
 
-  // Pass to client component for interactivity
-  return <TILPageClient initialTils={tils} />;
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: `${siteConfig.title} — Today I Learned`,
+    description: "Quick insights, code snippets, and daily learnings from the trenches of DevOps and infrastructure.",
+    url: `${baseUrl}/til`,
+    isPartOf: { "@type": "WebSite", name: siteConfig.title, url: baseUrl },
+    mainEntity: {
+      "@type": "ItemList",
+      numberOfItems: tils.length,
+      itemListElement: tils.slice(0, 25).map((til, i) => ({
+        "@type": "ListItem",
+        position: i + 1,
+        url: `${baseUrl}/til/${til.slug}`,
+        name: til.title,
+      })),
+    },
+  };
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <TILPageClient initialTils={tils} />
+    </>
+  );
 }

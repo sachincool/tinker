@@ -6,8 +6,6 @@ excerpt: "After two years of running both GitHub Actions and GitLab CI across 50
 featured: true
 ---
 
-# GitHub Actions vs GitLab CI: a practical comparison
-
 Two years, 50 microservices, two CI platforms running side by side. Some repos on GitHub, some on GitLab, same team writing the YAML for both. Here is what stuck after the marketing slides wore off.
 
 ![A six-row comparison of GitHub Actions and GitLab CI across syntax, runners, caching, secrets, ecosystem, and pricing at fifty microservices, with the pricing row marked focal.](/images/github-actions-gitlab-ci-comparison/hero.png)

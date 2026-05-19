@@ -2,11 +2,9 @@
 title: "When Netlify killed my free tier: a 15-minute migration to Dokploy"
 date: "2025-10-24"
 tags: ["devops", "hosting", "cost-optimization", "self-hosting", "dokploy"]
-excerpt: "Woke up to Netlify suspending 5 sites I'd run free for years. Had 15 minutes before my girlfriend noticed her appreciation site was down. Here's how I migrated everything to Dokploy for €3/month."
+excerpt: "Netlify suspended five free-tier sites of mine one Tuesday night. The 15-minute migration to Dokploy on a €3/month VPS that bought everything back."
 featured: true
 ---
-
-# When Netlify killed my free tier: a 15-minute migration to Dokploy
 
 Late night. Got this email: **"[Netlify] Your projects have been suspended due to credit limit exceeded."**
 
@@ -55,7 +53,7 @@ curl -sSL https://dokploy.com/install.sh | sh
 
 One command. Dokploy installed Docker, Traefik, PostgreSQL, everything.
 
-**Minutes 8-12**: Connected Git repos. Dokploy makes this ridiculously easy - paste GitHub URL, select branch, done.
+**Minutes 8-12**: Connected Git repos. Paste GitHub URL, select branch, done.
 
 ![Dokploy Git integration](/images/netlify-to-dokploy-migration/dokploy_git.png)
 
@@ -63,7 +61,7 @@ One command. Dokploy installed Docker, Traefik, PostgreSQL, everything.
 
 ![Dokploy migration dashboard](/images/netlify-to-dokploy-migration/dokploy_migration.png)
 
-The Fiance woke up. dilharia.love was live. Crisis averted.
+The Fiance woke up. dilharia.love was live.
 
 ## what surprised me
 
@@ -94,18 +92,6 @@ Deployed 3 more projects since then. No credit anxiety. No surprise bills.
 Total maintenance time: 10 minutes/week.
 
 Best infrastructure decision I've made this year.
-
-## the real lesson
-
-Free tiers aren't free. They're bait.
-
-Platforms give you free hosting to lock you in. Make migration painful. Then change pricing when you're invested.
-
-Netlify's legacy free tier was generous. But businesses change. VCs want returns. Free tiers disappear.
-
-Owning your infrastructure: predictable costs, no surprises, freedom to experiment.
-
-More work? Yes. Worth it for personal projects? Absolutely.
 
 ## related posts
 

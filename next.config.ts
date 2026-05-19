@@ -80,6 +80,12 @@ const nextConfig: NextConfig = {
         destination: '/tags',
         permanent: true,
       },
+      // Slug rename — body listed seven trials but slug said six
+      {
+        source: '/blog/six-visual-tools-one-diagram',
+        destination: '/blog/seven-visual-tools-one-diagram',
+        permanent: true,
+      },
     ];
   },
 

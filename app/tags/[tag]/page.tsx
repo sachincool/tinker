@@ -61,11 +61,20 @@ export async function generateMetadata({
       type: 'website',
       url: tagUrl,
       siteName: siteConfig.title,
+      images: [
+        {
+          url: `${baseUrl}/tags/opengraph-image`,
+          width: 1200,
+          height: 630,
+          alt: `#${tag} on ${siteConfig.title}`,
+        },
+      ],
     },
     twitter: {
-      card: 'summary',
+      card: 'summary_large_image',
       title: `#${tag} — ${siteConfig.title}`,
       description: trimmed,
+      images: [`${baseUrl}/tags/opengraph-image`],
     },
     alternates: {
       canonical: tagUrl,
@@ -94,8 +103,36 @@ export default async function TagPage({ params }: { params: Promise<{ tag: strin
   if (tilPosts.length) counts.push(`${tilPosts.length} TIL${tilPosts.length === 1 ? "" : "s"}`);
   const countLine = counts.join(" · ");
 
+  const headersList = await headers();
+  const hostname = headersList.get('host') || '';
+  const baseUrl = getCurrentDomain(hostname);
+  const tagUrl = `${baseUrl}/tags/${encodeURIComponent(tag)}`;
+
+  const collectionJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: `#${tag}`,
+    description: meta?.description || `Posts tagged #${tag}`,
+    url: tagUrl,
+    isPartOf: { "@type": "WebSite", name: siteConfig.title, url: baseUrl },
+    mainEntity: {
+      "@type": "ItemList",
+      numberOfItems: posts.length,
+      itemListElement: posts.slice(0, 25).map((post, i) => ({
+        "@type": "ListItem",
+        position: i + 1,
+        url: `${baseUrl}/${post.type}/${post.slug}`,
+        name: post.title,
+      })),
+    },
+  };
+
   return (
     <div className="space-y-12">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionJsonLd) }}
+      />
       <Button variant="ghost" asChild className="-ml-3">
         <Link href="/tags">
           <ArrowLeft className="mr-2 h-4 w-4" />

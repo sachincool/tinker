@@ -1,11 +1,9 @@
 ---
-title: "Blocking AI Crawlers is the New 'noindex'"
+title: "Blocking AI crawlers is the new 'noindex'"
 date: "2026-01-21"
 tags: ["seo", "ai", "crawlers", "strategy"]
-type: "til"
+excerpt: "Blocking GPTBot, Anthropic, and Perplexity trades long-term search reach for short-term control. The math on whether it's worth it for your site."
 ---
-
-# TIL: Blocking AI Crawlers is the New "noindex"
 
 If you're blocking GPTBot, Anthropic, Perplexity, Gemini — you're trading future reach for short-term control.
 

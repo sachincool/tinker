@@ -1,11 +1,9 @@
 ---
-title: "Docker Build Cache: The .dockerignore Gotcha"
+title: "Docker build cache: the .dockerignore gotcha"
 date: "2024-12-05"
 tags: ["docker", "devops", "optimization"]
-type: "til"
+excerpt: "Docker builds slow despite a clean layer order? Your .dockerignore is probably letting files bust the cache on every commit. The two-line fix."
 ---
-
-# TIL: Docker Build Cache: The .dockerignore Gotcha
 
 Spent 2 hours debugging why my Docker builds were slow despite using multi-stage builds and proper layer ordering.
 
@@ -37,5 +35,5 @@ npm-debug.log
 
 Build time went from 5 minutes to 30 seconds.
 
-**Pro tip:** treat `.dockerignore` like `.gitignore`. Be aggressive about what you exclude.
+Treat `.dockerignore` like `.gitignore`. Be aggressive about what you exclude.
 

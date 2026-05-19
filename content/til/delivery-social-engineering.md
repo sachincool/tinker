@@ -1,15 +1,11 @@
 ---
-title: "Delivery Service Impersonation is an Alarmingly Effective Social Engineering Vector"
+title: "Delivery impersonation: the social engineering vector that just works"
 date: "2025-10-17"
-tags: ["social-engineering", "cybersecurity", "privacy-risk", "OPSEC", "security-awareness", "pretexting", "human-vulnerability", "information-security", "personal-data", "threat-awareness"]
-type: "til"
+tags: ["social-engineering", "cybersecurity", "opsec", "privacy-risk", "pretexting", "security-awareness"]
+excerpt: "Someone called pretending to deliver a Diwali bakery hamper. They got my full address in 20 seconds. Why this pretext works and what to ask back."
 ---
 
-# TIL: Delivery Service Impersonation is an Alarmingly Effective Social Engineering Vector
-
-Most people have minimal security awareness around address disclosure. When someone claims to be delivering a gift from a well-known local business (like a popular bakery with "Diwali hampers" or "festive boxes"), victims willingly provide their exact address or real-time location on WhatsApp. The pretext works because it combines social proof (known business), plausibility (gift delivery), and urgency (driver needs directions now).
-
-![Server Infrastructure Security](/images/delivery-social-engineering/server-rack.webp)
+A few weeks ago, my mum got a WhatsApp call from someone claiming to deliver a Diwali hamper from a bakery she'd never ordered from. They asked for her live location to "route the driver". She sent it. Twenty seconds, full home address handed to a stranger.
 
 ## why this attack works
 
@@ -22,7 +18,7 @@ Attacker: "Hi, I'm from [Popular Local Bakery]. I have a Diwali gift
           hamper for you but I'm having trouble finding your location.
           Could you share your address or live location?"
 
-Victim: *Shares full address or WhatsApp live location without verification*
+Victim: Shares full address or WhatsApp live location without verification
 ```
 
 No order confirmation requested. No delivery tracking number asked for. No verification of any kind.
@@ -37,18 +33,7 @@ No order confirmation requested. No delivery tracking number asked for. No verif
 
 ## defense strategies
 
-### for individuals
-- Always ask for order/tracking numbers before sharing location
-- Verify with the business directly using their official contact
-- Ask who sent the gift and verify with them
-- Be suspicious of unsolicited delivery calls
-- Use landmark-based directions instead of exact addresses when possible
-
-### for organizations
-- Train employees on this attack vector
-- Include address disclosure in security awareness programs
-- Emphasize verification before sharing any personal information
-- Use delivery apps with in-app communication to reduce direct contact
+The defense is one habit: don't share an address until you've verified the order exists. Ask for a tracking number, call the business on its public number, ask who sent the gift and check with them. If the driver "needs directions right now", give a landmark, not a pin. Most delivery apps already have in-app chat — there's no good reason a real driver needs your live location over WhatsApp.
 
 ## real-world impact
 
@@ -60,8 +45,6 @@ This attack can be used for:
 - Targeted phishing (now knowing exact location)
 - Physical security breaches
 
-## the broader lesson
+## the asks that work
 
-The weakest link in security is rarely the technology, it's the human element. This attack requires zero technical skill, no expensive tools, just social engineering and a phone.
-
-When someone asks for personal information, always verify their identity first, no matter how legitimate they seem.
+The pretexts that actually get through share a shape. A familiar local business name doing the credibility work. A plausible occasion — Diwali hampers, birthday flowers, Amazon redelivery — that fits the calendar. A small action framed as urgent: "I'm outside, just send the location". Zero technical skill, one phone call, full address.

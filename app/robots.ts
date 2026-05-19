@@ -7,6 +7,9 @@ export default async function robots(): Promise<MetadataRoute.Robots> {
   const hostname = headersList.get('host') || '';
   const baseUrl = getCurrentDomain(hostname);
 
+  // AI crawlers are explicitly allowed. The bet: AI search will be the
+  // discovery layer; sites that train it early get cited later. See
+  // /til/blocking-ai-crawlers for the reasoning.
   return {
     rules: [
       {
@@ -14,34 +17,17 @@ export default async function robots(): Promise<MetadataRoute.Robots> {
         allow: '/',
         disallow: ['/api/', '/_next/'],
       },
-      {
-        userAgent: 'GPTBot',
-        allow: '/',
-      },
-      {
-        userAgent: 'ChatGPT-User',
-        allow: '/',
-      },
-      {
-        userAgent: 'Googlebot',
-        allow: '/',
-      },
-      {
-        userAgent: 'Google-Extended',
-        allow: '/',
-      },
-      {
-        userAgent: 'ClaudeBot',
-        allow: '/',
-      },
-      {
-        userAgent: 'Claude-Web',
-        allow: '/',
-      },
-      {
-        userAgent: 'PerplexityBot',
-        allow: '/',
-      },
+      { userAgent: 'Googlebot', allow: '/' },
+      { userAgent: 'GPTBot', allow: '/' },
+      { userAgent: 'ChatGPT-User', allow: '/' },
+      { userAgent: 'Google-Extended', allow: '/' },
+      { userAgent: 'ClaudeBot', allow: '/' },
+      { userAgent: 'Claude-Web', allow: '/' },
+      { userAgent: 'Anthropic-AI', allow: '/' },
+      { userAgent: 'PerplexityBot', allow: '/' },
+      { userAgent: 'Perplexity-User', allow: '/' },
+      { userAgent: 'CCBot', allow: '/' },
+      { userAgent: 'meta-externalagent', allow: '/' },
     ],
     sitemap: `${baseUrl}/sitemap.xml`,
   };

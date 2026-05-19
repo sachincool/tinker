@@ -1,6 +1,6 @@
 {
   "devto": {
-    "blog/six-visual-tools-one-diagram": {
+    "blog/seven-visual-tools-one-diagram": {
       "id": 3694898,
       "url": "https://dev.to/sachincool/seven-visual-tools-one-diagram-2j4i",
       "at": "2026-05-18T16:48:41.587Z"
@@ -314,7 +314,7 @@
       "reason": "short TIL, not cross-posted to Medium",
       "at": "2026-05-18T19:01:00.351Z"
     },
-    "blog/six-visual-tools-one-diagram": {
+    "blog/seven-visual-tools-one-diagram": {
       "status": "skipped",
       "reason": "user declined to retry import after original 503 failure",
       "at": "2026-05-18T19:24:07.077Z"

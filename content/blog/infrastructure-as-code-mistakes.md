@@ -1,12 +1,10 @@
 ---
-title: "Infrastructure as Code: Mistakes I Made So You Don't Have To"
+title: "Infrastructure as code: mistakes I made so you don't have to"
 date: "2024-11-28"
 tags: ["terraform", "iac", "devops", "infrastructure"]
 excerpt: "Learning Terraform the hard way. Here are the mistakes that cost me sleep, money, and a bit of my sanity."
 featured: true
 ---
-
-# Infrastructure as Code: Mistakes I Made So You Don't Have To
 
 The first time I ran `terraform destroy` against the wrong workspace, I had two terminals open, one coffee in, and roughly four seconds between hitting `yes` and realising what was on the other end of that plan. The instance count was 17. By the time I cancelled, it was 6. Every one of those came back, eventually. The pages did not.
 

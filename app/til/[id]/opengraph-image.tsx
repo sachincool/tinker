@@ -9,207 +9,171 @@ export const size = {
 };
 export const contentType = 'image/png';
 
+const PAPER = '#f7f1e6';
+const INK = '#1a1a1a';
+const RUST = '#b94d2f';
+const MUTED = '#6e6259';
+const BORDER = 'rgba(26,26,26,0.12)';
+
+async function loadSerif(): Promise<ArrayBuffer | null> {
+  try {
+    const cssRes = await fetch(
+      'https://fonts.googleapis.com/css2?family=Instrument+Serif&display=swap',
+      { headers: { 'User-Agent': 'Mozilla/5.0' } }
+    );
+    const css = await cssRes.text();
+    const match = css.match(/src:\s*url\(([^)]+)\)\s*format\('(truetype|woff2)'\)/);
+    if (!match) return null;
+    const fontRes = await fetch(match[1]);
+    return await fontRes.arrayBuffer();
+  } catch {
+    return null;
+  }
+}
+
+function titleFontSize(title: string): number {
+  const len = title.length;
+  if (len <= 30) return 132;
+  if (len <= 50) return 108;
+  if (len <= 75) return 88;
+  if (len <= 110) return 72;
+  return 60;
+}
+
 export default async function Image({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const post = getPostBySlug(id, 'til');
+  const serifData = await loadSerif();
 
   if (!post) {
     return new ImageResponse(
       (
         <div
           style={{
-            background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+            backgroundColor: PAPER,
             width: '100%',
             height: '100%',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            fontFamily: 'system-ui, sans-serif',
+            fontFamily: serifData ? 'InstrumentSerif' : 'serif',
           }}
         >
-          <div
-            style={{
-              fontSize: 64,
-              fontWeight: 'bold',
-              color: 'white',
-            }}
-          >
-            TIL Not Found
-          </div>
+          <div style={{ fontSize: 96, color: INK }}>TIL Not Found</div>
         </div>
       ),
       {
         ...size,
+        fonts: serifData
+          ? [{ name: 'InstrumentSerif', data: serifData, style: 'normal', weight: 400 }]
+          : undefined,
       }
     );
   }
 
-  // Truncate title if too long
-  const truncatedTitle = post.title.length > 80 
-    ? post.title.substring(0, 77) + '...' 
-    : post.title;
+  const truncatedTitle =
+    post.title.length > 140 ? post.title.substring(0, 137) + '...' : post.title;
+
+  const dateStr = new Date(post.date).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
 
   return new ImageResponse(
     (
       <div
         style={{
-          background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-          width: '100%',
           height: '100%',
+          width: '100%',
           display: 'flex',
           flexDirection: 'column',
-          padding: '60px 80px',
-          fontFamily: 'system-ui, sans-serif',
-          position: 'relative',
+          backgroundColor: PAPER,
+          padding: '64px 80px',
+          fontFamily: 'monospace',
         }}
       >
-        {/* Background pattern */}
-        <div
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            opacity: 0.1,
-            background: 'repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,.05) 10px, rgba(255,255,255,.05) 20px)',
-          }}
-        />
-
-        {/* Header with author info */}
         <div
           style={{
             display: 'flex',
             alignItems: 'center',
-            marginBottom: '40px',
-            zIndex: 1,
+            justifyContent: 'space-between',
+            borderBottom: `1px solid ${BORDER}`,
+            paddingBottom: '18px',
           }}
         >
           <div
             style={{
-              fontSize: 28,
-              fontWeight: 'bold',
-              color: 'white',
-              display: 'flex',
-              alignItems: 'center',
-            }}
-          >
-            <span style={{ marginRight: '12px' }}>💡</span>
-            Harshit Luthra
-          </div>
-          <div
-            style={{
-              marginLeft: 'auto',
               fontSize: 20,
-              color: 'rgba(255, 255, 255, 0.9)',
-              background: 'rgba(255, 255, 255, 0.1)',
-              padding: '8px 20px',
-              borderRadius: '20px',
-              backdropFilter: 'blur(10px)',
+              letterSpacing: '0.24em',
+              textTransform: 'uppercase',
+              color: RUST,
             }}
           >
+            TIL · Today I Learned
+          </div>
+          <div style={{ fontSize: 20, color: MUTED, letterSpacing: '0.12em' }}>
             harshit.cloud
           </div>
         </div>
 
-        {/* Main content */}
         <div
           style={{
             display: 'flex',
             flexDirection: 'column',
             flex: 1,
             justifyContent: 'center',
-            zIndex: 1,
           }}
         >
-          {/* TIL Badge */}
           <div
             style={{
-              display: 'flex',
-              marginBottom: '20px',
-            }}
-          >
-            <div
-              style={{
-                background: 'rgba(255, 255, 255, 0.2)',
-                color: 'white',
-                padding: '8px 20px',
-                borderRadius: '20px',
-                fontSize: 20,
-                fontWeight: 'bold',
-                backdropFilter: 'blur(10px)',
-                border: '2px solid rgba(255, 255, 255, 0.3)',
-              }}
-            >
-              Today I Learned
-            </div>
-          </div>
-
-          {/* Title */}
-          <div
-            style={{
-              fontSize: 64,
-              fontWeight: 'bold',
-              color: 'white',
-              lineHeight: 1.2,
-              textShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
+              fontSize: titleFontSize(truncatedTitle),
+              lineHeight: 1.0,
+              color: INK,
+              fontFamily: serifData ? 'InstrumentSerif' : 'serif',
+              letterSpacing: '-0.015em',
             }}
           >
             {truncatedTitle}
           </div>
         </div>
 
-        {/* Footer with tags and date */}
         <div
           style={{
             display: 'flex',
-            alignItems: 'center',
+            alignItems: 'flex-end',
             justifyContent: 'space-between',
-            marginTop: '40px',
-            zIndex: 1,
+            borderTop: `1px solid ${BORDER}`,
+            paddingTop: '18px',
           }}
         >
-          <div
-            style={{
-              display: 'flex',
-              gap: '12px',
-              flexWrap: 'wrap',
-            }}
-          >
-            {post.tags.slice(0, 4).map((tag) => (
-              <div
-                key={tag}
-                style={{
-                  background: 'rgba(255, 255, 255, 0.2)',
-                  color: 'white',
-                  padding: '6px 16px',
-                  borderRadius: '16px',
-                  fontSize: 16,
-                  backdropFilter: 'blur(10px)',
-                }}
-              >
-                #{tag}
-              </div>
-            ))}
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <div
+              style={{
+                fontSize: 18,
+                letterSpacing: '0.18em',
+                textTransform: 'uppercase',
+                color: MUTED,
+                marginBottom: '6px',
+              }}
+            >
+              {dateStr}
+            </div>
+            <div style={{ fontSize: 22, color: INK, letterSpacing: '0.08em' }}>
+              harshit.cloud
+            </div>
           </div>
-          <div
-            style={{
-              fontSize: 18,
-              color: 'rgba(255, 255, 255, 0.8)',
-            }}
-          >
-            {new Date(post.date).toLocaleDateString('en-US', {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric',
-            })}
+          <div style={{ fontSize: 22, color: MUTED, letterSpacing: '0.16em' }}>
+            BY HARSHIT LUTHRA
           </div>
         </div>
       </div>
     ),
     {
       ...size,
+      fonts: serifData
+        ? [{ name: 'InstrumentSerif', data: serifData, style: 'normal', weight: 400 }]
+        : undefined,
     }
   );
 }
-

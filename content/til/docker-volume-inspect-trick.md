@@ -1,11 +1,9 @@
 ---
-title: "Docker Volume Debugging: Finding Where Your Data Actually Lives"
+title: "Docker volume debugging: finding where your data actually lives"
 date: "2024-12-14"
 tags: ["docker", "debugging", "containers", "devops"]
-type: "til"
+excerpt: "Volume mounts that look right but won't persist data. The five-command inspection sequence that always tells me which mount is actually being read."
 ---
-
-# TIL: Docker Volume Debugging: Finding Where Your Data Actually Lives
 
 Spent 2 hours debugging why data wasn't persisting. Turns out, understanding Docker volumes is the actual job.
 
@@ -104,7 +102,7 @@ docker exec -it container_name ls -la /container/path
 
 ## common volume issues
 
-### issue 1, volume not mounting
+### volume not mounting
 
 ```bash
 # Check if volume exists
@@ -114,7 +112,7 @@ docker volume ls | grep mydata
 docker volume create mydata
 ```
 
-### issue 2, wrong permissions
+### wrong permissions
 
 ```bash
 # Check ownership in volume
@@ -124,7 +122,7 @@ docker run --rm -v mydata:/data alpine ls -ln /data
 docker run --rm -v mydata:/data alpine chown -R 1000:1000 /data
 ```
 
-### issue 3, dangling volumes
+### dangling volumes
 
 ```bash
 # List dangling volumes (not used by any container)
@@ -133,10 +131,10 @@ docker volume ls -f dangling=true
 # Remove them
 docker volume prune
 
-# Be careful! This deletes data!
+# this deletes data — make sure nothing important is dangling
 ```
 
-### issue 4, volume vs bind mount confusion
+### volume vs bind mount confusion
 
 ```bash
 # Named volume (managed by Docker)
@@ -150,7 +148,7 @@ docker volume prune
 -v /data
 ```
 
-## pro tips
+## patterns
 
 ### 1. backup a volume
 
@@ -202,13 +200,13 @@ I was debugging a database that wasn't persisting data:
 docker volume inspect postgres_data
 # Error: No such volume
 
-# Ah! The docker-compose.yml had a typo
-# It said: postgress_data (3 s's)
-# Should be: postgres_data (2 s's)
+# the docker-compose.yml had a typo
+# it said: postgress_data (3 s's)
+# should be: postgres_data (2 s's)
 
-# Found all volumes
+# found all volumes
 docker volume ls
-# Found: postgress_data (the typo!)
+# found: postgress_data (the typo)
 
 # Renamed it
 docker volume create postgres_data
@@ -256,6 +254,3 @@ volumes:
   mydata:
     name: mydata
 ```
-
-This one trick would have saved me those 2 hours.
-

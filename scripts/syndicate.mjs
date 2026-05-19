@@ -21,10 +21,11 @@ async function loadEnv() {
 
 // --- CLI args ---
 function parseArgs() {
-  const args = { platform: 'all', type: 'all', post: null, all: false, dryRun: false, throttle: 4000 };
+  const args = { platform: 'all', type: 'all', post: null, all: false, dryRun: false, throttle: 4000, update: false };
   for (const arg of process.argv.slice(2)) {
     if (arg === '--all') args.all = true;
     else if (arg === '--dry-run') args.dryRun = true;
+    else if (arg === '--update') args.update = true;
     else if (arg.startsWith('--post=')) args.post = arg.slice(7);
     else if (arg.startsWith('--platform=')) args.platform = arg.slice(11);
     else if (arg.startsWith('--type=')) args.type = arg.slice(7);
@@ -105,11 +106,25 @@ function normaliseTags(tags, max = 4) {
 }
 
 // --- dev.to ---
-async function publishToDevTo(post, { dryRun }) {
+// Resolves the cover image:
+//   1. explicit frontmatter `cover:` field (absolute or root-relative)
+//   2. first inline body image (current convention)
+//   3. fall back to the per-post OG image generator, so every post gets a thumbnail
+function resolveDevtoCover(post) {
+  const fm = post.frontmatter.cover;
+  if (typeof fm === 'string' && fm.trim()) {
+    return fm.startsWith('http') ? fm : SITE_URL + fm;
+  }
+  const body = extractFirstImage(post.body);
+  if (body) return body.src.startsWith('/') ? SITE_URL + body.src : body.src;
+  // OG fallback — uses the editorial-print OG generator at /<type>/<slug>/opengraph-image
+  return `${SITE_URL}/${post.type}/${post.slug}/opengraph-image`;
+}
+
+async function publishToDevTo(post, { dryRun, update, articleId }) {
   const apiKey = process.env.DEVTO_API_KEY;
   if (!apiKey) throw new Error('DEVTO_API_KEY missing');
 
-  const cover = extractFirstImage(post.body);
   const bodyAbs = rewriteImagesAbsolute(stripFirstImageBlock(post.body));
 
   // dev.to can't backdate. Prepend an origin note so the reader sees the real date.
@@ -127,15 +142,20 @@ async function publishToDevTo(post, { dryRun }) {
     canonical_url: canonicalUrl(post),
     description: post.frontmatter.excerpt || undefined,
     tags: normaliseTags(post.frontmatter.tags, 4),
+    main_image: resolveDevtoCover(post),
   };
-  if (cover) article.main_image = cover.src.startsWith('/') ? SITE_URL + cover.src : cover.src;
 
-  if (dryRun) return { dryRun: true, article };
+  if (dryRun) return { dryRun: true, article, mode: update ? 'update' : 'create' };
+
+  const url = update && articleId
+    ? `https://dev.to/api/articles/${articleId}`
+    : 'https://dev.to/api/articles';
+  const method = update && articleId ? 'PUT' : 'POST';
 
   // dev.to rate limit: 429 → wait and retry up to 3 times
   for (let attempt = 1; attempt <= 3; attempt++) {
-    const res = await fetch('https://dev.to/api/articles', {
-      method: 'POST',
+    const res = await fetch(url, {
+      method,
       headers: { 'api-key': apiKey, 'Content-Type': 'application/json', 'Accept': 'application/vnd.forem.api-v1+json' },
       body: JSON.stringify({ article }),
     });
@@ -148,7 +168,7 @@ async function publishToDevTo(post, { dryRun }) {
     }
     if (!res.ok) throw new Error(`dev.to ${res.status}: ${text.slice(0, 400)}`);
     const data = JSON.parse(text);
-    return { url: data.url, id: data.id };
+    return { url: data.url, id: data.id, mode: update ? 'updated' : 'created' };
   }
   throw new Error('dev.to 429 after 3 retries');
 }
@@ -217,7 +237,7 @@ async function main() {
   const state = await loadState();
 
   if (!args.all && !args.post) {
-    console.error('Usage: syndicate.mjs [--all | --post=<slug>] [--platform=devto|hashnode|all] [--type=blog|til|all] [--dry-run] [--throttle=<ms>]');
+    console.error('Usage: syndicate.mjs [--all | --post=<slug>] [--platform=devto|hashnode|all] [--type=blog|til|all] [--update] [--dry-run] [--throttle=<ms>]');
     process.exit(1);
   }
 
@@ -243,15 +263,25 @@ async function main() {
     console.log(`\n[${i}/${posts.length}] ${key}  (${post.frontmatter.date})`);
 
     if (wantDevto) {
-      if (state.devto[key] && !args.dryRun) {
-        console.log(`  devto      ↩ already syndicated: ${state.devto[key].url}`);
+      const existing = state.devto[key];
+      if (existing && !args.update && !args.dryRun) {
+        console.log(`  devto      ↩ already syndicated: ${existing.url} (pass --update to refresh)`);
       } else {
         try {
-          const out = await publishToDevTo(post, { dryRun: args.dryRun });
-          if (args.dryRun) console.log(`  devto      ✎ dry-run ok (${out.article.tags.join(',')})`);
-          else {
-            console.log(`  devto      ✓ ${out.url}`);
-            state.devto[key] = { id: out.id, url: out.url, at: new Date().toISOString() };
+          const out = await publishToDevTo(post, {
+            dryRun: args.dryRun,
+            update: args.update && !!existing,
+            articleId: existing?.id,
+          });
+          if (args.dryRun) {
+            console.log(`  devto      ✎ dry-run ${out.mode} (${out.article.tags.join(',')})`);
+          } else {
+            console.log(`  devto      ✓ ${out.mode}: ${out.url}`);
+            state.devto[key] = {
+              id: out.id,
+              url: out.url,
+              at: new Date().toISOString(),
+            };
             await saveState(state);
           }
         } catch (e) {

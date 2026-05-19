@@ -1,12 +1,10 @@
 ---
-title: "AWS Cost Optimization: How We Cut Our Bill by 60%"
+title: "AWS cost optimization: how we cut our bill by 60%"
 date: "2024-12-05"
 tags: ["aws", "cloud", "cost-optimization", "finops", "infrastructure"]
 excerpt: "Our AWS bill hit $50k/month. Here's exactly how we reduced it to $20k without sacrificing performance or reliability."
 featured: false
 ---
-
-# AWS Cost Optimization: How We Cut Our Bill by 60%
 
 The CFO saw the AWS bill hit $50,000 a month and I got a calendar invite titled "We need to talk about AWS." I knew the meeting before I clicked accept.
 

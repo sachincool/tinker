@@ -1,13 +1,11 @@
 ---
-title: "jq Magic: Parse JSON Like a Pro"
+title: "jq: the command-line JSON parser that earns its keep"
 date: "2024-12-08"
 tags: ["jq", "json", "linux", "command-line", "productivity"]
-type: "til"
+excerpt: "jq is sed for JSON. The patterns I use weekly — filtering, transforming, grouping — and the one-liner that replaced every Python parsing script I had."
 ---
 
-# TIL: jq Magic: Parse JSON Like a Pro
-
-`jq` is like `sed` for JSON. Once you learn it, you'll wonder how you ever lived without it.
+`jq` is like `sed` for JSON. After a week of using it I stopped reaching for Python one-liners and never looked back.
 
 ## installation
 
@@ -244,9 +242,9 @@ echo '{"user": {}}' | jq '.user.profile.name // "N/A"'
 #!/bin/bash
 curl -s http://api/services | jq -r '.[] | 
   if .status == "up" then
-    "\(.name): ✓"
+    "\(.name): pass"
   else
-    "\(.name): ✗ (DOWN)"
+    "\(.name): fail (DOWN)"
   end'
 ```
 
@@ -337,8 +335,6 @@ echo $NAME
 # John
 ```
 
-`jq` has completely changed how I interact with APIs and JSON data. No more manual parsing or Python scripts for simple tasks.
-
 ## cheat sheet
 
 ```bash
@@ -357,6 +353,3 @@ jq 'add'                   # Sum array
 jq 'unique'                # Unique values
 jq -s '.'                  # Slurp (combine files)
 ```
-
-Go forth and parse JSON.
-

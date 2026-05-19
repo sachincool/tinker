@@ -1,6 +1,7 @@
 import { ArrowLeft, Calendar, Clock } from "lucide-react";
 import Link from "next/link";
 import { ViewCounter } from "@/components/blog/view-counter";
+import { ReadingProgress } from "@/components/blog/reading-progress";
 
 import { MarkdownContent } from "@/components/blog/markdown-content";
 import { getPostBySlug, getAllPosts } from "@/lib/posts";
@@ -159,6 +160,13 @@ export default async function TILPost({ params }: { params: Promise<{ id: string
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
+      <a
+        href="#article-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+      >
+        Skip to content
+      </a>
+      <ReadingProgress />
       <div className="max-w-3xl mx-auto px-4 py-12 md:py-16 space-y-10">
         {/* Back link */}
         <Link

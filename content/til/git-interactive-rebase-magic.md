@@ -1,11 +1,9 @@
 ---
-title: "Git Interactive Rebase: Clean Up Your Commit History"
+title: "Git interactive rebase: clean up your commit history"
 date: "2024-12-19"
 tags: ["git", "version-control", "productivity", "devops"]
-type: "til"
+excerpt: "Turn five 'fix typo' commits into one before the review notices. git rebase -i, the rules for when not to use it, and the aliases I keep around."
 ---
-
-# TIL: Git Interactive Rebase: Clean Up Your Commit History
 
 Discovered `git rebase -i` today. Turns five "fix typo" commits into one clean commit before the PR review notices.
 
@@ -67,7 +65,7 @@ fixup 7m8n9o0 remove console.log
 
 Result: one clean commit.
 
-## pro tips
+## patterns
 
 **Reword commit messages:**
 ```
@@ -98,7 +96,7 @@ git rebase --continue
 
 ## warning
 
-**Never rebase commits that have been pushed to a shared branch!** You'll rewrite history and cause conflicts for your team.
+Don't rebase commits that have already been pushed to a shared branch. You'll rewrite history under your team and force everyone else to resolve conflicts they didn't cause.
 
 Safe:
 ```bash
@@ -110,7 +108,7 @@ Dangerous:
 ```bash
 # Main branch that others use
 git checkout main
-git rebase -i HEAD~5  # DON'T DO THIS!
+git rebase -i HEAD~5  # pushed commits — leave these alone
 ```
 
 ## useful aliases
@@ -131,6 +129,3 @@ Now you can do:
 git rb 5        # Rebase last 5 commits
 git rbm         # Rebase on main
 ```
-
-This has saved me so much embarrassment in code reviews.
-

@@ -1,11 +1,9 @@
 ---
-title: "JA4's Split Format Saved Our Metrics Cardinality"
+title: "JA4's split format saved our metrics cardinality"
 date: "2025-10-14"
 tags: ["sre", "monitoring", "tls", "observability"]
-type: "til"
+excerpt: "Rotating ciphers exploded our TLS client metrics to 50k unique fingerprints. JA4's split format dropped that to under 200 without losing detection."
 ---
-
-# TIL: JA4's Split Format Saved Our Metrics Cardinality
 
 We had a service that rotated TLS ciphers on every connection. Our client classification metrics exploded to 50k unique fingerprints. Prometheus cardinality alert fired.
 

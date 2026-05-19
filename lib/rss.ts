@@ -9,7 +9,7 @@ export function generateRSSFeed(posts: Post[], baseUrl: string, feedOptions?: { 
     id: baseUrl,
     link: baseUrl,
     language: 'en',
-    image: `${baseUrl}/assets/tinker.svg`,
+    image: `${baseUrl}/og-image.png`,
     favicon: `${baseUrl}/favicon.ico`,
     copyright: `All rights reserved ${new Date().getFullYear()}, ${siteConfig.author.name}`,
     updated: posts.length > 0 ? new Date(posts[0].date) : new Date(),
@@ -28,6 +28,14 @@ export function generateRSSFeed(posts: Post[], baseUrl: string, feedOptions?: { 
 
   posts.forEach((post) => {
     const url = `${baseUrl}/${post.type}/${post.slug}`;
+    // Prefer the post's own hero image; fall back to the per-post OG image so every
+    // feed item has a thumbnail (Feedly, Inoreader, etc. render this).
+    const rawHero = post.heroImage;
+    const heroAbsolute = rawHero
+      ? rawHero.startsWith('http')
+        ? rawHero
+        : `${baseUrl}${rawHero}`
+      : `${baseUrl}/${post.type}/${post.slug}/opengraph-image`;
 
     feed.addItem({
       title: post.title,
@@ -43,6 +51,7 @@ export function generateRSSFeed(posts: Post[], baseUrl: string, feedOptions?: { 
         },
       ],
       date: new Date(post.date),
+      image: heroAbsolute,
       category: post.tags.map((tag) => ({ name: tag })),
     });
   });

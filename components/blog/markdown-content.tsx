@@ -95,7 +95,7 @@ function EmbedFrame({ src, title, initialHeight, caption }: { src: string; title
 
   return (
     <figure className="my-12">
-      <div className="relative overflow-hidden rounded-xl shadow-xl ring-1 ring-black/5 dark:ring-white/10 bg-white dark:bg-zinc-950">
+      <div className="relative overflow-hidden border border-border/40 bg-background">
         <iframe
           ref={ref}
           src={src}
@@ -106,7 +106,7 @@ function EmbedFrame({ src, title, initialHeight, caption }: { src: string; title
         />
       </div>
       {caption && (
-        <figcaption className="text-center text-sm text-muted-foreground mt-5 italic font-medium border-t border-border/30 pt-3 px-4">
+        <figcaption className="text-center text-sm text-muted-foreground mt-4 italic max-w-[60ch] mx-auto px-4">
           {caption}
         </figcaption>
       )}
@@ -145,10 +145,10 @@ export function MarkdownContent({ content }: MarkdownContentProps) {
         const text = paragraph.substring(3);
         const id = text.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '');
         elements.push(
-          <h2 
-            key={index} 
-            id={id} 
-            className="text-2xl md:text-3xl font-bold mt-16 mb-8 scroll-mt-24 border-l-4 border-blue-500 pl-4 py-2 bg-gradient-to-r from-blue-500/5 to-transparent break-words [overflow-wrap:anywhere]"
+          <h2
+            key={index}
+            id={id}
+            className="text-2xl md:text-3xl font-semibold mt-16 mb-6 scroll-mt-24 tracking-tight text-foreground break-words [overflow-wrap:anywhere]"
           >
             {text}
           </h2>
@@ -205,27 +205,23 @@ export function MarkdownContent({ content }: MarkdownContentProps) {
         const isKeyInsight = content.includes('**Key Insight:**') || content.includes('**Cost Impact:**');
 
         if (isKeyInsight) {
-          // Special styling for key insights/important callouts
+          // Editorial sidebar for key insights — no emoji, no gradient.
           const parts = content.split(/(\*\*[^*]+:\*\*)/);
           elements.push(
-            <blockquote key={index} className="relative border-l-4 border-purple-500 pl-4 pr-3 md:pl-8 md:pr-6 py-4 md:py-6 my-6 md:my-10 bg-gradient-to-r from-purple-500/15 via-blue-500/10 to-transparent rounded-r-xl shadow-lg hover:shadow-xl transition-all duration-300">
-              <div className="absolute left-2 top-2 text-purple-500/40 text-3xl">💡</div>
-              <div className="relative z-10 text-base md:text-lg leading-relaxed">
-                {parts.map((part, idx) => {
-                  if (part?.match(/^\*\*[^*]+:\*\*$/)) {
-                    return <strong key={idx} className="font-bold text-purple-700 dark:text-purple-300 text-lg block mb-2">{part.slice(2, -2)}</strong>;
-                  }
-                  return <span key={idx} className="text-foreground/90">{part}</span>;
-                })}
-              </div>
+            <blockquote key={index} className="border-l-2 border-primary pl-5 my-8 md:my-10 text-base md:text-lg leading-relaxed">
+              {parts.map((part, idx) => {
+                if (part?.match(/^\*\*[^*]+:\*\*$/)) {
+                  return <strong key={idx} className="font-semibold text-primary text-xs uppercase tracking-[0.18em] block mb-2 font-mono">{part.slice(2, -2)}</strong>;
+                }
+                return <span key={idx} className="text-foreground/90">{part}</span>;
+              })}
             </blockquote>
           );
         } else {
-          // Regular blockquote
+          // Regular pull-quote — flat, editorial.
           elements.push(
-            <blockquote key={index} className="relative border-l-4 border-blue-500 pl-4 pr-2 md:pl-6 md:pr-4 py-3 md:py-4 my-6 md:my-8 italic text-base md:text-lg text-muted-foreground bg-gradient-to-r from-blue-500/10 to-transparent rounded-r-lg shadow-sm">
-              <span className="absolute left-1 md:left-3 top-2 md:top-3 text-blue-500/30 text-2xl md:text-4xl font-serif">"</span>
-              <div className="relative z-10">{content}</div>
+            <blockquote key={index} className="border-l-2 border-border pl-5 my-6 md:my-8 italic text-base md:text-lg text-muted-foreground leading-relaxed">
+              {content}
             </blockquote>
           );
         }
@@ -342,7 +338,7 @@ export function MarkdownContent({ content }: MarkdownContentProps) {
           const [, alt, src] = match;
           elements.push(
             <figure key={index} className="my-12">
-              <div className="relative overflow-hidden rounded-xl shadow-xl ring-1 ring-black/5 dark:ring-white/10">
+              <div className="relative overflow-hidden">
                 <ImageLightbox
                   src={src}
                   alt={alt}
@@ -350,15 +346,8 @@ export function MarkdownContent({ content }: MarkdownContentProps) {
                 />
               </div>
               {alt && (
-                <figcaption className="text-center text-sm text-muted-foreground mt-5 italic font-medium border-t border-border/30 pt-3 px-4">
-                  <span className="inline-flex items-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-500 flex-shrink-0">
-                      <rect width="18" height="18" x="3" y="3" rx="2" ry="2"></rect>
-                      <circle cx="9" cy="9" r="2"></circle>
-                      <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path>
-                    </svg>
-                    {alt}
-                  </span>
+                <figcaption className="text-center text-sm text-muted-foreground mt-4 italic max-w-[60ch] mx-auto px-4">
+                  {alt}
                 </figcaption>
               )}
             </figure>
@@ -390,8 +379,8 @@ export function MarkdownContent({ content }: MarkdownContentProps) {
                   key={i} 
                   className={
                     isOrdered
-                      ? "text-lg leading-relaxed pl-2 text-foreground/90 hover:text-foreground transition-colors"
-                      : "text-lg leading-relaxed pl-2 text-foreground/90 hover:text-foreground transition-colors relative before:content-['→'] before:absolute before:-left-6 before:text-blue-500 before:font-bold"
+                      ? "text-lg leading-relaxed pl-2 text-foreground/90"
+                      : "text-lg leading-relaxed pl-2 text-foreground/90 relative before:content-['—'] before:absolute before:-left-6 before:text-primary/70"
                   }
                 >
                   {renderInlineRich(cleanedItem)}

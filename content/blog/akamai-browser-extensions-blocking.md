@@ -1,10 +1,9 @@
 ---
-title: "Access Denied: Edgesuite Edition - When Your Browser Extensions Become Attack Vectors"
+title: "Access denied: when your browser extensions look like attack vectors"
 date: "2025-12-31"
 tags: ["security", "waf", "akamai", "debugging", "browser-extensions", "cdn"]
 excerpt: "Tried booking a flight. Got blocked. VPN didn't help. IP was clean. Turns out Akamai thinks my 21 security extensions make me look like a hacker. They're not wrong."
 featured: true
-type: "post"
 ---
 
 Last week I tried booking a flight on Indigo. Access Denied. Tried MakeMyTrip. Access Denied. Ixigo? Same story. Yatra? Blocked.
@@ -13,9 +12,11 @@ My banking apps worked fine. But every travel booking site using Akamai's CDN de
 
 ![Indigo Access Denied](/images/akamai-browser-extensions-blocking/indigo_access_denied.png)
 
+*Fig. 1 — every travel booking site behind Akamai locked me out with the same Access Denied page.*
+
 ![MakeMyTrip Access Denied](/images/akamai-browser-extensions-blocking/mmt_access_denied.png)
 
-## The Debugging Rabbit Hole
+## the debugging rabbit hole
 
 First thought: bad IP from my ISP's CGNAT pool. Changed my IP. Worked for 10 minutes. Then blocked again.
 
@@ -31,7 +32,7 @@ Google dorking time. Found tons of users globally facing the same issue. Not ISP
 
 Then I found [this blog](https://leinss.com/blog/?p=3409) that pointed at browser extensions. Interesting.
 
-## The Lightbulb Moment
+## the lightbulb moment
 
 Switched from Arc to Chrome. Still blocked. Because I carried over the same 21 extensions like a digital hoarder.
 
@@ -43,7 +44,7 @@ Here's my toolkit: Wappalyzer, Shodan, Trufflehog, DotGit, and a bunch of OSINT/
 
 Turned off all extensions. Instant access to every site.
 
-## What's Actually Happening
+## what's actually happening
 
 Akamai's Bot Manager isn't counting your requests. It's fingerprinting the client environment. Browser extensions can inject JavaScript, mutate the DOM, alter request behavior, and add tracking parameters — all things the client-side fingerprint will flag as bot-shaped, the same way it would flag a scraper or an injection probe.
 
@@ -51,7 +52,7 @@ My security toolkit became my own DoS attack vector. Poetic, really.
 
 Some users reported User-Agent changes helped. I didn't test that. I also didn't have time to debug which of the 21 extensions was the actual culprit. Life's too short for that level of troubleshooting.
 
-## The Takeaway
+## the takeaway
 
 WAF rules are aggressive by design. Your legitimate security tools look exactly like attack vectors because, well, they kind of are. The line between security researcher and threat actor is thinner than we'd like to admit.
 
@@ -63,6 +64,3 @@ If you're getting blocked by Akamai with a clean IP:
 4. Your OSINT toolkit makes CDNs nervous
 
 Infrastructure is meant to keep bad actors out. Sometimes it keeps infrastructure wizards out too. Not fun.
-
-Got blocked by Akamai with your security toolkit? Which extension was your culprit? Reach out if this saved you from the same rabbit hole.
-

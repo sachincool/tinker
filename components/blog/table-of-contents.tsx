@@ -45,7 +45,7 @@ function TocContent({
                   "block -ml-px border-l-2 py-1.5 transition-colors duration-150",
                   heading.level === 3 ? "pl-6 text-[12.5px]" : "pl-4 text-[13.5px]",
                   isActive
-                    ? "border-blue-500 text-foreground font-medium"
+                    ? "border-primary text-foreground font-medium"
                     : "border-transparent text-muted-foreground hover:text-foreground hover:border-foreground/30"
                 )}
               >
@@ -139,7 +139,10 @@ export function TableOfContents() {
 
   return (
     <>
-      <nav className="sticky top-24 hidden lg:block max-h-[calc(100vh-8rem)] overflow-y-auto pr-2 -mr-2">
+      <nav
+        aria-label="Table of contents"
+        className="sticky top-24 hidden lg:block max-h-[calc(100vh-8rem)] overflow-y-auto pr-2 -mr-2"
+      >
         <TocContent headings={headings} activeId={activeId} />
       </nav>
 

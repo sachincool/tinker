@@ -1,12 +1,10 @@
 ---
-title: "How I Took Down 30% of Production with One TLS Fingerprinting Rule"
+title: "How I took down 30% of production with one TLS fingerprinting rule"
 date: "2025-10-14"
 tags: ["sre", "tls", "networking", "monitoring", "production-incidents"]
 excerpt: "Deployed a TLS fingerprinting rule that seemed reasonable. Blocked every Chrome 119 user on Windows. The incident report was not fun to write."
 featured: true
 ---
-
-# How I Took Down 30% of Production with One TLS Fingerprinting Rule
 
 Last month I broke production. Blocked 30% of legitimate traffic because I misunderstood how TLS fingerprinting actually works.
 
@@ -230,15 +228,11 @@ Keep an eye on your TLS 1.3 ECH adoption metrics. When it hits 20%+, time to ret
 
 ## the incident postmortem takeaways
 
-1. **Test in staging with production traffic patterns**. I tested with synthetic traffic. Missed that real users would match the "bad" fingerprint.
+I tested the rule in staging with synthetic traffic. Real users matched the "bad" fingerprint and I never saw it coming. Anything fingerprint-shaped needs to be canaried at 1% of real traffic first, with anomaly alerts on drops in known-good fingerprints — "chrome-119-windows traffic dropped 90%" is the kind of signal that would have caught this in five minutes instead of two hours.
 
-2. **Canary your rules**. Start with 1% of traffic. Watch for anomalies. Slowly increase.
+Rollback path matters more than the rule itself. We killed ours with a feature flag and still spent 30 minutes draining caches and recovering. If a rule can take down 30% of traffic, the kill switch needs to be a single toggle, tested before the rule ships.
 
-3. **Alert on drops in known-good fingerprints**. If "chrome-119-windows" traffic drops 90%, something's wrong.
-
-4. **Have a fast rollback**. We killed the rule with a feature flag. Still took 30 minutes to fully recover.
-
-5. **Fingerprints are dimensions, not identities**. Use them for grouping and classification, not for targeting individuals.
+The deeper lesson is that fingerprints are a dimension, not an identity. Group by them, classify with them, slice metrics with them — don't target individuals with them.
 
 ## should SREs care about JA4?
 
@@ -249,5 +243,3 @@ It's not about security. It's about observability. Understanding your traffic co
 Adding JA4 fingerprints to your logs and metrics gives you another dimension to slice your data. When something weird happens, you can answer "what client type is doing this?" faster.
 
 Just don't rate limit or block based on it alone. That way lies incidents and awkward conversations with your VP of Engineering.
-
-My incident report was 12 pages. Learn from my mistakes.

@@ -2,14 +2,38 @@ import { ImageResponse } from 'next/og';
 
 export const runtime = 'edge';
 
-export const alt = "About Harshit Luthra - Infrastructure Wizard";
+export const alt = 'About — Harshit Luthra';
 export const size = {
   width: 1200,
   height: 630,
 };
 export const contentType = 'image/png';
 
+const PAPER = '#f7f1e6';
+const INK = '#1a1a1a';
+const RUST = '#b94d2f';
+const MUTED = '#6e6259';
+const BORDER = 'rgba(26,26,26,0.12)';
+
+async function loadSerif(): Promise<ArrayBuffer | null> {
+  try {
+    const cssRes = await fetch(
+      'https://fonts.googleapis.com/css2?family=Instrument+Serif&display=swap',
+      { headers: { 'User-Agent': 'Mozilla/5.0' } }
+    );
+    const css = await cssRes.text();
+    const match = css.match(/src:\s*url\(([^)]+)\)\s*format\('(truetype|woff2)'\)/);
+    if (!match) return null;
+    const fontRes = await fetch(match[1]);
+    return await fontRes.arrayBuffer();
+  } catch {
+    return null;
+  }
+}
+
 export default async function Image() {
+  const serifData = await loadSerif();
+
   return new ImageResponse(
     (
       <div
@@ -18,108 +42,103 @@ export default async function Image() {
           width: '100%',
           display: 'flex',
           flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          backgroundColor: '#0a0a0a',
-          backgroundImage: 'radial-gradient(circle at 25px 25px, #1a1a1a 2%, transparent 0%), radial-gradient(circle at 75px 75px, #1a1a1a 2%, transparent 0%)',
-          backgroundSize: '100px 100px',
+          backgroundColor: PAPER,
+          padding: '72px 88px',
+          fontFamily: 'monospace',
         }}
       >
         <div
           style={{
             display: 'flex',
-            flexDirection: 'column',
             alignItems: 'center',
-            justifyContent: 'center',
-            padding: '80px',
+            justifyContent: 'space-between',
+            borderBottom: `1px solid ${BORDER}`,
+            paddingBottom: '20px',
           }}
         >
-          {/* Avatar placeholder */}
           <div
             style={{
-              width: 120,
-              height: 120,
-              borderRadius: '50%',
-              background: 'linear-gradient(to right, #a855f7, #ec4899)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: 60,
-              marginBottom: '30px',
+              fontSize: 20,
+              letterSpacing: '0.24em',
+              textTransform: 'uppercase',
+              color: RUST,
             }}
           >
-            HL
+            Colophon · About the author
           </div>
+          <div style={{ fontSize: 20, color: MUTED, letterSpacing: '0.12em' }}>
+            harshit.cloud
+          </div>
+        </div>
 
-          {/* Name */}
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            flex: 1,
+            justifyContent: 'center',
+          }}
+        >
           <div
             style={{
-              fontSize: 56,
-              fontWeight: 'bold',
-              background: 'linear-gradient(to right, #a855f7, #ec4899)',
-              backgroundClip: 'text',
-              color: 'transparent',
-              marginBottom: '16px',
-              textAlign: 'center',
+              fontSize: 22,
+              letterSpacing: '0.24em',
+              textTransform: 'uppercase',
+              color: MUTED,
+              marginBottom: '24px',
+            }}
+          >
+            ABOUT
+          </div>
+          <div
+            style={{
+              fontSize: 148,
+              lineHeight: 0.95,
+              color: INK,
+              fontFamily: serifData ? 'InstrumentSerif' : 'serif',
+              letterSpacing: '-0.015em',
             }}
           >
             Harshit Luthra
           </div>
-
-          {/* Title */}
           <div
             style={{
               fontSize: 32,
-              color: '#9ca3af',
-              textAlign: 'center',
-              marginBottom: '40px',
+              color: MUTED,
+              marginTop: '28px',
+              maxWidth: '900px',
+              lineHeight: 1.35,
+              fontFamily: serifData ? 'InstrumentSerif' : 'serif',
+              fontStyle: 'italic',
             }}
           >
-            Infrastructure Wizard & Chaos Engineer
+            Infrastructure engineer, tinkerer.
           </div>
+        </div>
 
-          {/* Skills */}
-          <div
-            style={{
-              display: 'flex',
-              gap: '16px',
-              flexWrap: 'wrap',
-              justifyContent: 'center',
-            }}
-          >
-            {['DevOps', 'Kubernetes', 'AWS', 'SRE'].map((skill) => (
-              <div
-                key={skill}
-                style={{
-                  padding: '8px 20px',
-                  backgroundColor: '#1f2937',
-                  color: '#a855f7',
-                  borderRadius: '8px',
-                  fontSize: 24,
-                  border: '2px solid #374151',
-                }}
-              >
-                {skill}
-              </div>
-            ))}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            borderTop: `1px solid ${BORDER}`,
+            paddingTop: '20px',
+          }}
+        >
+          <div style={{ fontSize: 22, color: INK, letterSpacing: '0.08em' }}>
+            harshit.cloud/about
           </div>
-
-          {/* Footer */}
-          <div
-            style={{
-              position: 'absolute',
-              bottom: '40px',
-              fontSize: 28,
-              color: '#6b7280',
-            }}
-          >
-            tinker.expert/about
+          <div style={{ fontSize: 22, color: MUTED, letterSpacing: '0.16em' }}>
+            EST. 2024
           </div>
         </div>
       </div>
     ),
     {
       ...size,
+      fonts: serifData
+        ? [{ name: 'InstrumentSerif', data: serifData, style: 'normal', weight: 400 }]
+        : undefined,
     }
   );
 }

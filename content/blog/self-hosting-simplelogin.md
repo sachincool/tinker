@@ -2,11 +2,9 @@
 title: "Self-hosting SimpleLogin: own your email aliases for $3 a month"
 date: "2026-02-07"
 tags: ["self-hosting", "docker", "security", "devops", "email"]
-excerpt: "I got tired of trusting third parties with my email privacy. Here's how I self-hosted SimpleLogin with Docker, Postfix, and Brevo, plus the TLS gotcha that cost me two hours."
+excerpt: "Self-hosted SimpleLogin with Docker, Postfix, and Brevo for $3/month. The TLS gotcha that ate two hours of my Sunday, written down so you skip it."
 featured: true
 ---
-
-# Self-hosting SimpleLogin: own your email aliases for $3 a month
 
 I'd been running Cloudflare Email Routing for months. Free. Dead simple. Emails hit my custom domain, forwarded to Gmail. Privacy-friendly aliases without paying a dime.
 

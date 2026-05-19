@@ -25,12 +25,7 @@ function ViewCounterComponent({ slug, className = "" }: ViewCounterProps) {
         if (postResponse.ok) {
           const postData = await postResponse.json();
           setViews(postData.count);
-          console.log(`View tracked for ${slug}:`, postData);
         } else {
-          const errorText = await postResponse.text();
-          console.error('Failed to track view:', errorText);
-          
-          // Fallback: fetch current count
           const getResponse = await fetch(`/api/views?slug=${encodeURIComponent(slug)}`);
           if (getResponse.ok) {
             const getData = await getResponse.json();
@@ -41,8 +36,7 @@ function ViewCounterComponent({ slug, className = "" }: ViewCounterProps) {
         }
 
         setIsLoading(false);
-      } catch (error) {
-        console.error('Error tracking view:', error);
+      } catch {
         setViews(0);
         setIsLoading(false);
       }

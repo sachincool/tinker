@@ -1,11 +1,9 @@
 ---
-title: "kubectl neat - Remove Kubernetes YAML Clutter"
+title: "kubectl neat: remove Kubernetes YAML clutter"
 date: "2024-12-10"
 tags: ["kubernetes", "kubectl", "productivity"]
-type: "til"
+excerpt: "kubectl get -o yaml dumps 200 lines of generated noise. kubectl neat strips it down to what you actually wrote. Two commands, no more copy-paste cleanup."
 ---
-
-# TIL: kubectl neat - Remove Kubernetes YAML Clutter
 
 Today I discovered `kubectl neat` - a plugin that removes all the clutter from Kubernetes YAML output.
 
