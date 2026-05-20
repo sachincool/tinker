@@ -2,6 +2,7 @@
 
 import Giscus from "@giscus/react";
 import { useEffect, useState } from "react";
+import { useTheme } from "next-themes";
 
 interface CommentsProps {
   slug: string;
@@ -12,6 +13,7 @@ export function Comments({ slug, shareButton }: CommentsProps) {
   const [error, setError] = useState<string | null>(null);
   const [errorDetails, setErrorDetails] = useState<any>(null);
   const [mounted, setMounted] = useState(false);
+  const { resolvedTheme } = useTheme();
 
   useEffect(() => {
     setMounted(true);
@@ -111,7 +113,7 @@ export function Comments({ slug, shareButton }: CommentsProps) {
         reactionsEnabled="1"
         emitMetadata="0"
         inputPosition="bottom"
-        theme="preferred_color_scheme"
+        theme={resolvedTheme === "dark" ? "dark_dimmed" : "light"}
         lang="en"
         loading="lazy"
       />

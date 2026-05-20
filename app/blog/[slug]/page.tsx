@@ -11,6 +11,7 @@ import { TableOfContents } from "@/components/blog/table-of-contents";
 import { Comments } from "@/components/blog/comments";
 import { ShareButton } from "@/components/blog/share-button";
 import { MarkdownContent } from "@/components/blog/markdown-content";
+import { ImageLightbox } from "@/components/blog/image-lightbox";
 import { getPostBySlug, getAllPosts, stripFirstImageBlock } from "@/lib/posts";
 import { NewsletterForm } from "@/components/blog/newsletter-form";
 import { notFound } from "next/navigation";
@@ -261,14 +262,11 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
 
             {post.heroImage && (
               <figure className="-mx-4 sm:mx-0 my-8 sm:my-10">
-                <div className="relative aspect-[3/2] overflow-hidden sm:rounded-lg border-y sm:border border-border/60 bg-muted/40">
-                  <Image
+                <div className="relative overflow-hidden sm:rounded-lg border-y sm:border border-border/60 bg-muted/40">
+                  <ImageLightbox
                     src={post.heroImage}
                     alt={post.heroAlt || post.title}
-                    fill
-                    priority
-                    sizes="(min-width: 1024px) 768px, 100vw"
-                    className="object-cover"
+                    className="block w-full h-auto"
                   />
                 </div>
               </figure>
