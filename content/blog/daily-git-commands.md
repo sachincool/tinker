@@ -6,6 +6,10 @@ excerpt: "Ten years of git, distilled. The daily eight, the weekly five, the arc
 featured: true
 ---
 
+![A newspaper-style poster titled The Daily Eight, listing the eight git aliases I run most: gst, glola, gd/gds, gcam, gpsup, gco/gcb, gpf, gfa, each paired with its expansion in mono caps.](/images/daily-git-commands/hero.png)
+
+*Fig. 1. The eight aliases that survive every refactor, every job, every laptop.*
+
 I've been using git for a decade and most of what I type still fits on a single hand. The 200-page Pro Git book is wonderful and almost none of it survives contact with a real Tuesday. What survives is a small, boring set of commands that get rerun constantly, plus a handful of less-boring ones I reach for once a week and would mourn if they disappeared.
 
 This post is that list, ordered by how often my fingers actually type them. Aliases are from the oh-my-zsh `git` plugin (enabled in most zsh configs that exist); the full command sits next to the alias so it's portable.

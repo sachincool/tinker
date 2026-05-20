@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>The Daily Eight — daily-git-commands hero</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --paper: #faf7f2;
+      --ink: #1c1917;
+      --ink-soft: #45403a;
+      --rust: #b5523a;
+      --rule: #c8bfb0;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; background: var(--paper); }
+    body {
+      width: 1200px;
+      height: 630px;
+      font-family: 'Instrument Serif', 'Iowan Old Style', Georgia, serif;
+      color: var(--ink);
+      position: relative;
+      overflow: hidden;
+    }
+    .frame {
+      position: absolute;
+      inset: 28px;
+      border: 1px solid var(--ink);
+      padding: 36px 56px 44px;
+      display: flex;
+      flex-direction: column;
+    }
+    /* masthead */
+    .masthead {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--ink);
+      font-family: 'Geist Mono', ui-monospace, Menlo, monospace;
+      font-size: 12px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+    }
+    .masthead .domain { color: var(--ink); font-weight: 500; }
+    .masthead .vol { color: var(--ink-soft); }
+    /* title */
+    .title {
+      margin: 22px 0 8px;
+      font-size: 96px;
+      line-height: 1;
+      letter-spacing: -0.01em;
+      color: var(--ink);
+    }
+    .title em { color: var(--rust); font-style: italic; }
+    .deck {
+      font-family: 'Geist Mono', monospace;
+      font-size: 13px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+      margin-bottom: 24px;
+    }
+    /* grid */
+    .grid {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      column-gap: 36px;
+      row-gap: 18px;
+      border-top: 1px solid var(--rule);
+      padding-top: 18px;
+    }
+    .cell {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      padding-right: 12px;
+    }
+    .cell + .cell { border-left: 1px solid var(--rule); padding-left: 24px; }
+    /* break the left border at first column of each row */
+    .cell:nth-child(4n+1) { border-left: none; padding-left: 0; }
+    .alias {
+      font-family: 'Instrument Serif', serif;
+      font-size: 56px;
+      line-height: 1.05;
+      color: var(--ink);
+      margin-bottom: 6px;
+      letter-spacing: -0.005em;
+    }
+    .alias .slash { color: var(--rust); margin: 0 4px; font-style: italic; font-weight: 400; }
+    .cmd {
+      font-family: 'Geist Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--rust);
+      line-height: 1.45;
+    }
+    /* footer rule */
+    .footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding-top: 14px;
+      border-top: 1px solid var(--ink);
+      font-family: 'Geist Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+    }
+    .footer .tag { color: var(--rust); }
+  </style>
+</head>
+<body>
+  <div class="frame">
+    <div class="masthead">
+      <span class="domain">harshit.cloud · the working developer</span>
+      <span class="vol">vol. iv &middot; no. 042</span>
+    </div>
+
+    <h1 class="title">The Daily <em>Eight</em></h1>
+    <div class="deck">a decade of git, distilled to one hand</div>
+
+    <div class="grid">
+      <div class="cell">
+        <div class="alias">gst</div>
+        <div class="cmd">git status</div>
+      </div>
+      <div class="cell">
+        <div class="alias">glola</div>
+        <div class="cmd">git log --oneline --graph --all</div>
+      </div>
+      <div class="cell">
+        <div class="alias">gd<span class="slash">/</span>gds</div>
+        <div class="cmd">git diff &middot; git diff --staged</div>
+      </div>
+      <div class="cell">
+        <div class="alias">gcam</div>
+        <div class="cmd">git commit -a -m</div>
+      </div>
+      <div class="cell">
+        <div class="alias">gpsup</div>
+        <div class="cmd">git push --set-upstream origin</div>
+      </div>
+      <div class="cell">
+        <div class="alias">gco<span class="slash">/</span>gcb</div>
+        <div class="cmd">git checkout &middot; checkout -b</div>
+      </div>
+      <div class="cell">
+        <div class="alias">gpf</div>
+        <div class="cmd">git push --force-with-lease</div>
+      </div>
+      <div class="cell">
+        <div class="alias">gfa</div>
+        <div class="cmd">git fetch --all --prune</div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <span>filed under <span class="tag">git &middot; shell &middot; muscle memory</span></span>
+      <span>harshit.cloud/blog/daily-git-commands</span>
+    </div>
+  </div>
+</body>
+</html>
