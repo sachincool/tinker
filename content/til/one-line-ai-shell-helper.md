@@ -1,5 +1,5 @@
 ---
-title: "A single zsh function for one-line AI answers — that knows when to pre-type the command"
+title: "A single zsh function for one-line AI answers that knows when to pre-type the command"
 date: "2026-05-20"
 tags: ["zsh", "shell", "ai", "cli", "productivity"]
 excerpt: "Asking a chat UI for a one-line command is too much friction. A 15-line zsh function and a `print -z` trick fix it, with one oh-my-zsh footgun along the way."
@@ -12,7 +12,7 @@ Wrapping an AI CLI into a single shell function fixed it. The interesting part i
 ## the function
 
 ```zsh
-# p: one-shot AI query — `p whats 2 + 2`, `p kubectl secret decode grafana`
+# p: one-shot AI query. Examples: `p whats 2 + 2`, `p kubectl secret decode grafana`
 # Smart dispatch: if the answer looks like a runnable command, pre-type it into
 # the next prompt (print -z). Otherwise print to stdout. Math/facts get printed,
 # commands get queued for you to review and press Enter.
@@ -40,7 +40,7 @@ p() {
 alias p='noglob p'
 ```
 
-`pi` is just whatever AI CLI you have — swap in `claude -p`, `llm`, `gh copilot suggest`, `ollama run`. The pattern doesn't care about the backend.
+`pi` is just whatever AI CLI you have. Swap in `claude -p`, `llm`, `gh copilot suggest`, `ollama run`. The pattern doesn't care about the backend.
 
 ## what it feels like
 
@@ -67,14 +67,14 @@ Same two-letter command for both. Answers go to stdout, commands go to the promp
 
 ## the key idea: `print -z` for runnable output
 
-`print -z` is the trick that makes this design work. It pushes text onto the zsh line editor — i.e. into your next prompt, pre-typed and ready. Compared to every alternative:
+`print -z` is the trick that makes this design work. It pushes text onto the zsh line editor, i.e. into your next prompt, pre-typed and ready. Compared to every alternative:
 
 | Strategy | Speed | Safety | Friction |
 |----------|-------|--------|----------|
-| `eval "$(...)"` | fastest | **bad** — auto-runs model output | none |
+| `eval "$(...)"` | fastest | **bad**, auto-runs model output | none |
 | Pipe to `pbcopy` | medium | safe | switch focus, paste |
 | Print to stdout | medium | safe | select + copy + paste |
-| **`print -z`** | **fastest** | **safe** — you press Enter | **none** |
+| **`print -z`** | **fastest** | **safe**, you press Enter | **none** |
 
 The mental model: `print -z` is what `Ctrl-R` history search does when you accept a result. Native zsh. You always see and approve the command before it runs.
 
@@ -93,7 +93,7 @@ fi
 Two checks, both load-bearing:
 
 1. **First char is a letter or underscore.** Excludes digits (`4`), symbols (`[`, `/`, `(`), and anything else that obviously isn't a command name.
-2. **`whence -p` resolves it to a PATH executable.** Not just "this name exists in the shell" — *specifically* a real binary on disk.
+2. **`whence -p` resolves it to a PATH executable.** Not just "this name exists in the shell", but *specifically* a real binary on disk.
 
 Why `whence -p` and not `command -v`? Read on.
 
@@ -109,7 +109,7 @@ In a real interactive shell, that would have stuffed `4` into my prompt invisibl
 
 The fix has two parts:
 
-- **`[[ "$first" == [a-zA-Z_]* ]]`** alone would have caught it — `4` doesn't start with a letter.
+- **`[[ "$first" == [a-zA-Z_]* ]]`** alone would have caught it, because `4` doesn't start with a letter.
 - **`whence -p`** instead of `command -v` makes it doubly safe. `whence -p` only matches binaries in PATH, ignoring aliases, functions, and builtins. Aliases like `4 → cd -4` are filtered out.
 
 Either check alone would have caught the bug. Having both means the next time I add a feature here, I don't have to remember which one was load-bearing.
@@ -133,7 +133,7 @@ emulate -L zsh
 setopt NO_GLOB
 ```
 
-`emulate -L zsh` resets shell options to defaults, scoped to this function only (the `-L` means local — they restore on return). `NO_GLOB` is belt-and-suspenders for callers that bypass the alias (`command p ...`, `\p ...`, or scripts that don't see your aliases).
+`emulate -L zsh` resets shell options to defaults, scoped to this function only (the `-L` means local, so they restore on return). `NO_GLOB` is belt-and-suspenders for callers that bypass the alias (`command p ...`, `\p ...`, or scripts that don't see your aliases).
 
 ### output sanitization
 
@@ -141,13 +141,13 @@ setopt NO_GLOB
 tr -d '\000-\037' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//'
 ```
 
-`tr -d '\000-\037'` strips all C0 control characters — that includes ANSI escape sequences (ESC = `\033`), stray nulls, and any invisible cruft the model might emit. Critical for `print -z` because control characters in the payload corrupt the line editor's display.
+`tr -d '\000-\037'` strips all C0 control characters. That includes ANSI escape sequences (ESC = `\033`), stray nulls, and any invisible cruft the model might emit. Critical for `print -z` because control characters in the payload corrupt the line editor's display.
 
 `sed` then trims leading and trailing whitespace, which the model usually adds even when told not to.
 
 ## why `"$*"` and not `"$@"`
 
-`"$*"` joins all positional args into one string with spaces between them. `"$@"` would pass them as separate args, which most AI CLIs would concatenate anyway — but some treat the first positional as the prompt and the rest as files (the `@file.txt` convention is common). Joining explicitly avoids that ambiguity.
+`"$*"` joins all positional args into one string with spaces between them. `"$@"` would pass them as separate args, which most AI CLIs would concatenate anyway, but some treat the first positional as the prompt and the rest as files (the `@file.txt` convention is common). Joining explicitly avoids that ambiguity.
 
 If your CLI supports `--` to end option parsing, prefer:
 
@@ -165,7 +165,7 @@ The phrasing that worked best:
 
 > Answer in ONE line. No preamble, no explanation, no markdown, no code fences. For shell/kubectl/git/etc requests output only the command. For factual or math questions output only the answer.
 
-"No markdown, no code fences" is doing most of the work. Without it you get backtick-wrapped output that `print -z` would happily push into your prompt as `` `kubectl get pods` `` — which is not a runnable command.
+"No markdown, no code fences" is doing most of the work. Without it you get backtick-wrapped output that `print -z` would happily push into your prompt as `` `kubectl get pods` ``, which is not a runnable command.
 
 ## why this beats the chat UI for short questions
 

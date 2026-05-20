@@ -6,7 +6,7 @@ excerpt: "Ten years of git, distilled. The daily eight, the weekly five, the arc
 featured: true
 ---
 
-I've been using git for a decade and most of what I type still fits on a single hand. The 200-page Pro Git book is wonderful and almost none of it survives contact with a real Tuesday. What survives is a small, boring set of commands that get rerun constantly — plus a handful of less-boring ones I reach for once a week and would mourn if they disappeared.
+I've been using git for a decade and most of what I type still fits on a single hand. The 200-page Pro Git book is wonderful and almost none of it survives contact with a real Tuesday. What survives is a small, boring set of commands that get rerun constantly, plus a handful of less-boring ones I reach for once a week and would mourn if they disappeared.
 
 This post is that list, ordered by how often my fingers actually type them. Aliases are from the oh-my-zsh `git` plugin (enabled in most zsh configs that exist); the full command sits next to the alias so it's portable.
 
@@ -14,15 +14,15 @@ This post is that list, ordered by how often my fingers actually type them. Alia
 
 These are the ones I'd type in my sleep. If you're not using all eight already, picking them up pays back inside a week.
 
-### `gst` — `git status`
+### `gst` (`git status`)
 
 ```bash
 gst
 ```
 
-I run this between every other command. It's the cheapest sanity check git has. Branch, ahead/behind, staged, unstaged, untracked — in two seconds. If you only learn one alias, learn this one.
+I run this between every other command. It's the cheapest sanity check git has. Branch, ahead/behind, staged, unstaged, untracked. Two seconds. If you only learn one alias, learn this one.
 
-### `glola` — `git log --oneline --graph --decorate --all`
+### `glola` (`git log --oneline --graph --decorate --all`)
 
 ```bash
 glola | head -30
@@ -30,7 +30,7 @@ glola | head -30
 
 The one true log. Graph of every branch (local + remote), one line per commit, colored refs. Pipe through `head` because most of the time you only care about the last 20-30 commits. I have this bound to muscle memory more thoroughly than my own phone number.
 
-### `gd` / `gds` — `git diff` / `git diff --staged`
+### `gd` / `gds` (`git diff` / `git diff --staged`)
 
 ```bash
 gd          # what's changed but not staged
@@ -39,7 +39,7 @@ gds         # what's staged and about to be committed
 
 `gds` before every commit. If you set [delta](https://github.com/dandavison/delta) as your pager (`brew install git-delta`, then `pager = delta` in `~/.gitconfig`), the output stops being painful to read.
 
-### `gcam` — `git commit -a -m`
+### `gcam` (`git commit -a -m`)
 
 ```bash
 gcam "fix: trailing slash in webhook URL"
@@ -47,15 +47,15 @@ gcam "fix: trailing slash in webhook URL"
 
 Quick one-line commits for small fixes. For anything bigger I drop the `-m` and let `$EDITOR` open so I can write a proper message with a body.
 
-### `gpsup` — `git push --set-upstream origin <current-branch>`
+### `gpsup` (`git push --set-upstream origin <current-branch>`)
 
 ```bash
 gpsup
 ```
 
-First push of a new branch. The full command is annoying to type — `gpsup` figures out the current branch name itself. After the first push, plain `gp` (just `git push`) works because upstream is set.
+First push of a new branch. The full command is annoying to type, so `gpsup` figures out the current branch name itself. After the first push, plain `gp` (just `git push`) works because upstream is set.
 
-### `gco` / `gcb` — `git checkout` / `git checkout -b`
+### `gco` / `gcb` (`git checkout` / `git checkout -b`)
 
 ```bash
 gco main             # switch to main
@@ -65,15 +65,15 @@ gcb feature/login    # create + switch to new branch
 
 `gco -` is the one to notice. Like `cd -` for branches. When you're bouncing between two branches all day, it's a single keystroke each way instead of typing the name.
 
-### `gst` again, then `gpf` — `git push --force-with-lease`
+### `gst` again, then `gpf` (`git push --force-with-lease`)
 
 ```bash
 gpf
 ```
 
-After rebasing or amending. **Always use `--force-with-lease`, never `--force`.** The lease version refuses to push if someone else has pushed to your branch since your last fetch — saving you from silently overwriting a teammate's work. There is no good reason to ever type `--force` in 2026.
+After rebasing or amending. **Always use `--force-with-lease`, never `--force`.** The lease version refuses to push if someone else has pushed to your branch since your last fetch, saving you from silently overwriting a teammate's work. There is no good reason to ever type `--force` in 2026.
 
-### `gfa` — `git fetch --all --prune`
+### `gfa` (`git fetch --all --prune`)
 
 ```bash
 gfa
@@ -94,7 +94,7 @@ git restore --staged file.txt       # unstage
 git restore --source=abc123 file.go # restore single file from any commit
 ```
 
-`switch` and `restore` split the four jobs `checkout` used to do. Safer because they can't accidentally do the wrong one. The one I reach for most is `restore --source=<sha> <path>` — "grab this single file from three commits ago without touching anything else."
+`switch` and `restore` split the four jobs `checkout` used to do. Safer because they can't accidentally do the wrong one. The one I reach for most is `restore --source=<sha> <path>`. Translation: "grab this single file from three commits ago without touching anything else."
 
 ### interactive rebase with autosquash
 
@@ -105,7 +105,7 @@ git commit --fixup=abc123       # another one, still targeting
 git rebase -i --autosquash main # all fixups slot into place automatically
 ```
 
-This is the single biggest workflow win I've found in ten years of git. While reviewing your own PR you find a bug four commits back. Don't fix it on top — `git commit --fixup=<sha>` creates a commit *targeting* the offender. Keep working. When you're done: `git rebase -i --autosquash main` reorders and squashes everything for you. PR history stays clean. No `// fix bug in earlier commit` commits.
+This is the single biggest workflow win I've found in ten years of git. While reviewing your own PR you find a bug four commits back. Don't fix it on top. `git commit --fixup=<sha>` creates a commit *targeting* the offender. Keep working. When you're done: `git rebase -i --autosquash main` reorders and squashes everything for you. PR history stays clean. No `// fix bug in earlier commit` commits.
 
 Install `git-absorb` (`brew install git-absorb`) and it picks the target sha for you by looking at which lines you changed. The flow becomes:
 
@@ -117,7 +117,7 @@ git absorb --and-rebase
 
 The first time it works on a six-commit branch you'll wonder why it isn't built into git.
 
-### `git reflog` — the universal undo
+### `git reflog`, the universal undo
 
 ```bash
 git reflog
@@ -160,7 +160,7 @@ gfa
 git branch --merged main | grep -v '\*\|main\|master' | xargs -n1 git branch -d
 ```
 
-Deletes every local branch whose tip commit is already in `main`. Works only if your team uses merge commits — most don't.
+Deletes every local branch whose tip commit is already in `main`. Works only if your team uses merge commits. Most don't.
 
 ### the hard half: squash-merges
 
@@ -186,7 +186,7 @@ git-gone() {
 }
 ```
 
-Or install [`git-trim`](https://github.com/foriequal0/git-trim) (`brew install git-trim`) which is smarter — it also detects patch-equivalent commits, so it catches squash-merges even when the upstream tracking ref isn't `[gone]`.
+Or install [`git-trim`](https://github.com/foriequal0/git-trim) (`brew install git-trim`), which is smarter. It also detects patch-equivalent commits, so it catches squash-merges even when the upstream tracking ref isn't `[gone]`.
 
 ```bash
 git trim                # dry-run
@@ -199,7 +199,7 @@ This is the closest thing to "did my PR ship?" you can ask git directly.
 
 For when something is broken and the question is "when did this start."
 
-### pickaxe — finding when a string appeared
+### pickaxe, finding when a string appeared
 
 ```bash
 git log -S "functionName"       # commits where this string was added or removed
@@ -214,7 +214,7 @@ git log -G "regex"              # same but with regex
 git blame -w -C -C -C path/to/file.go
 ```
 
-Plain `blame` is misleading — it gives credit to whoever last touched the line, which is often whoever ran a formatter. The flags:
+Plain `blame` is misleading. It gives credit to whoever last touched the line, which is often whoever ran a formatter. The flags:
 
 - `-w` ignore whitespace changes
 - `-C -C -C` follow code copied or moved across files, with three levels of aggressiveness
@@ -257,7 +257,7 @@ git config --global push.default current
 git config --global push.autoSetupRemote true
 ```
 
-`current` makes `git push` push the current branch to a remote of the same name. `autoSetupRemote` means `git push` on a new branch sets upstream automatically — no more `gpsup` for the first push.
+`current` makes `git push` push the current branch to a remote of the same name. `autoSetupRemote` means `git push` on a new branch sets upstream automatically. No more `gpsup` for the first push.
 
 ### better diff and merge UX
 
@@ -266,7 +266,7 @@ git config --global diff.algorithm histogram
 git config --global merge.conflictStyle zdiff3
 ```
 
-`histogram` produces cleaner diffs for most refactors than the default `myers`. `zdiff3` shows the common ancestor in conflict markers — i.e. the original code both sides diverged from. Once you've used it, plain `<<<<<<<` markers feel like flying blind.
+`histogram` produces cleaner diffs for most refactors than the default `myers`. `zdiff3` shows the common ancestor in conflict markers, i.e. the original code both sides diverged from. Once you've used it, plain `<<<<<<<` markers feel like flying blind.
 
 ### maintenance, on a schedule
 
@@ -308,7 +308,7 @@ d() {
   emulate -L zsh
   setopt NO_GLOB
   local query="$*"
-  local prompt="You are a command line expert. The user wants to run a command but they don't know how. Here is what they asked: ${query}. Return ONLY the exact shell command needed. No explanation, no markdown, no code blocks — just the raw command."
+  local prompt="You are a command line expert. The user wants to run a command but they don't know how. Here is what they asked: ${query}. Return ONLY the exact shell command needed. No explanation, no markdown, no code blocks. Just the raw command."
   local cmd
   cmd=$(droid exec -m glm-4.6 -r off --output-format text --disabled-tools execute-cli -- "$prompt" \
         | tr -d '\000-\037' \
@@ -318,7 +318,7 @@ d() {
 alias d='noglob d'
 ```
 
-Swap `pi` and `droid` for whatever AI CLI you have — `claude -p`, `llm`, `gh copilot suggest`, `ollama run`. The pattern is what matters, not the backend.
+Swap `pi` and `droid` for whatever AI CLI you have: `claude -p`, `llm`, `gh copilot suggest`, `ollama run`. The pattern is what matters, not the backend.
 
 ### why split into two functions
 
@@ -332,14 +332,14 @@ Different jobs:
 
 ### the trick: `print -z` is what makes `d` safe
 
-`print -z` pushes text onto the zsh line editor — i.e. into your next prompt, pre-typed and ready. Compared to the alternatives:
+`print -z` pushes text onto the zsh line editor, i.e. into your next prompt, pre-typed and ready. Compared to the alternatives:
 
 | Strategy | Speed | Safety | Friction |
 |----------|-------|--------|----------|
-| `eval "$(...)"` | fastest | **bad** — auto-runs model output | none |
+| `eval "$(...)"` | fastest | **bad**, auto-runs model output | none |
 | Pipe to `pbcopy` | medium | safe | switch focus, paste |
 | Print to stdout | medium | safe | select + copy + paste |
-| **`print -z`** | **fastest** | **safe** — you press Enter | **none** |
+| **`print -z`** | **fastest** | **safe**, you press Enter | **none** |
 
 Same trick `Ctrl-R` history search uses. Native zsh. You always see and approve the command before it runs.
 
