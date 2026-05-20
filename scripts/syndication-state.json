@@ -3,7 +3,7 @@
     "blog/seven-visual-tools-one-diagram": {
       "id": 3694898,
       "url": "https://dev.to/sachincool/seven-visual-tools-one-diagram-2j4i",
-      "at": "2026-05-20T19:37:35.495Z"
+      "at": "2026-05-20T19:58:03.932Z"
     },
     "blog/infrastructure-as-code-mistakes": {
       "id": 3694901,
@@ -28,27 +28,27 @@
     "blog/ja4-fingerprinting-network-security": {
       "id": 3694906,
       "url": "https://dev.to/sachincool/how-i-took-down-30-of-production-with-one-tls-fingerprinting-rule-1ila",
-      "at": "2026-05-20T19:36:28.831Z"
+      "at": "2026-05-20T19:56:50.873Z"
     },
     "til/ja4-fingerprint-bot-detection": {
       "id": 3694907,
       "url": "https://dev.to/sachincool/ja4s-split-format-saved-our-metrics-cardinality-25cf",
-      "at": "2026-05-20T19:36:33.164Z"
+      "at": "2026-05-20T19:56:55.294Z"
     },
     "blog/self-hosting-simplelogin": {
       "id": 3694910,
       "url": "https://dev.to/sachincool/self-hosting-simplelogin-own-your-email-aliases-for-3-a-month-3cfp",
-      "at": "2026-05-20T19:36:59.851Z"
+      "at": "2026-05-20T19:57:26.758Z"
     },
     "blog/lazy-security-part-1-supply-chain": {
       "id": 3694911,
       "url": "https://dev.to/sachincool/lazy-sres-guide-to-secure-systems-part-1-the-dependencies-you-didnt-read-2eck",
-      "at": "2026-05-20T19:37:04.292Z"
+      "at": "2026-05-20T19:57:32.110Z"
     },
     "blog/lazy-security-part-6-network-plane": {
       "id": 3694914,
       "url": "https://dev.to/sachincool/lazy-sres-guide-to-secure-systems-part-6-the-network-in-front-of-everything-480g",
-      "at": "2026-05-20T19:37:31.012Z"
+      "at": "2026-05-20T19:57:59.497Z"
     },
     "til/docker-build-cache-trick": {
       "id": 3694919,
@@ -58,7 +58,7 @@
     "til/jq-for-json-parsing": {
       "id": 3694920,
       "url": "https://dev.to/sachincool/jq-magic-parse-json-like-a-pro-4lpc",
-      "at": "2026-05-20T19:35:40.291Z"
+      "at": "2026-05-20T19:52:04.699Z"
     },
     "blog/docker-security-hardening": {
       "id": 3694925,
@@ -83,12 +83,12 @@
     "blog/prometheus-grafana-monitoring-guide": {
       "id": 3694932,
       "url": "https://dev.to/sachincool/prometheus-and-grafana-from-zero-to-production-monitoring-4lgm",
-      "at": "2026-05-20T19:36:11.260Z"
+      "at": "2026-05-20T19:55:48.368Z"
     },
     "til/git-interactive-rebase-magic": {
       "id": 3694934,
       "url": "https://dev.to/sachincool/git-interactive-rebase-clean-up-your-commit-history-2k2o",
-      "at": "2026-05-20T19:36:15.679Z"
+      "at": "2026-05-20T19:55:53.624Z"
     },
     "blog/github-actions-gitlab-ci-comparison": {
       "id": 3694935,
@@ -98,67 +98,67 @@
     "blog/favorite-shows-sitcoms-detective": {
       "id": 3694936,
       "url": "https://dev.to/sachincool/my-watchlist-from-70s-basements-to-victorian-crime-scenes-43b2",
-      "at": "2026-05-20T19:36:24.412Z"
+      "at": "2026-05-20T19:56:43.124Z"
     },
     "til/delivery-social-engineering": {
       "id": 3694939,
       "url": "https://dev.to/sachincool/delivery-service-impersonation-is-an-alarmingly-effective-social-engineering-vector-52bj",
-      "at": "2026-05-20T19:36:37.512Z"
+      "at": "2026-05-20T19:57:00.061Z"
     },
     "blog/netlify-to-dokploy-migration": {
       "id": 3694940,
       "url": "https://dev.to/sachincool/when-netlify-killed-my-free-tier-a-15-minute-migration-to-dokploy-54k1",
-      "at": "2026-05-20T19:36:41.862Z"
+      "at": "2026-05-20T19:57:04.479Z"
     },
     "blog/victorialogs-vs-loki": {
       "id": 3694946,
       "url": "https://dev.to/sachincool/victorialogs-vs-loki-real-world-benchmarking-results-26bg",
-      "at": "2026-05-20T19:36:46.222Z"
+      "at": "2026-05-20T19:57:11.319Z"
     },
     "blog/akamai-browser-extensions-blocking": {
       "id": 3694948,
       "url": "https://dev.to/sachincool/access-denied-edgesuite-edition-when-your-browser-extensions-become-attack-vectors-2h0c",
-      "at": "2026-05-20T19:36:50.545Z"
+      "at": "2026-05-20T19:57:17.002Z"
     },
     "til/blocking-ai-crawlers": {
       "id": 3694950,
       "url": "https://dev.to/sachincool/blocking-ai-crawlers-is-the-new-noindex-4lig",
-      "at": "2026-05-20T19:36:54.855Z"
+      "at": "2026-05-20T19:57:21.397Z"
     },
     "blog/lazy-security-part-2-github-actions": {
       "id": 3694955,
       "url": "https://dev.to/sachincool/lazy-sres-guide-to-secure-systems-part-2-the-actions-you-didnt-pin-428g",
-      "at": "2026-05-20T19:37:08.742Z"
+      "at": "2026-05-20T19:57:36.717Z"
     },
     "blog/lazy-security-part-3-unsexy-list": {
       "id": 3694958,
       "url": "https://dev.to/sachincool/lazy-sres-guide-to-secure-systems-part-3-the-unsexy-list-4e8n",
-      "at": "2026-05-20T19:37:13.158Z"
+      "at": "2026-05-20T19:57:41.309Z"
     },
     "blog/lazy-security-part-4-dns-records": {
       "id": 3694961,
       "url": "https://dev.to/sachincool/lazy-sres-guide-to-secure-systems-part-4-the-four-dns-records-4eh4",
-      "at": "2026-05-20T19:37:17.691Z"
+      "at": "2026-05-20T19:57:45.768Z"
     },
     "blog/lazy-security-part-5-dev-laptops": {
       "id": 3694966,
       "url": "https://dev.to/sachincool/lazy-sres-guide-to-secure-systems-part-5-the-dev-laptop-is-the-perimeter-3109",
-      "at": "2026-05-20T19:37:22.119Z"
+      "at": "2026-05-20T19:57:50.217Z"
     },
     "blog/bypassing-claude-code-mdm-managed-settings": {
       "id": 3694967,
       "url": "https://dev.to/sachincool/how-to-bypass-corporate-mdm-and-ai-gateways-on-claude-code-27de",
-      "at": "2026-05-20T19:37:26.588Z"
+      "at": "2026-05-20T19:57:54.650Z"
     },
     "til/one-line-ai-shell-helper": {
       "id": 3706873,
       "url": "https://dev.to/sachincool/a-7-line-shell-function-for-one-liner-ai-answers-20o8",
-      "at": "2026-05-20T19:37:44.646Z"
+      "at": "2026-05-20T19:58:13.157Z"
     },
     "blog/daily-git-commands": {
       "id": 3711317,
       "url": "https://dev.to/sachincool/the-git-commands-i-actually-run-every-day-423p",
-      "at": "2026-05-20T19:37:40.212Z"
+      "at": "2026-05-20T19:58:08.665Z"
     }
   },
   "hashnode": {},
