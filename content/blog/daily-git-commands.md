@@ -14,7 +14,8 @@ This post is that list, ordered by how often my fingers actually type them. Alia
 
 These are the ones I'd type in my sleep. If you're not using all eight already, picking them up pays back inside a week.
 
-### `gst` (`git status`)
+### gst
+*git status*
 
 ```bash
 gst
@@ -22,7 +23,8 @@ gst
 
 I run this between every other command. It's the cheapest sanity check git has. Branch, ahead/behind, staged, unstaged, untracked. Two seconds. If you only learn one alias, learn this one.
 
-### `glola` (`git log --oneline --graph --decorate --all`)
+### glola
+*git log --oneline --graph --decorate --all*
 
 ```bash
 glola | head -30
@@ -30,7 +32,8 @@ glola | head -30
 
 The one true log. Graph of every branch (local + remote), one line per commit, colored refs. Pipe through `head` because most of the time you only care about the last 20-30 commits. I have this bound to muscle memory more thoroughly than my own phone number.
 
-### `gd` / `gds` (`git diff` / `git diff --staged`)
+### gd / gds
+*git diff / git diff --staged*
 
 ```bash
 gd          # what's changed but not staged
@@ -39,7 +42,8 @@ gds         # what's staged and about to be committed
 
 `gds` before every commit. If you set [delta](https://github.com/dandavison/delta) as your pager (`brew install git-delta`, then `pager = delta` in `~/.gitconfig`), the output stops being painful to read.
 
-### `gcam` (`git commit -a -m`)
+### gcam
+*git commit -a -m*
 
 ```bash
 gcam "fix: trailing slash in webhook URL"
@@ -47,7 +51,8 @@ gcam "fix: trailing slash in webhook URL"
 
 Quick one-line commits for small fixes. For anything bigger I drop the `-m` and let `$EDITOR` open so I can write a proper message with a body.
 
-### `gpsup` (`git push --set-upstream origin <current-branch>`)
+### gpsup
+*git push --set-upstream origin &lt;current-branch&gt;*
 
 ```bash
 gpsup
@@ -55,7 +60,8 @@ gpsup
 
 First push of a new branch. The full command is annoying to type, so `gpsup` figures out the current branch name itself. After the first push, plain `gp` (just `git push`) works because upstream is set.
 
-### `gco` / `gcb` (`git checkout` / `git checkout -b`)
+### gco / gcb
+*git checkout / git checkout -b*
 
 ```bash
 gco main             # switch to main
@@ -65,7 +71,8 @@ gcb feature/login    # create + switch to new branch
 
 `gco -` is the one to notice. Like `cd -` for branches. When you're bouncing between two branches all day, it's a single keystroke each way instead of typing the name.
 
-### `gst` again, then `gpf` (`git push --force-with-lease`)
+### gpf
+*git push --force-with-lease*
 
 ```bash
 gpf
@@ -73,7 +80,8 @@ gpf
 
 After rebasing or amending. **Always use `--force-with-lease`, never `--force`.** The lease version refuses to push if someone else has pushed to your branch since your last fetch, saving you from silently overwriting a teammate's work. There is no good reason to ever type `--force` in 2026.
 
-### `gfa` (`git fetch --all --prune`)
+### gfa
+*git fetch --all --prune*
 
 ```bash
 gfa
