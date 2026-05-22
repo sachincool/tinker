@@ -49,7 +49,10 @@ function renderInlineRich(text: string): React.ReactNode[] {
     }
   };
 
-  const pattern = /(\*\*[^*]+\*\*)|(\*[^*]+\*)|(\[[^\]]+\]\([^)]+\))/g;
+  // Bold must tolerate single `*` inside the span (e.g. **`[a-zA-Z_]*`**) —
+  // code spans frequently contain regex/glob characters. The old `[^*]+`
+  // forbade any `*` and silently dropped the entire emphasis.
+  const pattern = /(\*\*(?:[^*]|\*(?!\*))+?\*\*)|(\*[^*]+\*)|(\[[^\]]+\]\([^)]+\))/g;
   let cursor = 0;
   let match: RegExpExecArray | null;
   while ((match = pattern.exec(text)) !== null) {
@@ -285,8 +288,8 @@ export function MarkdownContent({ content }: MarkdownContentProps) {
                             key={j}
                             className={`py-3 px-4 md:px-5 align-top ${j === 0 ? 'text-foreground font-medium' : 'text-foreground/85'} ${alignClass(alignments[j] || 'left')}`}
                           >
-                            {cell.split(/(\*\*[^*]+\*\*|`[^`]+`)/).map((part, k) => {
-                              if (part?.match(/^\*\*[^*]+\*\*$/)) {
+                            {cell.split(/(\*\*(?:[^*]|\*(?!\*))+?\*\*|`[^`]+`)/).map((part, k) => {
+                              if (part?.match(/^\*\*(?:[^*]|\*(?!\*))+?\*\*$/)) {
                                 return <strong key={k} className="font-semibold text-foreground">{part.slice(2, -2)}</strong>;
                               } else if (part?.match(/^`[^`]+`$/)) {
                                 return <code key={k} className="bg-muted/60 px-1.5 py-0.5 rounded text-xs font-mono text-foreground">{part.slice(1, -1)}</code>;
