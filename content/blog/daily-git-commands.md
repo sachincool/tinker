@@ -56,7 +56,7 @@ gcam "fix: trailing slash in webhook URL"
 Quick one-line commits for small fixes. For anything bigger I drop the `-m` and let `$EDITOR` open so I can write a proper message with a body.
 
 ### gpsup
-*git push --set-upstream origin &lt;current-branch&gt;*
+*git push --set-upstream origin \<current-branch\>*
 
 ```bash
 gpsup
