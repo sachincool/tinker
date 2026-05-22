@@ -203,39 +203,41 @@ export function NewsletterForm({
               <h3 className="font-semibold text-lg">{title}</h3>
             </div>
             <p className="text-sm text-muted-foreground">{description}</p>
-            <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3">
+            <form onSubmit={handleSubmit} className="space-y-3">
+              <div className="flex flex-col sm:flex-row gap-3">
+                <Input
+                  type="email"
+                  placeholder="wizard@infrastructure.magic"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  disabled={status === "loading" || status === "success"}
+                  className="flex-1"
+                  required
+                />
+                <Button
+                  type="submit"
+                  disabled={status === "loading" || status === "success"}
+                  className="group"
+                >
+                  {status === "loading" ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Subscribing...
+                    </>
+                  ) : status === "success" ? (
+                    <>
+                      <CheckCircle2 className="mr-2 h-4 w-4" />
+                      Subscribed!
+                    </>
+                  ) : (
+                    <>
+                      <Mail className="mr-2 h-4 w-4 group-hover:scale-110 transition-transform" />
+                      Subscribe
+                    </>
+                  )}
+                </Button>
+              </div>
               {protectionFields}
-              <Input
-                type="email"
-                placeholder="wizard@infrastructure.magic"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                disabled={status === "loading" || status === "success"}
-                className="flex-1"
-                required
-              />
-              <Button
-                type="submit"
-                disabled={status === "loading" || status === "success"}
-                className="group"
-              >
-                {status === "loading" ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Subscribing...
-                  </>
-                ) : status === "success" ? (
-                  <>
-                    <CheckCircle2 className="mr-2 h-4 w-4" />
-                    Subscribed!
-                  </>
-                ) : (
-                  <>
-                    <Mail className="mr-2 h-4 w-4 group-hover:scale-110 transition-transform" />
-                    Subscribe
-                  </>
-                )}
-              </Button>
             </form>
             {status === "error" && (
               <div className="flex items-center gap-2 text-sm text-red-500">
@@ -258,32 +260,34 @@ export function NewsletterForm({
         </h3>
         <p className="text-muted-foreground">{description}</p>
       </div>
-      <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 max-w-md">
+      <form onSubmit={handleSubmit} className="space-y-3 max-w-md">
+        <div className="flex flex-col sm:flex-row gap-3">
+          <Input
+            type="email"
+            placeholder="your@email.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            disabled={status === "loading" || status === "success"}
+            className="flex-1"
+            required
+          />
+          <Button
+            type="submit"
+            disabled={status === "loading" || status === "success"}
+          >
+            {status === "loading" ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : status === "success" ? (
+              <>
+                <CheckCircle2 className="mr-2 h-4 w-4" />
+                Done!
+              </>
+            ) : (
+              "Subscribe"
+            )}
+          </Button>
+        </div>
         {protectionFields}
-        <Input
-          type="email"
-          placeholder="your@email.com"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          disabled={status === "loading" || status === "success"}
-          className="flex-1"
-          required
-        />
-        <Button
-          type="submit"
-          disabled={status === "loading" || status === "success"}
-        >
-          {status === "loading" ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
-          ) : status === "success" ? (
-            <>
-              <CheckCircle2 className="mr-2 h-4 w-4" />
-              Done!
-            </>
-          ) : (
-            "Subscribe"
-          )}
-        </Button>
       </form>
       {message && (
         <p className={`text-sm ${status === "error" ? "text-red-500" : "text-green-500"}`}>
