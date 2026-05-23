@@ -156,6 +156,22 @@ export function getPostsByTag(tag: string): Post[] {
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 }
 
+// Scan a post's markdown for internal references to other posts/TILs.
+// Matches markdown links like `[label](/blog/some-slug)` and `[label](/til/some-slug)`,
+// ignoring fragments and trailing punctuation. Used by the knowledge graph to draw
+// post-to-post edges (not just post-to-tag).
+export function extractInternalRefs(content: string): Array<{ type: 'blog' | 'til'; slug: string }> {
+  const refs = new Map<string, { type: 'blog' | 'til'; slug: string }>();
+  const re = /\]\(\/(blog|til)\/([a-z0-9][a-z0-9-]*)/gi;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(content)) !== null) {
+    const type = m[1].toLowerCase() as 'blog' | 'til';
+    const slug = m[2];
+    refs.set(`${type}:${slug}`, { type, slug });
+  }
+  return Array.from(refs.values());
+}
+
 export function getAllTags(): string[] {
   const blogPosts = getAllPosts('blog');
   const tilPosts = getAllPosts('til');

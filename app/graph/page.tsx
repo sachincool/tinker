@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, Network } from "lucide-react";
 import Link from "next/link";
 import GraphView from "@/components/blog/graph-view-lazy";
-import { getAllPosts, getAllTags } from "@/lib/posts";
+import { getAllPosts, getAllTags, extractInternalRefs } from "@/lib/posts";
 import type { Metadata } from "next";
 import { siteConfig, getCurrentDomain } from "@/lib/site-config";
 import { headers } from "next/headers";
@@ -39,6 +39,24 @@ export default function GraphPage() {
   const blogPosts = getAllPosts('blog');
   const tilPosts = getAllPosts('til');
   const allTags = getAllTags();
+
+  // Build a slim, serializable payload for the client graph. We compute internal
+  // cross-references server-side so post bodies don't have to ship to the browser.
+  const validKeys = new Set<string>([
+    ...blogPosts.map((p) => `blog:${p.slug}`),
+    ...tilPosts.map((p) => `til:${p.slug}`),
+  ]);
+  const toGraphNode = (p: typeof blogPosts[number]) => ({
+    slug: p.slug,
+    title: p.title,
+    tags: p.tags,
+    type: p.type,
+    related: extractInternalRefs(p.content)
+      .map((r) => `${r.type}:${r.slug}`)
+      .filter((key) => key !== `${p.type}:${p.slug}` && validKeys.has(key)),
+  });
+  const blogNodes = blogPosts.map(toGraphNode);
+  const tilNodes = tilPosts.map(toGraphNode);
 
   return (
     <div className="space-y-8">
@@ -104,9 +122,9 @@ export default function GraphPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <GraphView 
-            blogPosts={blogPosts} 
-            tilPosts={tilPosts} 
+          <GraphView
+            blogPosts={blogNodes}
+            tilPosts={tilNodes}
             allTags={allTags}
           />
         </CardContent>

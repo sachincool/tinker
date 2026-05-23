@@ -16,6 +16,7 @@ interface Node extends d3.SimulationNodeDatum {
 interface Link extends d3.SimulationLinkDatum<Node> {
   source: string | Node;
   target: string | Node;
+  kind?: "tag" | "ref";
 }
 
 interface Post {
@@ -23,6 +24,9 @@ interface Post {
   title: string;
   tags: string[];
   type: "blog" | "til";
+  // Outbound internal references to other posts/TILs, e.g. "blog:foo", "til:bar".
+  // Computed server-side from markdown links. Optional for backward compatibility.
+  related?: string[];
 }
 
 interface GraphViewProps {
@@ -43,29 +47,37 @@ export function GraphView({ blogPosts, tilPosts, allTags }: GraphViewProps) {
     const nodes: Node[] = [];
     const links: Link[] = [];
     const tagCounts = new Map<string, number>();
+    const usedTags = new Set<string>();
 
-    // Count tag usage
+    // Count tag usage across every post we'll render. Drives node size and lets us
+    // skip orphan tags (declared in the corpus but unused by any rendered post).
     [...blogPosts, ...tilPosts].forEach(post => {
       post.tags.forEach(tag => {
         tagCounts.set(tag, (tagCounts.get(tag) || 0) + 1);
+        usedTags.add(tag);
       });
     });
 
-    // Create tag nodes
+    // Tag nodes — only for tags that are actually referenced by a rendered post.
     allTags.forEach(tag => {
+      if (!usedTags.has(tag)) return;
       const count = tagCounts.get(tag) || 1;
       nodes.push({
         id: `tag-${tag}`,
         name: tag,
         type: "tag",
-        size: 10 + count * 2, // Size based on usage
+        size: 10 + count * 2,
         slug: tag
       });
     });
 
-    // Create blog post nodes and links
-    blogPosts.slice(0, 10).forEach((post, idx) => { // Limit to 10 for readability
+    // "blog:slug" / "til:slug" → node id, so post→post edges land on real nodes.
+    const postKeyToNodeId = new Map<string, string>();
+
+    // Blog post nodes
+    blogPosts.forEach((post) => {
       const nodeId = `post-${post.slug}`;
+      postKeyToNodeId.set(`blog:${post.slug}`, nodeId);
       nodes.push({
         id: nodeId,
         name: post.title.length > 30 ? post.title.substring(0, 30) + '...' : post.title,
@@ -73,19 +85,15 @@ export function GraphView({ blogPosts, tilPosts, allTags }: GraphViewProps) {
         size: 6,
         slug: post.slug
       });
-
-      // Link to tags
       post.tags.forEach(tag => {
-        links.push({
-          source: `tag-${tag}`,
-          target: nodeId
-        });
+        links.push({ source: `tag-${tag}`, target: nodeId, kind: "tag" });
       });
     });
 
-    // Create TIL nodes and links
-    tilPosts.slice(0, 10).forEach((til, idx) => { // Limit to 10 for readability
+    // TIL nodes
+    tilPosts.forEach((til) => {
       const nodeId = `til-${til.slug}`;
+      postKeyToNodeId.set(`til:${til.slug}`, nodeId);
       nodes.push({
         id: nodeId,
         name: til.title.length > 25 ? til.title.substring(0, 25) + '...' : til.title,
@@ -93,13 +101,24 @@ export function GraphView({ blogPosts, tilPosts, allTags }: GraphViewProps) {
         size: 5,
         slug: til.slug
       });
-
-      // Link to tags
       til.tags.forEach(tag => {
-        links.push({
-          source: `tag-${tag}`,
-          target: nodeId
-        });
+        links.push({ source: `tag-${tag}`, target: nodeId, kind: "tag" });
+      });
+    });
+
+    // Post→post cross-reference edges. Deduplicated by undirected pair so the
+    // 6-part lazy-security series doesn't draw both A→B and B→A as parallel lines.
+    const seenPairs = new Set<string>();
+    [...blogPosts, ...tilPosts].forEach((post) => {
+      const sourceId = postKeyToNodeId.get(`${post.type}:${post.slug}`);
+      if (!sourceId || !post.related) return;
+      post.related.forEach((key) => {
+        const targetId = postKeyToNodeId.get(key);
+        if (!targetId || targetId === sourceId) return;
+        const pair = [sourceId, targetId].sort().join('|');
+        if (seenPairs.has(pair)) return;
+        seenPairs.add(pair);
+        links.push({ source: sourceId, target: targetId, kind: "ref" });
       });
     });
 
@@ -134,16 +153,17 @@ export function GraphView({ blogPosts, tilPosts, allTags }: GraphViewProps) {
       .force("center", d3.forceCenter(width / 2, height / 2))
       .force("collision", d3.forceCollide().radius((d: any) => Math.sqrt(d.size) * 3));
 
-    // Create links (in the zoomable group)
+    // Create links (in the zoomable group). Post→post refs render thicker and in
+    // the rust accent so the reader can spot direct cross-references at a glance.
     const link = g
       .append("g")
       .selectAll("line")
       .data(links)
       .enter()
       .append("line")
-      .attr("stroke", "#999")
-      .attr("stroke-opacity", 0.6)
-      .attr("stroke-width", 1);
+      .attr("stroke", (d: any) => (d.kind === "ref" ? "#b45309" : "#999"))
+      .attr("stroke-opacity", (d: any) => (d.kind === "ref" ? 0.85 : 0.5))
+      .attr("stroke-width", (d: any) => (d.kind === "ref" ? 1.75 : 1));
 
     // Create nodes (in the zoomable group)
     const node = g
@@ -311,6 +331,10 @@ export function GraphView({ blogPosts, tilPosts, allTags }: GraphViewProps) {
         <div className="flex items-center gap-2">
           <div className="w-3 h-3 rounded-full bg-purple-500"></div>
           <span>Tags</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="w-6 h-[2px]" style={{ backgroundColor: "#b45309" }}></div>
+          <span>Cross-reference</span>
         </div>
       </div>
       <p className="text-center text-xs text-muted-foreground mt-4">
