@@ -70,9 +70,23 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ];
 
+  const PAGE_SIZE = 10;
+  const totalBlogPages = Math.ceil(blogPosts.length / PAGE_SIZE);
+  // /blog/page/1 redirects to /blog — start from page 2
+  const paginatedBlogPages: MetadataRoute.Sitemap = Array.from(
+    { length: Math.max(0, totalBlogPages - 1) },
+    (_, i) => ({
+      url: `${baseUrl}/blog/page/${i + 2}`,
+      lastModified: latestBlogDate,
+      changeFrequency: 'weekly' as const,
+      priority: 0.6,
+    })
+  );
+
   const blogPages: MetadataRoute.Sitemap = blogPosts.map(post => ({
     url: `${baseUrl}/blog/${post.slug}`,
-    lastModified: new Date(post.date),
+    // Use updatedAt when the post has been revised, else fall back to publish date
+    lastModified: new Date(post.updatedAt ?? post.date),
     changeFrequency: 'monthly' as const,
     priority: post.featured ? 0.9 : 0.8,
   }));
@@ -101,6 +115,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })
     .filter((p): p is NonNullable<typeof p> => p !== null);
 
-  return [...staticPages, ...blogPages, ...tilPages, ...tagPages];
+  return [...staticPages, ...blogPages, ...paginatedBlogPages, ...tilPages, ...tagPages];
 }
 

@@ -4,6 +4,8 @@ date: "2026-05-03"
 tags: ["security", "devsecops", "lazy-sre", "endpoint", "mdm", "macos"]
 excerpt: "Snowflake taught everyone what happens when an infostealer runs on a contractor's personal Mac. The laptop is the perimeter."
 featured: false
+series: "Lazy Security"
+seriesPart: 5
 ---
 
 In June 2024, Mandiant published the writeup for the Snowflake mass-extortion campaign. Ticketmaster, Santander, AT&T, LendingTree, Advance Auto Parts — roughly 165 Snowflake tenants in total had data extracted from their warehouses. The defining detail wasn't sophistication. It was the laptop.

@@ -4,6 +4,8 @@ date: "2026-04-05"
 tags: ["security", "lazy-sre", "supply-chain", "npm", "devsecops"]
 excerpt: "Startup-grade defense against npm supply-chain attacks, for Future You at 3am. Chainjacking, postinstall scripts, smallest install, most leverage."
 featured: true
+series: "Lazy Security"
+seriesPart: 1
 ---
 
 A few months ago a friend's CI pipeline tried to install a package none of us had heard of. The build failed. The error wasn't a missing dep. The error was a local proxy saying *this is malware, I'm not letting it touch disk*. The package was a transitive dependency, six levels deep, that had been published to npm 38 minutes earlier. Nobody on the team had asked for it.

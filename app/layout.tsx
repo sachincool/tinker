@@ -109,10 +109,16 @@ export default function RootLayout({
               '@context': 'https://schema.org',
               '@type': 'Person',
               name: 'Harshit Luthra',
-              url: siteConfig.siteUrl,
+              url: siteConfig.author.url,
+              email: siteConfig.author.email,
               image: `${siteConfig.siteUrl}/og-image.png`,
               jobTitle: 'Infrastructure Engineer',
               description: 'Level 99 Infrastructure Wizard, Professional Chaos Engineer',
+              affiliation: {
+                '@type': 'Organization',
+                name: 'TrueFoundry',
+                url: 'https://truefoundry.com',
+              },
               sameAs: [
                 siteConfig.social.github,
                 siteConfig.social.twitter,

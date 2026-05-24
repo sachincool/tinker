@@ -4,6 +4,8 @@ date: "2026-04-12"
 tags: ["security", "lazy-sre", "github-actions", "supply-chain", "ci-cd", "devsecops"]
 excerpt: "Hardening GitHub Actions for small teams. SHA pinning, OIDC, cooldowns, and the trigger Future You at 3am should not touch."
 featured: false
+series: "Lazy Security"
+seriesPart: 2
 ---
 
 Last March, someone with write access to the `trivy-action` repo rewrote 76 of its 77 version tags in place. The tags still resolved to `aquasecurity/trivy-action` — they just resolved to different commits than they did the week before. Every pipeline that ran `aquasecurity/trivy-action@0.20.0` (and every other tagged version) ran the attacker's commit instead. Secrets exfiltrated. The stolen credentials chained into PyPI and took down LiteLLM. Nobody noticed for hours, because the workflow file diff was still clean.

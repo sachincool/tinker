@@ -13,6 +13,7 @@ import { ShareButton } from "@/components/blog/share-button";
 import { MarkdownContent } from "@/components/blog/markdown-content";
 import { ImageLightbox } from "@/components/blog/image-lightbox";
 import { getPostBySlug, getAllPosts, stripFirstImageBlock } from "@/lib/posts";
+import { SeriesNav } from "@/components/blog/series-nav";
 import { NewsletterForm } from "@/components/blog/newsletter-form";
 import { notFound } from "next/navigation";
 import readingTime from "reading-time";
@@ -51,7 +52,7 @@ export async function generateMetadata({
       description: post.excerpt,
       type: 'article',
       publishedTime: post.date,
-      modifiedTime: post.date,
+      modifiedTime: post.updatedAt ?? post.date,
       authors: [siteConfig.author.name],
       tags: post.tags,
       url: postUrl,
@@ -79,7 +80,7 @@ export async function generateMetadata({
     },
     other: {
       'article:published_time': post.date,
-      'article:modified_time': post.date,
+      'article:modified_time': post.updatedAt ?? post.date,
       'article:author': siteConfig.author.name,
       'article:section': 'Technology',
     },
@@ -118,11 +119,22 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
     description: post.excerpt,
     image: `${baseUrl}/blog/${slug}/opengraph-image`,
     datePublished: post.date,
-    dateModified: post.date,
+    dateModified: post.updatedAt ?? post.date,
     author: {
       '@type': 'Person',
       name: siteConfig.author.name,
-      url: baseUrl,
+      url: siteConfig.author.url,
+      email: siteConfig.author.email,
+      affiliation: {
+        '@type': 'Organization',
+        name: 'TrueFoundry',
+        url: 'https://truefoundry.com',
+      },
+      sameAs: [
+        siteConfig.social.github,
+        siteConfig.social.twitter,
+        siteConfig.social.linkedin,
+      ],
     },
     publisher: {
       '@type': 'Organization',
@@ -144,6 +156,37 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
     proficiencyLevel: 'Expert',
     dependencies: post.tags.join(', '),
   };
+
+  // FAQPage JSON-LD — emitted only when post frontmatter includes a `faqs` array
+  const faqJsonLd = post.faqs && post.faqs.length > 0
+    ? {
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: post.faqs.map(({ question, answer }) => ({
+          '@type': 'Question',
+          name: question,
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: answer,
+          },
+        })),
+      }
+    : null;
+
+  // Series navigation data — built from all blog posts that share the same `series` tag
+  const seriesNavData = post.series
+    ? (() => {
+        const allPosts = getAllPosts('blog');
+        const seriesPosts = allPosts
+          .filter(p => p.series === post.series && typeof p.seriesPart === 'number')
+          .sort((a, b) => (a.seriesPart ?? 0) - (b.seriesPart ?? 0));
+        return seriesPosts.map(p => ({
+          part: p.seriesPart as number,
+          slug: p.slug,
+          title: p.title,
+        }));
+      })()
+    : null;
 
   // Breadcrumb structured data
   const breadcrumbJsonLd = {
@@ -182,6 +225,12 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
+      {faqJsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+        />
+      )}
       {/* Skip to main content link for accessibility */}
       <a
         href="#article-content"
@@ -270,6 +319,15 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
                   />
                 </div>
               </figure>
+            )}
+
+            {seriesNavData && post.series && typeof post.seriesPart === 'number' && (
+              <SeriesNav
+                series={post.series}
+                currentPart={post.seriesPart}
+                totalParts={6}
+                parts={seriesNavData}
+              />
             )}
 
             <div id="article-content">

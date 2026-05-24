@@ -66,10 +66,15 @@ export default async function BlogPage() {
     })),
   };
 
+  const totalPages = Math.ceil(posts.length / 10);
+  const hasNextPage = totalPages > 1;
+
   // Suspense boundary required because BlogPageClient calls useSearchParams()
   // for ?q= deep-link sync — Next 15 bails out of prerender otherwise.
   return (
     <>
+      {/* rel=next pagination hint for crawlers — /blog is page 1 */}
+      {hasNextPage && <link rel="next" href={`${baseUrl}/blog/page/2`} />}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

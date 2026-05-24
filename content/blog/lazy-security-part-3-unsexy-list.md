@@ -4,6 +4,8 @@ date: "2026-04-19"
 tags: ["security", "devsecops", "lazy-sre", "identity", "supply-chain", "audit-logs"]
 excerpt: "Identity, network, default creds, attestation, audit logs — the controls that close most of the gap Parts 1 and 2 left."
 featured: false
+series: "Lazy Security"
+seriesPart: 3
 ---
 
 I have a calendar reminder that fires on the first of every month. It says "rotate the PAT." I have hit "snooze for 1 week" seventeen times in a row. The PAT in question is a `ghp_` token with read-write access to four private repos and permission to push tags, and the last time I rotated it was October 2024. If anyone has phished my GitHub session in the past fifteen months, they have had a year's head start on me.

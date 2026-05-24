@@ -4,6 +4,8 @@ date: "2026-04-26"
 tags: ["security", "devsecops", "lazy-sre", "dns", "email", "dmarc"]
 excerpt: "Four DNS records that close the entire phishing impersonation class. SPF, DKIM, DMARC, CAA, two monitors, one afternoon."
 featured: false
+series: "Lazy Security"
+seriesPart: 4
 ---
 
 In February 2024, Guardio Labs published a writeup of a campaign called SubdoMailing. Five million phishing emails a day, sent through subdomains owned by MSN, eBay, VMware, NYC.gov, UNICEF, and McAfee. Every single email passed SPF and DKIM. Every one of them passed DMARC.

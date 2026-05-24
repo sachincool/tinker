@@ -4,6 +4,8 @@ date: "2026-05-10"
 tags: ["security", "devsecops", "lazy-sre", "network", "vpn", "tailscale"]
 excerpt: "Ivanti made everyone re-read their VPN architecture in January 2024. Tailscale, Cloudflare Tunnel, and WireGuard in one afternoon."
 featured: false
+series: "Lazy Security"
+seriesPart: 6
 ---
 
 In January 2024, Ivanti disclosed two CVEs in their Connect Secure and Policy Secure VPN appliances. CVE-2023-46805 was an authentication bypass. CVE-2024-21887 was an unauthenticated command injection: a remote shell on a box that, by design, had to be reachable from the public internet. Mandiant attributed the in-the-wild exploitation to UNC5221, a suspected Chinese state-sponsored cluster. By the time Ivanti shipped a patch, Mandiant had identified more than a thousand compromised appliances. CISA issued Emergency Directive 24-01 telling every U.S. federal agency to take their Ivanti boxes offline.

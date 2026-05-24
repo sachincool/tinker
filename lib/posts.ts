@@ -2,10 +2,16 @@ import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
 
+export interface PostFaq {
+  question: string;
+  answer: string;
+}
+
 export interface Post {
   slug: string;
   title: string;
   date: string;
+  updatedAt?: string;
   tags: string[];
   excerpt: string;
   content: string;
@@ -13,6 +19,9 @@ export interface Post {
   heroImage?: string;
   heroAlt?: string;
   type: 'blog' | 'til';
+  faqs?: PostFaq[];
+  series?: string;
+  seriesPart?: number;
 }
 
 const contentDirectory = path.join(process.cwd(), 'content');
@@ -103,6 +112,7 @@ export function getPostBySlug(slug: string, type: 'blog' | 'til' = 'blog'): Post
       slug,
       title,
       date,
+      updatedAt: data.updatedAt || data.lastModified || undefined,
       tags: data.tags || [],
       excerpt,
       content,
@@ -110,6 +120,9 @@ export function getPostBySlug(slug: string, type: 'blog' | 'til' = 'blog'): Post
       heroImage: hero?.src,
       heroAlt: hero?.alt,
       type,
+      faqs: Array.isArray(data.faqs) ? data.faqs : undefined,
+      series: data.series || undefined,
+      seriesPart: typeof data.seriesPart === 'number' ? data.seriesPart : undefined,
     };
   } catch (error) {
     console.error(`Error reading post ${slug}:`, error);
