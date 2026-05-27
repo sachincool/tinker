@@ -113,7 +113,7 @@ export default async function Image({ params }: { params: Promise<{ slug: string
               color: RUST,
             }}
           >
-            POST · {eyebrow}
+            {`POST · ${eyebrow}`}
           </div>
           <div style={{ fontSize: 20, color: MUTED, letterSpacing: '0.12em' }}>
             harshit.cloud
