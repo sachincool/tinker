@@ -73,7 +73,7 @@ export async function generateMetadata(): Promise<Metadata> {
         "What sits on the workbench: SDR, Flipper Zero, Pwnagotchi, antennas, and one hourglass.",
       type: "website",
       url: `${baseUrl}/lair`,
-      images: [{ url: `${baseUrl}/images/workspace-setup.webp`, width: 1200, height: 800, alt: "The workbench" }],
+      images: [{ url: `${baseUrl}/og-image.png`, width: 1200, height: 630, alt: `The Lair | ${siteConfig.title}` }],
     },
   };
 }

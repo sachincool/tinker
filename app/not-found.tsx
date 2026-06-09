@@ -42,7 +42,9 @@ export default function NotFound() {
     "This endpoint returned undefined. Classic JavaScript move. 🤷",
   ];
 
-  const [message] = useState(funMessages[Math.floor(Math.random() * funMessages.length)]);
+  const [message] = useState(
+    () => funMessages[Math.floor(Math.random() * funMessages.length)]
+  );
 
   return (
     <div className="min-h-[70vh] flex items-center justify-center">

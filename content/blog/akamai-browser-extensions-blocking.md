@@ -2,7 +2,7 @@
 title: "Access denied: when your browser extensions look like attack vectors"
 date: "2025-12-31"
 tags: ["security", "waf", "akamai", "debugging", "browser-extensions", "cdn"]
-excerpt: "Tried booking a flight. Got blocked. VPN didn't help. IP was clean. Turns out Akamai thinks my 21 security extensions make me look like a hacker. They're not wrong."
+excerpt: "Tried booking a flight. Got blocked. Turns out Akamai thinks my 21 security extensions make me look like a hacker. They're not wrong."
 featured: true
 ---
 

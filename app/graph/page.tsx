@@ -22,11 +22,20 @@ export async function generateMetadata(): Promise<Metadata> {
       type: 'website',
       url: `${baseUrl}/graph`,
       siteName: siteConfig.title,
+      images: [
+        {
+          url: `${baseUrl}/og-image.png`,
+          width: 1200,
+          height: 630,
+          alt: `Knowledge Graph | ${siteConfig.title}`,
+        },
+      ],
     },
     twitter: {
-      card: 'summary',
+      card: 'summary_large_image',
       title: `Knowledge Graph | ${siteConfig.author.name}`,
       description: 'Explore the interactive knowledge graph showing connections between blog posts, TILs, and tags.',
+      images: [`${baseUrl}/og-image.png`],
     },
     alternates: {
       canonical: `${baseUrl}/graph`,

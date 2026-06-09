@@ -21,7 +21,7 @@ export function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    // Match all paths except Next.js internals and static files
-    '/((?!_next/static|_next/image|favicon.ico|api|rss).*)',
+    // Match all paths except Next.js internals, static files, and feed/crawler routes
+    '/((?!_next/static|_next/image|favicon.ico|api|rss|atom|sitemap|robots).*)',
   ],
 };

@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback, useId } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Mail, Loader2, CheckCircle2, AlertCircle, Sparkles } from "lucide-react";
+import { Mail, Loader2, CheckCircle2, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 
 const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? "";
@@ -156,7 +156,7 @@ export function NewsletterForm({
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             disabled={status === "loading" || status === "success"}
-            className="h-9 text-sm"
+            className="h-9 text-sm flex-1 min-w-0"
             required
           />
           <Button
@@ -185,9 +185,8 @@ export function NewsletterForm({
 
   if (variant === "card") {
     return (
-      <div className={`relative overflow-hidden rounded-lg border bg-card p-6 ${className}`}>
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-purple-500/5 to-pink-500/5" />
-        <div className="relative flex flex-col md:flex-row gap-6 items-center">
+      <div className={`rounded-lg border bg-card p-6 ${className}`}>
+        <div className="flex flex-col md:flex-row gap-6 items-center">
           <div className="shrink-0">
             <Image
               src="/images/newsletter-wizard.webp"
@@ -198,10 +197,7 @@ export function NewsletterForm({
             />
           </div>
           <div className="flex-1 space-y-4">
-            <div className="flex items-center gap-2">
-              <Sparkles className="h-5 w-5 text-purple-500" />
-              <h3 className="font-semibold text-lg">{title}</h3>
-            </div>
+            <h3 className="font-semibold text-lg">{title}</h3>
             <p className="text-sm text-muted-foreground">{description}</p>
             <form onSubmit={handleSubmit} className="space-y-3">
               <div className="flex flex-col sm:flex-row gap-3">
@@ -217,7 +213,6 @@ export function NewsletterForm({
                 <Button
                   type="submit"
                   disabled={status === "loading" || status === "success"}
-                  className="group"
                 >
                   {status === "loading" ? (
                     <>
@@ -231,7 +226,7 @@ export function NewsletterForm({
                     </>
                   ) : (
                     <>
-                      <Mail className="mr-2 h-4 w-4 group-hover:scale-110 transition-transform" />
+                      <Mail className="mr-2 h-4 w-4" />
                       Subscribe
                     </>
                   )}
@@ -255,7 +250,7 @@ export function NewsletterForm({
     <div className={`space-y-4 py-8 border-t border-b ${className}`}>
       <div className="space-y-2">
         <h3 className="font-semibold text-xl flex items-center gap-2">
-          <Mail className="h-5 w-5 text-blue-500" />
+          <Mail className="h-5 w-5 text-primary" />
           {title}
         </h3>
         <p className="text-muted-foreground">{description}</p>

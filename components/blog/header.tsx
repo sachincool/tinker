@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetClose, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { SearchDialog } from "@/components/blog/search-dialog";
 import {
   Moon,
@@ -17,8 +18,6 @@ import {
   Tags,
   Github,
   Twitter,
-  Server,
-  Zap,
   Network
 } from "lucide-react";
 
@@ -55,12 +54,13 @@ export function Header() {
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-3 group">
             <div className="relative h-12 w-12 transition-transform group-hover:scale-105 rounded-full overflow-hidden ring-1 ring-border/60 dark:ring-0 bg-background">
-              <img
+              <Image
                 src="/logo/infra-magician-clean.webp"
                 alt="Infra Magician Logo"
                 className="h-full w-full object-cover scale-[1.55] dark:drop-shadow-[0_0_10px_rgba(139,92,246,0.5)]"
                 width={48}
                 height={48}
+                priority
               />
             </div>
             <div className="flex flex-col">
@@ -68,7 +68,7 @@ export function Header() {
                 harshit.cloud{" "}
                 <span className="font-normal text-muted-foreground" aria-hidden="true">ツ</span>
               </span>
-              <span className="text-xs text-muted-foreground leading-none mt-0.5">Sénior SRE</span>
+              <span className="text-xs text-muted-foreground leading-none mt-0.5">Senior SRE</span>
             </div>
           </Link>
 
@@ -137,28 +137,32 @@ export function Header() {
               <SheetContent side="right" className="w-[85vw] max-w-[320px] px-6">
                 <div className="flex flex-col space-y-4 mt-8">
                   <div className="flex items-center space-x-3 mb-6">
-                    <div className="relative">
-                      <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-blue-600 via-purple-600 to-blue-800 flex items-center justify-center">
-                        <Server className="h-4 w-4 text-white" />
-                      </div>
-                      <Zap className="absolute -top-1 -right-1 h-3 w-3 text-yellow-500" />
+                    <div className="relative h-8 w-8 rounded-full overflow-hidden ring-1 ring-border/60 dark:ring-0 bg-background">
+                      <Image
+                        src="/logo/infra-magician-clean.webp"
+                        alt="Infra Magician Logo"
+                        className="h-full w-full object-cover scale-[1.55]"
+                        width={32}
+                        height={32}
+                      />
                     </div>
                     <div className="flex flex-col">
-                      <span className="font-bold">Infra Magician</span>
-                      <span className="text-xs text-muted-foreground">Level 99 Chaos Engineer</span>
+                      <span className="font-bold">harshit.cloud</span>
+                      <span className="text-xs text-muted-foreground">Senior SRE</span>
                     </div>
                   </div>
                   {navigation.map((item) => {
                     const Icon = item.icon;
                     return (
-                      <Link
-                        key={item.name}
-                        href={item.href}
-                        className="flex items-center space-x-3 text-lg font-medium hover:text-primary transition-colors"
-                      >
-                        <Icon className="h-5 w-5" />
-                        <span>{item.name}</span>
-                      </Link>
+                      <SheetClose asChild key={item.name}>
+                        <Link
+                          href={item.href}
+                          className="flex items-center space-x-3 text-lg font-medium hover:text-primary transition-colors"
+                        >
+                          <Icon className="h-5 w-5" />
+                          <span>{item.name}</span>
+                        </Link>
+                      </SheetClose>
                     );
                   })}
                   <div className="pt-4 border-t">

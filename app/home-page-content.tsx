@@ -240,7 +240,7 @@ export default function HomePageContent({ latestPosts, tilCount, blogCount }: Ho
           About
         </div>
         <p className="text-base text-muted-foreground leading-relaxed">
-          Harshit Luthra. Sénior SRE, infrequent essayist, occasional
+          Harshit Luthra. Senior SRE, infrequent essayist, occasional
           source of production incidents.{" "}
           <Link
             href="/about"

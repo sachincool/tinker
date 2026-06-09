@@ -37,21 +37,34 @@ export function CodeBlock({ code, language = "bash", className = "" }: CodeBlock
   }, []);
 
   useEffect(() => {
+    let cancelled = false;
+
+    const escapeHtml = (text: string) =>
+      text
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
     const highlight = async () => {
       try {
         const html = await codeToHtml(code, {
           lang: language || 'bash',
           theme: isDark ? 'github-dark' : 'github-light',
         });
-        setHighlightedCode(html);
+        if (!cancelled) setHighlightedCode(html);
       } catch (error) {
         console.error('Syntax highlighting error:', error);
-        // Fallback to plain code
-        setHighlightedCode(`<pre><code>${code}</code></pre>`);
+        // Fallback to plain code (escaped — this string is rendered via dangerouslySetInnerHTML)
+        if (!cancelled) setHighlightedCode(`<pre><code>${escapeHtml(code)}</code></pre>`);
       }
     };
 
     highlight();
+    return () => {
+      cancelled = true;
+    };
   }, [code, language, isDark]);
 
   const copyToClipboard = async () => {

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { X } from "lucide-react";
 
 interface ImageLightboxProps {
@@ -12,6 +12,16 @@ interface ImageLightboxProps {
 export function ImageLightbox({ src, alt, className }: ImageLightboxProps) {
   const [isOpen, setIsOpen] = useState(false);
 
+  // Close on Escape while the lightbox is open
+  useEffect(() => {
+    if (!isOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setIsOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [isOpen]);
+
   return (
     <>
       {/* Clickable image */}
@@ -20,13 +30,24 @@ export function ImageLightbox({ src, alt, className }: ImageLightboxProps) {
         alt={alt}
         className={`${className} cursor-pointer`}
         loading="lazy"
+        role="button"
+        tabIndex={0}
         onClick={() => setIsOpen(true)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            setIsOpen(true);
+          }
+        }}
       />
 
       {/* Lightbox modal */}
       {isOpen && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm p-4 animate-in fade-in duration-200"
+          role="dialog"
+          aria-modal="true"
+          aria-label={alt || "Image preview"}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm p-4"
           onClick={() => setIsOpen(false)}
         >
           {/* Close button */}

@@ -37,7 +37,7 @@ export function Footer() {
               harshit.cloud{" "}
               <span className="text-muted-foreground" aria-hidden="true">ツ</span>
             </Link>
-            <p className="text-sm text-muted-foreground">Sénior SRE</p>
+            <p className="text-sm text-muted-foreground">Senior SRE</p>
           </div>
 
           {/* Quick Links */}
