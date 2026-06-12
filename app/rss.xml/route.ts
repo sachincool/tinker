@@ -16,6 +16,9 @@ export async function GET() {
       headers: {
         'Content-Type': 'application/xml; charset=utf-8',
         'Cache-Control': 'public, max-age=3600, s-maxage=3600',
+        // Feeds duplicate page content across /rss.xml, /atom.xml, /rss.json —
+        // keep them out of the index (GSC: "Duplicate without user-selected canonical")
+        'X-Robots-Tag': 'noindex',
       },
     });
   } catch (error) {

@@ -22,7 +22,7 @@ export const siteConfig = {
   siteUrl: getSiteUrl(),
   author: {
     name: 'Harshit Luthra',
-    email: 'contact@sachin.cool',
+    email: 'harshit@truefoundry.com',
     url: 'https://harshit.cloud/about',
   },
   social: {
@@ -34,12 +34,15 @@ export const siteConfig = {
 };
 
 // Helper to get the current domain dynamically (for use in server components)
+// Non-localhost hosts are pinned to the production domain so duplicate hosts
+// (tinker.expert, www) canonicalize to harshit.cloud instead of themselves —
+// Google was indexing/deindexing the two hosts as competing duplicates.
 export function getCurrentDomain(hostname?: string): string {
   if (hostname) {
     if (hostname.includes('localhost')) {
       return `http://${hostname}`;
     }
-    return `https://${hostname}`;
+    return PRODUCTION_SITE_URL;
   }
 
   if (process.env.NEXT_PUBLIC_SITE_URL) {

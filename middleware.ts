@@ -3,7 +3,15 @@ import type { NextRequest } from 'next/server';
 
 export function middleware(request: NextRequest) {
   const hostname = request.headers.get('host') || '';
-  
+
+  // Redirect www to apex — www serves identical pages with host-derived
+  // canonicals, which Google flags as duplicates of harshit.cloud
+  if (hostname === 'www.harshit.cloud') {
+    const url = request.nextUrl.clone();
+    url.host = 'harshit.cloud';
+    return NextResponse.redirect(url, 301);
+  }
+
   // Redirect blog subdomain to /blog path
   if (hostname === 'blog.harshit.cloud' || hostname === 'www.blog.harshit.cloud') {
     const url = request.nextUrl.clone();

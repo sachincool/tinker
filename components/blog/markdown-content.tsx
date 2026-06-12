@@ -10,16 +10,18 @@ interface MarkdownContentProps {
 }
 
 // Inline markdown renderer for paragraphs, list items, and table cells.
-// Handles bold (**...**), italic (*...*), inline code (`...`), and links.
+// Handles bold (**...**), italic (*...*), inline code (`...`), links, and images.
 // Code spans and links are valid inside emphasis — the previous parser split
 // on code first, which made every **strong with `code`** render as literal **.
+// Images (![alt](url)) must be matched before links, otherwise the link rule
+// eats `[alt](url)` and the alt text is demoted to anchor text with a stray `!`.
 function renderInlineRich(text: string): React.ReactNode[] {
   const nodes: React.ReactNode[] = [];
   let key = 0;
 
   const pushLeafInto = (collector: React.ReactNode[], segment: string): void => {
     if (!segment) return;
-    const parts = segment.split(/(`[^`]+`|\[[^\]]+\]\([^)]+\))/g);
+    const parts = segment.split(/(`[^`]+`|!\[[^\]]*\]\([^)]+\)|\[[^\]]+\]\([^)]+\))/g);
     for (const part of parts) {
       if (!part) continue;
       if (part.startsWith('`') && part.endsWith('`') && part.length >= 2) {
@@ -27,6 +29,19 @@ function renderInlineRich(text: string): React.ReactNode[] {
           <code key={key++} className="bg-muted px-1.5 py-0.5 rounded text-sm font-mono text-foreground">
             {part.slice(1, -1)}
           </code>
+        );
+        continue;
+      }
+      const imageMatch = part.match(/^!\[([^\]]*)\]\(([^)]+)\)$/);
+      if (imageMatch) {
+        collector.push(
+          <img
+            key={key++}
+            src={imageMatch[2]}
+            alt={imageMatch[1]}
+            loading="lazy"
+            className="inline-block max-w-full rounded"
+          />
         );
         continue;
       }
@@ -52,7 +67,7 @@ function renderInlineRich(text: string): React.ReactNode[] {
   // Bold must tolerate single `*` inside the span (e.g. **`[a-zA-Z_]*`**) —
   // code spans frequently contain regex/glob characters. The old `[^*]+`
   // forbade any `*` and silently dropped the entire emphasis.
-  const pattern = /(\*\*(?:[^*]|\*(?!\*))+?\*\*)|(\*[^*]+\*)|(\[[^\]]+\]\([^)]+\))/g;
+  const pattern = /(\*\*(?:[^*]|\*(?!\*))+?\*\*)|(\*[^*]+\*)|(!\[[^\]]*\]\([^)]+\)|\[[^\]]+\]\([^)]+\))/g;
   let cursor = 0;
   let match: RegExpExecArray | null;
   while ((match = pattern.exec(text)) !== null) {

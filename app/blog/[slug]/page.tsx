@@ -21,10 +21,15 @@ import type { Metadata } from "next";
 import { siteConfig, getCurrentDomain } from "@/lib/site-config";
 import { headers } from "next/headers";
 
-export async function generateMetadata({ 
-  params 
-}: { 
-  params: Promise<{ slug: string }> 
+export async function generateStaticParams() {
+  const posts = getAllPosts('blog');
+  return posts.map((post) => ({ slug: post.slug }));
+}
+
+export async function generateMetadata({
+  params
+}: {
+  params: Promise<{ slug: string }>
 }): Promise<Metadata> {
   const { slug } = await params;
   const post = getPostBySlug(slug, 'blog');

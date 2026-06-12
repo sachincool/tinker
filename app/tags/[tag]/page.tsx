@@ -8,6 +8,11 @@ import type { Metadata } from "next";
 import { siteConfig, getCurrentDomain } from "@/lib/site-config";
 import { headers } from "next/headers";
 
+export async function generateStaticParams() {
+  const tags = getAllTags();
+  return tags.map((tag) => ({ tag }));
+}
+
 export async function generateMetadata({
   params
 }: {

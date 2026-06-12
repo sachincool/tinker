@@ -27,7 +27,7 @@ const SOCIAL_LINKS = [
   { icon: Twitter, label: "Twitter", href: "https://twitter.com/exploit_sh" },
   { icon: Linkedin, label: "LinkedIn", href: "https://linkedin.com/in/harshit-luthra/" },
   { icon: Instagram, label: "Instagram", href: "https://instagram.com/exploit.sh" },
-  { icon: Mail, label: "Email", href: "mailto:contact@sachin.cool" },
+  { icon: Mail, label: "Email", href: "mailto:harshit@truefoundry.com" },
 ];
 
 export default function AboutPageClient() {

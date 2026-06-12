@@ -11,6 +11,11 @@ import type { Metadata } from "next";
 import { siteConfig, getCurrentDomain } from "@/lib/site-config";
 import { headers } from "next/headers";
 
+export async function generateStaticParams() {
+  const tils = getAllPosts("til");
+  return tils.map((til) => ({ id: til.slug }));
+}
+
 export async function generateMetadata({
   params,
 }: {
