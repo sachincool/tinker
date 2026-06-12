@@ -15,13 +15,23 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v5
         with:
-          fetch-depth: 2
+          fetch-depth: 0
 
       - name: Detect new blog posts
         id: detect
         run: |
+          # Diff the whole push (event.before..sha), not just the last commit —
+          # HEAD~1 silently skips posts added earlier in a multi-commit push.
+          BEFORE="${{ github.event.before }}"
+          AFTER="${{ github.sha }}"
+          if [ -z "$BEFORE" ] || [ "$BEFORE" = "0000000000000000000000000000000000000000" ] || ! git cat-file -e "$BEFORE" 2>/dev/null; then
+            RANGE="HEAD~1..HEAD"   # force-push or missing base: fall back to last commit
+          else
+            RANGE="$BEFORE..$AFTER"
+          fi
+          echo "Diff range: $RANGE"
           # Find newly added files in content/blog/ (not modified/renamed)
-          NEW_FILES=$(git diff --name-only --diff-filter=A HEAD~1 HEAD -- 'content/blog/*.md' || true)
+          NEW_FILES=$(git diff --name-only --diff-filter=A "$RANGE" -- 'content/blog/*.md' || true)
 
           if [ -z "$NEW_FILES" ]; then
             echo "No new blog posts found"
@@ -43,6 +53,10 @@ jobs:
       - name: Install dependencies
         if: steps.detect.outputs.has_new_posts == 'true'
         run: bun install
+
+      - name: Validate frontmatter
+        if: steps.detect.outputs.has_new_posts == 'true'
+        run: node scripts/validate-frontmatter.mjs
 
       - name: Send newsletter for new posts
         if: steps.detect.outputs.has_new_posts == 'true'
@@ -67,6 +81,20 @@ jobs:
             process.exit(1);
           }
 
+          // The email must not beat the Vercel deploy: poll until the post URL
+          // is live so "Read the full post" never 404s for early clickers.
+          async function waitForLive(url, timeoutMs = 5 * 60 * 1000) {
+            const deadline = Date.now() + timeoutMs;
+            while (Date.now() < deadline) {
+              try {
+                const res = await fetch(url, { method: "HEAD", redirect: "follow" });
+                if (res.ok) return true;
+              } catch {}
+              await new Promise(r => setTimeout(r, 15000));
+            }
+            return false;
+          }
+
           async function sendNewsletter(filePath) {
             const raw = fs.readFileSync(filePath, "utf8");
             const { data, content } = matter(raw);
@@ -75,6 +103,11 @@ jobs:
               .replace("content/blog/", "")
               .replace(".md", "");
             const postUrl = `${siteUrl}/blog/${slug}`;
+
+            if (!(await waitForLive(postUrl))) {
+              console.error(`${postUrl} still not live after 5 minutes — not emailing a dead link.`);
+              process.exit(1);
+            }
             const title = data.title || slug;
             const excerpt = data.excerpt || content.substring(0, 200) + "...";
             const tags = (data.tags || []).map(t => `\`${t}\``).join(" ");

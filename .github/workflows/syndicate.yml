@@ -27,6 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      issues: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
@@ -41,6 +42,9 @@ jobs:
 
       - name: Install dependencies
         run: npm ci --no-audit --no-fund
+
+      - name: Validate frontmatter
+        run: node scripts/validate-frontmatter.mjs
 
       - name: Syndicate to dev.to
         env:
@@ -70,4 +74,38 @@ jobs:
           git add scripts/syndication-state.json
           # [skip ci] prevents the state-file commit from re-triggering the workflow.
           git commit -m "chore(syndicate): refresh dev.to state [skip ci]"
+          # Rebase before pushing: this job checked out the SHA that triggered it,
+          # so a commit pushed to main meanwhile (another run's state commit, a
+          # local push) would make a plain push fail non-fast-forward and silently
+          # drop this run's state — causing duplicate dev.to articles next run.
+          git pull --rebase origin main
           git push
+
+      - name: Remind about pending Medium imports
+        if: github.event.inputs.dry_run != 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          node scripts/medium-import.mjs --pending > /tmp/medium-pending.txt
+          COUNT=$(grep -c . /tmp/medium-pending.txt || true)
+          EXISTING=$(gh issue list --label medium-pending --state open --json number --jq '.[0].number' || true)
+          if [ "$COUNT" -gt 0 ]; then
+            echo "::warning::$COUNT post(s) pending Medium import"
+            gh label create medium-pending --description "Posts awaiting Medium import" --color C2410C --force || true
+            {
+              echo "These posts are live on the site (and synced to dev.to) but not yet imported to Medium:"
+              echo
+              sed 's/^/- /' /tmp/medium-pending.txt
+              echo
+              echo 'Run `npm run medium:import` locally (headed Chrome), publish the drafts at https://medium.com/me/stories/drafts, then commit `scripts/syndication-state.json`.'
+              echo
+              echo '_Auto-maintained by the syndicate workflow — closes itself when the state file catches up._'
+            } > /tmp/medium-issue-body.md
+            if [ -n "$EXISTING" ]; then
+              gh issue edit "$EXISTING" --body-file /tmp/medium-issue-body.md
+            else
+              gh issue create --title "Pending Medium imports" --label medium-pending --body-file /tmp/medium-issue-body.md
+            fi
+          elif [ -n "$EXISTING" ]; then
+            gh issue close "$EXISTING" --comment "All posts are now on Medium — closing."
+          fi

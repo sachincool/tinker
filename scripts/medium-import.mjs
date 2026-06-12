@@ -41,9 +41,10 @@ const IMPORT_DELAY_MS = 75_000;
 const DEFAULT_LIMIT = 8;
 
 function parseArgs() {
-  const args = { post: null, dryRun: false, limit: DEFAULT_LIMIT };
+  const args = { post: null, dryRun: false, pending: false, limit: DEFAULT_LIMIT };
   for (const arg of process.argv.slice(2)) {
     if (arg === '--dry-run') args.dryRun = true;
+    else if (arg === '--pending') args.pending = true;
     else if (arg.startsWith('--post=')) args.post = arg.slice(7);
     else if (arg.startsWith('--limit=')) args.limit = parseInt(arg.slice(8), 10);
   }
@@ -137,6 +138,12 @@ async function main() {
 
   let pending = (await discoverPosts()).filter(p => !state.medium[`${p.type}/${p.slug}`]);
   if (args.post) pending = pending.filter(p => p.slug === args.post);
+
+  // --pending: machine-readable list for CI (no browser, no headers, exit 0)
+  if (args.pending) {
+    for (const p of pending) console.log(`${p.type}/${p.slug} — ${p.title}`);
+    return;
+  }
 
   if (!pending.length) {
     console.log(args.post ? `"${args.post}" is already on Medium (or doesn't exist).` : 'Nothing pending — every post is accounted for in syndication-state.json.');
