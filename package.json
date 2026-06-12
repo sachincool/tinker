@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "syndicate": "node scripts/syndicate.mjs"
+    "syndicate": "node scripts/syndicate.mjs",
+    "medium:import": "node scripts/medium-import.mjs"
   },
   "dependencies": {
     "@giscus/react": "^3.1.0",
@@ -46,6 +47,7 @@
     "eslint": "^9",
     "eslint-config-next": "^15.5.5",
     "lightningcss": "^1.28.2",
+    "playwright-core": "^1.60.0",
     "tailwindcss": "^4",
     "tw-animate-css": "^1.3.8",
     "typescript": "^5"
