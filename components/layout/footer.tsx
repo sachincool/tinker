@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Github, Twitter, Linkedin, Rss } from "lucide-react";
 import { NewsletterForm } from "@/components/blog/newsletter-form";
+import { siteConfig } from "@/lib/site-config";
 
 const eyebrow =
   "text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground";
@@ -10,6 +11,7 @@ const navLinks = [
   { href: "/til", label: "TIL" },
   { href: "/tags", label: "Tags" },
   { href: "/about", label: "About" },
+  { href: "/lab", label: "Lab" },
 ];
 
 const socialLinks = [
@@ -85,6 +87,18 @@ export function Footer() {
         {/* Bottom line */}
         <div className="mt-16 flex flex-col items-start gap-2 border-t border-border/60 pt-6 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
           <p>© {new Date().getFullYear()} Harshit Luthra</p>
+          <p className="font-mono">
+            also on{" "}
+            <a
+              href={`http://${siteConfig.onion}`}
+              rel="noopener noreferrer"
+              title={siteConfig.onion}
+              className="underline-offset-4 transition-colors hover:text-foreground"
+            >
+              tor
+            </a>
+            {" "}· best opened in Tor Browser
+          </p>
           <p>
             Built with{" "}
             <Link
