@@ -73,8 +73,8 @@ const STACK = [
   },
   {
     cmd: "dig AAAA harshit.cloud",
-    status: "wiring",
-    desc: "IPv6, dual-stack. the AAAA record is one orange cloud away — the 6 in v6 stands for 'soon'.",
+    status: "live",
+    desc: "IPv6, dual-stack, answering now. orange-clouded through Cloudflare so the AAAA finally resolves; the 6 in v6 stopped meaning 'soon'.",
   },
   {
     cmd: "ssh proxy.harshit.cloud",
