@@ -51,30 +51,24 @@ export default function NotFound() {
       <div className="max-w-2xl mx-auto px-4 py-16 text-center space-y-8">
         {/* Glitch Effect 404 */}
         <div className="relative">
-          <div className="absolute inset-0 -z-10 bg-gradient-to-br from-red-50 via-orange-50 to-yellow-50 dark:from-red-950/20 dark:via-orange-950/20 dark:to-yellow-950/20 rounded-3xl blur-3xl"></div>
-          
-          <div className="relative">
-            <Terminal className="h-16 w-16 mx-auto mb-4 text-red-500 opacity-50" />
-            <h1 
-              className={`text-8xl md:text-9xl font-bold mb-4 transition-all duration-100 ${
-                glitchActive 
-                  ? "text-red-500 animate-pulse" 
-                  : "bg-gradient-to-r from-red-500 via-orange-500 to-yellow-500 bg-clip-text text-transparent"
-              }`}
-            >
-              {errorCode}
-            </h1>
-          </div>
+          <Terminal aria-hidden className="h-14 w-14 mx-auto mb-4 text-primary opacity-60" />
+          <h1
+            className={`font-serif text-8xl md:text-9xl mb-4 transition-colors duration-100 ${
+              glitchActive ? "text-primary animate-pulse" : "text-foreground"
+            }`}
+          >
+            {errorCode}
+          </h1>
         </div>
 
         {/* Fun Message */}
         <div className="space-y-4">
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-red-500/10 rounded-full text-sm font-medium">
-            <AlertTriangle className="h-4 w-4 text-red-500" />
-            <span className="text-red-600 dark:text-red-400">Page Not Found</span>
+          <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-[0.22em] text-muted-foreground">
+            <AlertTriangle aria-hidden className="h-3.5 w-3.5 text-primary" />
+            Page not found
           </div>
-          
-          <h2 className="text-3xl md:text-4xl font-bold">
+
+          <h2 className="font-serif text-3xl md:text-4xl leading-tight">
             Oops! Lost in the Cloud ☁️
           </h2>
           

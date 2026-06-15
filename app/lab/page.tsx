@@ -3,7 +3,8 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { ArrowUpRight, Terminal } from "lucide-react";
-import { CurrentlyStatus } from "@/components/blog/currently-status";
+import { SplitFlap } from "@/components/lab/split-flap";
+import { RelayMap } from "@/components/lab/relay-map";
 import { CommitTicker } from "@/components/lab/commit-ticker";
 import { CodeBlock } from "@/components/blog/code-block";
 import { siteConfig, getCurrentDomain } from "@/lib/site-config";
@@ -48,10 +49,10 @@ const TOOLS = [
     desc: "the paywall remover. ironic, given how few of my own posts have one.",
   },
   {
-    name: "meet.harshit.cloud",
-    href: "https://meet.harshit.cloud",
-    spec: "self-hosted jitsi",
-    desc: "video calls with no 40-minute timer and no telemetry phoning home about your face.",
+    name: "meet.harshit.cloud/book",
+    href: "https://meet.harshit.cloud/book/15min",
+    spec: "self-hosted cal.com / 15 min",
+    desc: "grab 15 minutes on my calendar. self-hosted cal.com, so the only thing booking the slot is you, not a sales tool counting leads.",
   },
   {
     name: "proxy.sachin.cool",
@@ -76,11 +77,6 @@ const STACK = [
     desc: "IPv6, dual-stack. the AAAA record is one orange cloud away — the 6 in v6 stands for 'soon'.",
   },
   {
-    cmd: "dig +short TXT harshit.cloud",
-    status: "wiring",
-    desc: "a banner stashed in a TXT record, because the best place to hide a note is in plain DNS.",
-  },
-  {
     cmd: "ssh proxy.harshit.cloud",
     status: "live",
     desc: "a banner greets you before the password prompt does. no shell unless the box knows your key, but you do get a poem.",
@@ -99,6 +95,11 @@ const STACK = [
     cmd: "b6k54gstib5fmn4rage34vpwo2qhm4phu2hulmpid4u52nxof3opvvid.onion",
     status: "live",
     desc: "the web proxy, on its own v3 onion. reach the blocked web from inside tor, no exit node in the path. it lives on the same relay as the site mirror.",
+  },
+  {
+    cmd: "nus4hjq4rk7yesz6pxvmu32yxzt6ibelbloemmx33nxedyyuj5gnmiad.onion",
+    status: "live",
+    desc: "the paywall remover (ladder), on its own v3 onion. read the walled web from inside tor, where nobody's counting your free articles.",
   },
 ];
 
@@ -186,8 +187,8 @@ export default function LabPage() {
           this page with <span className="font-mono text-foreground">curl</span>,
           you didn&apos;t — that&apos;s the joke, scroll down for it.
         </p>
-        <div className="pt-1">
-          <CurrentlyStatus activities={CURRENTLY} />
+        <div className="pt-2">
+          <SplitFlap words={CURRENTLY} />
         </div>
       </header>
 
@@ -257,6 +258,21 @@ export default function LabPage() {
             attempt; the banner is the only part it shares back.
           </figcaption>
         </figure>
+      </section>
+
+      {/* Where the boxes live */}
+      <section className="space-y-6">
+        <div className={sectionLabel}>
+          <span className="inline-block h-1.5 w-1.5 rounded-full bg-primary" />
+          Where the boxes live
+        </div>
+        <p className="text-sm text-muted-foreground leading-relaxed max-w-2xl">
+          The stack isn&apos;t in one place. I&apos;m in Bengaluru, the box that
+          runs the relay and the onion sits in New York, and the Hetzner box
+          runs out of Helsinki. The arcs are the traffic that bounces between
+          them, so the wire stays boring.
+        </p>
+        <RelayMap />
       </section>
 
       {/* Commit ticker */}
@@ -346,16 +362,17 @@ export default function LabPage() {
         <figure className="flex flex-col items-center gap-3">
           <div className="rounded-md border border-border/60 bg-white p-4">
             <Image
-              src="/images/lab-qr.svg"
-              alt="QR code linking back to this page, harshit.cloud/lab"
+              src="/images/lab-qr.png"
+              alt="Rust QR code with the ツ mark in the center, linking back to harshit.cloud/lab"
               width={176}
               height={176}
               className="h-44 w-44"
             />
           </div>
           <figcaption className="font-serif italic text-sm text-muted-foreground text-center max-w-sm">
-            It points back to this page. The recursion is intentional; the
-            disappointment is yours to manage.
+            The ツ in the middle is the site shrugging at you. It points back to
+            this page anyway; the recursion is intentional, the disappointment
+            is yours to manage.
           </figcaption>
         </figure>
       </section>

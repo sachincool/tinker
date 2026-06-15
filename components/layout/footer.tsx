@@ -91,14 +91,14 @@ export function Footer() {
         <div className="mt-16 flex flex-col items-start gap-2 border-t border-border/60 pt-6 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
           <p>© {new Date().getFullYear()} Harshit Luthra</p>
           <p className="font-mono">
-            also on{" "}
+            also on the dark web —{" "}
             <a
               href={`http://${siteConfig.onion}`}
               rel="noopener noreferrer"
               title={siteConfig.onion}
-              className="underline-offset-4 transition-colors hover:text-foreground"
+              className="underline underline-offset-4 decoration-border transition-colors hover:text-foreground hover:decoration-foreground"
             >
-              tor
+              .onion mirror
             </a>
             {" "}· best opened in Tor Browser
           </p>

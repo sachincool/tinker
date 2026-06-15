@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Github, Instagram, Linkedin, Mail, Twitter } from "lucide-react";
 import { CurrentlyStatus } from "@/components/blog/currently-status";
+import ScrollReveal from "@/components/animations/scroll-reveal";
 
 const CURRENTLY = [
   "antenna building",
@@ -58,6 +59,7 @@ export default function AboutPageClient() {
       </header>
 
       {/* Profile image — clean circular portrait, hairline border */}
+      <ScrollReveal direction="up" duration={0.5}>
       <figure className="flex justify-center">
         <div className="relative h-40 w-40 md:h-48 md:w-48 rounded-full overflow-hidden border border-border/60 bg-muted/40">
           <Image
@@ -70,8 +72,10 @@ export default function AboutPageClient() {
           />
         </div>
       </figure>
+      </ScrollReveal>
 
       {/* Bio prose */}
+      <ScrollReveal direction="up" duration={0.5}>
       <section className="space-y-5 text-base md:text-lg leading-relaxed text-foreground/90">
         <p>
           I&apos;m a passionate infrastructure engineer who spends most days
@@ -95,8 +99,10 @@ export default function AboutPageClient() {
           at 3am.
         </p>
       </section>
+      </ScrollReveal>
 
       {/* Weird fact — quiet pull quote */}
+      <ScrollReveal direction="up" duration={0.5}>
       <section className="space-y-3">
         <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-[0.22em] text-muted-foreground">
           <span className="inline-block h-1.5 w-1.5 rounded-full bg-primary" />
@@ -106,8 +112,10 @@ export default function AboutPageClient() {
           &ldquo;{fact}&rdquo;
         </blockquote>
       </section>
+      </ScrollReveal>
 
       {/* The lair pointer — workbench lives there now */}
+      <ScrollReveal direction="up" duration={0.5}>
       <section className="space-y-3">
         <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-[0.22em] text-muted-foreground">
           <span className="inline-block h-1.5 w-1.5 rounded-full bg-primary" />
@@ -124,8 +132,10 @@ export default function AboutPageClient() {
           </Link>
         </p>
       </section>
+      </ScrollReveal>
 
       {/* Quick links — small mono row */}
+      <ScrollReveal direction="up" duration={0.5}>
       <section className="space-y-3">
         <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-[0.22em] text-muted-foreground">
           <span className="inline-block h-1.5 w-1.5 rounded-full bg-primary" />
@@ -154,8 +164,10 @@ export default function AboutPageClient() {
           </a>
         </p>
       </section>
+      </ScrollReveal>
 
       {/* Social — minimal icon row */}
+      <ScrollReveal direction="up" duration={0.5}>
       <section className="space-y-3">
         <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-[0.22em] text-muted-foreground">
           <span className="inline-block h-1.5 w-1.5 rounded-full bg-primary" />
@@ -180,6 +192,7 @@ export default function AboutPageClient() {
           ))}
         </ul>
       </section>
+      </ScrollReveal>
     </div>
   );
 }

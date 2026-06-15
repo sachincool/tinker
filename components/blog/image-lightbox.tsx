@@ -47,7 +47,7 @@ export function ImageLightbox({ src, alt, className }: ImageLightboxProps) {
           role="dialog"
           aria-modal="true"
           aria-label={alt || "Image preview"}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm p-4"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm p-4 animate-in fade-in duration-200"
           onClick={() => setIsOpen(false)}
         >
           {/* Close button */}
@@ -61,7 +61,7 @@ export function ImageLightbox({ src, alt, className }: ImageLightboxProps) {
 
           {/* Image container */}
           <div
-            className="relative max-w-7xl max-h-[90vh] w-full"
+            className="relative max-w-7xl max-h-[90vh] w-full animate-in fade-in zoom-in-95 duration-200"
             onClick={(e) => e.stopPropagation()}
           >
             <img

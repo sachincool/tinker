@@ -3,6 +3,7 @@ import Image from "next/image";
 import { type Post } from "@/lib/posts";
 import { NewsletterForm } from "@/components/blog/newsletter-form";
 import { CurrentlyStatus } from "@/components/blog/currently-status";
+import ScrollReveal from "@/components/animations/scroll-reveal";
 
 interface HomePageContentProps {
   latestPosts: Post[];
@@ -40,21 +41,27 @@ export default function HomePageContent({ latestPosts, tilCount, blogCount }: Ho
       {/* Hero */}
       <section className="grid md:grid-cols-[1fr_auto] md:gap-12 lg:gap-16 items-start">
         <div className="max-w-3xl space-y-6 md:space-y-8">
+          <ScrollReveal direction="up" duration={0.5} delay={0}>
           <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-[0.22em] text-muted-foreground">
             <span className="inline-block h-1.5 w-1.5 rounded-full bg-primary" />
             Infrastructure notes
           </div>
+          </ScrollReveal>
 
+          <ScrollReveal direction="up" duration={0.5} delay={0.08}>
           <h1 className="text-5xl md:text-6xl leading-[1.05] tracking-tight">
             Production stories,
             <br />
             written in the calm after.
           </h1>
+          </ScrollReveal>
 
+          <ScrollReveal direction="up" duration={0.5} delay={0.16}>
           <p className="text-lg text-muted-foreground leading-relaxed max-w-xl">
             I do platform work at a startup. This is where I write down the things
             I had to figure out the hard way, so future-me at 3am doesn&apos;t have to.
           </p>
+          </ScrollReveal>
 
           <div className="flex flex-wrap items-center gap-x-6 gap-y-2 pt-2 text-base">
             <Link

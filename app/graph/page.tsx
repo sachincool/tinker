@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, Network } from "lucide-react";
 import Link from "next/link";
 import GraphView from "@/components/blog/graph-view-lazy";
+import AnimatedCounter from "@/components/animations/animated-counter";
 import { getAllPosts, getAllTags, extractInternalRefs } from "@/lib/posts";
 import type { Metadata } from "next";
 import { siteConfig, getCurrentDomain } from "@/lib/site-config";
@@ -78,46 +79,43 @@ export default function GraphPage() {
       </Button>
 
       {/* Header */}
-      <div className="text-center space-y-4 relative py-8">
-        <div className="absolute inset-0 -z-10 bg-gradient-to-br from-purple-50 via-blue-50 to-transparent dark:from-purple-950/20 dark:via-blue-950/20 rounded-3xl"></div>
-        <div className="inline-flex items-center gap-2 px-4 py-2 bg-purple-500/10 rounded-full text-sm font-medium mb-4">
-          <Network className="h-4 w-4 text-purple-500" />
-          <span>Knowledge Graph</span>
+      <div className="text-center space-y-4 py-8">
+        <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-[0.22em] text-muted-foreground">
+          <Network aria-hidden className="h-3.5 w-3.5 text-primary" />
+          Knowledge graph
         </div>
-        <h1 className="text-4xl md:text-5xl font-bold">
-          <span className="bg-gradient-to-r from-purple-600 via-blue-600 to-cyan-600 bg-clip-text text-transparent">
-            Content Graph
-          </span>
+        <h1 className="font-serif text-4xl md:text-5xl leading-[1.1] tracking-tight">
+          Content Graph
         </h1>
-        <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+        <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
           Explore the connections between posts, TILs, and tags. Click and drag nodes to rearrange the graph.
         </p>
       </div>
 
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-3xl mx-auto">
-        <Card className="hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+        <Card className="hover:shadow-md transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/40">
           <CardContent className="pt-6 text-center">
-            <div className="text-3xl font-bold bg-gradient-to-r from-blue-500 to-cyan-500 bg-clip-text text-transparent">
-              {blogPosts.length}
+            <div className="font-serif text-4xl text-primary">
+              <AnimatedCounter value={String(blogPosts.length)} />
             </div>
-            <p className="text-xs text-muted-foreground mt-1">Blog Posts</p>
+            <p className="text-[11px] font-mono uppercase tracking-[0.16em] text-muted-foreground mt-1.5">Blog Posts</p>
           </CardContent>
         </Card>
-        <Card className="hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+        <Card className="hover:shadow-md transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/40">
           <CardContent className="pt-6 text-center">
-            <div className="text-3xl font-bold bg-gradient-to-r from-yellow-500 to-orange-500 bg-clip-text text-transparent">
-              {tilPosts.length}
+            <div className="font-serif text-4xl text-primary">
+              <AnimatedCounter value={String(tilPosts.length)} />
             </div>
-            <p className="text-xs text-muted-foreground mt-1">TILs</p>
+            <p className="text-[11px] font-mono uppercase tracking-[0.16em] text-muted-foreground mt-1.5">TILs</p>
           </CardContent>
         </Card>
-        <Card className="hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+        <Card className="hover:shadow-md transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/40">
           <CardContent className="pt-6 text-center">
-            <div className="text-3xl font-bold bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent">
-              {allTags.length}
+            <div className="font-serif text-4xl text-primary">
+              <AnimatedCounter value={String(allTags.length)} />
             </div>
-            <p className="text-xs text-muted-foreground mt-1">Unique Tags</p>
+            <p className="text-[11px] font-mono uppercase tracking-[0.16em] text-muted-foreground mt-1.5">Unique Tags</p>
           </CardContent>
         </Card>
       </div>
@@ -147,27 +145,27 @@ export default function GraphPage() {
         <CardContent>
           <ul className="space-y-2 text-muted-foreground">
             <li className="flex items-start gap-2">
-              <span className="text-blue-500">•</span>
+              <span className="text-primary">•</span>
               <span>Scroll or use buttons to zoom</span>
             </li>
             <li className="flex items-start gap-2">
-              <span className="text-green-500">•</span>
+              <span className="text-primary">•</span>
               <span>Drag canvas to pan</span>
             </li>
             <li className="flex items-start gap-2">
-              <span className="text-purple-500">•</span>
+              <span className="text-primary">•</span>
               <span>Drag nodes to rearrange</span>
             </li>
             <li className="flex items-start gap-2">
-              <span className="text-orange-500">•</span>
+              <span className="text-primary">•</span>
               <span>Double-click to navigate</span>
             </li>
             <li className="flex items-start gap-2">
-              <span className="text-pink-500">•</span>
+              <span className="text-primary">•</span>
               <span>Lines show connections</span>
             </li>
             <li className="flex items-start gap-2">
-              <span className="text-yellow-500">•</span>
+              <span className="text-primary">•</span>
               <span>Hover for details</span>
             </li>
           </ul>

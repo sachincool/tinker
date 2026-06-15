@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { Coffee } from "lucide-react";
 import { CurrentlyStatus } from "@/components/blog/currently-status";
+import ScrollReveal from "@/components/animations/scroll-reveal";
 import { siteConfig, getCurrentDomain } from "@/lib/site-config";
 
 const CURRENTLY = [
@@ -101,6 +102,7 @@ export default function LairPage() {
       </header>
 
       {/* The photo */}
+      <ScrollReveal direction="up" duration={0.5}>
       <figure className="space-y-3">
         <div className="relative aspect-[3/2] overflow-hidden rounded-md border border-border/60 bg-muted/40">
           <Image
@@ -116,8 +118,10 @@ export default function LairPage() {
           The workbench, on a productive afternoon. The hourglass is for measuring how long a deploy actually takes.
         </figcaption>
       </figure>
+      </ScrollReveal>
 
       {/* What's on the desk */}
+      <ScrollReveal direction="up" duration={0.5}>
       <section className="space-y-6">
         <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-[0.22em] text-muted-foreground border-b border-border/60 pb-2">
           <span className="inline-block h-1.5 w-1.5 rounded-full bg-primary" />
@@ -140,8 +144,10 @@ export default function LairPage() {
           ))}
         </ul>
       </section>
+      </ScrollReveal>
 
       {/* Quote block — easter egg with binary footer */}
+      <ScrollReveal direction="up" duration={0.5}>
       <section className="pt-2 space-y-6 text-center max-w-2xl mx-auto">
         <Coffee aria-hidden className="h-7 w-7 mx-auto text-primary/80" strokeWidth={1.5} />
         <blockquote className="font-serif italic text-xl md:text-2xl leading-snug text-foreground">
@@ -159,6 +165,7 @@ export default function LairPage() {
           01101111 01101110 01100101 00100000 01110100 01110010 01110101 01110100 01101000 00100000 01110000 01110010 01100101 01110110 01100001 01101001 01101100 01110011
         </p>
       </section>
+      </ScrollReveal>
 
       {/* Back link */}
       <div className="pt-6">

@@ -153,7 +153,7 @@ export function TableOfContents() {
             size="sm"
             aria-label="Open table of contents"
             className={cn(
-              "fixed bottom-6 right-6 lg:hidden z-40 h-10 rounded-full border border-border/60 bg-background/90 backdrop-blur px-4 text-muted-foreground shadow-lg hover:text-foreground",
+              "fixed bottom-6 right-6 lg:hidden z-40 h-10 rounded-full border border-border/60 bg-background/90 backdrop-blur px-4 text-muted-foreground shadow-lg transition-opacity duration-200 hover:text-foreground",
               showFab ? "opacity-100" : "pointer-events-none opacity-0"
             )}
           >

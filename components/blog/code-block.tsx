@@ -77,7 +77,7 @@ export function CodeBlock({ code, language = "bash", className = "" }: CodeBlock
     <div className={cn("relative group my-8 max-w-full overflow-hidden", className)}>
       <div className="rounded-xl overflow-hidden border border-border/50 shadow-lg hover:shadow-xl transition-shadow duration-300 max-w-full">
         {language && (
-          <div className="flex items-center justify-between px-4 py-2.5 bg-gradient-to-r from-muted to-muted/50 border-b border-border/50">
+          <div className="flex items-center justify-between px-4 py-2.5 bg-muted border-b border-border/50">
             <span className="text-xs font-mono font-semibold text-primary uppercase tracking-wider">
               {language}
             </span>
@@ -85,7 +85,7 @@ export function CodeBlock({ code, language = "bash", className = "" }: CodeBlock
               variant="ghost"
               size="sm"
               onClick={copyToClipboard}
-              className="h-7 text-xs hover:bg-background/50 transition-all"
+              className="h-7 text-xs hover:bg-background/50 transition-colors duration-200"
             >
               {copied ? (
                 <>
@@ -101,7 +101,7 @@ export function CodeBlock({ code, language = "bash", className = "" }: CodeBlock
             </Button>
           </div>
         )}
-        <div className="relative bg-gradient-to-br from-muted/30 to-muted/50 max-w-full">
+        <div className="relative bg-muted/40 max-w-full">
           {highlightedCode ? (
             <div 
               className={cn(
@@ -121,7 +121,7 @@ export function CodeBlock({ code, language = "bash", className = "" }: CodeBlock
               variant="ghost"
               size="sm"
               onClick={copyToClipboard}
-              className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity h-7 text-xs"
+              className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 h-7 text-xs"
             >
               {copied ? (
                 <>

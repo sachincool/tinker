@@ -1,5 +1,6 @@
 "use client";
 
+import { motion } from "motion/react";
 import { useState, useMemo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -46,10 +47,16 @@ export default function TagsPageClient({ initialTags }: TagsPageClientProps) {
   const totalPosts = initialTags.reduce((sum, tag) => sum + tag.count, 0);
 
   return (
-    <div className="space-y-12">
-      <header className="space-y-3 max-w-2xl">
-        <h1>Tags</h1>
-        <p className="text-sm text-muted-foreground">
+    <div className="max-w-4xl mx-auto px-4 py-12 md:py-16 space-y-12">
+      <header className="space-y-4 max-w-2xl">
+        <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-[0.22em] text-muted-foreground">
+          <span className="inline-block h-1.5 w-1.5 rounded-full bg-primary" />
+          Tags
+        </div>
+        <h1 className="font-serif text-4xl md:text-5xl leading-[1.1] tracking-tight">
+          Everything, filed by subject.
+        </h1>
+        <p className="text-base text-muted-foreground leading-relaxed">
           {initialTags.length} tags across {totalPosts} posts.
         </p>
       </header>
@@ -73,13 +80,23 @@ export default function TagsPageClient({ initialTags }: TagsPageClientProps) {
 
       {filteredTags.length > 0 ? (
         <section className="space-y-5">
-          <h2>{debouncedSearchQuery ? "Matching tags" : "All tags"}</h2>
+          <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-[0.22em] text-muted-foreground border-b border-border/60 pb-2">
+            <span className="inline-block h-1.5 w-1.5 rounded-full bg-primary" />
+            {debouncedSearchQuery ? "Matching tags" : "All tags"}
+          </div>
           <div className="flex flex-wrap gap-2.5">
-            {filteredTags.map((tag) => (
-              <Link key={tag.name} href={`/tags/${tag.name}`} className={tagBadgeClass}>
-                <span>#{tag.name}</span>
-                <span className="text-xs text-muted-foreground">·&nbsp;{tag.count}</span>
-              </Link>
+            {filteredTags.map((tag, i) => (
+              <motion.div
+                key={tag.name}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.25, delay: Math.min(i * 0.015, 0.4), ease: [0.25, 0.4, 0.25, 1] }}
+              >
+                <Link href={`/tags/${tag.name}`} className={tagBadgeClass}>
+                  <span>#{tag.name}</span>
+                  <span className="text-xs text-muted-foreground">·&nbsp;{tag.count}</span>
+                </Link>
+              </motion.div>
             ))}
           </div>
         </section>
@@ -97,14 +114,24 @@ export default function TagsPageClient({ initialTags }: TagsPageClientProps) {
 
       {!debouncedSearchQuery && popularTags.length >= 3 && (
         <section className="space-y-5">
-          <h2>Most written about</h2>
+          <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-[0.22em] text-muted-foreground border-b border-border/60 pb-2">
+            <span className="inline-block h-1.5 w-1.5 rounded-full bg-primary" />
+            Most written about
+          </div>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {popularTags.slice(0, 6).map((tag) => (
-              <Link key={tag.name} href={`/tags/${tag.name}`} className="group block">
-                <Card className="h-full border-border/60 transition-colors group-hover:border-primary/60">
+            {popularTags.slice(0, 6).map((tag, i) => (
+              <motion.div
+                key={tag.name}
+                initial={{ opacity: 0, y: 12 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-60px" }}
+                transition={{ duration: 0.4, delay: Math.min(i * 0.06, 0.4), ease: [0.25, 0.4, 0.25, 1] }}
+              >
+                <Link href={`/tags/${tag.name}`} className="group block h-full">
+                <Card className="h-full border-border/60 transition-colors group-hover:border-primary/60 hover:-translate-y-0.5 duration-300">
                   <CardContent className="space-y-2 pt-6 pb-6">
                     <div className="flex items-baseline justify-between gap-3">
-                      <h3 className="text-xl group-hover:text-primary transition-colors">
+                      <h3 className="font-serif text-xl group-hover:text-primary transition-colors">
                         #{tag.name}
                       </h3>
                       <span className="text-xs text-muted-foreground whitespace-nowrap">
@@ -118,7 +145,8 @@ export default function TagsPageClient({ initialTags }: TagsPageClientProps) {
                     )}
                   </CardContent>
                 </Card>
-              </Link>
+                </Link>
+              </motion.div>
             ))}
           </div>
         </section>

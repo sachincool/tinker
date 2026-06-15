@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import ScrollReveal from "@/components/animations/scroll-reveal";
 
 const experience = [
   {
@@ -242,15 +243,15 @@ export default function ResumePageClient() {
       <section className="space-y-6">
         <Eyebrow>By the numbers</Eyebrow>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-8">
-          {stats.map((stat) => (
-            <div key={stat.label} className="space-y-1">
+          {stats.map((stat, i) => (
+            <ScrollReveal key={stat.label} direction="up" delay={i * 0.08} duration={0.5} className="space-y-1">
               <p className="font-serif text-3xl md:text-4xl leading-none text-foreground">
                 {stat.value}
               </p>
               <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
                 {stat.label}
               </p>
-            </div>
+            </ScrollReveal>
           ))}
         </div>
       </section>
@@ -273,7 +274,8 @@ export default function ResumePageClient() {
         <Eyebrow>Experience</Eyebrow>
         <div className="space-y-12">
           {experience.map((job, idx) => (
-            <article key={`${job.company}-${idx}`} className="space-y-3">
+            <ScrollReveal key={`${job.company}-${idx}`} direction="up" duration={0.5}>
+            <article className="space-y-3">
               <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-1 sm:gap-6">
                 <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground order-2 sm:order-1 shrink-0">
                   {job.period.toLowerCase()}
@@ -328,6 +330,7 @@ export default function ResumePageClient() {
                 </div>
               )}
             </article>
+            </ScrollReveal>
           ))}
         </div>
       </section>

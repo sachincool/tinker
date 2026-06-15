@@ -1,5 +1,6 @@
 "use client";
 
+import { motion } from "motion/react";
 import { useState, useMemo } from "react";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -116,8 +117,14 @@ export default function TILPageClient({ initialTils }: TILPageClientProps) {
 
         {filteredTils.length > 0 ? (
           <ul className="divide-y divide-border/60">
-            {filteredTils.map((til) => (
-              <li key={til.slug} className="py-5 first:pt-2">
+            {filteredTils.map((til, index) => (
+              <motion.li
+                key={til.slug}
+                className="py-5 first:pt-2"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.28, delay: Math.min(index * 0.03, 0.3), ease: [0.25, 0.4, 0.25, 1] }}
+              >
                 <article className="space-y-2">
                   <div className="flex items-center gap-2 text-[11px] font-mono uppercase tracking-[0.18em] text-muted-foreground">
                     <time dateTime={til.date}>
@@ -157,7 +164,7 @@ export default function TILPageClient({ initialTils }: TILPageClientProps) {
                     </div>
                   )}
                 </article>
-              </li>
+              </motion.li>
             ))}
           </ul>
         ) : (
