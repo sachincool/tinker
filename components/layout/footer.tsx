@@ -12,6 +12,7 @@ const navLinks = [
   { href: "/tags", label: "Tags" },
   { href: "/about", label: "About" },
   { href: "/lab", label: "Lab" },
+  { href: "https://k8s.org.in", label: "Infra & AI consulting" },
 ];
 
 const socialLinks = [
@@ -50,6 +51,8 @@ export function Footer() {
                 <li key={href}>
                   <Link
                     href={href}
+                    target={href.startsWith("http") ? "_blank" : undefined}
+                    rel={href.startsWith("http") ? "noopener" : undefined}
                     className="text-muted-foreground transition-colors hover:text-foreground"
                   >
                     {label}
@@ -72,7 +75,7 @@ export function Footer() {
                     href.startsWith("http") ? "noopener noreferrer" : undefined
                   }
                   aria-label={label}
-                  className="text-muted-foreground transition-colors hover:text-primary"
+                  className="text-muted-foreground transition-[color,transform] duration-200 hover:text-primary hover:scale-110"
                 >
                   <Icon className="h-4 w-4" />
                 </Link>
