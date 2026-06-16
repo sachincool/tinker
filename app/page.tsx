@@ -30,7 +30,7 @@ export async function generateMetadata(): Promise<Metadata> {
       locale: 'en_US',
       images: [
         {
-          url: `${baseUrl}/og-image.png`,
+          url: `${baseUrl}/opengraph-image`,
           width: 1200,
           height: 630,
           alt: `${siteConfig.title} — ${siteConfig.author.name}`,
@@ -43,7 +43,7 @@ export async function generateMetadata(): Promise<Metadata> {
       description,
       creator: '@exploit_sh',
       site: '@exploit_sh',
-      images: [`${baseUrl}/og-image.png`],
+      images: [`${baseUrl}/opengraph-image`],
     },
   };
 }
