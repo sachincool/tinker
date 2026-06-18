@@ -1,10 +1,22 @@
 ---
 title: "AWS cost optimization: how we cut our bill by 60%"
 date: "2024-12-05"
+updatedAt: "2026-06-18"
 tags: ["aws", "cloud", "cost-optimization", "finops", "infrastructure"]
 excerpt: "Our AWS bill hit $50k/month. Here's exactly how we reduced it to $20k without sacrificing performance or reliability."
 featured: false
+faqs:
+  - question: "What is the fastest way to cut an AWS bill?"
+    answer: "Rightsize EC2 first. Most fleets run instances 4x larger than their actual CPU and memory use. Pulling a 12%-CPU m5.2xlarge down to m5.large cut our per-hour rate 4x and saved $18,000/month with no performance hit. After that: Reserved Instances or Savings Plans for steady-state, S3 lifecycle policies, and CloudWatch log retention."
+  - question: "How do I reduce CloudWatch costs?"
+    answer: "Ingestion is usually the biggest CloudWatch line, not storage. Set log retention (30 days prod, 7 elsewhere) on every log group, filter verbose info/debug logs out of production (can cut ingestion volume 50%+), move rarely-queried logs to the Infrequent Access class (about 50% cheaper to ingest), consolidate dashboards ($3/dashboard/month), and watch metric cardinality from high-uniqueness dimensions like request IDs."
+  - question: "Are Reserved Instances or Spot Instances better for saving money?"
+    answer: "Use both for different workloads. Reserved Instances or Savings Plans (around 40% off On-Demand) fit steady-state 24/7 servers. Spot (up to 70% off) fits interruptible, parallelizable work like CI runners, with one On-Demand instance for baseline and capacity-optimized allocation to avoid interruptions."
+  - question: "Why is my AWS data transfer bill so high?"
+    answer: "You usually can't see it until you enable VPC Flow Logs. Common culprits: pulling Docker images over NAT on every cold start (fix with ECR interface endpoints), cross-region syncs nobody sponsors, and static assets served from S3 instead of CloudFront. The S3 gateway endpoint is free and routes bucket traffic off the per-GB egress lane."
 ---
+
+The fastest AWS savings come from rightsizing EC2 and turning on the defaults nobody set: Reserved Instances for steady-state, S3 lifecycle policies, CloudWatch log retention, and VPC endpoints to dodge NAT egress. We took a $50k/month bill to $20k in six weeks with Terraform diffs and one Python script, no architecture rewrites and better p95 latency.
 
 The CFO saw the AWS bill hit $50,000 a month and I got a calendar invite titled "We need to talk about AWS." I knew the meeting before I clicked accept.
 
@@ -207,32 +219,37 @@ resource "aws_rds_cluster" "staging" {
 
 $5,000 a month. The complaints about staging being slow on the first request after lunch went away once people understood that two seconds of cold-start was the trade.
 
-## CloudWatch logs, kept forever
+## CloudWatch, where ingestion is the real bill
 
-CloudWatch logs default to "never expire," which is fine if you want to be the company paying $0.50 per GB to ingest and $0.03 per GB-month to keep a stack trace from 2021.
+CloudWatch costs split three ways: ingestion ($0.50 per GB), storage ($0.03 per GB-month), and analysis. For us, ingestion was the biggest line by far, and the default of "never expire" meant we were also paying to keep a stack trace from 2021 forever. Four levers, biggest first.
 
-A short script set retention on every log group in the account:
+**Filter verbose logs before they're ingested.** Half our ingestion was `INFO` and `DEBUG` lines from happy-path requests in production. A subscription filter that drops them at the log group, or just raising the app log level in prod, cut ingestion volume by more than 50%. You pay for every GB that lands, so the cheapest log line is the one you never send.
+
+**Set retention on every log group.** A short script walked the whole account:
 
 ```python
 import boto3
 
 client = boto3.client('logs')
+paginator = client.get_paginator('describe_log_groups')
 
-log_groups = client.describe_log_groups()
+for page in paginator.paginate():
+    for log_group in page['logGroups']:
+        group_name = log_group['logGroupName']
 
-for log_group in log_groups['logGroups']:
-    group_name = log_group['logGroupName']
+        # prod keeps 30 days, everything else keeps 7
+        retention_days = 30 if 'prod' in group_name else 7
 
-    # prod keeps 30 days, everything else keeps 7
-    retention_days = 30 if 'prod' in group_name else 7
-
-    client.put_retention_policy(
-        logGroupName=group_name,
-        retentionInDays=retention_days
-    )
-
-    print(f"Set {group_name} to {retention_days} days")
+        client.put_retention_policy(
+            logGroupName=group_name,
+            retentionInDays=retention_days,
+        )
+        print(f"Set {group_name} to {retention_days} days")
 ```
+
+**Use the Infrequent Access log class for logs you rarely query.** Logs you keep for audit or the occasional incident, but don't run Logs Insights against daily, can go in the Infrequent Access class. Ingestion lands at roughly half the Standard rate. You give up some advanced query features, which for cold audit logs you weren't using anyway.
+
+**Consolidate dashboards and watch cardinality.** Each dashboard is $3/month, so one dashboard per service with several widget rows beats a separate dashboard per metric. And high-cardinality custom metrics, the ones tagged with per-request dimensions like `RequestId` or `UserId`, each count as a distinct metric and add up fast. Aggregate before you publish.
 
 $1,500 a month, recovered from log groups whose entire purpose was to exist.
 

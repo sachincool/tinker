@@ -1,10 +1,32 @@
 ---
 title: "GitHub Actions vs GitLab CI: a practical comparison"
 date: "2024-12-20"
+updatedAt: "2026-06-18"
 tags: ["ci-cd", "github", "gitlab", "devops", "automation"]
 excerpt: "After two years of running both GitHub Actions and GitLab CI across 50 microservices, here is which one I'd reach for and when."
 featured: true
+faqs:
+  - question: "Is GitHub Actions or GitLab CI better?"
+    answer: "Neither wins outright. GitHub Actions is better for small-to-medium pipelines, open source, and teams already on GitHub, thanks to its 20,000+ action marketplace and a 2,000 min/month free tier. GitLab CI is better for heavy Docker workflows, large self-hosted runner fleets, and multi-stage deployments, and its interactive SSH-into-runner debugging is the best in class."
+  - question: "Which is cheaper, GitHub Actions or GitLab CI?"
+    answer: "GitHub's hosted free tier is more generous: 2,000 minutes/month for private repos and unlimited for public, with overage at $0.008/minute. GitLab SaaS gives 400 minutes/month free and charges $10 per 1,000 extra minutes. But GitLab self-hosted runners are unlimited, so if you run your own runners, GitLab gets cheaper at scale."
+  - question: "Can I migrate from GitLab CI to GitHub Actions?"
+    answer: "Most script steps translate directly. The real win is collapsing custom scripts into marketplace actions you no longer maintain. Going the other way (Actions to GitLab), you replace marketplace actions with include files and Docker images."
+  - question: "Which CI has better Docker support?"
+    answer: "GitLab CI. Docker is a first-class citizen via docker:dind, with fewer permission issues. GitHub Actions needs setup-buildx-action and build-push-action to reach the same place."
 ---
+
+GitHub Actions is the better default for small-to-medium pipelines, open source, and teams already on GitHub. GitLab CI is the better pick for heavy Docker workflows, large self-hosted runner fleets, and pipelines you need to debug interactively. Here is the data behind that call.
+
+| Dimension | GitHub Actions | GitLab CI |
+|---|---|---|
+| Config style | Verbose, explicit; matrix builds in one block | Flatter, stage-based; YAML anchors and `include:` |
+| Typical Node build | 3-5 min | 4-6 min |
+| Reusable components | 20,000+ marketplace actions | `include:` files + your own Docker images |
+| Docker builds | Needs buildx/build-push actions | First-class `docker:dind`, just works |
+| Interactive debugging | SSH only via third-party action | Native web terminal / SSH into a live job |
+| Free tier | 2,000 min/month private, unlimited public | 400 min/month; self-hosted runners unlimited |
+| Best fit | Open source, GitHub-hosted, small-medium pipelines | Heavy Docker, large runner fleets, gnarly deploys |
 
 Two years, 50 microservices, two CI platforms running side by side. Some repos on GitHub, some on GitLab, same team writing the YAML for both. Here is what stuck after the marketing slides wore off.
 

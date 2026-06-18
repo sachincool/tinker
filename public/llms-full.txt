@@ -1,0 +1,38 @@
+# Harshit Luthra — Infra Magician (full)
+
+> Technical blog by Harshit Luthra, a Senior SRE and infrastructure engineer at TrueFoundry. The writing comes from running production systems: incidents, benchmarks, cost work, and self-hosting projects. Posts favor measured numbers and concrete commands over generic advice.
+
+Served identically on https://harshit.cloud and https://tinker.expert. Each domain canonicalizes to itself. Author contact: GitHub https://github.com/sachincool, Twitter/X https://twitter.com/exploit_sh, LinkedIn https://linkedin.com/in/harshit-luthra/, email harshit@truefoundry.com.
+
+## Topics covered
+
+Kubernetes operations and debugging, observability (Prometheus, Grafana, Loki, VictoriaLogs), CI/CD (GitHub Actions, GitLab CI), AWS cost optimization including CloudWatch, Docker security, Terraform and infrastructure-as-code, TLS fingerprinting and network security, and self-hosting (SimpleLogin email aliases, Dokploy migrations).
+
+## Selected posts with summaries
+
+### VictoriaLogs vs Loki
+URL: https://harshit.cloud/blog/victorialogs-vs-loki
+A benchmarked comparison of two log stores under the same production workload. Covers ingest throughput, query latency, storage footprint, and multi-tenant behavior, with named methodology and concrete percentages rather than vendor claims. The post is the template for the rest of the blog: original data, a comparison table, and a clear recommendation.
+
+### GitHub Actions vs GitLab CI
+URL: https://harshit.cloud/blog/github-actions-gitlab-ci-comparison
+Two years of running both platforms across 50 microservices on the same team. Compares syntax, build times (3-5 min on Actions, 4-6 min on GitLab for a typical Node app), parallelization, the GitHub marketplace (20,000+ actions) vs GitLab's include/Docker model, Docker-in-Docker, secrets, self-hosted runners, debugging (GitLab's interactive SSH-into-runner is the standout), and pricing (GitHub Free: 2,000 min/month; GitLab SaaS: 400 min/month, self-hosted runners unlimited). Recommendation: pick whichever already hosts your code; the integration tax beats any syntax preference.
+
+### AWS cost optimization
+URL: https://harshit.cloud/blog/aws-cost-optimization-tricks
+How a team cut a $50k/month AWS bill to $20k without losing reliability. Includes right-sizing, Savings Plans, storage tiering, and a CloudWatch section: ingestion is usually the largest line, dropping verbose info logs in production can cut ingestion volume by over 50%, Infrequent Access log class cuts ingestion cost ~50%, 7-30 day retention on non-critical logs, consolidating dashboards ($3/dashboard/month), and watching metric cardinality.
+
+### Self-hosting SimpleLogin
+URL: https://harshit.cloud/blog/self-hosting-simplelogin
+Bidirectional email aliases on a ~$3/month VPS using Docker (PostgreSQL, app, email handler, job runner), Postfix on the host, and Brevo as the SMTP relay for IP reputation. Walks DNS (A, MX, SPF, DKIM, DMARC, PTR), Brevo setup, container commands, and the TLS trap: Postfix doesn't trust the system CA store by default, so outbound relay to Brevo fails silently until you set smtp_tls_CAfile=/etc/ssl/certs/ca-certificates.crt. Cloudflare proxy (orange cloud) must be off for the mail subdomain.
+
+### Kubernetes debugging
+URL: https://harshit.cloud/blog/kubernetes-debugging-tips
+Field-tested steps for stuck pods, crash loops, OOM kills, and networking failures, with the commands and the order to run them in.
+
+### Lazy Security (6-part series)
+URLs: /blog/lazy-security-part-1-supply-chain through part-6-network-plane
+The security work that actually moves risk: supply chain, GitHub Actions hardening, the unglamorous checklist, DNS records, developer laptops, and the network plane.
+
+## Feeds
+RSS: https://harshit.cloud/rss.xml — Atom: https://harshit.cloud/atom.xml — JSON: https://harshit.cloud/rss.json

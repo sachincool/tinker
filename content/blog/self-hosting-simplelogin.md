@@ -1,10 +1,24 @@
 ---
 title: "Self-hosting SimpleLogin: own your email aliases for $3 a month"
 date: "2026-02-07"
+updatedAt: "2026-06-18"
 tags: ["self-hosting", "docker", "security", "devops", "email"]
 excerpt: "Self-hosted SimpleLogin with Docker, Postfix, and Brevo for $3/month. The TLS gotcha that ate two hours of my Sunday, written down so you skip it."
 featured: true
+faqs:
+  - question: "How much does it cost to self-host SimpleLogin?"
+    answer: "About $3/month for a small VPS (Hetzner, Contabo) with ports 25, 465, and 443 open. Outbound mail goes through Brevo's free SMTP relay (300 emails/day), so there is no extra cost for a personal alias service."
+  - question: "Why use Brevo instead of sending mail directly from Postfix?"
+    answer: "A fresh VPS IP has no sender reputation, so Gmail, Outlook, and Yahoo spam-folder or reject mail sent directly. Brevo relays from IPs with established reputation, so your mail lands in inboxes. Warming up your own IP takes weeks and is not worth it for 10 emails a day."
+  - question: "Why is my self-hosted SimpleLogin outbound mail failing silently?"
+    answer: "The most common cause is Postfix not trusting the system CA store. You see 'Untrusted TLS connection' and 'certificate verification failed' in the Postfix logs. Fix it by setting smtp_tls_security_level = encrypt and smtp_tls_CAfile = /etc/ssl/certs/ca-certificates.crt, then restart Postfix."
+  - question: "Can I self-host SimpleLogin behind Cloudflare?"
+    answer: "Only for the web UI. The mail subdomain's A record must be DNS-only (grey cloud). Cloudflare's proxy does not pass SMTP on port 25, so an orange-cloud MX target drops mail silently."
+  - question: "What does SimpleLogin do that Cloudflare Email Routing cannot?"
+    answer: "Reply and send from the alias. Cloudflare Email Routing is inbound-only: replies go out from your real address. SimpleLogin rewrites the path in both directions, plus adds PGP encryption and a browser extension."
 ---
+
+Self-hosting SimpleLogin gives you bidirectional email aliases (receive, reply, and send as the alias) for about $3/month on a small VPS, using Docker, Postfix, and Brevo as the SMTP relay. The one trap that eats an afternoon: Postfix won't trust Brevo's TLS cert until you point it at the system CA file. Everything else is just DNS and containers.
 
 I'd been running Cloudflare Email Routing for months. Free. Dead simple. Emails hit my custom domain, forwarded to Gmail. Privacy-friendly aliases without paying a dime.
 

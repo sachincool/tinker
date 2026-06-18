@@ -1,0 +1,32 @@
+# Harshit Luthra — Infra Magician
+
+> Technical blog by Harshit Luthra, a Senior SRE and infrastructure engineer at TrueFoundry. Production war stories and hands-on guides for Kubernetes, observability, CI/CD, AWS cost work, and self-hosting. Every post is written from real incidents and measured numbers, not vendor marketing.
+
+The same content is served on two domains: https://harshit.cloud and https://tinker.expert. Both are canonical for themselves.
+
+Author: Harshit Luthra. GitHub: https://github.com/sachincool. Twitter/X: https://twitter.com/exploit_sh. LinkedIn: https://linkedin.com/in/harshit-luthra/.
+
+## Blog
+
+- [VictoriaLogs vs Loki](https://harshit.cloud/blog/victorialogs-vs-loki): Benchmarked log-store comparison with real ingest, query, and storage numbers from production.
+- [GitHub Actions vs GitLab CI](https://harshit.cloud/blog/github-actions-gitlab-ci-comparison): Two years running both across 50 microservices. Decision matrix, build times, pricing, and when to pick which.
+- [AWS cost optimization](https://harshit.cloud/blog/aws-cost-optimization-tricks): How a $50k/month AWS bill came down to $20k, including the CloudWatch levers that cut ingestion and storage.
+- [Self-hosting SimpleLogin](https://harshit.cloud/blog/self-hosting-simplelogin): Bidirectional email aliases on Docker + Postfix + Brevo for about $3/month, with the TLS CA trap that eats most people's afternoon.
+- [Kubernetes debugging](https://harshit.cloud/blog/kubernetes-debugging-tips): Field-tested debugging moves for stuck pods, crash loops, and networking failures.
+- [Prometheus + Grafana monitoring guide](https://harshit.cloud/blog/prometheus-grafana-monitoring-guide): A working monitoring stack, not a hello-world dashboard.
+- [Docker security hardening](https://harshit.cloud/blog/docker-security-hardening): Stop running containers as root, and the rest of the baseline.
+- [Infrastructure as code mistakes](https://harshit.cloud/blog/infrastructure-as-code-mistakes): Terraform mistakes paid for in pages and money.
+- [JA4 TLS fingerprinting incident](https://harshit.cloud/blog/ja4-fingerprinting-network-security): How one fingerprinting rule took down 30% of production.
+- [Lazy Security series](https://harshit.cloud/blog/lazy-security-part-1-supply-chain): Six parts on the security work that actually pays off — supply chain, GitHub Actions, DNS, dev laptops, the network plane.
+
+## More
+
+- [Today I Learned](https://harshit.cloud/til): Short, dated notes from day-to-day infrastructure work.
+- [About](https://harshit.cloud/about): Background and contact.
+- [Tags](https://harshit.cloud/tags): Posts grouped by topic.
+
+## Feeds
+
+- [RSS](https://harshit.cloud/rss.xml)
+- [Atom](https://harshit.cloud/atom.xml)
+- [JSON Feed](https://harshit.cloud/rss.json)

@@ -1,6 +1,20 @@
 // Production canonical for build-time metadata (Vercel previews shouldn't leak into canonicals)
 const PRODUCTION_SITE_URL = 'https://harshit.cloud';
 
+// The two production domains are independent properties. Each one canonicalizes
+// to ITSELF — no 301, no cross-domain canonical between them. www and the blog
+// subdomain fold to their own apex (handled here for canonicals, and by
+// middleware.ts for the actual redirect). Anything we don't recognise (Vercel
+// preview hosts, the onion mirror) falls back to the primary production URL so
+// preview URLs never leak into a canonical.
+const PRODUCTION_HOSTS: Record<string, string> = {
+  'harshit.cloud': 'https://harshit.cloud',
+  'www.harshit.cloud': 'https://harshit.cloud',
+  'blog.harshit.cloud': 'https://harshit.cloud',
+  'tinker.expert': 'https://tinker.expert',
+  'www.tinker.expert': 'https://tinker.expert',
+};
+
 function getSiteUrl(): string {
   if (process.env.NEXT_PUBLIC_SITE_URL) {
     return process.env.NEXT_PUBLIC_SITE_URL;
@@ -36,16 +50,19 @@ export const siteConfig = {
   },
 };
 
-// Helper to get the current domain dynamically (for use in server components)
-// Non-localhost hosts are pinned to the production domain so duplicate hosts
-// (tinker.expert, www) canonicalize to harshit.cloud instead of themselves —
-// Google was indexing/deindexing the two hosts as competing duplicates.
+// Helper to get the current domain dynamically (for use in server components).
+// Each recognised production host canonicalizes to its own apex, so harshit.cloud
+// and tinker.expert stay independent properties (no cross-domain canonical).
+// Unknown hosts (preview URLs) fall back to the primary production URL.
 export function getCurrentDomain(hostname?: string): string {
   if (hostname) {
-    if (hostname.includes('localhost')) {
+    const host = hostname.toLowerCase().split(':')[0];
+
+    if (host === 'localhost' || host.endsWith('.localhost') || host === '127.0.0.1') {
       return `http://${hostname}`;
     }
-    return PRODUCTION_SITE_URL;
+
+    return PRODUCTION_HOSTS[host] ?? PRODUCTION_SITE_URL;
   }
 
   if (process.env.NEXT_PUBLIC_SITE_URL) {
