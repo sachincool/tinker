@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Check, Copy } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { codeToHtml } from "shiki";
 
 interface CodeBlockProps {
   code: string;
@@ -49,6 +48,7 @@ export function CodeBlock({ code, language = "bash", className = "" }: CodeBlock
 
     const highlight = async () => {
       try {
+        const { codeToHtml } = await import("shiki");
         const html = await codeToHtml(code, {
           lang: language || 'bash',
           theme: isDark ? 'github-dark' : 'github-light',

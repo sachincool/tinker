@@ -87,17 +87,17 @@ const STACK = [
     desc: "today it answers cloudflare. the plan is my own nameservers on my own metal. (that one's its own blog post.)",
   },
   {
-    cmd: "zufs5srx4x4xaukduvn3dbfhjesee3hy7bdtjsuiq7c4w35npyszfsyd.onion",
+    cmd: "harshitnia7nl7zgl42ezm656our7pfxqlviokkt7yhusich5wghxeid.onion",
     status: "live",
     desc: "a v3 hidden-service mirror of this site, served off the tor relay in the closet. open it in tor browser. v2 is dead; this one isn't. (tor browser also auto-suggests it via the Onion-Location header.)",
   },
   {
-    cmd: "b6k54gstib5fmn4rage34vpwo2qhm4phu2hulmpid4u52nxof3opvvid.onion",
+    cmd: "harshitnr4iv2ay32yg2y6kz77sudcfzsbcwr2bg6bwudqxry3v7xbid.onion",
     status: "live",
     desc: "the web proxy, on its own v3 onion. reach the blocked web from inside tor, no exit node in the path. it lives on the same relay as the site mirror.",
   },
   {
-    cmd: "nus4hjq4rk7yesz6pxvmu32yxzt6ibelbloemmx33nxedyyuj5gnmiad.onion",
+    cmd: "harshitobxiym2gimbx5iozpw7twwyfi5dzvpc3hliwntjc62ucakuqd.onion",
     status: "live",
     desc: "the paywall remover (ladder), on its own v3 onion. read the walled web from inside tor, where nobody's counting your free articles.",
   },

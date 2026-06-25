@@ -13,26 +13,14 @@ function ViewCounterComponent({ slug, className = "" }: ViewCounterProps) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const trackView = async () => {
+    const loadViews = async () => {
       try {
-        // Always try to track the view - let the server decide if it's unique
-        const postResponse = await fetch('/api/views', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ slug })
-        });
-
-        if (postResponse.ok) {
-          const postData = await postResponse.json();
-          setViews(postData.count);
+        const res = await fetch(`/api/views?slug=${encodeURIComponent(slug)}`);
+        if (res.ok) {
+          const data = await res.json();
+          setViews(data.count);
         } else {
-          const getResponse = await fetch(`/api/views?slug=${encodeURIComponent(slug)}`);
-          if (getResponse.ok) {
-            const getData = await getResponse.json();
-            setViews(getData.count);
-          } else {
-            setViews(0);
-          }
+          setViews(0);
         }
 
         setIsLoading(false);
@@ -42,7 +30,7 @@ function ViewCounterComponent({ slug, className = "" }: ViewCounterProps) {
       }
     };
 
-    trackView();
+    loadViews();
   }, [slug]);
 
   // Hide while loading and for low-view posts — a "0 views" or "7 views" line

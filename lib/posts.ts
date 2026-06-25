@@ -26,6 +26,11 @@ export interface Post {
 
 const contentDirectory = path.join(process.cwd(), 'content');
 
+// ponytail: process-lifetime cache — content is immutable during a build. Prod-only so `next dev` still reflects edits live.
+const CACHE = process.env.NODE_ENV === 'production';
+const postCache = new Map<string, Post | null>();
+const allPostsCache = new Map<string, Post[]>();
+
 // Clamp text to ~155 chars on a word boundary, suitable for a meta description.
 function clampToMetaLength(text: string): string {
   const max = 155;
@@ -88,6 +93,10 @@ function deriveExcerpt(content: string, fallback: string): string {
 }
 
 export function getPostBySlug(slug: string, type: 'blog' | 'til' = 'blog'): Post | null {
+  const cacheKey = `${type}:${slug}`;
+  if (CACHE && postCache.has(cacheKey)) {
+    return postCache.get(cacheKey)!;
+  }
   try {
     const filePath = path.join(contentDirectory, type, `${slug}.md`);
     const fileContents = fs.readFileSync(filePath, 'utf8');
@@ -98,7 +107,10 @@ export function getPostBySlug(slug: string, type: 'blog' | 'til' = 'blog'): Post
     const date = data.date || new Date().toISOString();
     const isFuture = new Date(date).getTime() > Date.now();
     const showDrafts = process.env.NODE_ENV !== 'production' || process.env.BLOG_SHOW_DRAFTS === '1';
-    if (isFuture && !showDrafts) return null;
+    if (isFuture && !showDrafts) {
+      if (CACHE) postCache.set(cacheKey, null);
+      return null;
+    }
 
     const title = data.title || 'Untitled';
     const rawExcerpt = (data.excerpt || '').trim();
@@ -108,7 +120,7 @@ export function getPostBySlug(slug: string, type: 'blog' | 'til' = 'blog'): Post
 
     const hero = extractFirstImage(content);
 
-    return {
+    const post: Post = {
       slug,
       title,
       date,
@@ -124,6 +136,9 @@ export function getPostBySlug(slug: string, type: 'blog' | 'til' = 'blog'): Post
       series: data.series || undefined,
       seriesPart: typeof data.seriesPart === 'number' ? data.seriesPart : undefined,
     };
+
+    if (CACHE) postCache.set(cacheKey, post);
+    return post;
   } catch (error) {
     console.error(`Error reading post ${slug}:`, error);
     return null;
@@ -131,6 +146,9 @@ export function getPostBySlug(slug: string, type: 'blog' | 'til' = 'blog'): Post
 }
 
 export function getAllPosts(type: 'blog' | 'til' = 'blog'): Post[] {
+  if (CACHE && allPostsCache.has(type)) {
+    return allPostsCache.get(type)!;
+  }
   try {
     const postsDirectory = path.join(contentDirectory, type);
 
@@ -152,6 +170,7 @@ export function getAllPosts(type: 'blog' | 'til' = 'blog'): Post[] {
         return new Date(b.date).getTime() - new Date(a.date).getTime();
       });
 
+    if (CACHE) allPostsCache.set(type, posts);
     return posts;
   } catch (error) {
     console.error(`Error getting all posts for ${type}:`, error);

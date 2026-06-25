@@ -36,7 +36,7 @@ export const siteConfig = {
   siteUrl: getSiteUrl(),
   // v3 onion mirror served off the tor relay (198.251.67.184). Surfaced in the
   // footer and as an Onion-Location header so Tor Browser auto-suggests it.
-  onion: 'zufs5srx4x4xaukduvn3dbfhjesee3hy7bdtjsuiq7c4w35npyszfsyd.onion',
+  onion: 'harshitnia7nl7zgl42ezm656our7pfxqlviokkt7yhusich5wghxeid.onion',
   author: {
     name: 'Harshit Luthra',
     email: 'harshit@truefoundry.com',

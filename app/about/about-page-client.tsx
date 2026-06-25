@@ -166,6 +166,29 @@ export default function AboutPageClient() {
       </section>
       </ScrollReveal>
 
+      {/* Open to — the connect CTA */}
+      <ScrollReveal direction="up" duration={0.5}>
+      <section className="space-y-3">
+        <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-[0.22em] text-muted-foreground">
+          <span className="inline-block h-1.5 w-1.5 rounded-full bg-primary" />
+          Open to
+        </div>
+        <p className="text-base md:text-lg text-foreground/90 leading-relaxed">
+          IoT, hardware hacking, security, CTFs, DevOps and SRE war stories &mdash;
+          or a 1v1 in Dota 2 (Meepo, if you&apos;re feeling brave). I also hate
+          watching teams burn VC money on unoptimized infra so Jeff Bezos can buy
+          another yacht. If any of that sounds like your kind of conversation,{" "}
+          <a
+            href="mailto:harshit@truefoundry.com"
+            className="text-primary underline underline-offset-4 decoration-primary/40 hover:decoration-primary transition-colors"
+          >
+            let&apos;s talk
+          </a>
+          .
+        </p>
+      </section>
+      </ScrollReveal>
+
       {/* Social — minimal icon row */}
       <ScrollReveal direction="up" duration={0.5}>
       <section className="space-y-3">
