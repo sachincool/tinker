@@ -34,17 +34,17 @@ const mono = Geist_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.siteUrl),
-  title: 'Harshit\'s Blog - Infra Magician\'s Digital Garden',
-  description: 'Level 99 Infrastructure Wizard, Dota2 Scrub, and Professional Chaos Engineer. Deep dives into DevOps, Kubernetes, AWS cost optimization, and production war stories from the trenches.',
-  keywords: ['infrastructure', 'devops', 'kubernetes', 'chaos engineering', 'dota2', 'web development'],
+  title: 'harshit.cloud: infrastructure notes by Harshit Luthra',
+  description: 'Platform and SRE work, written down in the calm after. Production stories, Kubernetes, Terraform, AWS, and the things I had to figure out the hard way.',
+  keywords: ['infrastructure', 'devops', 'kubernetes', 'terraform', 'aws', 'site reliability engineering'],
   authors: [{ name: 'Harshit Luthra', url: siteConfig.siteUrl }],
   creator: 'Harshit Luthra',
   alternates: {
     canonical: siteConfig.siteUrl,
   },
   openGraph: {
-    title: 'Harshit\'s Blog - Infra Magician\'s Digital Garden',
-    description: 'Level 99 Infrastructure Wizard, Dota2 Scrub, and Professional Chaos Engineer. Deep dives into DevOps, Kubernetes, AWS cost optimization, and production war stories from the trenches.',
+    title: 'harshit.cloud: infrastructure notes by Harshit Luthra',
+    description: 'Platform and SRE work, written down in the calm after. Production stories, Kubernetes, Terraform, AWS, and the things I had to figure out the hard way.',
     type: 'website',
     url: siteConfig.siteUrl,
     siteName: siteConfig.title,
@@ -55,8 +55,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Harshit\'s Blog - Infra Magician\'s Digital Garden',
-    description: 'Level 99 Infrastructure Wizard, Dota2 Scrub, and Professional Chaos Engineer. Deep dives into DevOps, Kubernetes, AWS cost optimization, and production war stories from the trenches.',
+    title: 'harshit.cloud: infrastructure notes by Harshit Luthra',
+    description: 'Platform and SRE work, written down in the calm after. Production stories, Kubernetes, Terraform, AWS, and the things I had to figure out the hard way.',
     creator: '@exploit_sh',
     site: '@exploit_sh',
     // twitter image falls back to the generated opengraph-image.tsx banner
@@ -112,8 +112,8 @@ export default function RootLayout({
               url: siteConfig.author.url,
               email: siteConfig.author.email,
               image: `${siteConfig.siteUrl}/og-image.png`,
-              jobTitle: 'Infrastructure Engineer',
-              description: 'Level 99 Infrastructure Wizard, Professional Chaos Engineer',
+              jobTitle: 'Senior Site Reliability Engineer',
+              description: 'Senior SRE writing about platform work, Kubernetes, and production infrastructure.',
               affiliation: {
                 '@type': 'Organization',
                 name: 'TrueFoundry',
@@ -143,9 +143,9 @@ export default function RootLayout({
             __html: JSON.stringify({
               '@context': 'https://schema.org',
               '@type': 'WebSite',
-              name: 'Harshit\'s Blog - Infra Magician\'s Digital Garden',
+              name: 'harshit.cloud: infrastructure notes by Harshit Luthra',
               url: siteConfig.siteUrl,
-              description: 'Deep dives into DevOps, Kubernetes, AWS cost optimization, and production war stories from the trenches.',
+              description: 'Platform and SRE work, written down in the calm after. Kubernetes, Terraform, AWS, and production stories.',
               author: {
                 '@type': 'Person',
                 name: 'Harshit Luthra',

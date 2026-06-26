@@ -42,8 +42,7 @@ export default function HomePageContent({ latestPosts, tilCount, blogCount }: Ho
       <section className="grid md:grid-cols-[1fr_auto] md:gap-12 lg:gap-16 items-start">
         <div className="max-w-3xl space-y-6 md:space-y-8">
           <ScrollReveal direction="up" duration={0.5} delay={0}>
-          <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-[0.22em] text-muted-foreground">
-            <span className="inline-block h-1.5 w-1.5 rounded-full bg-primary" />
+          <div className="text-xs font-mono uppercase tracking-[0.22em] text-muted-foreground">
             Infrastructure notes
           </div>
           </ScrollReveal>
@@ -101,19 +100,6 @@ export default function HomePageContent({ latestPosts, tilCount, blogCount }: Ho
 
       {/* The lair — teaser, links to /lair */}
       <section>
-        <div className="flex items-baseline justify-between flex-wrap gap-3 mb-4">
-          <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-[0.22em] text-muted-foreground">
-            <span className="inline-block h-1.5 w-1.5 rounded-full bg-primary" />
-            The lair
-          </div>
-          <Link
-            href="/lair"
-            className="text-xs font-mono uppercase tracking-[0.18em] text-muted-foreground hover:text-foreground transition-colors"
-          >
-            See the workbench &rarr;
-          </Link>
-        </div>
-
         <Link href="/lair" className="group flex flex-col sm:flex-row gap-5 sm:gap-6 items-start">
           <div className="relative w-full sm:w-64 md:w-72 aspect-[4/3] shrink-0 overflow-hidden rounded-md border border-border/60 bg-muted/40">
             <Image
@@ -145,8 +131,7 @@ export default function HomePageContent({ latestPosts, tilCount, blogCount }: Ho
       {lead && (
         <section className="space-y-6">
           <div className="flex items-baseline justify-between flex-wrap gap-3">
-            <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-[0.22em] text-muted-foreground">
-              <span className="inline-block h-1.5 w-1.5 rounded-full bg-primary" />
+            <div className="text-xs font-mono uppercase tracking-[0.22em] text-muted-foreground">
               Latest
             </div>
             <Link
@@ -226,10 +211,6 @@ export default function HomePageContent({ latestPosts, tilCount, blogCount }: Ho
 
       {/* Newsletter — quiet, editorial */}
       <section className="max-w-3xl space-y-4">
-        <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-[0.22em] text-muted-foreground">
-          <span className="inline-block h-1.5 w-1.5 rounded-full bg-primary" />
-          Subscribe
-        </div>
         <NewsletterForm
           variant="default"
           title="The next post, in your inbox."
@@ -242,10 +223,6 @@ export default function HomePageContent({ latestPosts, tilCount, blogCount }: Ho
 
       {/* About + tech stack + honest numbers */}
       <section className="max-w-3xl space-y-4">
-        <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-[0.22em] text-muted-foreground">
-          <span className="inline-block h-1.5 w-1.5 rounded-full bg-primary" />
-          About
-        </div>
         <p className="text-base text-muted-foreground leading-relaxed">
           Harshit Luthra. Senior SRE, infrequent essayist, occasional
           source of production incidents.{" "}

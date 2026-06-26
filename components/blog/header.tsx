@@ -57,7 +57,7 @@ export function Header() {
               <Image
                 src="/logo/infra-magician-clean.webp"
                 alt="Infra Magician Logo"
-                className="h-full w-full object-cover scale-[1.55] dark:drop-shadow-[0_0_10px_rgba(139,92,246,0.5)]"
+                className="h-full w-full object-cover scale-[1.55]"
                 width={48}
                 height={48}
                 priority
