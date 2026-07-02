@@ -12,17 +12,17 @@ export async function generateMetadata(): Promise<Metadata> {
   const isMainDomain = hostname === 'harshit.cloud' || hostname === 'www.harshit.cloud';
 
   const description = isMainDomain
-    ? 'Harshit Luthra — Senior SRE and Infrastructure Wizard. Deep dives into Kubernetes, multi-cloud platforms, observability, and production war stories from the trenches.'
-    : "Infra Magician's digital garden — production stories, DevOps deep dives, Kubernetes debugging, and infrastructure tinkering from a senior SRE.";
+    ? 'Harshit Luthra. Senior SRE and Infrastructure Wizard. Deep dives into Kubernetes, multi-cloud platforms, observability, and production war stories from the trenches.'
+    : "Infra Magician's digital garden: production stories, DevOps deep dives, Kubernetes debugging, and infrastructure tinkering from a senior SRE.";
 
   return {
-    title: isMainDomain ? `${siteConfig.author.name} — Infra Magician` : siteConfig.title,
+    title: isMainDomain ? `${siteConfig.author.name} · Infra Magician` : siteConfig.title,
     description,
     alternates: {
       canonical: `${baseUrl}/`,
     },
     openGraph: {
-      title: isMainDomain ? `${siteConfig.author.name} — Infra Magician` : siteConfig.title,
+      title: isMainDomain ? `${siteConfig.author.name} · Infra Magician` : siteConfig.title,
       description,
       type: 'website',
       url: `${baseUrl}/`,
@@ -33,13 +33,13 @@ export async function generateMetadata(): Promise<Metadata> {
           url: `${baseUrl}/opengraph-image`,
           width: 1200,
           height: 630,
-          alt: `${siteConfig.title} — ${siteConfig.author.name}`,
+          alt: `${siteConfig.title} · ${siteConfig.author.name}`,
         },
       ],
     },
     twitter: {
       card: 'summary_large_image',
-      title: isMainDomain ? `${siteConfig.author.name} — Infra Magician` : siteConfig.title,
+      title: isMainDomain ? `${siteConfig.author.name} · Infra Magician` : siteConfig.title,
       description,
       creator: '@exploit_sh',
       site: '@exploit_sh',

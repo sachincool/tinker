@@ -50,8 +50,8 @@ export async function generateMetadata({
       ? `${meta.description} ${breakdown}.${titlePreview ? ` Featuring: ${titlePreview}.` : ''}`
       : meta.description
     : count
-      ? `Explore ${breakdown} on #${tag} — DevOps, Kubernetes, infrastructure, and production war stories from the Infra Magician's digital garden.${titlePreview ? ` Featuring: ${titlePreview}.` : ''}`
-      : `Articles, notes, and tutorials on #${tag} from the Infra Magician's digital garden — DevOps, Kubernetes, infrastructure, and production engineering insights.`;
+      ? `Explore ${breakdown} on #${tag}: DevOps, Kubernetes, infrastructure, and production war stories from the Infra Magician's digital garden.${titlePreview ? ` Featuring: ${titlePreview}.` : ''}`
+      : `Articles, notes, and tutorials on #${tag} from the Infra Magician's digital garden: DevOps, Kubernetes, infrastructure, and production engineering insights.`;
 
   const trimmed = description.length > 158
     ? description.slice(0, description.lastIndexOf(' ', 155)).replace(/[,;:.\s]+$/, '') + '…'
@@ -61,7 +61,7 @@ export async function generateMetadata({
     title: `#${tag}`,
     description: trimmed,
     openGraph: {
-      title: `#${tag} — ${siteConfig.title}`,
+      title: `#${tag} · ${siteConfig.title}`,
       description: trimmed,
       type: 'website',
       url: tagUrl,
@@ -77,7 +77,7 @@ export async function generateMetadata({
     },
     twitter: {
       card: 'summary_large_image',
-      title: `#${tag} — ${siteConfig.title}`,
+      title: `#${tag} · ${siteConfig.title}`,
       description: trimmed,
       images: [`${baseUrl}/tags/opengraph-image`],
     },

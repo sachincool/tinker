@@ -10,7 +10,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const resumeUrl = `${baseUrl}/resume`;
 
   const description =
-    "Resume of Harshit Luthra — Senior SRE and infrastructure engineer specializing in Kubernetes, multi-cloud (AWS/GCP/Azure), observability, and cost optimization.";
+    "Resume of Harshit Luthra, Senior SRE and infrastructure engineer specializing in Kubernetes, multi-cloud (AWS/GCP/Azure), observability, and cost optimization.";
 
   return {
     title: `Resume | ${siteConfig.author.name}`,
@@ -30,7 +30,7 @@ export async function generateMetadata(): Promise<Metadata> {
           url: `${baseUrl}/og-image.png`,
           width: 1200,
           height: 630,
-          alt: `Resume — ${siteConfig.author.name}`,
+          alt: `Resume · ${siteConfig.author.name}`,
         },
       ],
     },

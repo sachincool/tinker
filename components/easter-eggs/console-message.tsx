@@ -28,7 +28,7 @@ export function ConsoleMessage() {
     console.log('%cWarning:', styles.warning);
     console.log('%cDon\'t paste random code here. Self-XSS is real.', styles.text);
     console.log('');
-    console.log('%charshit@truefoundry.com', styles.code);
+    console.log('%croot@harshit.cloud', styles.code);
     console.log('');
     console.log('%c═══════════════════════════════════════', 'color: #6366f1;');
     console.log('%c01001001 01110100 01011111 01001000 01100101 01110010 01110100 01111010 01011111 01010111 01000001 01001110 01011111 01001001 01010000', styles.code);

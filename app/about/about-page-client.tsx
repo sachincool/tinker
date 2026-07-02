@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Github, Instagram, Linkedin, Mail, Twitter } from "lucide-react";
+import { CalendarClock, Github, Instagram, Linkedin, Mail, Twitter } from "lucide-react";
 import { CurrentlyStatus } from "@/components/blog/currently-status";
 import ScrollReveal from "@/components/animations/scroll-reveal";
 
@@ -28,7 +28,8 @@ const SOCIAL_LINKS = [
   { icon: Twitter, label: "Twitter", href: "https://twitter.com/exploit_sh" },
   { icon: Linkedin, label: "LinkedIn", href: "https://linkedin.com/in/harshit-luthra/" },
   { icon: Instagram, label: "Instagram", href: "https://instagram.com/exploit.sh" },
-  { icon: Mail, label: "Email", href: "mailto:harshit@truefoundry.com" },
+  { icon: Mail, label: "Email", href: "mailto:root@harshit.cloud" },
+  { icon: CalendarClock, label: "Book a call", href: "https://meet.harshit.cloud/book/15min" },
 ];
 
 export default function AboutPageClient() {
@@ -80,7 +81,7 @@ export default function AboutPageClient() {
         <p>
           I&apos;m a passionate infrastructure engineer who spends most days
           playing with servers, orchestrating Kubernetes clusters, and
-          occasionally making production environments cry &mdash; then fixing
+          occasionally making production environments cry, then fixing
           them, of course.
         </p>
         <p>
@@ -123,7 +124,7 @@ export default function AboutPageClient() {
         </div>
         <p className="text-base text-muted-foreground leading-relaxed">
           The desk, the SDR, the Flipper, the Pwnagotchi, and the hourglass for
-          measuring how long a deploy actually takes &mdash;{" "}
+          measuring how long a deploy actually takes:{" "}
           <Link
             href="/lair"
             className="text-primary underline underline-offset-4 decoration-primary/40 hover:decoration-primary transition-colors"
@@ -174,12 +175,12 @@ export default function AboutPageClient() {
           Open to
         </div>
         <p className="text-base md:text-lg text-foreground/90 leading-relaxed">
-          IoT, hardware hacking, security, CTFs, DevOps and SRE war stories &mdash;
+          IoT, hardware hacking, security, CTFs, DevOps and SRE war stories,
           or a 1v1 in Dota 2 (Meepo, if you&apos;re feeling brave). I also hate
           watching teams burn VC money on unoptimized infra so Jeff Bezos can buy
           another yacht. If any of that sounds like your kind of conversation,{" "}
           <a
-            href="mailto:harshit@truefoundry.com"
+            href="mailto:root@harshit.cloud"
             className="text-primary underline underline-offset-4 decoration-primary/40 hover:decoration-primary transition-colors"
           >
             let&apos;s talk

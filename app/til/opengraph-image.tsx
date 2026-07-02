@@ -2,7 +2,7 @@ import { ImageResponse } from 'next/og';
 
 export const runtime = 'edge';
 
-export const alt = 'Today I Learned — harshit.cloud';
+export const alt = 'Today I Learned · harshit.cloud';
 export const size = {
   width: 1200,
   height: 630,
@@ -112,7 +112,7 @@ export default async function Image() {
               fontStyle: 'italic',
             }}
           >
-            Short notes from the terminal — the kind you wish you'd written down the first time.
+            Short notes from the terminal, the kind you wish you'd written down the first time.
           </div>
         </div>
 

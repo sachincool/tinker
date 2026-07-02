@@ -43,8 +43,8 @@ export async function generateMetadata({
   const baseUrl = getCurrentDomain(hostname);
 
   return {
-    title: `Blog — Page ${pageNum} | ${siteConfig.author.name}`,
-    description: `Blog posts by ${siteConfig.author.name} — page ${pageNum} of ${totalPages}.`,
+    title: `Blog · Page ${pageNum} | ${siteConfig.author.name}`,
+    description: `Blog posts by ${siteConfig.author.name}, page ${pageNum} of ${totalPages}.`,
     alternates: {
       canonical: pageNum === 1 ? `${baseUrl}/blog` : `${baseUrl}/blog/page/${pageNum}`,
     },
@@ -108,7 +108,7 @@ export default async function PaginatedBlogPage({
               <li key={post.slug}>
                 <article className="py-8 space-y-2">
                   <p className="text-[11px] font-mono uppercase tracking-[0.18em] text-muted-foreground">
-                    {date} &mdash; {stats.text.toLowerCase()}
+                    {date} · {stats.text.toLowerCase()}
                   </p>
                   <h2 className="font-serif font-normal text-2xl leading-snug">
                     <Link href={`/blog/${post.slug}`} className="hover:text-primary transition-colors">

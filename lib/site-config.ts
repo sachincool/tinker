@@ -39,7 +39,7 @@ export const siteConfig = {
   onion: 'harshitnia7nl7zgl42ezm656our7pfxqlviokkt7yhusich5wghxeid.onion',
   author: {
     name: 'Harshit Luthra',
-    email: 'harshit@truefoundry.com',
+    email: 'root@harshit.cloud',
     url: 'https://harshit.cloud/about',
   },
   social: {

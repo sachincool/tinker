@@ -2,7 +2,7 @@ import { ImageResponse } from 'next/og';
 
 export const runtime = 'edge';
 
-export const alt = 'harshit.cloud — deep dives in infrastructure, security, and tinkering';
+export const alt = 'harshit.cloud · deep dives in infrastructure, security, and tinkering';
 export const size = {
   width: 1200,
   height: 630,

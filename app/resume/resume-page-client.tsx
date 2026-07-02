@@ -8,17 +8,17 @@ const experience = [
     title: "Senior Site Reliability Engineer (SRE)",
     company: "TrueFoundry",
     location: "India",
-    period: "Sep 2024 — Present",
+    period: "Sep 2024 – Present",
     current: true,
     summary:
       "Own platform reliability, observability, incident response, and customer success for a multi-tenant SaaS platform serving enterprise ML workloads across AWS, GCP, Azure, and on-prem. Partner directly with global enterprise customers on onboarding and long-term operational health.",
     highlights: [
       "Built a modular Terraform framework that cut client onboarding time by 70% across AWS, Azure, GCP, and on-prem; complemented by AWS/GCP/Azure Marketplace listings that drove a 40% increase in self-service customer acquisition",
-      "Migrated the platform's logging stack from Grafana Loki to VictoriaLogs — 94% lower query latency, ~40% smaller storage footprint, 3x ingestion throughput, ~50% lower CPU/RAM; published as a public engineering benchmark",
-      "Led a platform-wide monitoring overhaul — bifurcated alerts into P0/P1 severity tiers and migrated critical components to New Relic after a successful PoC, improving signal quality with flat observability spend",
-      "Architected a severity-tiered incident management and on-call system integrating Sentry, Grafana, and New Relic with Zenduty and Slack, with team-wise routing across five functional domains — materially reducing MTTR and on-call noise",
+      "Migrated the platform's logging stack from Grafana Loki to VictoriaLogs: 94% lower query latency, ~40% smaller storage footprint, 3x ingestion throughput, ~50% lower CPU/RAM; published as a public engineering benchmark",
+      "Led a platform-wide monitoring overhaul: bifurcated alerts into P0/P1 severity tiers and migrated critical components to New Relic after a successful PoC, improving signal quality with flat observability spend",
+      "Architected a severity-tiered incident management and on-call system integrating Sentry, Grafana, and New Relic with Zenduty and Slack, with team-wise routing across five functional domains, materially reducing MTTR and on-call noise",
       "Drove infrastructure standardization across the fleet (security contacts, K8s labels/annotations, resource conventions) and hardened multi-tenant SaaS via tighter tenant isolation, namespace-scoped RBAC, and resource governance",
-      "Escalation point for complex multi-cloud production debugging across EKS/GKE/AKS — Karpenter, EFS/CSI, GPU node scheduling, IAM/IRSA, networking, airgapped artifact registries — while keeping enterprise SLAs intact",
+      "Escalation point for complex multi-cloud production debugging across EKS/GKE/AKS (Karpenter, EFS/CSI, GPU node scheduling, IAM/IRSA, networking, airgapped artifact registries) while keeping enterprise SLAs intact",
       "Routinely support late-IST and weekend windows for onboarding, cluster upgrades, and live debugging with global enterprise customers (e.g., Riot Games, Zscaler)",
     ],
     tech: ["kubernetes", "terraform", "aws", "gcp", "azure", "victorialogs", "new relic", "karpenter"],
@@ -27,7 +27,7 @@ const experience = [
     title: "Infrastructure Lead (Founding Engineer)",
     company: "Primetrace (Kutumb Crafto)",
     location: "India",
-    period: "Feb 2021 — Sep 2024",
+    period: "Feb 2021 – Sep 2024",
     current: false,
     summary:
       "Architected and operated AWS-based infrastructure on self-hosted Kubernetes supporting 4M DAU at 1M RPM peak. Built monitoring on RED/USE methodologies with Prometheus, Grafana, Elastic-APM, Pyroscope, Loki, and Robusta.",
@@ -46,14 +46,14 @@ const experience = [
     title: "DevOps Engineer",
     company: "smallcase",
     location: "India",
-    period: "Feb 2019 — Sep 2020",
+    period: "Feb 2019 – Sep 2020",
     current: false,
     summary:
       "Managed core infrastructure (OpenVPN, Heartbeat, Elastalert, Grafana) and integrated developer tooling (Wiki.js, Sentry, JFrog Artifactory). Built Ansible automation for deployments, log rotation, backups, and monitoring agents; tuned CI/CD on Jenkins and AWS CodeDeploy.",
     highlights: [
       "Drove infrastructure cost optimization that delivered a 90% reduction in operational expenses while maintaining service quality",
       "Implemented HAProxy load balancing to improve network performance and reduce application response times",
-      "Improved developer productivity by integrating open-source observability tools — Elastic-APM, Kafka-manager, Kafka-topics-ui",
+      "Improved developer productivity by integrating open-source observability tools: Elastic-APM, Kafka-manager, Kafka-topics-ui",
       "Designed fault-tolerant data infrastructure on multi-broker Apache Kafka clusters and a distributed ELK Stack running on spot instances",
     ],
     tech: ["ansible", "jenkins", "aws", "haproxy", "kafka", "elk"],
@@ -62,7 +62,7 @@ const experience = [
     title: "Technical Mentor",
     company: "Udacity",
     location: "Remote",
-    period: "Apr 2018 — Present",
+    period: "Apr 2018 – Present",
     current: true,
     summary: "",
     highlights: [
@@ -74,7 +74,7 @@ const experience = [
     title: "Open Source Contributor",
     company: "Utopian.io",
     location: "Remote",
-    period: "Jun 2018 — Jan 2019",
+    period: "Jun 2018 – Jan 2019",
     current: false,
     summary: "",
     highlights: [
@@ -87,7 +87,7 @@ const experience = [
 const honors = [
   { year: "2024", title: "Winner, AWS GameDay: Security & Resilience (2x)", location: "Bangalore" },
   { year: "2023", title: "Runner-up, AWS GameDay: Microservices", location: "Bangalore" },
-  { year: "2018", title: "Winner, MSHacks 2.0 — Microsoft Hackathon", location: "LPU, Jalandhar" },
+  { year: "2018", title: "Winner, MSHacks 2.0 (Microsoft Hackathon)", location: "LPU, Jalandhar" },
   { year: "2018", title: "Runner-up, Octahacks", location: "Chandigarh" },
   { year: "2018", title: "Winner, Code Breakers", location: "CSI Chandigarh" },
   { year: "2018", title: "Runner-up, SAP Next-Gen Hackathon", location: "Chandigarh" },
@@ -96,19 +96,19 @@ const honors = [
 
 const certifications = [
   {
-    title: "CKS — Certified Kubernetes Security Specialist",
+    title: "CKS: Certified Kubernetes Security Specialist",
     issuer: "Linux Foundation",
     year: "2023",
     detail: "Credential LF-fty09fzmce",
   },
   {
-    title: "CKA — Certified Kubernetes Administrator",
+    title: "CKA: Certified Kubernetes Administrator",
     issuer: "Linux Foundation",
     year: "2021 · renewed 2023",
     detail: "Credential LF-bl5pcg30qm",
   },
   {
-    title: "AWS Certified Solutions Architect — Associate",
+    title: "AWS Certified Solutions Architect – Associate",
     issuer: "Amazon Web Services",
     year: "2019",
     detail: "Credential K71S1HB13NBEQT5N",
@@ -311,7 +311,7 @@ export default function ResumePageClient() {
                     key={hi}
                     className="flex items-start gap-3 text-sm sm:text-base text-muted-foreground leading-relaxed"
                   >
-                    <span aria-hidden className="text-primary/70 mt-2 shrink-0">—</span>
+                    <span aria-hidden className="text-primary/70 mt-2 shrink-0">·</span>
                     <span>{highlight}</span>
                   </li>
                 ))}
@@ -357,7 +357,7 @@ export default function ResumePageClient() {
         <Eyebrow>Education</Eyebrow>
         <div className="space-y-3">
           <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
-            2016 — 2020
+            2016 – 2020
           </p>
           <div className="space-y-1">
             <h3 className="font-serif text-xl md:text-2xl leading-tight tracking-tight">

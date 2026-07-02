@@ -48,7 +48,7 @@ export default async function TILPage() {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
-    name: `${siteConfig.title} — Today I Learned`,
+    name: `${siteConfig.title} · Today I Learned`,
     description: "Quick insights, code snippets, and daily learnings from the trenches of DevOps and infrastructure.",
     url: `${baseUrl}/til`,
     isPartOf: { "@type": "WebSite", name: siteConfig.title, url: baseUrl },

@@ -49,7 +49,7 @@ export default async function BlogPage() {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Blog",
-    name: `${siteConfig.title} — Blog`,
+    name: `${siteConfig.title} · Blog`,
     description: siteConfig.description,
     url: `${baseUrl}/blog`,
     author: {

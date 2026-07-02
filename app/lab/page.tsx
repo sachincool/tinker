@@ -121,10 +121,10 @@ const STATUS_STYLES: Record<string, string> = {
   planned: "text-muted-foreground border-border/60",
 };
 
-const MIDDLEWARE_SNIPPET = `// middleware.ts — the gate you just (probably) didn't trip
+const MIDDLEWARE_SNIPPET = `// middleware.ts, the gate you just (probably) didn't trip
 const ua = request.headers.get('user-agent') || '';
 if (/\\bcurl\\//i.test(ua)) {
-  return new NextResponse("403 — nice try.", { status: 403 });
+  return new NextResponse("403, nice try.", { status: 403 });
 }
 // feeds stay exempt via the matcher, so RSS readers live on.`;
 
@@ -185,7 +185,7 @@ export default function LabPage() {
           is the hardware, this is the software it ends up running. Mostly
           experiments that work right up until someone asks how. If you reached
           this page with <span className="font-mono text-foreground">curl</span>,
-          you didn&apos;t — that&apos;s the joke, scroll down for it.
+          you didn&apos;t. That&apos;s the joke, scroll down for it.
         </p>
         <div className="pt-2">
           <SplitFlap words={CURRENTLY} />

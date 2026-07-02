@@ -69,7 +69,7 @@ export default function TILPageClient({ initialTils }: TILPageClientProps) {
         </h1>
         <p className="text-base md:text-lg text-muted-foreground leading-relaxed max-w-2xl">
           Short entries. The kind of thing you scribble on the back of a receipt
-          before you forget &mdash; a flag that finally made sense, a one-liner
+          before you forget: a flag that finally made sense, a one-liner
           that saved an hour, a footgun that drew blood.
         </p>
       </header>

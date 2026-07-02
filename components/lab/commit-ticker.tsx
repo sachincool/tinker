@@ -58,7 +58,7 @@ export function CommitTicker() {
             <span className="inline-block h-2.5 w-2.5 rounded-full bg-yellow-400/70" />
             <span className="inline-block h-2.5 w-2.5 rounded-full bg-green-400/70" />
           </span>
-          harshit@lab — git log
+          harshit@lab · git log
         </span>
         <button
           onClick={fetchCommit}

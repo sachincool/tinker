@@ -2,7 +2,7 @@ import { ImageResponse } from 'next/og';
 
 export const runtime = 'edge';
 
-export const alt = 'Browse by tag — harshit.cloud';
+export const alt = 'Browse by tag · harshit.cloud';
 export const size = {
   width: 1200,
   height: 630,
@@ -112,7 +112,7 @@ export default async function Image() {
               fontStyle: 'italic',
             }}
           >
-            Every post and TIL, sorted by subject — infrastructure, security, debugging, the works.
+            Every post and TIL, sorted by subject: infrastructure, security, debugging, the works.
           </div>
         </div>
 

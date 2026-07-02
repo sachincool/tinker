@@ -12,10 +12,10 @@ export async function generateMetadata(): Promise<Metadata> {
 
   return {
     title: `Tags | ${siteConfig.author.name}`,
-    description: 'Every tag used across the writing — blog posts and TILs, alphabetized.',
+    description: 'Every tag used across the writing: blog posts and TILs, alphabetized.',
     openGraph: {
       title: `Tags | ${siteConfig.author.name}`,
-      description: 'Every tag used across the writing — blog posts and TILs, alphabetized.',
+      description: 'Every tag used across the writing: blog posts and TILs, alphabetized.',
       type: 'website',
       url: `${baseUrl}/tags`,
       siteName: siteConfig.title,

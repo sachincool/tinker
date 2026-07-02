@@ -12,7 +12,7 @@ export function SeriesNav({ series, currentPart, totalParts, parts }: SeriesNavP
   return (
     <aside className="my-8 border border-border rounded-lg p-5 bg-muted/30 space-y-3">
       <p className="text-[11px] font-mono uppercase tracking-[0.2em] text-muted-foreground">
-        Series — {series}
+        Series · {series}
       </p>
       <ol className="space-y-1.5">
         {parts.map(({ part, slug, title }) => {
