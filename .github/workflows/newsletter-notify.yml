@@ -104,6 +104,14 @@ jobs:
               .replace(".md", "");
             const postUrl = `${siteUrl}/blog/${slug}`;
 
+            // Future-dated posts are hidden on the site until their date (see
+            // lib/posts.ts). Don't wait on a URL that isn't live, and don't email
+            // a post readers can't open yet.
+            if (data.date && new Date(data.date).getTime() > Date.now()) {
+              console.log(`Skipping ${slug}: scheduled for ${data.date}, not live yet.`);
+              return;
+            }
+
             if (!(await waitForLive(postUrl))) {
               console.error(`${postUrl} still not live after 5 minutes — not emailing a dead link.`);
               process.exit(1);

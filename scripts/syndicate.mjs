@@ -97,6 +97,14 @@ function canonicalUrl(post) {
   return `${SITE_URL}/${post.type}/${post.slug}`;
 }
 
+// A post whose date is still in the future is hidden on the site (see lib/posts.ts).
+// Syndication mirrors that: don't publish it early, and pull it back to draft if it
+// already went out, so dev.to matches the site's drip schedule.
+function isFuturePost(post) {
+  const d = post.frontmatter.date;
+  return d ? new Date(d).getTime() > Date.now() : false;
+}
+
 function normaliseTags(tags, max = 4) {
   if (!Array.isArray(tags)) return [];
   return tags
@@ -121,7 +129,7 @@ function resolveDevtoCover(post) {
   return `${SITE_URL}/${post.type}/${post.slug}/opengraph-image`;
 }
 
-async function publishToDevTo(post, { dryRun, update, articleId }) {
+async function publishToDevTo(post, { dryRun, update, articleId, published = true }) {
   const apiKey = process.env.DEVTO_API_KEY;
   if (!apiKey) throw new Error('DEVTO_API_KEY missing');
 
@@ -138,7 +146,7 @@ async function publishToDevTo(post, { dryRun, update, articleId }) {
   const article = {
     title: post.frontmatter.title || post.slug,
     body_markdown: originNote + bodyAbs,
-    published: true,
+    published,
     canonical_url: canonicalUrl(post),
     description: post.frontmatter.excerpt || undefined,
     tags: normaliseTags(post.frontmatter.tags, 4),
@@ -264,29 +272,43 @@ async function main() {
 
     if (wantDevto) {
       const existing = state.devto[key];
-      if (existing && !args.update && !args.dryRun) {
-        console.log(`  devto      ↩ already syndicated: ${existing.url} (pass --update to refresh)`);
-      } else {
-        try {
+      const future = isFuturePost(post);
+      try {
+        if (future) {
+          // Not its publish date yet. If it already went out (mirrors an old
+          // always-publish run), pull it back to draft so dev.to matches the drip.
+          if (existing && existing.published !== false) {
+            if (args.dryRun) {
+              console.log(`  devto      ✎ dry-run: would unpublish (scheduled for ${post.frontmatter.date})`);
+            } else {
+              await publishToDevTo(post, { dryRun: false, update: true, articleId: existing.id, published: false });
+              state.devto[key] = { ...existing, published: false, at: new Date().toISOString() };
+              await saveState(state);
+              console.log(`  devto      ⏸ unpublished until ${post.frontmatter.date}`);
+            }
+          } else {
+            console.log(`  devto      ⏳ scheduled for ${post.frontmatter.date}, skipping`);
+          }
+        } else if (existing && existing.published !== false && !args.update) {
+          console.log(`  devto      ↩ already syndicated: ${existing.url} (pass --update to refresh)`);
+        } else {
+          // Date reached: create, or (re)publish a draft we parked earlier.
           const out = await publishToDevTo(post, {
             dryRun: args.dryRun,
-            update: args.update && !!existing,
+            update: !!existing,
             articleId: existing?.id,
+            published: true,
           });
           if (args.dryRun) {
             console.log(`  devto      ✎ dry-run ${out.mode} (${out.article.tags.join(',')})`);
           } else {
             console.log(`  devto      ✓ ${out.mode}: ${out.url}`);
-            state.devto[key] = {
-              id: out.id,
-              url: out.url,
-              at: new Date().toISOString(),
-            };
+            state.devto[key] = { id: out.id, url: out.url, at: new Date().toISOString(), published: true };
             await saveState(state);
           }
-        } catch (e) {
-          console.log(`  devto      ✗ ${e.message}`);
         }
+      } catch (e) {
+        console.log(`  devto      ✗ ${e.message}`);
       }
     }
 

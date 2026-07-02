@@ -6,6 +6,10 @@ on:
     paths:
       - 'content/blog/**'
       - 'content/til/**'
+  schedule:
+    # Daily 08:05 UTC: publish any post whose date has arrived (drip schedule),
+    # and keep still-future posts parked as drafts on dev.to.
+    - cron: '5 8 * * *'
   workflow_dispatch:
     inputs:
       post:
