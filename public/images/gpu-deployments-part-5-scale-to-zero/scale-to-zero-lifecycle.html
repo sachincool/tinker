@@ -1,0 +1,55 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#e6ddcc;display:flex;justify-content:center;padding:48px;font-family:Georgia,'Times New Roman',serif}
+.fig{width:1040px;background:#f4efe6;border:1px solid #cfc4b0;padding:40px 46px 34px}
+.eyebrow{font:600 12px/1 ui-monospace,Menlo,monospace;letter-spacing:.2em;text-transform:uppercase;color:#bf4a2e}
+.title{font-size:31px;color:#22201c;margin:11px 0 5px;letter-spacing:-.01em}
+.sub{font-size:15px;color:#6f6a60;font-style:italic;margin-bottom:16px}
+svg{display:block;width:100%}
+text{font-family:ui-monospace,Menlo,monospace}
+</style></head><body>
+<div class="fig">
+  <div class="eyebrow">Lifecycle · and the request that pays for it</div>
+  <div class="title">Scale-to-zero, one loop</div>
+  <div class="sub">Zero is where the savings are, and where the first request eats the full cold start.</div>
+  <svg viewBox="0 0 1000 300">
+    <!-- boxes -->
+    <g stroke-width="1.5">
+      <rect x="30" y="60" width="185" height="66" rx="6" fill="#faf6ee" stroke="#c3b8a4"/>
+      <rect x="278" y="60" width="185" height="66" rx="6" fill="#faf6ee" stroke="#c3b8a4"/>
+      <rect x="536" y="60" width="185" height="66" rx="6" fill="#f9ece4" stroke="#bf4a2e"/>
+      <rect x="794" y="60" width="176" height="66" rx="6" fill="#eef2ec" stroke="#9cbfa4"/>
+    </g>
+    <g text-anchor="middle">
+      <text x="122" y="90" font-size="14" font-weight="600" fill="#5a5348">ZERO</text>
+      <text x="122" y="110" font-size="11" fill="#9a9488">no replicas, no cost</text>
+      <text x="370" y="90" font-size="14" font-weight="600" fill="#5a5348">ACTIVATING</text>
+      <text x="370" y="107" font-size="10.5" fill="#9a9488">activator buffers the</text>
+      <text x="370" y="120" font-size="10.5" fill="#9a9488">request, ask for a node</text>
+      <text x="628" y="90" font-size="14" font-weight="600" fill="#bf4a2e">COLD START</text>
+      <text x="628" y="107" font-size="10.5" fill="#8a4a34">pull image · load</text>
+      <text x="628" y="120" font-size="10.5" fill="#8a4a34">weights · warm up</text>
+      <text x="882" y="90" font-size="14" font-weight="600" fill="#3d6b4f">SERVING</text>
+      <text x="882" y="110" font-size="11" fill="#9a9488">requests flow</text>
+    </g>
+    <!-- forward arrows -->
+    <g stroke="#b8ad98" stroke-width="1.6" fill="#b8ad98">
+      <line x1="215" y1="93" x2="272" y2="93"/><polygon points="272,93 264,89 264,97"/>
+      <line x1="463" y1="93" x2="530" y2="93"/><polygon points="530,93 522,89 522,97"/>
+      <line x1="721" y1="93" x2="788" y2="93"/><polygon points="788,93 780,89 780,97"/>
+    </g>
+    <!-- forward arrow labels -->
+    <g text-anchor="middle" font-size="10.5" fill="#6f6a60" font-style="italic">
+      <text x="243" y="82">request</text>
+      <text x="496" y="82">node ready</text>
+      <text x="754" y="82">replica ready</text>
+    </g>
+    <!-- annotation under cold start -->
+    <text x="628" y="150" text-anchor="middle" font-size="12" font-weight="600" fill="#bf4a2e">↑ the first user waits here</text>
+    <!-- return arrow SERVING -> ZERO -->
+    <path d="M 882 126 C 882 220, 122 220, 122 132" fill="none" stroke="#8a857a" stroke-width="1.6" stroke-dasharray="6 5"/>
+    <polygon points="122,132 118,142 126,142" fill="#8a857a"/>
+    <text x="502" y="234" text-anchor="middle" font-size="11.5" fill="#6f6a60" font-style="italic">idle timeout (cooldown) → scale back to zero</text>
+  </svg>
+</div>
+</body></html>

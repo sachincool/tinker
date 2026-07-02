@@ -2,7 +2,7 @@
 title: "Lazy SRE's guide to secure systems, part 3: the unsexy list"
 date: "2026-04-19"
 tags: ["security", "devsecops", "lazy-sre", "identity", "supply-chain", "audit-logs"]
-excerpt: "Identity, network, default creds, attestation, audit logs — the controls that close most of the gap Parts 1 and 2 left."
+excerpt: "Identity, network, default creds, attestation, audit logs: the controls that close most of the gap Parts 1 and 2 left."
 featured: false
 series: "Lazy Security"
 seriesPart: 3
@@ -28,7 +28,7 @@ That's five, not four, which is on-brand for this section.
 
 ![A stylized editorial map on a dark navy ground showing the typical places a credential lives on an engineer's machine and inside the org. Nodes for shell config (`~/.zshrc`, `~/.netrc`), Mac Keychain, the CI secret store with one node tagged 'orphaned' in coral, a `.env` file in a stale repo, a browser-cached session, a Slack DM history, a password manager entry, and a post-it from 2022 also in coral. Arrows show the typical sprawl, with concentric rings labeling 'on disk', 'in cloud', and 'in someone else's possession'.](/images/lazy-security-part-3-unsexy-list/credentials-in-the-wild.png)
 
-*Fig. 1 — every place a credential hides. Most teams have it in all of them simultaneously.*
+*Fig. 1 · every place a credential hides. Most teams have it in all of them simultaneously.*
 
 The fix isn't "rotate them all." It's "make the next leak useless." Three configs at the org level do the work.
 
@@ -62,7 +62,7 @@ The three configs, in rough order of cost:
 
 ![An animated horizontal bar chart in a dark editorial palette comparing the time to fully revoke an employee's access after offboarding. Top bar 'without SCIM (median, small-startup surveys 2024-2025)' grows over several seconds to around four days. Bottom bar 'with SCIM, SAML attribute push' grows to roughly forty-five seconds and is almost invisible at the scale of the first. Coral tip on the without-SCIM bar marks the window of compromise.](/images/lazy-security-part-3-unsexy-list/scim-revocation-window.gif)
 
-*Fig. 2 — the no-SCIM bar is the entire window of compromise.*
+*Fig. 2 · the no-SCIM bar is the entire window of compromise.*
 
 One nightly cron closes most of the rest of the gap:
 
@@ -87,7 +87,7 @@ For service-to-service inside cloud accounts, AWS PrivateLink and GCP Private Se
 
 ![A hand-drawn two-panel napkin. Left panel labeled 'what the security group says (`0.0.0.0/0`)' shows three boxes (postgres, redis, grafana) sitting in the open, with arrows from labeled attackers (a Shodan crawler, a credential stuffer, a CVE-2026-12345 scanner) landing directly on them. A dashed line labeled 'the bastion SG' floats nearby, doing nothing. Right panel labeled 'what the tailnet says' shows the same three boxes behind a solid Tailnet boundary, with the same attacker arrows bouncing off the boundary line. Bottom strip reads 'twelve lines of ACL → entire blast radius'.](/images/lazy-security-part-3-unsexy-list/access-plane-contrast.png)
 
-*Fig. 3 — same services, different boundary. The right panel is whatever Future You at 3am will thank you for.*
+*Fig. 3 · same services, different boundary. The right panel is whatever Future You at 3am will thank you for.*
 
 The anti-pattern is the "we'll just rotate the bastion IP" security group. We won't. The credentials for the bastion are in a Slack channel from 2023. The bastion is one of those things that exists because someone set it up before everyone joined and nobody knows whether it's safe to turn off. The lazy answer is to make the bastion irrelevant.
 
@@ -107,7 +107,7 @@ nuclei -t http/default-logins/ -l services.txt -severity critical,high
 
 If it finds something, that's a real incident. If it doesn't, you have evidence, which is the audit-log argument postponed by one section.
 
-One honest aside in parentheses: the rate at which Helm chart maintainers have moved away from default passwords is encouraging. Bitnami's PostgreSQL chart now generates a random password by default instead of `changeme`. The chart that ships with `admin/admin` today is more likely to be a private internal chart someone wrote three years ago than something current from Bitnami. (Note: the official Grafana chart still defaults to `admin/admin` — override it via Helm values before first install; "I'll change it later" is the part nobody does.) Check the internal charts first.
+One honest aside in parentheses: the rate at which Helm chart maintainers have moved away from default passwords is encouraging. Bitnami's PostgreSQL chart now generates a random password by default instead of `changeme`. The chart that ships with `admin/admin` today is more likely to be a private internal chart someone wrote three years ago than something current from Bitnami. (Note: the official Grafana chart still defaults to `admin/admin`: override it via Helm values before first install; "I'll change it later" is the part nobody does.) Check the internal charts first.
 
 ## sigstore, provenance, and reproducible builds
 

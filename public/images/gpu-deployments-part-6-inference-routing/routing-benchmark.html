@@ -1,0 +1,33 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#e6ddcc;display:flex;justify-content:center;padding:48px;font-family:Georgia,'Times New Roman',serif}
+.fig{width:1000px;background:#f4efe6;border:1px solid #cfc4b0;padding:40px 46px 36px}
+.eyebrow{font:600 12px/1 ui-monospace,Menlo,monospace;letter-spacing:.2em;text-transform:uppercase;color:#bf4a2e}
+.title{font-size:31px;color:#22201c;margin:11px 0 5px;letter-spacing:-.01em}
+.sub{font-size:15px;color:#6f6a60;font-style:italic;margin-bottom:24px}
+.head{display:grid;grid-template-columns:1.5fr 1fr 40px 1fr;align-items:baseline;padding:0 4px 8px;border-bottom:1px solid #d9d0c0;font:600 11px/1 ui-monospace,Menlo,monospace;letter-spacing:.1em;text-transform:uppercase;color:#9a9488}
+.head .r{text-align:right}
+.row{display:grid;grid-template-columns:1.5fr 1fr 40px 1fr;align-items:center;border-bottom:1px solid #e2d9c9;min-height:52px}
+.m{font-family:Georgia,serif;font-size:15px;color:#33302a}
+.rr{font-family:ui-monospace,Menlo,monospace;font-size:15px;color:#8a857a;text-align:right}
+.ar{text-align:center;color:#b8ad98;font-size:16px}
+.aw{font-family:ui-monospace,Menlo,monospace;font-size:16px;font-weight:600;color:#bf4a2e;text-align:right}
+.delta{font-size:11px;color:#9a9488;font-style:italic;font-family:Georgia,serif;display:block;margin-top:1px}
+.foot{margin-top:16px;font-size:13px;color:#4a463d;font-style:italic;line-height:1.5}
+.setup{margin-top:6px;font:600 11px/1.4 ui-monospace,Menlo,monospace;color:#9a9488}
+</style></head><body>
+<div class="fig">
+  <div class="eyebrow">Benchmark · Qwen2.5-7B · 8× A10G on EKS</div>
+  <div class="title">Same 8 GPUs, only the router changed</div>
+  <div class="sub">9,000 prompts sharing 150 long prefixes, the shape of real RAG and chat traffic.</div>
+  <div class="head"><span>metric</span><span class="r">round-robin</span><span></span><span class="r">prefix-aware</span></div>
+  <div class="row"><span class="m">output throughput</span><span class="rr">2,742 tok/s</span><span class="ar">→</span><span class="aw">6,423 tok/s<span class="delta">2.34×</span></span></div>
+  <div class="row"><span class="m">wall clock, 9k prompts</span><span class="rr">840 s</span><span class="ar">→</span><span class="aw">359 s<span class="delta">2.34× faster</span></span></div>
+  <div class="row"><span class="m">mean TTFT</span><span class="rr">19.0 s</span><span class="ar">→</span><span class="aw">0.86 s<span class="delta">~22× lower</span></span></div>
+  <div class="row"><span class="m">prefix cache hit rate</span><span class="rr">11%</span><span class="ar">→</span><span class="aw">93%<span class="delta">reuse instead of re-prefill</span></span></div>
+  <div class="row"><span class="m">requests waiting</span><span class="rr">~180</span><span class="ar">→</span><span class="aw">0<span class="delta">queue drained</span></span></div>
+  <div class="row"><span class="m">KV cache utilization</span><span class="rr">~99% (thrash)</span><span class="ar">→</span><span class="aw">64–71%<span class="delta">headroom</span></span></div>
+  <div class="foot">Nothing was added. The router stopped scattering shared prefixes across replicas, so the fleet quit re-computing its own work and the queue simply disappeared.</div>
+  <div class="setup">source: Golubev, llm-d prefix-cache routing on EKS, June 2026</div>
+</div>
+</body></html>

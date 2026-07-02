@@ -1,0 +1,53 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#e6ddcc;display:flex;justify-content:center;padding:48px;font-family:Georgia,'Times New Roman',serif}
+.fig{width:1040px;background:#f4efe6;border:1px solid #cfc4b0;padding:40px 46px 38px}
+.eyebrow{font:600 12px/1 ui-monospace,Menlo,monospace;letter-spacing:.2em;text-transform:uppercase;color:#bf4a2e}
+.title{font-size:31px;color:#22201c;margin:11px 0 5px;letter-spacing:-.01em}
+.sub{font-size:15px;color:#6f6a60;font-style:italic;margin-bottom:30px}
+.legend{display:flex;gap:20px;margin-bottom:16px;font:600 11.5px/1 ui-monospace,Menlo,monospace;color:#6f6a60;flex-wrap:wrap}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.barwrap{margin-bottom:22px}
+.blab{font-family:ui-monospace,Menlo,monospace;font-size:12.5px;font-weight:600;color:#22201c;margin-bottom:7px;display:flex;justify-content:space-between}
+.blab span:last-child{color:#bf4a2e}
+.bar{display:flex;height:46px;border:1px solid #ddd4c4;border-radius:3px;overflow:hidden}
+.seg{display:flex;align-items:center;justify-content:center;font:600 11px/1.2 ui-monospace,Menlo,monospace;color:#3a352c;text-align:center;padding:0 4px}
+.s-node{background:#e2d9c9}
+.s-image{background:#d99b7f;color:#4a2318}
+.s-model{background:#bf4a2e;color:#fbeee7}
+.s-warm{background:#e6c2ae;color:#5a2c1c}
+.scale{display:flex;justify-content:space-between;font:600 10px/1 ui-monospace,Menlo,monospace;color:#b8ad98;margin-top:5px}
+.foot{margin-top:12px;font-size:13px;color:#4a463d;font-style:italic;line-height:1.5}
+</style></head><body>
+<div class="fig">
+  <div class="eyebrow">Cold start · 70B model</div>
+  <div class="title">What the first user waits for</div>
+  <div class="sub">A cold start is four sequential stages, not one. The slowest unfixed stage sets the wait.</div>
+  <div class="legend">
+    <span><i class="s-node"></i>node provisioning</span>
+    <span><i class="s-image"></i>image pull (15–18 GB)</span>
+    <span><i class="s-model"></i>model weight load (~140 GB)</span>
+    <span><i class="s-warm"></i>warmup (graph capture)</span>
+  </div>
+  <div class="barwrap">
+    <div class="blab"><span>naive scale-to-zero</span><span>≈ 6–9 minutes</span></div>
+    <div class="bar">
+      <div class="seg s-node" style="width:22%">node<br>1–5m</div>
+      <div class="seg s-image" style="width:44%">image pull 4–8m</div>
+      <div class="seg s-model" style="width:24%">weight load</div>
+      <div class="seg s-warm" style="width:10%">warm</div>
+    </div>
+  </div>
+  <div class="barwrap">
+    <div class="blab"><span>after the fixes in this post</span><span>≈ under a minute</span></div>
+    <div class="bar" style="width:16%">
+      <div class="seg s-node" style="width:20%"></div>
+      <div class="seg s-image" style="width:30%"></div>
+      <div class="seg s-model" style="width:35%"></div>
+      <div class="seg s-warm" style="width:15%"></div>
+    </div>
+  </div>
+  <div class="scale"><span>0</span><span>lazy image pull + model streaming + warm node pool + snapshots</span></div>
+  <div class="foot">Each stage has its own fix. You have to attack all of them, because whichever one you leave alone becomes the whole wait.</div>
+</div>
+</body></html>

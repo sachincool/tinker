@@ -1,0 +1,49 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#e6ddcc;display:flex;justify-content:center;padding:48px;font-family:Georgia,'Times New Roman',serif}
+.fig{width:1000px;background:#f4efe6;border:1px solid #cfc4b0;padding:40px 46px 38px}
+.eyebrow{font:600 12px/1 ui-monospace,Menlo,monospace;letter-spacing:.2em;text-transform:uppercase;color:#bf4a2e}
+.title{font-size:31px;color:#22201c;margin:11px 0 5px;letter-spacing:-.01em}
+.sub{font-size:15px;color:#6f6a60;font-style:italic;margin-bottom:28px}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.card{border:1px solid #d9d0c0;background:#faf6ee;padding:20px 22px}
+.card.bad{border-color:#e0cabc;background:#f9ece4}
+.state{font-family:ui-monospace,Menlo,monospace;font-size:14px;font-weight:600;letter-spacing:.04em;margin-bottom:2px}
+.good .state{color:#3d6b4f}.bad .state{color:#bf4a2e}
+.gpu{font-size:12px;color:#9a9488;font-style:italic;margin-bottom:16px}
+.row{margin-bottom:13px}
+.rl{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px}
+.rn{font-family:ui-monospace,Menlo,monospace;font-size:11.5px;color:#5a5348}
+.rv{font-family:ui-monospace,Menlo,monospace;font-size:12px;font-weight:600;color:#22201c}
+.track{height:12px;background:#eae1d1;border:1px solid #ddd4c4;border-radius:2px;position:relative;overflow:hidden}
+.fill{height:100%}
+.fg{background:#8aa892}.fr{background:#bf4a2e}.fn{background:#c9bea8}
+.slo{position:absolute;top:-3px;bottom:-3px;width:2px;background:#8a857a}
+.slolab{font-size:10px;color:#8a857a;font-style:italic;text-align:right;margin-top:3px}
+</style></head><body>
+<div class="fig">
+  <div class="eyebrow">The same server, two states</div>
+  <div class="title">Healthy, and drowning</div>
+  <div class="sub">GPU utilization is high in both. Only the queue, the cache, and the preemption counter tell them apart.</div>
+  <div class="cols">
+    <div class="card good">
+      <div class="state">healthy</div>
+      <div class="gpu">GPU-util 92% · looks great on the hardware dashboard</div>
+      <div class="row"><div class="rl"><span class="rn">num_requests_running</span><span class="rv">28 / 32</span></div><div class="track"><div class="fill fn" style="width:88%"></div></div></div>
+      <div class="row"><div class="rl"><span class="rn">num_requests_waiting</span><span class="rv">0</span></div><div class="track"><div class="fill fg" style="width:2%"></div></div></div>
+      <div class="row"><div class="rl"><span class="rn">kv_cache_usage_perc</span><span class="rv">61%</span></div><div class="track"><div class="fill fg" style="width:61%"></div></div></div>
+      <div class="row"><div class="rl"><span class="rn">num_preemptions (rate)</span><span class="rv">0</span></div><div class="track"><div class="fill fg" style="width:1%"></div></div></div>
+      <div class="row"><div class="rl"><span class="rn">p99 TTFT</span><span class="rv">0.7s</span></div><div class="track"><div class="fill fg" style="width:35%"></div><div class="slo" style="left:66%"></div></div><div class="slolab">SLO 2s ▏</div></div>
+    </div>
+    <div class="card bad">
+      <div class="state">drowning</div>
+      <div class="gpu">GPU-util 94% · looks identical on the hardware dashboard</div>
+      <div class="row"><div class="rl"><span class="rn">num_requests_running</span><span class="rv">32 / 32</span></div><div class="track"><div class="fill fn" style="width:100%"></div></div></div>
+      <div class="row"><div class="rl"><span class="rn">num_requests_waiting</span><span class="rv">140 ↑</span></div><div class="track"><div class="fill fr" style="width:92%"></div></div></div>
+      <div class="row"><div class="rl"><span class="rn">kv_cache_usage_perc</span><span class="rv">99%</span></div><div class="track"><div class="fill fr" style="width:99%"></div></div></div>
+      <div class="row"><div class="rl"><span class="rn">num_preemptions (rate)</span><span class="rv">rising ↑</span></div><div class="track"><div class="fill fr" style="width:70%"></div></div></div>
+      <div class="row"><div class="rl"><span class="rn">p99 TTFT</span><span class="rv">8.4s ✕</span></div><div class="track"><div class="fill fr" style="width:100%"></div><div class="slo" style="left:66%"></div></div><div class="slolab">SLO 2s ▏ breached</div></div>
+    </div>
+  </div>
+</div>
+</body></html>

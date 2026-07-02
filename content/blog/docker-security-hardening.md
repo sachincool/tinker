@@ -10,7 +10,7 @@ The audit came back with 47 critical issues, 129 highs, 156 containers running a
 
 ![Side-by-side comparison of a Docker container running as root with permissive defaults versus a hardened container with a non-root user, dropped capabilities, a read-only filesystem, a seccomp profile, and a distroless base image.](/images/docker-security-hardening/hero.png)
 
-*Fig. 1 — same app code, two trust postures; the audit numbers do most of the arguing.*
+*Fig. 1 · same app code, two trust postures; the audit numbers do most of the arguing.*
 
 ## the report
 
@@ -164,7 +164,7 @@ On Swarm or Kubernetes, use the platform's secret store. Anything else is a laye
 
 ## capabilities you didn't ask for
 
-A vanilla container gets fourteen Linux capabilities by default — including `CAP_NET_RAW`, which lets the process craft raw packets. Most apps need `NET_BIND_SERVICE` and nothing else. Drop the lot, add back what you actually use.
+A vanilla container gets fourteen Linux capabilities by default, including `CAP_NET_RAW`, which lets the process craft raw packets. Most apps need `NET_BIND_SERVICE` and nothing else. Drop the lot, add back what you actually use.
 
 ```bash
 # Drop all capabilities, add only what's needed

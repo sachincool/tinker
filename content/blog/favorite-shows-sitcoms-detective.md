@@ -2,7 +2,7 @@
 title: "My watchlist: from 70s basements to Victorian crime scenes"
 date: "2025-01-12"
 tags: ["personal", "entertainment", "tv-shows", "sitcoms", "detective", "anime"]
-excerpt: "What I rewatch when the day's debugging is done — That 70's Show, Arrested Development, HIMYM, and the detective canon from Holmes to Poirot."
+excerpt: "What I rewatch when the day's debugging is done: That 70's Show, Arrested Development, HIMYM, and the detective canon from Holmes to Poirot."
 featured: false
 ---
 
@@ -10,7 +10,7 @@ After a day of debugging, I default to two genres: half-hour sitcoms I've alread
 
 ![A dark living room lit only by the purple ambient glow of a flat-screen TV showing a grid of streaming app tiles.](/images/favorite-shows-sitcoms-detective/hero.jpg)
 
-*Fig. 1 — the home screen, also known as the longest-running decision of the night.*
+*Fig. 1 · the home screen, also known as the longest-running decision of the night.*
 
 ## the sitcoms
 
@@ -24,7 +24,7 @@ Rewards rewatching more than any other comedy I've seen. The narrator's deadpan 
 
 ### How I Met Your Mother
 
-I have opinions about the finale. Everything before it holds up — Barney's suits, the slap bet, Ted's romantic optimism that the show kept earning back for nine seasons.
+I have opinions about the finale. Everything before it holds up: Barney's suits, the slap bet, Ted's romantic optimism that the show kept earning back for nine seasons.
 
 ## the detective shows
 

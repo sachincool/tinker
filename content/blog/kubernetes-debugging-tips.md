@@ -10,11 +10,11 @@ The first time I got paged for a `CrashLoopBackOff` it was 03:47, the pod was on
 
 ![Decision tree mapping five Kubernetes pod symptoms to the kubectl command that diagnoses each, drawn for a 3 a.m. on-call brain.](/images/kubernetes-debugging-tips/hero.png)
 
-*Fig. 1 — the chart I wish someone had taped to the wall before my first on-call shift.*
+*Fig. 1 · the chart I wish someone had taped to the wall before my first on-call shift.*
 
 ## the crashloopbackoff that lies to you
 
-The pod has restarted 14 times. You run `kubectl logs` and you get the logs of the *current* container, which is the one that hasn't crashed yet because it just started. The interesting bytes — the panic, the missing env var, the OOM at byte 1 — are in the previous container's stdout, and they're a single flag away.
+The pod has restarted 14 times. You run `kubectl logs` and you get the logs of the *current* container, which is the one that hasn't crashed yet because it just started. The interesting bytes (the panic, the missing env var, the OOM at byte 1) are in the previous container's stdout, and they're a single flag away.
 
 ```bash
 kubectl logs <pod-name> --previous
@@ -24,13 +24,13 @@ Add `-c <container>` if it's a multi-container pod, because the default containe
 
 ## ephemeral debug containers
 
-There used to be a ritual: edit the Dockerfile, add `curl` and `dig` and `tcpdump`, push, wait for CI, redeploy, exec in, debug, then forget to take any of it back out and ship a 900 MB image to prod. As of 1.25 (beta-default since 1.23) you don't have to. `kubectl debug` attaches an ephemeral container to a running pod with whatever image you want — sharing the network namespace, and the PID namespace when you pass `--target` or the pod has `shareProcessNamespace: true` — without touching the original container.
+There used to be a ritual: edit the Dockerfile, add `curl` and `dig` and `tcpdump`, push, wait for CI, redeploy, exec in, debug, then forget to take any of it back out and ship a 900 MB image to prod. As of 1.25 (beta-default since 1.23) you don't have to. `kubectl debug` attaches an ephemeral container to a running pod with whatever image you want (sharing the network namespace, and the PID namespace when you pass `--target` or the pod has `shareProcessNamespace: true`) without touching the original container.
 
 ```bash
 kubectl debug -it <pod-name> --image=nicolaka/netshoot
 ```
 
-`netshoot` is the standard kit — `dig`, `curl`, `tcpdump`, `iperf`, `mtr`, the works. The container vanishes when you detach. Your prod image stays the size it was supposed to be.
+`netshoot` is the standard kit: `dig`, `curl`, `tcpdump`, `iperf`, `mtr`, the works. The container vanishes when you detach. Your prod image stays the size it was supposed to be.
 
 ## ask the scheduler, don't guess
 
@@ -64,7 +64,7 @@ Swap `memory` for `cpu` depending on what's burning. Requires `metrics-server` t
 
 ## the one I forget I have
 
-`describe` is so obvious nobody writes about it, and so dense that nobody reads its full output. It includes the events, the resource limits, the volume mounts, the readiness probe definition, the last termination reason, and the QoS class — all the things you were about to run five separate commands to find.
+`describe` is so obvious nobody writes about it, and so dense that nobody reads its full output. It includes the events, the resource limits, the volume mounts, the readiness probe definition, the last termination reason, and the QoS class: all the things you were about to run five separate commands to find.
 
 ```bash
 kubectl describe pod <pod-name> | less

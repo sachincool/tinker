@@ -1,0 +1,51 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#e6ddcc;display:flex;justify-content:center;padding:48px;font-family:Georgia,'Times New Roman',serif}
+.fig{width:1060px;background:#f4efe6;border:1px solid #cfc4b0;padding:40px 46px 34px}
+.eyebrow{font:600 12px/1 ui-monospace,Menlo,monospace;letter-spacing:.2em;text-transform:uppercase;color:#bf4a2e}
+.title{font-size:31px;color:#22201c;margin:11px 0 5px;letter-spacing:-.01em}
+.sub{font-size:15px;color:#6f6a60;font-style:italic;margin-bottom:18px}
+svg{display:block;width:100%}
+text{font-family:ui-monospace,Menlo,monospace}
+.cap{margin-top:8px;font-size:13px;color:#4a463d;font-style:italic;text-align:center}
+</style></head><body>
+<div class="fig">
+  <div class="eyebrow">Pod shutdown · in order</div>
+  <div class="title">What happens when a vLLM pod is deleted</div>
+  <div class="sub">The whole job of preStop is to make traffic stop before the process does.</div>
+  <svg viewBox="0 0 1000 300">
+    <!-- t=0 node -->
+    <rect x="30" y="118" width="120" height="56" rx="6" fill="#f9ece4" stroke="#bf4a2e" stroke-width="1.5"/>
+    <text x="90" y="142" text-anchor="middle" font-size="12" font-weight="600" fill="#8a4a34">t = 0</text>
+    <text x="90" y="160" text-anchor="middle" font-size="11" fill="#8a4a34">Terminating</text>
+    <!-- fork lines -->
+    <line x1="150" y1="146" x2="215" y2="80" stroke="#b8ad98" stroke-width="1.5"/>
+    <line x1="150" y1="146" x2="215" y2="212" stroke="#b8ad98" stroke-width="1.5"/>
+    <!-- top lane: endpoint removal -->
+    <rect x="215" y="56" width="330" height="48" rx="6" fill="#faf6ee" stroke="#c3b8a4" stroke-width="1.3"/>
+    <text x="380" y="76" text-anchor="middle" font-size="11.5" font-weight="600" fill="#33302a">removed from EndpointSlice</text>
+    <text x="380" y="93" text-anchor="middle" font-size="11" fill="#6f6a60">load balancer stops routing new requests</text>
+    <!-- bottom lane: preStop -->
+    <rect x="215" y="188" width="330" height="48" rx="6" fill="#faf6ee" stroke="#c3b8a4" stroke-width="1.3"/>
+    <text x="380" y="208" text-anchor="middle" font-size="11.5" font-weight="600" fill="#33302a">preStop hook runs</text>
+    <text x="380" y="225" text-anchor="middle" font-size="11" fill="#6f6a60">sleep 15s (in parallel)</text>
+    <text x="380" y="130" text-anchor="middle" font-size="11" fill="#9a9488" font-style="italic">(these two happen at the same time)</text>
+    <!-- converge lines -->
+    <line x1="545" y1="80" x2="610" y2="146" stroke="#b8ad98" stroke-width="1.5"/>
+    <line x1="545" y1="212" x2="610" y2="146" stroke="#b8ad98" stroke-width="1.5"/>
+    <!-- SIGTERM node -->
+    <rect x="610" y="112" width="180" height="68" rx="6" fill="#fffdf8" stroke="#c3b8a4" stroke-width="1.5"/>
+    <text x="700" y="136" text-anchor="middle" font-size="12" font-weight="600" fill="#22201c">t = 15s · SIGTERM</text>
+    <text x="700" y="154" text-anchor="middle" font-size="10.5" fill="#6f6a60">vLLM stops new admissions,</text>
+    <text x="700" y="169" text-anchor="middle" font-size="10.5" fill="#6f6a60">finishes in-flight requests</text>
+    <!-- drain arrow -->
+    <line x1="790" y1="146" x2="855" y2="146" stroke="#b8ad98" stroke-width="1.5"/><polygon points="855,146 847,142 847,150" fill="#b8ad98"/>
+    <text x="822" y="136" text-anchor="middle" font-size="10" fill="#6f6a60" font-style="italic">drains</text>
+    <!-- SIGKILL backstop -->
+    <rect x="858" y="118" width="112" height="56" rx="6" fill="#f6e4dc" stroke="#c96f4f" stroke-width="1.3" stroke-dasharray="4 3"/>
+    <text x="914" y="140" text-anchor="middle" font-size="11" font-weight="600" fill="#a5341c">t = 210s</text>
+    <text x="914" y="157" text-anchor="middle" font-size="10" fill="#a5341c">SIGKILL backstop</text>
+  </svg>
+  <div class="cap">terminationGracePeriodSeconds sits above the longest in-flight generation, so SIGKILL is the backstop, not the norm.</div>
+</div>
+</body></html>

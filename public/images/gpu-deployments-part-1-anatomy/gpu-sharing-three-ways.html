@@ -1,0 +1,60 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#e6ddcc;display:flex;justify-content:center;padding:48px;font-family:Georgia,'Times New Roman',serif}
+.fig{width:1120px;background:#f4efe6;border:1px solid #cfc4b0;padding:40px 46px 40px}
+.eyebrow{font:600 12px/1 ui-monospace,Menlo,monospace;letter-spacing:.2em;text-transform:uppercase;color:#bf4a2e}
+.title{font-size:31px;color:#22201c;margin:11px 0 5px;letter-spacing:-.01em}
+.sub{font-size:15px;color:#6f6a60;font-style:italic;margin-bottom:30px}
+.cols{display:grid;grid-template-columns:1fr 1fr 1fr;gap:26px}
+.card{border:1px solid #d9d0c0;background:#faf6ee;padding:22px 22px 20px}
+.cname{font-family:ui-monospace,Menlo,monospace;font-size:15px;font-weight:600;color:#22201c}
+.ctag{font:600 11px/1 ui-monospace,Menlo,monospace;letter-spacing:.12em;text-transform:uppercase;color:#9a9488;margin-top:4px;margin-bottom:16px}
+.gpu{border:1.5px solid #c3b8a4;border-radius:7px;height:150px;padding:9px;display:flex;flex-wrap:wrap;gap:6px;align-content:flex-start;position:relative;background:#fffdf8}
+.mig .cell{flex:0 0 calc(50% - 3px);height:27px;border:1.5px solid #bf4a2e;background:#f7ddcf;border-radius:3px;display:flex;align-items:center;justify-content:center;font:600 10px/1 ui-monospace,Menlo,monospace;color:#8a4a34}
+.mig .cell.full{flex:0 0 100%}
+.proc{position:absolute;border-radius:5px;font:600 10px/1 ui-monospace,Menlo,monospace;display:flex;align-items:center;justify-content:center;color:#4a463d;background:rgba(150,140,120,.22);border:1px dashed #b0a690}
+.ts-pod{border:1px solid #c3b8a4;background:#efe7d7;border-radius:4px;padding:7px 0;text-align:center;font:600 11px/1 ui-monospace,Menlo,monospace;color:#8a857a;margin-bottom:6px}
+.ts-pod.active{background:#f7ddcf;border-color:#bf4a2e;color:#8a4a34}
+.iso{margin-top:16px;font-size:13px;color:#4a463d;line-height:1.5}
+.iso b{font-family:ui-monospace,Menlo,monospace;font-weight:600;font-size:12px}
+.use{margin-top:12px;font-size:12.5px;color:#6f6a60;font-style:italic;border-top:1px solid #e2d9c9;padding-top:10px}
+</style></head><body>
+<div class="fig">
+  <div class="eyebrow">Fractional GPU</div>
+  <div class="title">One GPU, shared three ways</div>
+  <div class="sub">Isolation drops left to right; scheduling convenience rises. Pick by how much you trust the tenants.</div>
+  <div class="cols">
+    <div class="card">
+      <div class="cname">MIG</div><div class="ctag">hardware partitions</div>
+      <div class="gpu mig">
+        <div class="cell">1g.10gb</div><div class="cell">1g.10gb</div>
+        <div class="cell">1g.10gb</div><div class="cell">1g.10gb</div>
+        <div class="cell">1g.10gb</div><div class="cell">1g.10gb</div>
+        <div class="cell full">1g.10gb</div>
+      </div>
+      <div class="iso">Each slice has its own SMs, HBM, L2. A fault in one <b>can't</b> touch the others.</div>
+      <div class="use">multi-tenant, untrusted, prod serving</div>
+    </div>
+    <div class="card">
+      <div class="cname">MPS</div><div class="ctag">shared context</div>
+      <div class="gpu">
+        <div class="proc" style="left:12px;top:16px;width:130px;height:52px">proc A</div>
+        <div class="proc" style="left:70px;top:52px;width:130px;height:52px">proc B</div>
+        <div class="proc" style="left:130px;top:26px;width:120px;height:52px">proc C</div>
+      </div>
+      <div class="iso">Kernels run <b>concurrently</b> in one context. Soft caps only. One OOM can kill the neighbors.</div>
+      <div class="use">trusted high-throughput inference</div>
+    </div>
+    <div class="card">
+      <div class="cname">time-slicing</div><div class="ctag">round-robin</div>
+      <div class="gpu" style="display:block;padding:12px">
+        <div class="ts-pod active">pod 1 · running now</div>
+        <div class="ts-pod">pod 2 · waiting</div>
+        <div class="ts-pod">pod 3 · waiting</div>
+      </div>
+      <div class="iso">Pods take turns on the <b>whole</b> card. No memory split, no fault isolation at all.</div>
+      <div class="use">dev, notebooks, CI</div>
+    </div>
+  </div>
+</div>
+</body></html>

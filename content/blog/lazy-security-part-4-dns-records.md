@@ -10,7 +10,7 @@ seriesPart: 4
 
 In February 2024, Guardio Labs published a writeup of a campaign called SubdoMailing. Five million phishing emails a day, sent through subdomains owned by MSN, eBay, VMware, NYC.gov, UNICEF, and McAfee. Every single email passed SPF and DKIM. Every one of them passed DMARC.
 
-The attack didn't break those protocols. It used them. Each victim domain had an `include:` line in its SPF record pointing at a contractor's domain that had been allowed to expire. The attackers re-registered the orphan, inherited the trust, started sending. Some of the broken `include:` chains had been broken for over a year — Guardio dated the operation back to at least late 2022. Nobody had thought to read their own SPF record again after writing it.
+The attack didn't break those protocols. It used them. Each victim domain had an `include:` line in its SPF record pointing at a contractor's domain that had been allowed to expire. The attackers re-registered the orphan, inherited the trust, started sending. Some of the broken `include:` chains had been broken for over a year. Guardio dated the operation back to at least late 2022. Nobody had thought to read their own SPF record again after writing it.
 
 This is part 4. Earlier parts covered npm ([Part 1](/blog/lazy-security-part-1-supply-chain)), GitHub Actions ([Part 2](/blog/lazy-security-part-2-github-actions)), and identity, network, and audit logs ([Part 3](/blog/lazy-security-part-3-unsexy-list)). Part 4 is four DNS records and two monitors. One afternoon to write them, three weeks for DMARC to ramp safely. Zero ongoing cost. Closes the entire phishing-impersonation class and the entire rogue-certificate class at the same time.
 
@@ -32,7 +32,7 @@ That last token matters. `-all` (hard-fail) tells receivers to reject anything n
 
 ![A horizontal editorial timeline of the SubdoMailing campaign on a deep navy ground. Six stages along a single line, from a contractor's SPF include published in 2021 through the contractor domain expiring in 2023, an attacker re-registering it in late 2023, the attacker publishing their own SPF record under the orphan, 5 million phishing emails a day passing SPF and DMARC in February 2024, and Guardio Labs' disclosure of 8000 affected subdomains. Attacker-controlled stages in coral, victim stages in cyan, ghosted 'ORPHAN' and 'INHERITED TRUST' phase labels strung across the background.](/images/lazy-security-part-4-dns-records/subdomailing-timeline.png)
 
-*Fig. 1 — three years from include line to five million phishing emails a day. The SPF record never changed.*
+*Fig. 1 · three years from include line to five million phishing emails a day. The SPF record never changed.*
 
 The SPF spec has a ten-DNS-lookup limit. Every `include:` counts, recursively. If you chain five SaaS senders (Google + Mailgun + Postmark + SendGrid + Stripe), each one's `include:` expands into its own record, which may include another, and you can blow the limit without realizing. When you blow the limit, the record evaluates as `permerror`, and many receivers treat that as "no SPF," which means anyone can spoof you. Tools like `dmarcian.com/spf-survey` count the lookups for free. Audit yours.
 
@@ -72,9 +72,9 @@ The fields that matter:
 
 The ramp from `p=none` to `p=reject` is what takes three weeks. The risk is breaking a legitimate sender path you didn't know existed. Week one, publish `p=none; pct=100`. Receive DMARC aggregate reports for seven days. Identify every IP and `From:` domain that sent on your behalf. There will be three or four you didn't expect: a newsletter platform finance signed up for, an HR tool, a calendar invite system. Onboard each into SPF and DKIM. Week two, move to `p=quarantine; pct=25`, watch reports for new failures. Week three, `p=reject; pct=100`. Done.
 
-![An animated horizontal bar chart in a dark editorial palette showing FBI IC3 business email compromise losses in the United States by year, from 2020 ($1.8B) through 2024 ($2.77B). Bars fill in sequence. The 2024 bar is accented with a brighter cyan and a coral tip. A bottom strip notes that the average loss per incident in 2024 was $129K and that the dataset is U.S.-only — global BEC losses are higher.](/images/lazy-security-part-4-dns-records/bec-losses.gif)
+![An animated horizontal bar chart in a dark editorial palette showing FBI IC3 business email compromise losses in the United States by year, from 2020 ($1.8B) through 2024 ($2.77B). Bars fill in sequence. The 2024 bar is accented with a brighter cyan and a coral tip. A bottom strip notes that the average loss per incident in 2024 was $129K and that the dataset is U.S.-only, and that global BEC losses are higher.](/images/lazy-security-part-4-dns-records/bec-losses.gif)
 
-*Fig. 2 — BEC losses by year, U.S. only. The 2024 number exceeded ransomware.*
+*Fig. 2 · BEC losses by year, U.S. only. The 2024 number exceeded ransomware.*
 
 Most small teams stop at `p=quarantine` and never finish the ramp. The difference between `quarantine` and `reject` is whether the attacker's spoofed wire-transfer email lands in the CFO's spam folder or never enters the mail system at all. Spam is where employees go to recover legitimate mail that was filtered too aggressively, which means they go there to fish out emails they want to trust. Reject is the answer.
 
@@ -108,7 +108,7 @@ First, certificate transparency log monitoring. Every publicly trusted CA is req
 
 ![A hand-drawn napkin showing the four DNS records as a cheat sheet, written in marker, ready to copy into a DNS panel. Top of the napkin reads 'the four-record afternoon'. Four labeled blocks underneath: SPF as a TXT record with `-all` circled in red, DKIM as a TXT record with the selector subdomain highlighted, DMARC with `p=reject` and `sp=reject` both underlined twice, CAA with the issuer name circled. Bottom of the napkin has two boxes labeled 'CT log monitor' and 'DMARC report inbox', with arrows pointing to a small Slack icon and a small email icon. A red callout at the bottom reads 'fifteen minutes a week'.](/images/lazy-security-part-4-dns-records/dns-records-napkin.png)
 
-*Fig. 3 — the whole afternoon, sketched. Plus what runs after.*
+*Fig. 3 · the whole afternoon, sketched. Plus what runs after.*
 
 Second, DMARC aggregate report parsing. The `rua=` address in your DMARC record receives daily XML reports from every receiver. Reading the XML raw is unpleasant. The free tiers of Postmark, dmarcian, and EasyDMARC all accept the report stream and render it as "here are the IPs that sent as you this week, here are the ones that failed alignment, here are the new ones since last week." The new-sender alerts are where you find out that someone in marketing has connected a SaaS tool that's now sending emails as you, failing alignment, and getting your domain reputation downgraded.
 
@@ -118,7 +118,7 @@ A weekly fifteen-minute review of both monitors is what good looks like at a 25-
 
 Four DNS records. Two monitors. One afternoon for the records, three weeks for the DMARC ramp, fifteen minutes a week for the reviews. Cost: zero, unless you upgrade past the free tier of a DMARC parser at $15–$50 a month, which is the only thing on the list that's not free.
 
-What this catches: every attempt to send email impersonating your domain from outside your authorized sender list, every attempt to issue a TLS cert for your domain from an unauthorized CA. The FBI's 2024 IC3 report attributed $2.77B in U.S. business email compromise losses to roughly 21,000 incidents — a $129K average. The fraction of those that would have been caught by a domain publishing `p=reject; sp=reject` with an honest SPF audit is enormous.
+What this catches: every attempt to send email impersonating your domain from outside your authorized sender list, every attempt to issue a TLS cert for your domain from an unauthorized CA. The FBI's 2024 IC3 report attributed $2.77B in U.S. business email compromise losses to roughly 21,000 incidents, a $129K average. The fraction of those that would have been caught by a domain publishing `p=reject; sp=reject` with an honest SPF audit is enormous.
 
 What it doesn't catch: phishing from a lookalike domain (`yourorg-corp.com`, `yourorg-support.com`, `yourorg.co`). Lookalike-domain defense needs a paid monitoring service at the tier that matters, and there's no free version that works at small-team scale. Skip it until you have a budget line for security. Note it in the runbook.
 

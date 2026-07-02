@@ -330,7 +330,7 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
               <SeriesNav
                 series={post.series}
                 currentPart={post.seriesPart}
-                totalParts={6}
+                totalParts={seriesNavData.length}
                 parts={seriesNavData}
               />
             )}

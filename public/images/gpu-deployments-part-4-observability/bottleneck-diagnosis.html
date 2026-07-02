@@ -1,0 +1,48 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#e6ddcc;display:flex;justify-content:center;padding:48px;font-family:Georgia,'Times New Roman',serif}
+.fig{width:1060px;background:#f4efe6;border:1px solid #cfc4b0;padding:40px 46px 40px}
+.eyebrow{font:600 12px/1 ui-monospace,Menlo,monospace;letter-spacing:.2em;text-transform:uppercase;color:#bf4a2e}
+.title{font-size:31px;color:#22201c;margin:11px 0 5px;letter-spacing:-.01em}
+.sub{font-size:15px;color:#6f6a60;font-style:italic;margin-bottom:22px}
+.top{border:1.5px solid #c3b8a4;background:#fffdf8;padding:13px 18px;text-align:center;max-width:620px;margin:0 auto 6px}
+.top .q{font-family:ui-monospace,Menlo,monospace;font-size:14px;font-weight:600;color:#22201c}
+.top .c{font-size:12.5px;color:#6f6a60;margin-top:3px;font-style:italic}
+.arrow{text-align:center;color:#b8ad98;font-size:20px;line-height:1;margin:2px 0 14px}
+.cols{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px}
+.card{border:1px solid #d9d0c0;background:#faf6ee;padding:18px 18px 16px}
+.cn{font-family:ui-monospace,Menlo,monospace;font-size:13.5px;font-weight:600;color:#22201c;margin-bottom:12px}
+.sig{font-size:12.5px;color:#33302a;line-height:1.4;padding:7px 0;border-top:1px solid #e2d9c9}
+.sig:first-of-type{border-top:none}
+.sig b{font-family:ui-monospace,Menlo,monospace;font-weight:600;font-size:11.5px;color:#5a5348}
+.act{margin-top:12px;padding-top:11px;border-top:1px solid #e0cabc;font-size:13px;color:#8a4a34}
+.act b{font-style:normal;font-weight:600}
+</style></head><body>
+<div class="fig">
+  <div class="eyebrow">Diagnosis · serving metric + GPU metric</div>
+  <div class="title">Why is the server slow?</div>
+  <div class="sub">The serving metric says something is wrong. The GPU metric next to it says which kind of wrong.</div>
+  <div class="top"><div class="q">read the queue, the KV cache, and the DCGM pipes together</div><div class="c">one panel alone lies; the pair localizes the bottleneck</div></div>
+  <div class="arrow">▽</div>
+  <div class="cols">
+    <div class="card">
+      <div class="cn">queue-bound</div>
+      <div class="sig"><b>serving:</b> num_requests_waiting high, TTFT high</div>
+      <div class="sig"><b>GPU:</b> SM_ACTIVE / GPU-util actually low</div>
+      <div class="act"><b>→</b> not a GPU problem. Add replicas (part 5). Don't buy a bigger card.</div>
+    </div>
+    <div class="card">
+      <div class="cn">memory-bound · decode</div>
+      <div class="sig"><b>serving:</b> ITL degrading under load</div>
+      <div class="sig"><b>GPU:</b> DRAM_ACTIVE pinned, TENSOR_ACTIVE low</div>
+      <div class="act"><b>→</b> smaller batch, quantize, watch for preemption thrash.</div>
+    </div>
+    <div class="card">
+      <div class="cn">compute-bound · prefill</div>
+      <div class="sig"><b>serving:</b> TTFT high on long prompts</div>
+      <div class="sig"><b>GPU:</b> TENSOR_ACTIVE saturated, DRAM lower</div>
+      <div class="act"><b>→</b> chunked prefill, cap prompt length, or disaggregate prefill.</div>
+    </div>
+  </div>
+</div>
+</body></html>

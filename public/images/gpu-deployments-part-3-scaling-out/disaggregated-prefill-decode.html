@@ -1,0 +1,49 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#e6ddcc;display:flex;justify-content:center;padding:48px;font-family:Georgia,'Times New Roman',serif}
+.fig{width:1040px;background:#f4efe6;border:1px solid #cfc4b0;padding:40px 46px 40px}
+.eyebrow{font:600 12px/1 ui-monospace,Menlo,monospace;letter-spacing:.2em;text-transform:uppercase;color:#bf4a2e}
+.title{font-size:31px;color:#22201c;margin:11px 0 5px;letter-spacing:-.01em}
+.sub{font-size:15px;color:#6f6a60;font-style:italic;margin-bottom:30px}
+.flow{display:flex;align-items:center;gap:0}
+.stage{border:1.5px solid #c3b8a4;border-radius:8px;background:#faf6ee;padding:18px 18px 16px;text-align:center}
+.prefill{flex:0 0 300px}
+.decode{flex:1}
+.sname{font-family:ui-monospace,Menlo,monospace;font-size:15px;font-weight:600;color:#22201c}
+.sbound{font-size:12.5px;font-style:italic;color:#bf4a2e;margin:3px 0 12px}
+.grid{display:grid;gap:4px;justify-content:center}
+.pg{grid-template-columns:repeat(6,14px)}
+.dg{grid-template-columns:repeat(16,14px)}
+.g{width:14px;height:14px;border-radius:2px;background:#e0b6a2}
+.count{font:600 11px/1 ui-monospace,Menlo,monospace;color:#6f6a60;margin-top:11px}
+.io{flex:0 0 62px;text-align:center;font:600 10px/1.3 ui-monospace,Menlo,monospace;color:#9a9488}
+.io .ar{display:block;font-size:22px;color:#b8ad98;margin-bottom:2px}
+.rdma{flex:0 0 128px;text-align:center;color:#8a4a34;font:600 11px/1.3 ui-monospace,Menlo,monospace}
+.rdma .ar{display:block;font-size:24px;color:#bf4a2e;margin-bottom:3px}
+.foot{margin-top:24px;border-top:1px solid #d9d0c0;padding-top:14px;font-size:14px;color:#4a463d;font-style:italic;line-height:1.55}
+.foot b{font-style:normal;font-family:ui-monospace,Menlo,monospace;font-weight:600;color:#bf4a2e}
+</style></head><body>
+<div class="fig">
+  <div class="eyebrow">Multi-node inference</div>
+  <div class="title">Disaggregated prefill and decode</div>
+  <div class="sub">Prefill and decode want different hardware ratios, so modern stacks run them as separate pools.</div>
+  <div class="flow">
+    <div class="io"><span class="ar">→</span>prompt in</div>
+    <div class="stage prefill">
+      <div class="sname">prefill pool</div>
+      <div class="sbound">compute-bound · process the whole prompt</div>
+      <div class="grid pg"><div class="g"></div><div class="g"></div><div class="g"></div><div class="g"></div><div class="g"></div><div class="g"></div><div class="g"></div><div class="g"></div><div class="g"></div><div class="g"></div><div class="g"></div><div class="g"></div></div>
+      <div class="count">~32 GPUs · 4 nodes</div>
+    </div>
+    <div class="rdma"><span class="ar">⇒</span>KV cache<br>over RDMA</div>
+    <div class="stage decode">
+      <div class="sname">decode pool</div>
+      <div class="sbound">memory-bandwidth-bound · one token at a time</div>
+      <div class="grid dg"><div class="g"></div><div class="g"></div><div class="g"></div><div class="g"></div><div class="g"></div><div class="g"></div><div class="g"></div><div class="g"></div><div class="g"></div><div class="g"></div><div class="g"></div><div class="g"></div><div class="g"></div><div class="g"></div><div class="g"></div><div class="g"></div><div class="g"></div><div class="g"></div><div class="g"></div><div class="g"></div><div class="g"></div><div class="g"></div><div class="g"></div><div class="g"></div><div class="g"></div><div class="g"></div><div class="g"></div><div class="g"></div><div class="g"></div><div class="g"></div><div class="g"></div><div class="g"></div></div>
+      <div class="count">~320 GPUs · 40 nodes · wide expert parallel</div>
+    </div>
+    <div class="io"><span class="ar">→</span>tokens out</div>
+  </div>
+  <div class="foot">Scale each pool for its own bottleneck; <b>prefill no longer stalls decode</b>. DeepSeek-V3 runs exactly this split in production: a 32-GPU prefill unit feeding a 320-GPU decode pool.</div>
+</div>
+</body></html>

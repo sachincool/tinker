@@ -1,0 +1,52 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#e6ddcc;display:flex;justify-content:center;padding:48px;font-family:Georgia,'Times New Roman',serif}
+.fig{width:1080px;background:#f4efe6;border:1px solid #cfc4b0;padding:40px 46px 42px}
+.eyebrow{font:600 12px/1 ui-monospace,Menlo,monospace;letter-spacing:.2em;text-transform:uppercase;color:#bf4a2e}
+.title{font-size:31px;color:#22201c;margin:11px 0 5px;letter-spacing:-.01em}
+.sub{font-size:15px;color:#6f6a60;font-style:italic;margin-bottom:26px}
+.top{border:1.5px solid #c3b8a4;background:#fffdf8;padding:14px 18px;text-align:center;max-width:560px;margin:0 auto 6px}
+.top .q{font-family:ui-monospace,Menlo,monospace;font-size:14px;color:#22201c;font-weight:600}
+.top .c{font-size:13px;color:#6f6a60;margin-top:3px}
+.arrow{text-align:center;color:#b8ad98;font-size:20px;line-height:1;margin:2px 0 12px}
+.split{font:600 11px/1 ui-monospace,Menlo,monospace;letter-spacing:.14em;text-transform:uppercase;text-align:center;color:#9a9488;margin-bottom:14px}
+.lanes{display:grid;grid-template-columns:1fr 1fr;gap:26px}
+.lane{border:1px solid #d9d0c0;background:#faf6ee;padding:18px 20px}
+.lane.hw{border-color:#e0cabc;background:#f9ece4}
+.lhead{font-family:ui-monospace,Menlo,monospace;font-size:13px;font-weight:600;letter-spacing:.04em;margin-bottom:2px}
+.lane.app .lhead{color:#5a5348}
+.lane.hw .lhead{color:#bf4a2e}
+.laction{font-size:13px;font-style:italic;color:#6f6a60;margin-bottom:14px}
+.item{display:flex;gap:12px;align-items:baseline;padding:8px 0;border-top:1px solid #e2d9c9}
+.item:first-of-type{border-top:none}
+.code{flex:0 0 78px;font:600 12px/1 ui-monospace,Menlo,monospace;color:#8a4a34}
+.lane.app .code{color:#7a746a}
+.desc{font-size:13px;color:#33302a;line-height:1.4}
+.desc b{font-weight:600}
+</style></head><body>
+<div class="fig">
+  <div class="eyebrow">On-call triage</div>
+  <div class="title">A GPU is misbehaving · what the Xid tells you</div>
+  <div class="sub">The split that matters: app fault restarts a pod, hardware fault cordons a node.</div>
+  <div class="top"><div class="q">grep dmesg → NVRM: Xid (PCI:0000:xx:00): &lt;code&gt;</div><div class="c">a nonzero Xid is never nothing; the code decides the next move</div></div>
+  <div class="arrow">▽</div>
+  <div class="lanes">
+    <div class="lane app">
+      <div class="lhead">app fault</div>
+      <div class="laction">restart the workload, look at the model, not the card</div>
+      <div class="item"><span class="code">Xid 13</span><span class="desc">graphics engine exception · usually illegal memory access</span></div>
+      <div class="item"><span class="code">Xid 31</span><span class="desc">MMU / page fault from application code</span></div>
+      <div class="item"><span class="code">Xid 43</span><span class="desc">GPU stopped processing, app-induced</span></div>
+    </div>
+    <div class="lane hw">
+      <div class="lhead">hardware fault</div>
+      <div class="laction">cordon the node, reset or RMA the card</div>
+      <div class="item"><span class="code">Xid 48 / 94</span><span class="desc"><b>contained</b> ECC · drain politely, reset the GPU</span></div>
+      <div class="item"><span class="code">Xid 95</span><span class="desc"><b>uncontained</b> ECC · reset before anything restarts</span></div>
+      <div class="item"><span class="code">Xid 63 / 64</span><span class="desc">row remapping · watch the trend, RMA if it fails</span></div>
+      <div class="item"><span class="code">Xid 79</span><span class="desc">fell off the bus · reboot node, RMA if it recurs</span></div>
+      <div class="item"><span class="code">Xid 119/120</span><span class="desc">GSP firmware hung · reset the GPU</span></div>
+    </div>
+  </div>
+</div>
+</body></html>

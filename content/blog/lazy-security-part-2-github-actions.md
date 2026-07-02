@@ -8,9 +8,9 @@ series: "Lazy Security"
 seriesPart: 2
 ---
 
-Last March, someone with write access to the `trivy-action` repo rewrote 76 of its 77 version tags in place. The tags still resolved to `aquasecurity/trivy-action` — they just resolved to different commits than they did the week before. Every pipeline that ran `aquasecurity/trivy-action@0.20.0` (and every other tagged version) ran the attacker's commit instead. Secrets exfiltrated. The stolen credentials chained into PyPI and took down LiteLLM. Nobody noticed for hours, because the workflow file diff was still clean.
+Last March, someone with write access to the `trivy-action` repo rewrote 76 of its 77 version tags in place. The tags still resolved to `aquasecurity/trivy-action`. They just resolved to different commits than they did the week before. Every pipeline that ran `aquasecurity/trivy-action@0.20.0` (and every other tagged version) ran the attacker's commit instead. Secrets exfiltrated. The stolen credentials chained into PyPI and took down LiteLLM. Nobody noticed for hours, because the workflow file diff was still clean.
 
-This is part 2. [Part 1](/blog/lazy-security-part-1-supply-chain) covered npm: the dependencies you didn't read. Part 2 is the same problem one level up: the workflows you didn't pin. Part 3 is the unsexy list — Tailscale, PrivateLink, IAP, the PAT you forgot.
+This is part 2. [Part 1](/blog/lazy-security-part-1-supply-chain) covered npm: the dependencies you didn't read. Part 2 is the same problem one level up: the workflows you didn't pin. Part 3 is the unsexy list: Tailscale, PrivateLink, IAP, the PAT you forgot.
 
 The thesis from Part 1 stands. The best security work for a small team is the work *Future You at 3am* will actually execute. The configuration that makes the wrong thing impossible beats the runbook that only discourages it. With GitHub Actions, "the wrong thing" has gotten very specific over the last twelve months, and the configs to block each variety have gotten correspondingly precise.
 
@@ -26,7 +26,7 @@ Full forty-character SHA. Immutable. The version comment is so the next reader k
 
 ![A horizontal editorial timeline of the trivy-action force-push attack of March 2026 on a deep navy ground. Six stages along a single line, from a maintainer credential phish at T-30d through 76 of 77 tags force-pushed at T-0, first CI pipelines picking up the rewritten tag at T+1h, secrets exfiltrated minutes later, a trojanized LiteLLM published to PyPI at T+6h, and detection at T+9d. Attacker-controlled stages are coral, victim stages cyan, with ghosted 'FORCE-PUSH' and 'VICTIM' phase labels strung across the background.](/images/lazy-security-part-2-github-actions/trivy-action-timeline.png)
 
-*Fig. 1 — nine days from force-push to advisory. The workflow files never changed.*
+*Fig. 1 · nine days from force-push to advisory. The workflow files never changed.*
 
 Two GitHub features shipped in 2025 that change the math:
 
@@ -63,9 +63,9 @@ That's it. Same trick, different ecosystem.
 
 ![An animated horizontal bar chart in a dark editorial palette showing the share of recent supply-chain action compromises caught by a cooldown of 0, 3, 7, 14, or 21 days. The 0-day bar lands at 3% and the 3-day bar at 38%. The 7-day bar reaches 76% and the 14-day bar reaches 89%, both accented with a brighter cyan and a coral tip. The 21-day bar lands at 94%. A bottom strip notes that the trivy-action force-push was detected at about nine days.](/images/lazy-security-part-2-github-actions/cooldown-window.gif)
 
-*Fig. 2 — the wait is doing the work. Seven days closes most of the door; fourteen closes most of the rest.*
+*Fig. 2 · the wait is doing the work. Seven days closes most of the door; fourteen closes most of the rest.*
 
-The empirical question is whether seven days is enough. The trivy-action force-push was detected at about nine — seven would have caught most consumers, not all of them. The cost of fourteen is "your action versions lag upstream by two weeks." If your action surface is small (most teams are running `actions/checkout`, `actions/setup-node`, one cloud-login action, maybe a deploy action), set fourteen and forget.
+The empirical question is whether seven days is enough. The trivy-action force-push was detected at about nine. Seven would have caught most consumers, not all of them. The cost of fourteen is "your action versions lag upstream by two weeks." If your action surface is small (most teams are running `actions/checkout`, `actions/setup-node`, one cloud-login action, maybe a deploy action), set fourteen and forget.
 
 ## pull_request_target is the new postinstall
 
@@ -77,7 +77,7 @@ Astral, who maintain `uv` and `ruff`, [wrote it cleanly](https://astral.sh/blog/
 
 ![A hand-drawn two-panel napkin. Left panel labeled 'pull_request_target' shows a fork PR boundary as a dashed line, a modified script.sh inside the fork, and a runner on the base side reaching across the boundary while holding a red keyring labeled NPM_TOKEN, AWS_KEY, GH_PAT. Right panel labeled 'pull_request' shows the same setup, but the keyring is replaced by a greyed-out 'secrets.* not in scope' bag. The two panels are structurally identical except for the presence or absence of secrets in the runner.](/images/lazy-security-part-2-github-actions/pull-request-target-contrast.png)
 
-*Fig. 3 — same workflow, different trigger, opposite blast radius.*
+*Fig. 3 · same workflow, different trigger, opposite blast radius.*
 
 The lazy stance:
 
@@ -118,7 +118,7 @@ Three secret-access rules with the same flavor:
 - Never `${{ toJson(secrets) }}`. Exposes every secret in the project to the runner. There is no use case.
 - Never `secrets: inherit` on reusable workflows. Pass each secret by name. The reusable workflow gets exactly what it asked for.
 
-The trivy-action exfiltration worked partly because secrets were workflow-scoped. The malicious step inherited every credential in the env, not just the one the legitimate scan needed. Step-scoping wouldn't have prevented the credential theft — but it would have bounded the blast radius to one secret instead of all of them.
+The trivy-action exfiltration worked partly because secrets were workflow-scoped. The malicious step inherited every credential in the env, not just the one the legitimate scan needed. Step-scoping wouldn't have prevented the credential theft, but it would have bounded the blast radius to one secret instead of all of them.
 
 ## OIDC, the promise from part 1
 
@@ -150,7 +150,7 @@ The labor here is genuinely one-time. Configure the trust relationship once per 
 
 ## zizmor is the local proxy for workflows
 
-Part 1's `safe-chain` sat in front of every package install and refused malware before bytes hit disk. The action ecosystem's equivalent is `zizmor` — a workflow linter that reads your YAML and catches the patterns this post is about, before they merge.
+Part 1's `safe-chain` sat in front of every package install and refused malware before bytes hit disk. The action ecosystem's equivalent is `zizmor`, a workflow linter that reads your YAML and catches the patterns this post is about, before they merge.
 
 ```bash
 brew install zizmor

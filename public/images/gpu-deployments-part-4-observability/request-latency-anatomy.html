@@ -1,0 +1,49 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#e6ddcc;display:flex;justify-content:center;padding:48px;font-family:Georgia,'Times New Roman',serif}
+.fig{width:1040px;background:#f4efe6;border:1px solid #cfc4b0;padding:40px 46px 36px}
+.eyebrow{font:600 12px/1 ui-monospace,Menlo,monospace;letter-spacing:.2em;text-transform:uppercase;color:#bf4a2e}
+.title{font-size:31px;color:#22201c;margin:11px 0 5px;letter-spacing:-.01em}
+.sub{font-size:15px;color:#6f6a60;font-style:italic;margin-bottom:20px}
+svg{display:block;width:100%}
+text{font-family:ui-monospace,Menlo,monospace}
+.foot{margin-top:14px;font-size:13px;color:#4a463d;font-style:italic}
+</style></head><body>
+<div class="fig">
+  <div class="eyebrow">One request · four measurements</div>
+  <div class="title">Where each latency number is measured</div>
+  <div class="sub">Queue time hides inside TTFT, which is why a busy GPU and a slow first token travel together.</div>
+  <svg viewBox="0 0 1000 250">
+    <!-- TTFT bracket (top) -->
+    <line x1="60" y1="46" x2="470" y2="46" stroke="#bf4a2e" stroke-width="1.4"/>
+    <line x1="60" y1="46" x2="60" y2="56" stroke="#bf4a2e" stroke-width="1.4"/>
+    <line x1="470" y1="46" x2="470" y2="56" stroke="#bf4a2e" stroke-width="1.4"/>
+    <text x="265" y="38" text-anchor="middle" font-size="13" font-weight="600" fill="#bf4a2e">TTFT = queue + prefill</text>
+    <!-- track segments -->
+    <rect x="60" y="70" width="160" height="46" fill="#e2d9c9" stroke="#c3b8a4" stroke-width="1.2"/>
+    <text x="140" y="98" text-anchor="middle" font-size="13" fill="#5a5348">queue wait</text>
+    <rect x="220" y="70" width="250" height="46" fill="#f0d8cb" stroke="#d99b7f" stroke-width="1.2"/>
+    <text x="345" y="98" text-anchor="middle" font-size="13" fill="#8a4a34">prefill</text>
+    <!-- first token marker -->
+    <circle cx="470" cy="93" r="9" fill="#bf4a2e"/>
+    <text x="470" y="140" text-anchor="middle" font-size="11.5" font-weight="600" fill="#bf4a2e">first token</text>
+    <!-- decode tokens -->
+    <g fill="#f7ddcf" stroke="#d99b7f" stroke-width="1.2">
+      <rect x="500" y="74" width="34" height="38"/><rect x="564" y="74" width="34" height="38"/>
+      <rect x="628" y="74" width="34" height="38"/><rect x="692" y="74" width="34" height="38"/>
+      <rect x="756" y="74" width="34" height="38"/><rect x="820" y="74" width="34" height="38"/>
+      <rect x="884" y="74" width="34" height="38"/>
+    </g>
+    <!-- ITL gap marker between token 1 and 2 -->
+    <path d="M 534 122 L 549 138 L 564 122" fill="none" stroke="#8a857a" stroke-width="1.3"/>
+    <text x="640" y="156" text-anchor="middle" font-size="11.5" fill="#6f6a60">ITL / TPOT · the gap between output tokens</text>
+    <text x="710" y="60" text-anchor="middle" font-size="12" fill="#6f6a60">decode, one token at a time →</text>
+    <!-- e2e bracket (bottom) -->
+    <line x1="60" y1="168" x2="918" y2="168" stroke="#8a857a" stroke-width="1.4"/>
+    <line x1="60" y1="158" x2="60" y2="168" stroke="#8a857a" stroke-width="1.4"/>
+    <line x1="918" y1="158" x2="918" y2="168" stroke="#8a857a" stroke-width="1.4"/>
+    <text x="489" y="188" text-anchor="middle" font-size="13" font-weight="600" fill="#5a5348">end-to-end latency ≈ TTFT + (output tokens − 1) × ITL</text>
+  </svg>
+  <div class="foot">TTFT is what the user waits for before anything appears; ITL is how smooth the stream feels once it starts.</div>
+</div>
+</body></html>

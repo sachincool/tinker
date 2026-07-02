@@ -24,7 +24,7 @@ Three months later we were at $20,000 a month, with better p95 latency than when
 
 ![Per-service AWS bill before and after, animated as a dumbbell chart: EC2 $28k to $12k, RDS $12k to $7k, Data Transfer $6k to $2.5k, CloudWatch $2k to $0.5k, Other $2k to $1k, total $50k to $20k per month](/images/aws-cost-optimization-tricks/hero.gif)
 
-*Fig. 1 — most of the bill was EC2 doing nothing in particular.*
+*Fig. 1 · most of the bill was EC2 doing nothing in particular.*
 
 ## the starting point
 
@@ -88,7 +88,7 @@ The argument against RIs is always "but what if our load profile changes." Three
 
 ## spot for the things that can die
 
-The CI fleet was On-Demand `c5.xlarge` runners that sat idle most of the day and got hammered for an hour around lunch. A perfect Spot workload — interruptible, parallelizable, with a queue in front.
+The CI fleet was On-Demand `c5.xlarge` runners that sat idle most of the day and got hammered for an hour around lunch. A perfect Spot workload: interruptible, parallelizable, with a queue in front.
 
 ```hcl
 resource "aws_launch_template" "ci_runner" {
@@ -132,7 +132,7 @@ One On-Demand runner for the always-on baseline, the rest Spot, capacity-optimiz
 
 ## S3 lifecycle policies
 
-We had 50 TB in S3, all in Standard. The application logs were the worst offender — every JSON line our services had ever emitted, sitting at $0.023 per GB-month, being read by exactly nobody.
+We had 50 TB in S3, all in Standard. The application logs were the worst offender: every JSON line our services had ever emitted, sitting at $0.023 per GB-month, being read by exactly nobody.
 
 ```bash
 aws s3api list-objects-v2 \

@@ -294,7 +294,7 @@
       <div class="hero rise d3">
         <div class="kicker">Steady-state headline</div>
         <div class="num nums">5<span style="font-size:0.5em;">×</span><small>lighter</small></div>
-        <div class="caption">memory at steady state — the metric that gates how many tenants share a node.</div>
+        <div class="caption">memory at steady state, the metric that gates how many tenants share a node.</div>
       </div>
     </div>
 
@@ -360,7 +360,7 @@
       </div>
     </div>
 
-    <!-- Bottom chip strip — additional context -->
+    <!-- Bottom chip strip: additional context -->
     <div class="chips rise d6">
       <span class="chip"><span class="v">3×</span> peak ingestion · 66 vs 20 MB/s</span>
       <span class="chip"><span class="v">12×</span> faster needle search</span>
@@ -389,7 +389,7 @@
       if (typeof ResizeObserver !== 'undefined') {
         new ResizeObserver(postHeight).observe(document.body);
       }
-      // Fonts settle after load — re-measure once they're applied.
+      // Fonts settle after load, re-measure once they're applied.
       if (document.fonts && document.fonts.ready) {
         document.fonts.ready.then(function () { setTimeout(postHeight, 50); });
       }

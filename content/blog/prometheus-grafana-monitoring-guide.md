@@ -10,11 +10,11 @@ We started shipping monitoring after a string of outages where customers paged u
 
 ![Prometheus pulls metrics from exporters running next to each service, stores them in its TSDB, then fans out to Alertmanager for paging and Grafana for dashboards.](/images/prometheus-grafana-monitoring-guide/hero.png)
 
-*Fig. 1 — five boxes do most of the work; the other ten you'll add later are mostly for taste.*
+*Fig. 1 · five boxes do most of the work; the other ten you'll add later are mostly for taste.*
 
 ## why Prometheus and Grafana
 
-After trying CloudWatch, Datadog, and New Relic, we landed on Prometheus and Grafana for the same reason most teams do. Prometheus is open source, pull-based, and fits Kubernetes without protest. Grafana puts the dashboards on top, talks to almost anything, and costs nothing. Self-hosted, the bill is server time. The commercial options were running us $500 a month and climbing.
+After trying CloudWatch, Datadog, and New Relic, we landed on Prometheus and Grafana for the same reason most teams do. Prometheus is open source and pull-based, and it fits Kubernetes without protest. Grafana puts the dashboards on top, talks to almost anything, and costs nothing. Self-hosted, the bill is server time. The commercial options were running us $500 a month and climbing.
 
 ## setup with Docker Compose
 

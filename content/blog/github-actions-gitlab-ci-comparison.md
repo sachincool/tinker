@@ -7,7 +7,7 @@ excerpt: "After two years of running both GitHub Actions and GitLab CI across 50
 featured: true
 faqs:
   - question: "Is GitHub Actions or GitLab CI better?"
-    answer: "Neither wins outright. GitHub Actions is better for small-to-medium pipelines, open source, and teams already on GitHub, thanks to its 20,000+ action marketplace and a 2,000 min/month free tier. GitLab CI is better for heavy Docker workflows, large self-hosted runner fleets, and multi-stage deployments, and its interactive SSH-into-runner debugging is the best in class."
+    answer: "Neither wins outright. GitHub Actions is better for small-to-medium pipelines, open source, and teams already on GitHub, thanks to its 20,000+ action marketplace and a 2,000 min/month free tier. GitLab CI is better for heavy Docker workflows, large self-hosted runner fleets, and multi-stage deployments, and its interactive SSH-into-runner debugging beats anything Actions offers."
   - question: "Which is cheaper, GitHub Actions or GitLab CI?"
     answer: "GitHub's hosted free tier is more generous: 2,000 minutes/month for private repos and unlimited for public, with overage at $0.008/minute. GitLab SaaS gives 400 minutes/month free and charges $10 per 1,000 extra minutes. But GitLab self-hosted runners are unlimited, so if you run your own runners, GitLab gets cheaper at scale."
   - question: "Can I migrate from GitLab CI to GitHub Actions?"
@@ -32,7 +32,7 @@ Two years, 50 microservices, two CI platforms running side by side. Some repos o
 
 ![A six-row comparison of GitHub Actions and GitLab CI across syntax, runners, caching, secrets, ecosystem, and pricing at fifty microservices, with the pricing row marked focal.](/images/github-actions-gitlab-ci-comparison/hero.png)
 
-*Fig. 1 — six rows, two YAMLs, one billing model that ended the debate.*
+*Fig. 1 · six rows, two YAMLs, one billing model that ended the debate.*
 
 ## syntax and configuration
 

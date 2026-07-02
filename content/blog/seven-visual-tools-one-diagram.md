@@ -34,7 +34,7 @@ It's not a toy. There's enough going on that a half-baked tool would visibly fal
 
 Installing them was less smooth than I expected. The shell command I tried first, `claude plugin add <repo>`, doesn't exist. Claude Code's plugin system runs inside the TUI via `/plugin marketplace add` and `/plugin install`, or you `git clone` raw skills into `~/.claude/skills/<name>/`. The Cocoon entry on that list isn't a Claude Code plugin at all; it's a claude.ai web skill that you upload as a zip in the browser. I gave up on installing it from the CLI and drew its equivalent by hand instead, which means my Trial 1 below is more "Claude doing AWS re:Invent" than "the Cocoon skill doing what it does". For an apples-to-apples Trial 1 you'd have to upload the actual zip at claude.ai.
 
-## trial 1 — the AWS re:Invent stand-in
+## trial 1: the AWS re:Invent stand-in
 
 ![AWS re:Invent dashboard showing three cluster cards with category-coded service rows](/images/seven-visual-tools-one-diagram/trial-1-cocoon.png)
 
@@ -44,7 +44,7 @@ I went with the AWS re:Invent aesthetic because anyone who's watched a cloud key
 
 The output is dense. It's the kind of thing I'd use as an inline reference figure in a long post where the prose already explains each piece. If I dropped it as a hero, it'd be too much.
 
-## trial 2 — diagram-design
+## trial 2: diagram-design
 
 ![Editorial dark page with hub-spoke diagram, coral focal hub, muted spokes, italic-serif annotation, and three summary cards](/images/seven-visual-tools-one-diagram/trial-2-diagram-design.png)
 
@@ -54,7 +54,7 @@ This is the one I'd actually publish without retouching. The skill has a real de
 
 It looks like it came out of someone who's spent a long time thinking about diagrams as a form, not from a tool that randomly throws boxes on a page.
 
-## trial 3 — infographic-gif
+## trial 3: infographic-gif
 
 ![Animated sankey diagram showing flows from a hub through three clusters to three resource categories](/images/seven-visual-tools-one-diagram/trial-3-infographic-gif.gif)
 
@@ -64,7 +64,7 @@ This one surprised me. The output it gives you is an HTML file, not a GIF. You o
 
 One thing to know if you try this: the skill's sankey template is fundamentally two-level. Sources on the left, destinations on the right, with one center node. I had three layers, so the per-cluster resource breakdown got merged into single resource totals. The proportions are honest, the per-cluster detail isn't quite there. For an animated explainer where motion is the point, that's an acceptable trade.
 
-## trial 4 — frontend-design-pro
+## trial 4: frontend-design-pro
 
 ![Cyberpunk-styled cluster status panel with neon cyan and magenta accents and CRT scanlines](/images/seven-visual-tools-one-diagram/trial-4-cyberpunk.png)
 
@@ -72,7 +72,7 @@ One thing to know if you try this: the skill's sankey template is fundamentally 
 
 I asked for a "live cluster status panel" in a cyberpunk aesthetic and got exactly that. CRT scanlines, VT323 for the chunky CRT-display digits on the node counts, neon accents, a magenta pulse on the panel that's marked `syncing`. A tiny script ticks the relative timestamps every second so the thing feels alive.
 
-In isolation it looks great. Embedded in a sober technical post though, it would scream at the reader and you'd basically end up designing the rest of the post around the widget. So I went back to the same skill with a tighter brief to see if it could play in a calmer register.
+In isolation it looks great. Embedded in a sober technical post though, it would scream at the reader and you'd end up designing the rest of the post around the widget. So I went back to the same skill with a tighter brief to see if it could play in a calmer register.
 
 ### same skill, second pass
 
@@ -98,27 +98,27 @@ And the Flux raster, prompt written by the skill, rendered by `ai-cli`:
 
 Eighteen seconds of generation, zero human prompt-engineering on top. The skill's prompt was the work.
 
-## trial 5 — Vercel ai-cli + Flux
+## trial 5: Vercel ai-cli + Flux
 
 ![Isometric scene with three floating clusters connected to a central ArgoCD hub via glowing bridges](/images/seven-visual-tools-one-diagram/trial-5-flux-cover.png)
 
 This is the one I'd use as a section header or a post cover. Flux 2 Pro through Vercel's AI Gateway, twelve seconds to render, a single one-line prompt. It's not replacing a technical figure (you can't actually point at anything in it), but as visual atmosphere at the top of a post, it carries weight. One thing to watch: the model ignored my `--size 1200x630` flag and inferred an aspect ratio instead. The CLI surfaced a warning about it, which I only noticed by accident. Check your output dimensions before you cut it into a layout.
 
-## trial 6 — hand-coded SVG
+## trial 6: hand-coded SVG
 
 ![Hand-coded SVG architecture diagram with three VPC boxes and color-coded legend](/images/seven-visual-tools-one-diagram/trial-6-native-svg.svg)
 
 The baseline. AWS-orange-on-navy, three boxes in a row, dashed hub-spoke arrows, observability strip at the bottom, color-coded legend. 12 KB, no JS, no fonts, no dependencies. Loads instantly, scales infinitely, and is trivial to edit when the architecture inevitably changes. Inside a long post where you need a quick reference and you don't want to fight CSS, this is more than enough. It's also the least visually interesting of anything in the lineup, which is either a feature or a bug depending on what the post is doing.
 
-## trial 7 — Excalidraw (via the official connector)
+## trial 7: Excalidraw (via the official connector)
 
-![Hub-spoke architecture diagram from the Excalidraw connector — yellow hub cluster with nested ArgoCD callout, two blue spoke clusters with argocd-agent sub-boxes, and a green observability strip at the bottom with separate New Relic and Zenduty boxes connected by an "alerts" flow](/images/seven-visual-tools-one-diagram/trial-7-excalidraw.png)
+![Hub-spoke architecture diagram from the Excalidraw connector: yellow hub cluster with nested ArgoCD callout, two blue spoke clusters with argocd-agent sub-boxes, and a green observability strip at the bottom with separate New Relic and Zenduty boxes connected by an "alerts" flow](/images/seven-visual-tools-one-diagram/trial-7-excalidraw.png)
 
 [Download the `.excalidraw` source →](/images/seven-visual-tools-one-diagram/trial-7-excalidraw.excalidraw) · [View as SVG →](/images/seven-visual-tools-one-diagram/trial-7-excalidraw.svg)
 
 Excalidraw is what I'd been using before this whole exercise, and it's the thing I was originally trying to graduate from. There's an official Excalidraw connector in the Claude.ai directory, so I dropped the same brief into it. It took the connector about four minutes to produce this.
 
-The surprising thing isn't the layout — it's the aesthetic. The connector deliberately chose not to look like Excalidraw. The strokes are clean and straight, no rough.js wobble. The typography is sans-serif, not the Virgil hand-drawn default. Everything is grid-aligned, with nested sub-components: `argocd-agent (receiver)` boxes inside each spoke, an `argocd-agent (principal)` callout inside the hub, separate `New Relic` and `Zenduty` boxes inside the observability strip, an `alerts` flow connecting them. It reads as "architecture diagram drawn in Excalidraw" rather than "Excalidraw scratchwork".
+The surprising thing isn't the layout. It's the aesthetic. The connector deliberately chose not to look like Excalidraw. The strokes are clean and straight, no rough.js wobble. The typography is sans-serif, not the Virgil hand-drawn default. Everything is grid-aligned, with nested sub-components: `argocd-agent (receiver)` boxes inside each spoke, an `argocd-agent (principal)` callout inside the hub, separate `New Relic` and `Zenduty` boxes inside the observability strip, an `alerts` flow connecting them. It reads as "architecture diagram drawn in Excalidraw" rather than "Excalidraw scratchwork".
 
 That changes my read of Trial 7 in a way I didn't expect. The connector quietly opted out of the genre I'd complained about in the opening of this post. The casual hand-drawn aesthetic is one register of Excalidraw now, not the default Excalidraw. The canvas can be a sketchpad or a structured diagram tool, depending on how the scene is authored. The connector chose the structured side.
 
@@ -136,7 +136,7 @@ For hero images or section openers where the goal is mood rather than informatio
 
 For quick reference diagrams inside a post, hand-coded SVG is still where I end up. It costs nothing to maintain, ages well, and gets out of the reader's way. Not every diagram needs to be a hero.
 
-For the first draft, Excalidraw the app — still the fastest way to figure out where the boxes go in five minutes. For a ready-to-ship version with the Excalidraw canvas behind it but without the genre aesthetic, the Claude connector turned out to be a genuine option I hadn't expected to like.
+For the first draft, Excalidraw the app, still the fastest way to figure out where the boxes go in five minutes. For a ready-to-ship version with the Excalidraw canvas behind it but without the genre aesthetic, the Claude connector turned out to be a genuine option I hadn't expected to like.
 
 ## keeping all of this from eating your context
 

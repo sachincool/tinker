@@ -1,0 +1,55 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#e6ddcc;display:flex;justify-content:center;padding:48px;font-family:Georgia,'Times New Roman',serif}
+.fig{width:1040px;background:#f4efe6;border:1px solid #cfc4b0;padding:40px 46px 34px}
+.eyebrow{font:600 12px/1 ui-monospace,Menlo,monospace;letter-spacing:.2em;text-transform:uppercase;color:#bf4a2e}
+.title{font-size:31px;color:#22201c;margin:11px 0 5px;letter-spacing:-.01em}
+.sub{font-size:15px;color:#6f6a60;font-style:italic;margin-bottom:14px}
+svg{display:block;width:100%}
+text{font-family:ui-monospace,Menlo,monospace}
+.cap{margin-top:8px;font-size:13px;color:#4a463d;font-style:italic;text-align:center}
+</style></head><body>
+<div class="fig">
+  <div class="eyebrow">The request path</div>
+  <div class="title">Where the routing decision happens</div>
+  <div class="sub">The gateway is an ordinary Envoy proxy. The intelligence lives in the Endpoint Picker it consults per request.</div>
+  <svg viewBox="0 0 1000 410">
+    <!-- request in -->
+    <text x="30" y="96" font-size="12" fill="#6f6a60" font-style="italic">request</text>
+    <line x1="30" y1="105" x2="150" y2="105" stroke="#b8ad98" stroke-width="1.6"/><polygon points="150,105 142,101 142,109" fill="#b8ad98"/>
+    <!-- Gateway -->
+    <rect x="150" y="75" width="230" height="66" rx="6" fill="#faf6ee" stroke="#c3b8a4" stroke-width="1.5"/>
+    <text x="265" y="102" text-anchor="middle" font-size="14" font-weight="600" fill="#22201c">Gateway (Envoy)</text>
+    <text x="265" y="122" text-anchor="middle" font-size="11" fill="#9a9488">TLS · connections · forwarding</text>
+    <!-- ext-proc down to EPP -->
+    <line x1="265" y1="141" x2="265" y2="216" stroke="#bf4a2e" stroke-width="1.6" stroke-dasharray="6 5"/>
+    <polygon points="265,216 261,208 269,208" fill="#bf4a2e"/>
+    <line x1="290" y1="216" x2="290" y2="141" stroke="#bf4a2e" stroke-width="1.6" stroke-dasharray="6 5"/>
+    <polygon points="290,141 286,149 294,149" fill="#bf4a2e"/>
+    <text x="300" y="182" font-size="11" fill="#bf4a2e" font-weight="600">ext-proc</text>
+    <text x="300" y="197" font-size="10.5" fill="#8a4a34" font-style="italic">score every request</text>
+    <!-- EPP -->
+    <rect x="120" y="218" width="300" height="176" rx="6" fill="#f9ece4" stroke="#bf4a2e" stroke-width="1.5"/>
+    <text x="270" y="242" text-anchor="middle" font-size="14" font-weight="600" fill="#bf4a2e">Endpoint Picker (EPP)</text>
+    <text x="140" y="266" font-size="11.5" fill="#33302a">reads live per-replica signals:</text>
+    <text x="150" y="288" font-size="11.5" fill="#5a5348">· prefix-cache locality</text>
+    <text x="150" y="308" font-size="11.5" fill="#5a5348">· KV-cache utilization</text>
+    <text x="150" y="328" font-size="11.5" fill="#5a5348">· queue depth</text>
+    <text x="150" y="348" font-size="11.5" fill="#5a5348">· loaded LoRA adapters</text>
+    <text x="140" y="380" font-size="11.5" fill="#8a4a34" font-style="italic">→ scores each, picks the best</text>
+    <!-- forward to pool -->
+    <line x1="380" y1="98" x2="620" y2="66" stroke="#3d6b4f" stroke-width="1.8"/><polygon points="620,66 611,66 615,74" fill="#3d6b4f"/>
+    <text x="500" y="44" text-anchor="middle" font-size="11" fill="#3d6b4f" font-weight="600" font-style="italic">routed to the chosen replica</text>
+    <!-- InferencePool -->
+    <rect x="600" y="30" width="370" height="340" rx="8" fill="none" stroke="#c3b8a4" stroke-width="1.3" stroke-dasharray="4 4"/>
+    <text x="785" y="52" text-anchor="middle" font-size="12" font-weight="600" fill="#9a9488">InferencePool · 4× vLLM</text>
+    <g>
+      <rect x="630" y="66" width="310" height="60" rx="5" fill="#eef2ec" stroke="#9cbfa4" stroke-width="1.5"/><text x="648" y="92" font-size="12.5" font-weight="600" fill="#22201c">replica 1 · holds this prefix</text><text x="648" y="112" font-size="11" fill="#3d6b4f">chosen · cache hit, low load</text>
+      <rect x="630" y="142" width="310" height="52" rx="5" fill="#faf6ee" stroke="#c3b8a4"/><text x="648" y="172" font-size="12.5" fill="#9a9488">replica 2</text>
+      <rect x="630" y="210" width="310" height="52" rx="5" fill="#faf6ee" stroke="#c3b8a4"/><text x="648" y="240" font-size="12.5" fill="#9a9488">replica 3</text>
+      <rect x="630" y="278" width="310" height="52" rx="5" fill="#faf6ee" stroke="#c3b8a4"/><text x="648" y="308" font-size="12.5" fill="#9a9488">replica 4</text>
+    </g>
+  </svg>
+  <div class="cap">InferencePool is the LLM-aware Service; the EPP is the brain. Same ext-proc hook Envoy already uses for auth and rate limiting.</div>
+</div>
+</body></html>

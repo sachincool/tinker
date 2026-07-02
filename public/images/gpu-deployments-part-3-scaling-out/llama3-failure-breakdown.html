@@ -1,0 +1,49 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#e6ddcc;display:flex;justify-content:center;padding:48px;font-family:Georgia,'Times New Roman',serif}
+.fig{width:1000px;background:#f4efe6;border:1px solid #cfc4b0;padding:40px 46px 40px}
+.eyebrow{font:600 12px/1 ui-monospace,Menlo,monospace;letter-spacing:.2em;text-transform:uppercase;color:#bf4a2e}
+.title{font-size:31px;color:#22201c;margin:11px 0 5px;letter-spacing:-.01em}
+.sub{font-size:15px;color:#6f6a60;font-style:italic;margin-bottom:20px}
+.body{display:flex;align-items:center;gap:40px}
+svg{flex:0 0 340px}
+.donut circle{fill:none;stroke-width:44}
+.center{font-family:ui-monospace,Menlo,monospace}
+.legend{flex:1}
+.li{display:flex;align-items:center;gap:12px;padding:9px 0;border-bottom:1px solid #e2d9c9}
+.li:last-child{border-bottom:none}
+.sw{width:14px;height:14px;border-radius:3px;flex:0 0 14px}
+.ln{font-family:ui-monospace,Menlo,monospace;font-size:13px;color:#33302a;flex:1}
+.lp{font-family:ui-monospace,Menlo,monospace;font-size:14px;font-weight:600;color:#22201c}
+.tag{font-size:11px;color:#9a9488;font-style:italic;font-family:Georgia,serif;margin-left:6px}
+</style></head><body>
+<div class="fig">
+  <div class="eyebrow">Reliability at scale · Meta Llama 3 405B</div>
+  <div class="title">What interrupted 54 days of training</div>
+  <div class="sub">16,384 H100s. 419 unexpected interruptions. Roughly half were the GPUs themselves.</div>
+  <div class="body">
+    <svg class="donut" viewBox="0 0 320 320">
+      <g transform="rotate(-90 160 160)">
+        <circle cx="160" cy="160" r="120" pathLength="100" stroke="#a5341c" stroke-dasharray="30.1 100" stroke-dashoffset="0"/>
+        <circle cx="160" cy="160" r="120" pathLength="100" stroke="#bf4a2e" stroke-dasharray="17.2 100" stroke-dashoffset="-30.1"/>
+        <circle cx="160" cy="160" r="120" pathLength="100" stroke="#8a857a" stroke-dasharray="8.4 100" stroke-dashoffset="-47.3"/>
+        <circle cx="160" cy="160" r="120" pathLength="100" stroke="#d97a58" stroke-dasharray="4.5 100" stroke-dashoffset="-55.7"/>
+        <circle cx="160" cy="160" r="120" pathLength="100" stroke="#e39e83" stroke-dasharray="4.1 100" stroke-dashoffset="-60.2"/>
+        <circle cx="160" cy="160" r="120" pathLength="100" stroke="#d8cdb8" stroke-dasharray="35.7 100" stroke-dashoffset="-64.3"/>
+      </g>
+      <text class="center" x="160" y="146" text-anchor="middle" font-size="34" font-weight="600" fill="#22201c">419</text>
+      <text class="center" x="160" y="168" text-anchor="middle" font-size="12" fill="#6f6a60">interruptions</text>
+      <text class="center" x="160" y="188" text-anchor="middle" font-size="11" fill="#bf4a2e">~1 every 3 hours</text>
+      <text class="center" x="160" y="204" text-anchor="middle" font-size="11" fill="#8a857a">~78% hardware</text>
+    </svg>
+    <div class="legend">
+      <div class="li"><span class="sw" style="background:#a5341c"></span><span class="ln">GPU faults</span><span class="lp">30.1%</span></div>
+      <div class="li"><span class="sw" style="background:#bf4a2e"></span><span class="ln">HBM3 memory</span><span class="lp">17.2%</span></div>
+      <div class="li"><span class="sw" style="background:#8a857a"></span><span class="ln">network switch &amp; cable</span><span class="lp">8.4%</span></div>
+      <div class="li"><span class="sw" style="background:#d97a58"></span><span class="ln">GPU SRAM</span><span class="lp">4.5%</span></div>
+      <div class="li"><span class="sw" style="background:#e39e83"></span><span class="ln">GPU processor</span><span class="lp">4.1%</span></div>
+      <div class="li"><span class="sw" style="background:#d8cdb8"></span><span class="ln">other / software<span class="tag">the long tail you plan around</span></span><span class="lp">35.7%</span></div>
+    </div>
+  </div>
+</div>
+</body></html>

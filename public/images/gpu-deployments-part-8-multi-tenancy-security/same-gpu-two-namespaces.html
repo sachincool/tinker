@@ -1,0 +1,31 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#e6ddcc;display:flex;justify-content:center;padding:48px;font-family:ui-monospace,'SF Mono',Menlo,monospace}
+.fig{width:1000px;background:#1c1f24;border:1px solid #34343a;border-radius:10px;overflow:hidden;box-shadow:0 1px 0 #cfc4b0}
+.bar{background:#2a2d33;padding:11px 16px;display:flex;align-items:center;gap:8px}
+.dot{width:12px;height:12px;border-radius:50%}
+.tt{color:#8a8f98;font-size:12px;margin-left:12px}
+.body{padding:22px 26px 26px;font-size:13px;line-height:1.65;color:#c8ccd2;white-space:pre;overflow-x:auto}
+.p{color:#7fb069}
+.cmd{color:#eef0f2}
+.o{color:#9aa0a8}
+.rust{color:#e8795a}
+.amber{color:#e8a04a}
+.cmt{color:#6a7078}
+.ns{color:#6fa8c7}
+</style></head><body>
+<div class="fig">
+  <div class="bar"><span class="dot" style="background:#e06c5a"></span><span class="dot" style="background:#e3b341"></span><span class="dot" style="background:#57a75b"></span><span class="tt">is my namespace a wall?</span></div>
+<div class="body"><span class="p">$</span> <span class="cmd">kubectl exec -n <span class="ns">team-a</span> pod/vllm-a -- nvidia-smi --query-gpu=name,pci.bus_id,uuid,memory.used --format=csv</span>
+<span class="o">name, pci.bus_id, uuid, memory.used</span>
+<span class="o">NVIDIA H100 80GB HBM3, </span><span class="amber">00000000:17:00.0</span><span class="o">, </span><span class="rust">GPU-4a8f2c1e-7b93-4d21-a0e5-9c1f2b3d4e5f</span><span class="o">, 1024 MiB</span>
+
+<span class="p">$</span> <span class="cmd">kubectl exec -n <span class="ns">team-b</span> pod/vllm-b -- nvidia-smi --query-gpu=name,pci.bus_id,uuid,memory.used --format=csv</span>
+<span class="o">name, pci.bus_id, uuid, memory.used</span>
+<span class="o">NVIDIA H100 80GB HBM3, </span><span class="amber">00000000:17:00.0</span><span class="o">, </span><span class="rust">GPU-4a8f2c1e-7b93-4d21-a0e5-9c1f2b3d4e5f</span><span class="o">, 896 MiB</span>
+
+<span class="cmt">  # team-a and team-b are different namespaces.</span>
+<span class="cmt">  # </span><span class="amber">same PCI bus</span><span class="cmt">, </span><span class="rust">same GPU UUID</span><span class="cmt">, one physical die, no DRAM wall between them.</span>
+<span class="cmt">  # each pod believes it owns the whole 80GB card and cannot see the other.</span></div>
+</div>
+</body></html>

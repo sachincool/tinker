@@ -1,0 +1,56 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#e6ddcc;display:flex;justify-content:center;padding:48px;font-family:Georgia,'Times New Roman',serif}
+.fig{width:1000px;background:#f4efe6;border:1px solid #cfc4b0;padding:40px 46px 40px}
+.eyebrow{font:600 12px/1 ui-monospace,Menlo,monospace;letter-spacing:.2em;text-transform:uppercase;color:#bf4a2e}
+.title{font-size:31px;color:#22201c;margin:11px 0 5px;letter-spacing:-.01em}
+.sub{font-size:15px;color:#6f6a60;font-style:italic;margin-bottom:28px}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:26px}
+.card{border:1px solid #d9d0c0;background:#faf6ee;padding:22px 22px 20px}
+.card.bad{border-color:#e0cabc}
+.cname{font-family:ui-monospace,Menlo,monospace;font-size:14px;font-weight:600;color:#22201c;margin-bottom:2px}
+.ctag{font-size:12.5px;color:#6f6a60;font-style:italic;margin-bottom:18px}
+.job{font:600 11px/1 ui-monospace,Menlo,monospace;letter-spacing:.1em;text-transform:uppercase;color:#9a9488;margin-bottom:10px}
+.pods{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.pod{border:1.5px solid #c3b8a4;border-radius:5px;padding:14px 10px;text-align:center;font-family:ui-monospace,Menlo,monospace;font-size:12px;font-weight:600}
+.run{background:#e6efe4;border-color:#9cbfa4;color:#3d6b4f}
+.pend{background:#f9ece4;border-color:#bf4a2e;color:#bf4a2e;border-style:dashed}
+.gang{background:#eef2ec;border-color:#9cbfa4;color:#3d6b4f}
+.pod small{display:block;font-weight:400;font-size:10px;color:#9a9488;margin-top:3px;font-family:Georgia,serif;font-style:italic}
+.verdict{border-top:1px solid #e2d9c9;padding-top:12px;font-size:13.5px;line-height:1.5;color:#33302a}
+.verdict b{font-family:ui-monospace,Menlo,monospace;font-weight:600;font-size:12.5px}
+.bad .verdict b{color:#bf4a2e}
+.good .verdict b{color:#3d6b4f}
+</style></head><body>
+<div class="fig">
+  <div class="eyebrow">Scheduling · all-or-nothing</div>
+  <div class="title">Why training needs gang scheduling</div>
+  <div class="sub">Distributed training is all-or-nothing on N pods. A scheduler that doesn't know that wedges the cluster.</div>
+  <div class="cols">
+    <div class="card bad">
+      <div class="cname">vanilla Kubernetes</div>
+      <div class="ctag">schedules pods independently, one at a time</div>
+      <div class="job">4-pod training job</div>
+      <div class="pods">
+        <div class="pod run">pod 0<small>running</small></div>
+        <div class="pod run">pod 1<small>running</small></div>
+        <div class="pod run">pod 2<small>running</small></div>
+        <div class="pod pend">pod 3<small>Pending · no node</small></div>
+      </div>
+      <div class="verdict">Three nodes of GPUs sit idle waiting for the fourth pod that never places. Two such jobs starve each other. <b>deadlock</b></div>
+    </div>
+    <div class="card good">
+      <div class="cname">gang scheduling</div>
+      <div class="ctag">Volcano / Kueue / Slurm · admits the group as a unit</div>
+      <div class="job">4-pod training job</div>
+      <div class="pods">
+        <div class="pod gang">pod 0<small>admitted</small></div>
+        <div class="pod gang">pod 1<small>admitted</small></div>
+        <div class="pod gang">pod 2<small>admitted</small></div>
+        <div class="pod gang">pod 3<small>admitted</small></div>
+      </div>
+      <div class="verdict">All four pods are placed together or none are. No partial allocation, no mutual starvation. <b>all-or-nothing</b></div>
+    </div>
+  </div>
+</div>
+</body></html>

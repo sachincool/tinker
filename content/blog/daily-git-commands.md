@@ -8,7 +8,7 @@ featured: true
 
 ![A newspaper-style poster titled The Daily Eight, listing the eight git aliases I run most: gst, glola, gd/gds, gcam, gpsup, gco/gcb, gpf, gfa, each paired with its expansion in mono caps.](/images/daily-git-commands/hero.png)
 
-*Fig. 1. The eight aliases that survive every refactor, every job, every laptop.*
+*Fig. 1 · the eight aliases that survive every refactor, every job, every laptop.*
 
 I've been using git for a decade and most of what I type still fits on a single hand. The 200-page Pro Git book is wonderful and almost none of it survives contact with a real Tuesday. What survives is a small, boring set of commands that get rerun constantly.
 
@@ -133,7 +133,7 @@ gfa
 git branch --merged main | grep -v '\*\|main\|master' | xargs -n1 git branch -d
 ```
 
-Works only if your team uses merge commits. Most don't. GitHub's "Squash and merge" creates a brand-new commit on `main` with a different SHA, so `git branch --merged` never catches your local branch — its commits aren't in main's history at all.
+Works only if your team uses merge commits. Most don't. GitHub's "Squash and merge" creates a brand-new commit on `main` with a different SHA, so `git branch --merged` never catches your local branch. Its commits aren't in main's history at all.
 
 The workaround: after `gfa`, any branch whose tracked remote was deleted shows as `[gone]`. Those are your merged-and-deleted PRs.
 
@@ -186,7 +186,7 @@ git commit --fixup=abc123       # fixup commit targeting abc123
 git rebase -i --autosquash main # all fixups slot into place automatically
 ```
 
-The single biggest workflow win I've found in ten years of git. While reviewing your own PR you find a bug four commits back. Don't fix it on top — `--fixup=<sha>` creates a commit targeting the offender, and the autosquash rebase squashes everything into place when you're done. Install [git-absorb](https://github.com/tummychow/git-absorb) (`brew install git-absorb`) and it even picks the target SHA for you: edit the files, run `git absorb --and-rebase`, done.
+The single biggest workflow win I've found in ten years of git. While reviewing your own PR you find a bug four commits back. Don't fix it on top. `--fixup=<sha>` creates a commit targeting the offender, and the autosquash rebase squashes everything into place when you're done. Install [git-absorb](https://github.com/tummychow/git-absorb) (`brew install git-absorb`) and it even picks the target SHA for you: edit the files, run `git absorb --and-rebase`, done.
 
 ### `git reflog`, the universal undo
 
@@ -232,7 +232,7 @@ git log -p --follow file.go        # full file history, including across renames
 git range-diff @{u} @              # what a rebase actually changed; run before force-pushing
 ```
 
-`-S` searches the content of the diff, not commit messages — different thing entirely from `--grep`. And plain `blame` gives credit to whoever last ran Prettier; `-w -C -C -C` follows the code across whitespace changes, moves, and file boundaries to the person who wrote the logic.
+`-S` searches the content of the diff, not commit messages. Different thing entirely from `--grep`. And plain `blame` gives credit to whoever last ran Prettier; `-w -C -C -C` follows the code across whitespace changes, moves, and file boundaries to the person who wrote the logic.
 
 ## the four tools worth installing today
 

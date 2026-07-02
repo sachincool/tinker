@@ -12,7 +12,7 @@ Here's the incident, what I got wrong, and what SREs actually need to know about
 
 ![Timeline of a JA4 rate-limit deploy that turned a confident 2pm push into a 30 percent revenue drop and a 4pm rollback two hours later.](/images/ja4-fingerprinting-network-security/hero.png)
 
-*Fig. 1 — one fingerprint looked like one attacker. it was a tls stack used by 30% of customers.*
+*Fig. 1 · one fingerprint looked like one attacker. it was a tls stack used by 30% of customers.*
 
 ## the JA3 problem that hit our monitoring
 
@@ -222,23 +222,23 @@ Ugly, but it's reality.
 
 ## what's coming that will break this
 
-ECH (Encrypted ClientHello) in TLS 1.3 encrypts the inner ClientHello, hiding SNI and ALPN. The outer hello still carries cipher suites and extensions, so JA4 can still be computed on what's visible — the identifying signal just gets weaker. When ECH adoption hits scale, we'll want a different approach.
+ECH (Encrypted ClientHello) in TLS 1.3 encrypts the inner ClientHello, hiding SNI and ALPN. The outer hello still carries cipher suites and extensions, so JA4 can still be computed on what's visible. The identifying signal just gets weaker. When ECH adoption hits scale, we'll want a different approach.
 
 Keep an eye on your TLS 1.3 ECH adoption metrics. When it hits 20%+, time to rethink your monitoring strategy.
 
-## the incident postmortem takeaways
+## what the postmortem changed
 
-I tested the rule in staging with synthetic traffic. Real users matched the "bad" fingerprint and I never saw it coming. Anything fingerprint-shaped needs to be canaried at 1% of real traffic first, with anomaly alerts on drops in known-good fingerprints — "chrome-119-windows traffic dropped 90%" is the kind of signal that would have caught this in five minutes instead of two hours.
+I tested the rule in staging with synthetic traffic. Real users matched the "bad" fingerprint and I never saw it coming. Anything fingerprint-shaped needs to be canaried at 1% of real traffic first, with anomaly alerts on drops in known-good fingerprints. "chrome-119-windows traffic dropped 90%" is the kind of signal that would have caught this in five minutes instead of two hours.
 
 Rollback path matters more than the rule itself. We killed ours with a feature flag and still spent 30 minutes draining caches and recovering. If a rule can take down 30% of traffic, the kill switch needs to be a single toggle, tested before the rule ships.
 
-The deeper lesson is that fingerprints are a dimension, not an identity. Group by them, classify with them, slice metrics with them — don't target individuals with them.
+The deeper lesson is that fingerprints are a dimension, not an identity. Group by them and slice metrics with them. Don't target individuals with them.
 
 ## should SREs care about JA4?
 
 Yes, but not for the reasons you might think.
 
-It's not about security. It's about observability. Understanding your traffic composition, detecting anomalies, debugging production issues.
+It's not about security. It's about observability: understanding your traffic composition and detecting anomalies.
 
 Adding JA4 fingerprints to your logs and metrics gives you another dimension to slice your data. When something weird happens, you can answer "what client type is doing this?" faster.
 

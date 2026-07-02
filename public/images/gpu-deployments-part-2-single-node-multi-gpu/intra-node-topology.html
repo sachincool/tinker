@@ -1,0 +1,91 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#e6ddcc;display:flex;justify-content:center;padding:48px;font-family:Georgia,'Times New Roman',serif}
+.fig{width:1080px;background:#f4efe6;border:1px solid #cfc4b0;padding:40px 46px 40px}
+.eyebrow{font:600 12px/1 ui-monospace,Menlo,monospace;letter-spacing:.2em;text-transform:uppercase;color:#bf4a2e}
+.title{font-size:31px;color:#22201c;margin:11px 0 5px;letter-spacing:-.01em}
+.sub{font-size:15px;color:#6f6a60;font-style:italic;margin-bottom:24px}
+.panel{border:1px solid #d9d0c0;background:#faf6ee;padding:16px 22px 20px;margin-bottom:20px}
+.panel:last-child{margin-bottom:0}
+.pname{font-family:ui-monospace,Menlo,monospace;font-size:14px;font-weight:600;color:#22201c;display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
+.pname .verdict{font-size:12.5px;font-style:italic;font-family:Georgia,serif;font-weight:400}
+.good{color:#3d6b4f}.bad{color:#bf4a2e}
+svg{display:block;width:100%}
+text{font-family:ui-monospace,Menlo,monospace}
+</style></head><body>
+<div class="fig">
+  <div class="eyebrow">Single node · topology</div>
+  <div class="title">Same GPU count, two very different boxes</div>
+  <div class="sub">The wiring between the cards sets the ceiling on everything above it. Check which one you bought.</div>
+
+  <div class="panel">
+    <div class="pname"><span>HGX / DGX baseboard · NVSwitch mesh</span><span class="verdict good">any GPU ↔ any GPU at full 900 GB/s</span></div>
+    <svg viewBox="0 0 1000 210">
+      <!-- NVSwitch bank -->
+      <rect x="250" y="150" width="500" height="34" rx="4" fill="#f7ddcf" stroke="#bf4a2e" stroke-width="1.5"/>
+      <text x="500" y="171" text-anchor="middle" font-size="12" font-weight="600" fill="#8a4a34">4 × NVSwitch · non-blocking fabric</text>
+      <!-- 8 GPUs -->
+      <g fill="#fffdf8" stroke="#c3b8a4" stroke-width="1.3">
+        <rect x="40"  y="40" width="96" height="46" rx="4"/>
+        <rect x="160" y="40" width="96" height="46" rx="4"/>
+        <rect x="280" y="40" width="96" height="46" rx="4"/>
+        <rect x="400" y="40" width="96" height="46" rx="4"/>
+        <rect x="520" y="40" width="96" height="46" rx="4"/>
+        <rect x="640" y="40" width="96" height="46" rx="4"/>
+        <rect x="760" y="40" width="96" height="46" rx="4"/>
+        <rect x="880" y="40" width="96" height="46" rx="4"/>
+      </g>
+      <g font-size="12" font-weight="600" fill="#33302a" text-anchor="middle">
+        <text x="88" y="68">GPU 0</text><text x="208" y="68">GPU 1</text><text x="328" y="68">GPU 2</text><text x="448" y="68">GPU 3</text>
+        <text x="568" y="68">GPU 4</text><text x="688" y="68">GPU 5</text><text x="808" y="68">GPU 6</text><text x="928" y="68">GPU 7</text>
+      </g>
+      <!-- links every GPU to switch bank -->
+      <g stroke="#d99b7f" stroke-width="1.4" opacity="0.9">
+        <line x1="88" y1="86" x2="360" y2="150"/><line x1="208" y1="86" x2="400" y2="150"/>
+        <line x1="328" y1="86" x2="440" y2="150"/><line x1="448" y1="86" x2="480" y2="150"/>
+        <line x1="568" y1="86" x2="520" y2="150"/><line x1="688" y1="86" x2="560" y2="150"/>
+        <line x1="808" y1="86" x2="600" y2="150"/><line x1="928" y1="86" x2="640" y2="150"/>
+      </g>
+    </svg>
+  </div>
+
+  <div class="panel">
+    <div class="pname"><span>PCIe box · no NVSwitch</span><span class="verdict bad">GPU ↔ GPU capped at PCIe, routed through the CPU</span></div>
+    <svg viewBox="0 0 1000 210">
+      <!-- 8 GPUs -->
+      <g fill="#fffdf8" stroke="#c3b8a4" stroke-width="1.3">
+        <rect x="40"  y="30" width="96" height="42" rx="4"/><rect x="160" y="30" width="96" height="42" rx="4"/>
+        <rect x="280" y="30" width="96" height="42" rx="4"/><rect x="400" y="30" width="96" height="42" rx="4"/>
+        <rect x="520" y="30" width="96" height="42" rx="4"/><rect x="640" y="30" width="96" height="42" rx="4"/>
+        <rect x="760" y="30" width="96" height="42" rx="4"/><rect x="880" y="30" width="96" height="42" rx="4"/>
+      </g>
+      <g font-size="11.5" font-weight="600" fill="#33302a" text-anchor="middle">
+        <text x="88" y="56">GPU 0</text><text x="208" y="56">GPU 1</text><text x="328" y="56">GPU 2</text><text x="448" y="56">GPU 3</text>
+        <text x="568" y="56">GPU 4</text><text x="688" y="56">GPU 5</text><text x="808" y="56">GPU 6</text><text x="928" y="56">GPU 7</text>
+      </g>
+      <!-- PCIe switches -->
+      <g fill="#efe7d7" stroke="#c3b8a4" stroke-width="1.3">
+        <rect x="120" y="100" width="240" height="30" rx="4"/><rect x="640" y="100" width="240" height="30" rx="4"/>
+      </g>
+      <text x="240" y="120" text-anchor="middle" font-size="11" fill="#6f6a60">PCIe switch</text>
+      <text x="760" y="120" text-anchor="middle" font-size="11" fill="#6f6a60">PCIe switch</text>
+      <!-- CPUs -->
+      <g fill="#e7ddca" stroke="#b8ad98" stroke-width="1.3">
+        <rect x="180" y="162" width="180" height="30" rx="4"/><rect x="640" y="162" width="180" height="30" rx="4"/>
+      </g>
+      <text x="270" y="182" text-anchor="middle" font-size="11" font-weight="600" fill="#5a5348">CPU 0 (NUMA)</text>
+      <text x="730" y="182" text-anchor="middle" font-size="11" font-weight="600" fill="#5a5348">CPU 1 (NUMA)</text>
+      <!-- GPU to switch to CPU -->
+      <g stroke="#c3b8a4" stroke-width="1.2">
+        <line x1="88" y1="72" x2="170" y2="100"/><line x1="208" y1="72" x2="220" y2="100"/><line x1="328" y1="72" x2="300" y2="100"/><line x1="448" y1="72" x2="340" y2="100"/>
+        <line x1="568" y1="72" x2="700" y2="100"/><line x1="688" y1="72" x2="740" y2="100"/><line x1="808" y1="72" x2="800" y2="100"/><line x1="928" y1="72" x2="860" y2="100"/>
+        <line x1="240" y1="130" x2="270" y2="162"/><line x1="760" y1="130" x2="730" y2="162"/>
+      </g>
+      <!-- slow cross-CPU path -->
+      <path d="M 270 192 C 380 214, 620 214, 730 192" fill="none" stroke="#bf4a2e" stroke-width="1.8" stroke-dasharray="6 5"/>
+      <rect x="326" y="199" width="348" height="15" fill="#faf6ee"/>
+      <text x="500" y="207" text-anchor="middle" font-size="11" font-weight="600" fill="#bf4a2e">cross-socket hop = slow all-reduce</text>
+    </svg>
+  </div>
+</div>
+</body></html>

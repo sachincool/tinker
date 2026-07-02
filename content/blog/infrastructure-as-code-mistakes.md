@@ -8,9 +8,9 @@ featured: true
 
 The first time I ran `terraform destroy` against the wrong workspace, I had two terminals open, one coffee in, and roughly four seconds between hitting `yes` and realising what was on the other end of that plan. The instance count was 17. By the time I cancelled, it was 6. Every one of those came back, eventually. The pages did not.
 
-![Five hand-drawn tombstones lined up in a small graveyard, each one marking a different terraform mistake — hardcoded amis, lost local state, a 2000-line main.tf, an unpinned provider, and a stray terraform destroy in red.](/images/infrastructure-as-code-mistakes/hero.png)
+![Five hand-drawn tombstones lined up in a small graveyard, each one marking a different terraform mistake: hardcoded amis, lost local state, a 2000-line main.tf, an unpinned provider, and a stray terraform destroy in red.](/images/infrastructure-as-code-mistakes/hero.png)
 
-*Fig. 1 — every headstone here was paid for in pages.*
+*Fig. 1 · every headstone here was paid for in pages.*
 
 What follows is the short list of Terraform mistakes I've made enough times to recognise on sight. None of them are clever. All of them are the sort of thing you nod at in a blog post and then commit anyway because it's Friday.
 
@@ -48,7 +48,7 @@ The data source costs you one API call per plan. It saves you the next four migr
 
 ## not using remote state
 
-**The mistake.** Keeping `terraform.tfstate` on my laptop. I lost it once — clean reinstall, didn't think to copy the working directory across. The infrastructure was still up, happily running. Terraform had no idea any of it existed. I rebuilt the state by hand with `terraform import`, one resource at a time, and learned more about resource addresses than I wanted to.
+**The mistake.** Keeping `terraform.tfstate` on my laptop. I lost it once. Clean reinstall, didn't think to copy the working directory across. The infrastructure was still up, happily running. Terraform had no idea any of it existed. I rebuilt the state by hand with `terraform import`, one resource at a time, and learned more about resource addresses than I wanted to.
 
 **The fix.** S3 backend, versioning on, lock table next to it:
 
@@ -76,7 +76,7 @@ Versioning on the bucket is the part most people skip. Turn it on. The day you f
 - `versions.tf` for provider and Terraform version constraints
 - separate child modules under `modules/` for anything used twice
 
-The names don't matter to Terraform — it concatenates every `.tf` in the directory regardless. They matter to the next person who opens the repo, which on a long enough timeline is also you.
+The names don't matter to Terraform. It concatenates every `.tf` in the directory regardless. They matter to the next person who opens the repo, which on a long enough timeline is also you.
 
 ## not locking provider versions
 

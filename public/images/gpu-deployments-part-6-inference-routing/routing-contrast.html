@@ -1,0 +1,75 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#e6ddcc;display:flex;justify-content:center;padding:48px;font-family:Georgia,'Times New Roman',serif}
+.fig{width:1080px;background:#f4efe6;border:1px solid #cfc4b0;padding:40px 46px 38px}
+.eyebrow{font:600 12px/1 ui-monospace,Menlo,monospace;letter-spacing:.2em;text-transform:uppercase;color:#bf4a2e}
+.title{font-size:31px;color:#22201c;margin:11px 0 5px;letter-spacing:-.01em}
+.sub{font-size:15px;color:#6f6a60;font-style:italic;margin-bottom:22px}
+.panel{border:1px solid #d9d0c0;background:#faf6ee;padding:12px 20px 16px;margin-bottom:18px}
+.panel:last-child{margin-bottom:0}
+.pname{font-family:ui-monospace,Menlo,monospace;font-size:13.5px;font-weight:600;color:#22201c;display:flex;justify-content:space-between;align-items:baseline;margin-bottom:2px}
+.pname .v{font-size:12.5px;font-style:italic;font-family:Georgia,serif;font-weight:400}
+.bad{color:#bf4a2e}.good{color:#3d6b4f}
+svg{display:block;width:100%}
+text{font-family:ui-monospace,Menlo,monospace}
+</style></head><body>
+<div class="fig">
+  <div class="eyebrow">Inference routing · the same pool, two front doors</div>
+  <div class="title">The load balancer that throws away your cache</div>
+  <div class="sub">Two requests share a prefix. Whether that's free or paid for twice is a routing decision.</div>
+
+  <div class="panel">
+    <div class="pname"><span>round-robin</span><span class="v bad">prefix cache hit ≈ 11%: every replica re-prefills its neighbors' prompts</span></div>
+    <svg viewBox="0 0 1000 200">
+      <text x="70" y="18" font-size="11" fill="#9a9488">requests (color = shared prefix)</text>
+      <!-- request chips -->
+      <g>
+        <rect x="40" y="30" width="120" height="26" rx="4" fill="#f2c9ba" stroke="#bf4a2e"/><text x="100" y="47" text-anchor="middle" font-size="11" fill="#8a4a34">req · prefix A</text>
+        <rect x="40" y="70" width="120" height="26" rx="4" fill="#c7d6da" stroke="#5f8792"/><text x="100" y="87" text-anchor="middle" font-size="11" fill="#3f5a61">req · prefix B</text>
+        <rect x="40" y="110" width="120" height="26" rx="4" fill="#f2c9ba" stroke="#bf4a2e"/><text x="100" y="127" text-anchor="middle" font-size="11" fill="#8a4a34">req · prefix A</text>
+        <rect x="40" y="150" width="120" height="26" rx="4" fill="#c7d6da" stroke="#5f8792"/><text x="100" y="167" text-anchor="middle" font-size="11" fill="#3f5a61">req · prefix B</text>
+      </g>
+      <!-- replicas -->
+      <g>
+        <rect x="700" y="26" width="270" height="30" rx="4" fill="#fffdf8" stroke="#c3b8a4"/><text x="716" y="45" font-size="11.5" fill="#33302a">replica 1</text><text x="954" y="45" text-anchor="end" font-size="10.5" fill="#bf4a2e">prefill A</text>
+        <rect x="700" y="66" width="270" height="30" rx="4" fill="#fffdf8" stroke="#c3b8a4"/><text x="716" y="85" font-size="11.5" fill="#33302a">replica 2</text><text x="954" y="85" text-anchor="end" font-size="10.5" fill="#bf4a2e">prefill B</text>
+        <rect x="700" y="106" width="270" height="30" rx="4" fill="#fffdf8" stroke="#c3b8a4"/><text x="716" y="125" font-size="11.5" fill="#33302a">replica 3</text><text x="954" y="125" text-anchor="end" font-size="10.5" fill="#bf4a2e">prefill A again</text>
+        <rect x="700" y="146" width="270" height="30" rx="4" fill="#fffdf8" stroke="#c3b8a4"/><text x="716" y="165" font-size="11.5" fill="#33302a">replica 4</text><text x="954" y="165" text-anchor="end" font-size="10.5" fill="#bf4a2e">prefill B again</text>
+      </g>
+      <!-- scatter arrows: reqA(43)->R1(41), reqB(83)->R2(81), reqA(123)->R3(121), reqB(163)->R4(161) -->
+      <g stroke-width="1.6" fill="none">
+        <line x1="160" y1="43" x2="700" y2="41" stroke="#d99b7f"/>
+        <line x1="160" y1="83" x2="700" y2="81" stroke="#8fb0b8"/>
+        <line x1="160" y1="123" x2="700" y2="121" stroke="#d99b7f"/>
+        <line x1="160" y1="163" x2="700" y2="161" stroke="#8fb0b8"/>
+      </g>
+    </svg>
+  </div>
+
+  <div class="panel">
+    <div class="pname"><span>prefix-cache-aware</span><span class="v good">prefix cache hit ≈ 93%: a match skips prefill entirely</span></div>
+    <svg viewBox="0 0 1000 200">
+      <text x="70" y="18" font-size="11" fill="#9a9488">same requests</text>
+      <g>
+        <rect x="40" y="30" width="120" height="26" rx="4" fill="#f2c9ba" stroke="#bf4a2e"/><text x="100" y="47" text-anchor="middle" font-size="11" fill="#8a4a34">req · prefix A</text>
+        <rect x="40" y="70" width="120" height="26" rx="4" fill="#c7d6da" stroke="#5f8792"/><text x="100" y="87" text-anchor="middle" font-size="11" fill="#3f5a61">req · prefix B</text>
+        <rect x="40" y="110" width="120" height="26" rx="4" fill="#f2c9ba" stroke="#bf4a2e"/><text x="100" y="127" text-anchor="middle" font-size="11" fill="#8a4a34">req · prefix A</text>
+        <rect x="40" y="150" width="120" height="26" rx="4" fill="#c7d6da" stroke="#5f8792"/><text x="100" y="167" text-anchor="middle" font-size="11" fill="#3f5a61">req · prefix B</text>
+      </g>
+      <g>
+        <rect x="700" y="26" width="270" height="30" rx="4" fill="#eef2ec" stroke="#9cbfa4"/><text x="716" y="45" font-size="11.5" fill="#33302a">replica 1 · holds A</text><text x="954" y="45" text-anchor="end" font-size="10.5" fill="#3d6b4f">cache hit</text>
+        <rect x="700" y="66" width="270" height="30" rx="4" fill="#eef2ec" stroke="#9cbfa4"/><text x="716" y="85" font-size="11.5" fill="#33302a">replica 2 · holds B</text><text x="954" y="85" text-anchor="end" font-size="10.5" fill="#3d6b4f">cache hit</text>
+        <rect x="700" y="106" width="270" height="30" rx="4" fill="#fffdf8" stroke="#c3b8a4"/><text x="716" y="125" font-size="11.5" fill="#9a9488">replica 3 · idle headroom</text>
+        <rect x="700" y="146" width="270" height="30" rx="4" fill="#fffdf8" stroke="#c3b8a4"/><text x="716" y="165" font-size="11.5" fill="#9a9488">replica 4 · idle headroom</text>
+      </g>
+      <!-- aware arrows: both A -> R1(41), both B -> R2(81) -->
+      <g stroke-width="1.6" fill="none">
+        <line x1="160" y1="43" x2="700" y2="41" stroke="#bf4a2e"/>
+        <line x1="160" y1="123" x2="700" y2="41" stroke="#bf4a2e"/>
+        <line x1="160" y1="83" x2="700" y2="81" stroke="#5f8792"/>
+        <line x1="160" y1="163" x2="700" y2="81" stroke="#5f8792"/>
+      </g>
+    </svg>
+  </div>
+</div>
+</body></html>

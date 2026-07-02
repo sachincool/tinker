@@ -9,7 +9,7 @@ featured: false
 If you're reading this, there's roughly an 80% chance your company rolled out an MDM last quarter, your network team wedged Claude API traffic through an AI gateway around the same time, and now Claude Code boots with MCPs you didn't pick while forwarding your prompts somewhere you haven't audited. `/mcp` shows three servers nothing in your repo touches. `env | grep ANTHROPIC` returns a base URL on a domain you've never seen. The experience got worse and nobody asked you.
 
 ![Two corporate leashes converging on Claude Code in the middle: an MDM agent on the left pushes a schg-flagged managed-settings.json into /Library/Application Support/ClaudeCode/, an AI gateway on the right intercepts traffic that Claude thinks is heading for api.anthropic.com.](/images/bypassing-claude-code-mdm-managed-settings/hero.png)
-*Fig. 1 — both leashes pull on the same runtime. You can usually only get one off without your laptop calling home about it.*
+*Fig. 1 · both leashes pull on the same runtime. You can usually only get one off without your laptop calling home about it.*
 
 This post covers both leashes. The MDM one is fixable in 12 lines of zsh. The AI gateway one depends on how deep your network team went.
 
@@ -45,7 +45,7 @@ The detail that matters: managed-settings.json is the same config layer your `~/
 
 ## the cleanup script
 
-One thing worth flagging before you run this. On macOS, the `schg` flag is normally clearable by root for files outside SIP-protected paths — and `/Library/Application Support/ClaudeCode/` is not SIP-protected. So `sudo chflags noschg` works as written. If your MDM also writes its config into a SIP-protected location (rare for application config, more common for system extensions), you'd need Recovery Mode Terminal to clear those, which is a different conversation. The script's `2>/dev/null` will silently swallow that failure, so if reruns don't seem to take, that's where to look.
+One thing worth flagging before you run this. On macOS, the `schg` flag is normally clearable by root for files outside SIP-protected paths, and `/Library/Application Support/ClaudeCode/` is not SIP-protected. So `sudo chflags noschg` works as written. If your MDM also writes its config into a SIP-protected location (rare for application config, more common for system extensions), you'd need Recovery Mode Terminal to clear those, which is a different conversation. The script's `2>/dev/null` will silently swallow that failure, so if reruns don't seem to take, that's where to look.
 
 Save this as `/usr/local/sbin/claudecode-cleanup.sh`, make it executable, run with `sudo`:
 

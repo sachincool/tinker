@@ -18,7 +18,7 @@ You opened your editor, ran `npm install`, and onboarded somewhere between 800 a
 
 ![A two-panel hand-drawn diagram. Left panel labeled 'what i installed' shows five neat dependency boxes connected to a 'your app' box. Right panel labeled 'what npm install pulled in' shows the same five boxes fanning out into a sprawling cluster of small transitive dependencies, with one highlighted in red labeled evil-helper@1.2.3 and a callout reading 'this one is the one shipping crypto miners.'](/images/lazy-security-part-1-supply-chain/dependency-tree-contrast.png)
 
-*Fig. 1 — left is the dependency graph you reviewed at PR time. Right is the one your CI runner actually executes.*
+*Fig. 1 · left is the dependency graph you reviewed at PR time. Right is the one your CI runner actually executes.*
 
 The job is not to read all 1,995. The job is to make sure that when one of them is the problem, the blast radius is small and the alarm goes off.
 
@@ -28,7 +28,7 @@ Chainjacking is the umbrella term for "someone got control of a package you depe
 
 ![A magazine-infographic-style timeline on a dark navy background. Six stages from left to right: T-7d maintainer account targeted, T-0 malicious version published, T+12m first CI installs it, T+12m02s secrets exfiltrated, T+1h backdoor in artifacts, T+24h credentials for sale. Stages 1-2 highlighted in coral as 'compromise' stages; stages 3-6 in cyan as 'victim' stages.](/images/lazy-security-part-1-supply-chain/chainjacking-timeline.png)
 
-*Fig. 2 — twenty-four hours from maintainer phish to credential resale. Nobody noticed the version bump.*
+*Fig. 2 · twenty-four hours from maintainer phish to credential resale. Nobody noticed the version bump.*
 
 What matters in that timeline is that the *human* steps are slow and the *automated* steps are fast. The window between "malicious version published" and "your CI runs `npm install`" is whatever your dependabot cron is. If you auto-merge minor and patch bumps, that window is ninety seconds.
 
@@ -47,7 +47,7 @@ Scope everything internal. Register your scope on public npm as a parked placeho
 
 ## postinstall
 
-Most install-time npm supply-chain incidents I have read the postmortem on shipped their malicious code in a `postinstall` script — not in runtime code. (Some recent ones, like the chalk/debug compromise of Sept 2025, activate at runtime in the browser or on first import; the switch below doesn't help against those. It does help against the install-time class, which is still the majority.) The install hook runs before your tests, before your linter, as part of the install. Default is enabled. The one-line change with the highest blast-radius reduction:
+Most install-time npm supply-chain incidents I have read the postmortem on shipped their malicious code in a `postinstall` script, not in runtime code. (Some recent ones, like the chalk/debug compromise of Sept 2025, activate at runtime in the browser or on first import; the switch below doesn't help against those. It does help against the install-time class, which is still the majority.) The install hook runs before your tests, before your linter, as part of the install. Default is enabled. The one-line change with the highest blast-radius reduction:
 
 ```
 # .npmrc
@@ -62,7 +62,7 @@ Aikido's [`safe-chain`](https://github.com/AikidoSec/safe-chain) is an open-sour
 
 ![A clean dark-editorial flow diagram. Five columns from left to right: developer terminal running 'npm install lodash-utils', a shell alias intercepting the command, a local proxy that all package downloads route through, the Aikido Intel cloud queried for malware reputation, and an outcome column with a green 'allowed → installed' branch and a red 'blocked → install aborted' branch.](/images/lazy-security-part-1-supply-chain/safe-chain-flow.png)
 
-*Fig. 3 — safe-chain in one picture. A local proxy in front of every package manager, checked against an open threat-intel feed.*
+*Fig. 3 · safe-chain in one picture. A local proxy in front of every package manager, checked against an open threat-intel feed.*
 
 On a dev machine:
 
@@ -84,7 +84,7 @@ In CI:
 - run: npm ci
 ```
 
-And, the part that quietly does the most work — refuse to install anything younger than 48 hours, because that's the window in which most npm malware is caught and removed:
+And, the part that quietly does the most work: refuse to install anything younger than 48 hours, because that's the window in which most npm malware is caught and removed:
 
 ```bash
 export SAFE_CHAIN_MINIMUM_PACKAGE_AGE_HOURS=48
@@ -104,7 +104,7 @@ If you do one thing this week, go register your npm scope.
 
 Three diagrams, three different tools, one brief: "explain a supply-chain attack to a tired SRE in one image." Prompts kept short. Results below.
 
-### #1 — the napkin contrast (coleam00 excalidraw-diagram skill)
+### #1: the napkin contrast (coleam00 excalidraw-diagram skill)
 
 Brief: *"two-panel hand-drawn napkin. Left panel 'what i installed': five direct deps off a 'your app' box. Right panel 'what npm install pulled in': same five direct deps, transitive sprawl under each, one of them is a red `evil-helper@1.2.3`, callout reads 'shipping crypto miners.'"*
 
@@ -116,7 +116,7 @@ One install gotcha worth knowing: the skill loads Excalidraw via ESM and the def
 
 Verdict: **won for the hero.** The Excalidraw aesthetic earns a place when a post needs a punchline; the skill's methodology adds the second zoom level that elevates a punchline into something that teaches.
 
-### #2 — the chainjacking timeline (diagram-design, polished editorial)
+### #2: the chainjacking timeline (diagram-design, polished editorial)
 
 Brief: *"Horizontal six-stage timeline. Dark navy `#11141c` ground, coral `#ff6b5a` for the two 'compromise' stages, muted cyan `#5bc0d9` for the four 'victim' stages. Each stage: small timestamp label (T-7d, T-0, T+12m, T+12m02s, T+1h, T+24h), a node on the line, a short title, one-line caption. Title 'a chainjacking attack, in six steps' (lowercase). Italic figcaption. Magazine-infographic feel, no neon, no scanlines."*
 
@@ -124,7 +124,7 @@ Result: [Fig. 2](/images/lazy-security-part-1-supply-chain/chainjacking-timeline
 
 Verdict: **won for explaining attacker workflow.** Editorial polish without being a dashboard. The agent's improvisation (the phase label) was the part I would not have prompted my way to.
 
-### #3 — the safe-chain flow (diagram-design, five-column system diagram)
+### #3: the safe-chain flow (diagram-design, five-column system diagram)
 
 Brief: *"Five columns left to right: developer terminal running `npm install lodash-utils`, shell alias intercepting, local proxy as the focal column, Aikido Intel cloud with a lookup arrow, outcome column with a green 'installed' branch and a red 'install aborted' branch. Dark editorial background `#0d1117`. Cyan normal flow, red blocked, green allowed. Legend strip at the bottom."*
 
@@ -132,4 +132,4 @@ Result: [Fig. 3](/images/lazy-security-part-1-supply-chain/safe-chain-flow.png).
 
 Verdict: **won for explaining a system.** When the diagram has to show *what a tool does*, this format beats the napkin every time. The napkin is a punchline. This one is a reference.
 
-I did not ship an animated `.gif` for Part 1. The `infographic-gif` skill is the right tool for *quantitative motion* — a funnel decaying, a bar chart counting up. Nothing in Part 1 needed motion to make the point. If Part 3 ends up wanting a "blast radius over 24 hours" visualisation, that's where the GIF goes.
+I did not ship an animated `.gif` for Part 1. The `infographic-gif` skill is the right tool for *quantitative motion*: a funnel decaying, a bar chart counting up. Nothing in Part 1 needed motion to make the point. If Part 3 ends up wanting a "blast radius over 24 hours" visualisation, that's where the GIF goes.

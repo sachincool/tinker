@@ -1,0 +1,38 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#e6ddcc;display:flex;justify-content:center;padding:48px;font-family:Georgia,'Times New Roman',serif}
+.fig{width:1000px;background:#f4efe6;border:1px solid #cfc4b0;padding:40px 46px 36px}
+.eyebrow{font:600 12px/1 ui-monospace,Menlo,monospace;letter-spacing:.2em;text-transform:uppercase;color:#bf4a2e}
+.title{font-size:31px;color:#22201c;margin:11px 0 5px;letter-spacing:-.01em}
+.sub{font-size:15px;color:#6f6a60;font-style:italic;margin-bottom:18px}
+.key{display:flex;gap:22px;margin-bottom:22px;font:600 12px/1 ui-monospace,Menlo,monospace;color:#6f6a60}
+.key i{display:inline-block;width:13px;height:13px;border-radius:3px;margin-right:7px;vertical-align:-1px}
+.chart{display:flex;align-items:flex-end;justify-content:space-around;height:300px;border-bottom:1.5px solid #c3b8a4;padding:0 10px}
+.grp{display:flex;flex-direction:column;align-items:center;flex:1}
+.bars{display:flex;align-items:flex-end;gap:12px;height:280px}
+.bar{width:64px;display:flex;align-items:flex-start;justify-content:center;border-radius:3px 3px 0 0;padding-top:7px;font:600 13px/1 ui-monospace,Menlo,monospace}
+.neo{background:#bf4a2e;color:#fbeee7}
+.hyp{background:#d8cdb8;color:#5a5348}
+.glabel{margin-top:11px;font-family:ui-monospace,Menlo,monospace;font-size:13px;font-weight:600;color:#22201c}
+.foot{margin-top:20px;border-top:1px solid #d9d0c0;padding-top:14px;font-size:13.5px;color:#4a463d;font-style:italic;line-height:1.55}
+.foot b{font-style:normal;font-family:ui-monospace,Menlo,monospace;font-weight:600;color:#bf4a2e}
+</style></head><body>
+<div class="fig">
+  <div class="eyebrow">Cost · on-demand, per GPU-hour, 2026</div>
+  <div class="title">Neoclouds vs hyperscalers</div>
+  <div class="sub">The spread is wide and moves monthly. Big training runs almost never pay these rates.</div>
+  <div class="key"><span><i class="neo"></i>neocloud (Lambda, CoreWeave, Nebius)</span><span><i class="hyp"></i>hyperscaler (AWS / Azure)</span></div>
+  <div class="chart">
+    <div class="grp"><div class="bars">
+      <div class="bar neo" style="height:63px">$3.0</div><div class="bar hyp" style="height:145px">$6.88</div>
+    </div><div class="glabel">H100 SXM</div></div>
+    <div class="grp"><div class="bars">
+      <div class="bar neo" style="height:82px">$3.9</div><div class="bar hyp" style="height:242px">~$11.5</div>
+    </div><div class="glabel">H200</div></div>
+    <div class="grp"><div class="bars">
+      <div class="bar neo" style="height:116px">$5.5</div><div class="bar hyp" style="height:300px">$14.24</div>
+    </div><div class="glabel">B200</div></div>
+  </div>
+  <div class="foot">Reserved commits cut <b>16–40%</b>. Spot is <b>30–70%</b> cheaper but nearly unusable for gang-scheduled training: lose one node and the whole synchronous job stalls. That gap is why capacity blocks exist.</div>
+</div>
+</body></html>

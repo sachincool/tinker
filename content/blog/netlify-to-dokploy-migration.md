@@ -16,11 +16,15 @@ Five sites down:
 - My personal blog
 - A ex-ceo's landing page
 
-![Netlify suspension email](/images/netlify-to-dokploy-migration/dokploy_email.png)
+![The Netlify email announcing five of my projects were suspended for exceeding the credit limit.](/images/netlify-to-dokploy-migration/dokploy_email.png)
+
+*Fig. 1 · the email that started the 15-minute scramble.*
 
 Netlify moved legacy free tier users to their new 300-credit plan. I burned through it in a week.
 
-![Netlify upgrade notice](/images/netlify-to-dokploy-migration/dokploy_upgrade_netlify.webp)
+![Netlify's upgrade prompt offering 1000 credits for $9 a month after the free tier ran out.](/images/netlify-to-dokploy-migration/dokploy_upgrade_netlify.webp)
+
+*Fig. 2 · the upgrade path Netlify wanted me to take.*
 
 New option: $9/month for 1000 credits, or figure something else out.
 
@@ -30,14 +34,18 @@ I had 15 minutes before my girlfriend woke up. Here's what happened.
 
 Hetzner CX22: 2 vCPUs, 4GB RAM, 40GB SSD. **€3.29/month**.
 
-![Hetzner CX22 pricing](/images/netlify-to-dokploy-migration/dokploy_hetzner.png)
+![Hetzner's CX22 plan listing 2 vCPUs, 4GB RAM, and 40GB SSD for €3.29 a month.](/images/netlify-to-dokploy-migration/dokploy_hetzner.png)
+
+*Fig. 3 · the box that replaced all five sites for €3.29 a month.*
 
 Math was simple:
 
 - Netlify: $108/year for credit anxiety
 - Dokploy + Hetzner: $42/year for unlimited deploys
 
-![Netlify vs Self-Hosted Comparison](/images/netlify-to-dokploy-migration/dokploy_netlify.png)
+![A cost comparison putting Netlify's $108 a year against Dokploy on Hetzner at $42 a year.](/images/netlify-to-dokploy-migration/dokploy_netlify.png)
+
+*Fig. 4 · $108 a year for credit anxiety versus $42 a year for unlimited deploys.*
 
 I'd been [watching this Dokploy video](https://www.youtube.com/watch?v=RoANBROvUeE) the week before. Perfect timing.
 
@@ -55,11 +63,15 @@ One command. Dokploy installed Docker, Traefik, PostgreSQL, everything.
 
 **Minutes 8-12**: Connected Git repos. Paste GitHub URL, select branch, done.
 
-![Dokploy Git integration](/images/netlify-to-dokploy-migration/dokploy_git.png)
+![Dokploy's Git integration screen where you paste a GitHub URL and pick a branch.](/images/netlify-to-dokploy-migration/dokploy_git.png)
+
+*Fig. 5 · connecting a repo is a URL and a branch.*
 
 **Minutes 12-15**: Hit deploy on all 5 projects. Watched them come back to life.
 
-![Dokploy migration dashboard](/images/netlify-to-dokploy-migration/dokploy_migration.png)
+![The Dokploy dashboard showing all five projects deploying at once.](/images/netlify-to-dokploy-migration/dokploy_migration.png)
+
+*Fig. 6 · all five projects coming back to life.*
 
 The Fiance woke up. dilharia.love was live.
 
@@ -71,7 +83,9 @@ WWW redirects? One checkbox. Netlify charged extra for this.
 
 Logs and monitoring built-in. No Datadog bill. No "$500/month observability platform."
 
-![Dokploy projects dashboard](/images/netlify-to-dokploy-migration/dokploy_projects.png)
+![The Dokploy projects view with SSL, logs, and monitoring built in.](/images/netlify-to-dokploy-migration/dokploy_projects.png)
+
+*Fig. 7 · SSL, logs, and monitoring without a separate bill.*
 
 ## the catch
 
@@ -90,8 +104,6 @@ All 5 sites running smoothly: linkedintel.ai pulling data, sachin.cool looking s
 Deployed 3 more projects since then. No credit anxiety. No surprise bills.
 
 Total maintenance time: 10 minutes/week.
-
-Best infrastructure decision I've made this year.
 
 ## related posts
 

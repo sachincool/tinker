@@ -24,7 +24,7 @@ I'd been running Cloudflare Email Routing for months. Free. Dead simple. Emails 
 
 Then I tried to reply from an alias. Couldn't.
 
-Cloudflare Email Routing is inbound-only. You receive emails at your alias, but when you hit reply, it goes out from your real Gmail address. The whole point of aliasing — gone in one click.
+Cloudflare Email Routing is inbound-only. You receive emails at your alias, but when you hit reply, it goes out from your real Gmail address. The whole point of aliasing, gone in one click.
 
 I'd already moved my infrastructure to [a self-hosted Dokploy setup](/blog/netlify-to-dokploy-migration) running on Hetzner. The server was sitting there at 8% CPU. Why not run my own email aliasing too?
 
@@ -32,7 +32,7 @@ Two hours later, I had full bidirectional email aliases running on SimpleLogin. 
 
 ![Side-by-side sequence diagram showing Cloudflare Email Routing leaking the real Gmail address on reply, while a self-hosted SimpleLogin stack on Hetzner rewrites the reply path so the alias survives in both directions.](/images/self-hosting-simplelogin/hero.png)
 
-*Fig. 1 — Cloudflare can hand you the letter. It just can't post one back without signing your real name.*
+*Fig. 1 · Cloudflare can hand you the letter. It just can't post one back without signing your real name.*
 
 ## why Cloudflare email routing wasn't enough
 
@@ -60,14 +60,14 @@ If all you need is inbound forwarding, stick with Cloudflare. It's free and it w
 
 ## what you'll need
 
-Before diving in:
+Before you start:
 
-- **A VPS** with ports 25, 465, and 443 open (Hetzner, Contabo, etc. — ~$3/month)
+- **A VPS** with ports 25, 465, and 443 open (Hetzner, Contabo, etc., around $3/month)
 - **A domain** with DNS you control
 - **A Brevo account** (free tier: 300 emails/day) for outbound SMTP relay
 - **30 minutes of focus** for DNS, plus another hour for the stack
 
-> **Key Insight:** Most residential ISPs and some cloud providers block port 25. Hetzner doesn't by default, but you might need to request it. Check before you start — no port 25, no self-hosted email.
+> **Key Insight:** Most residential ISPs and some cloud providers block port 25. Hetzner doesn't by default, but you might need to request it. Check before you start. No port 25, no self-hosted email.
 
 ## architecture overview
 
@@ -88,7 +88,7 @@ Four containers plus Postfix on the host:
 | `sl-db` | PostgreSQL database | 5432 |
 | `sl-app` | Web UI + API | 7777 |
 | `sl-email` | Email handler (SMTP) | 20381 |
-| `sl-job-runner` | Background tasks | — |
+| `sl-job-runner` | Background tasks | n/a |
 
 Plus Postfix running directly on the host, listening on port 25.
 
@@ -98,7 +98,7 @@ DNS is where most people give up. Don't. It's just a lot of records. Set them al
 
 For a domain like `sl.example.com` with server IP `203.0.113.50`:
 
-### A Record
+### A record
 
 ```
 Type: A
@@ -107,7 +107,7 @@ Value: 203.0.113.50
 Proxy: OFF (DNS only)
 ```
 
-### MX Record
+### MX record
 
 ```
 Type: MX
@@ -116,7 +116,7 @@ Value: sl.example.com
 Priority: 10
 ```
 
-### SPF Record
+### SPF record
 
 ```
 Type: TXT
@@ -124,9 +124,9 @@ Name: sl.example.com
 Value: v=spf1 mx a ip4:203.0.113.50 include:spf.sendinblue.com ~all
 ```
 
-The `include:spf.sendinblue.com` is critical — Brevo (formerly Sendinblue) sends your outbound mail through that SPF record.
+You need the `include:spf.sendinblue.com` line: Brevo (formerly Sendinblue) sends your outbound mail through that SPF record.
 
-### DKIM Record
+### DKIM record
 
 ```
 Type: TXT
@@ -136,7 +136,7 @@ Value: v=DKIM1; k=rsa; p=YOUR_DKIM_PUBLIC_KEY
 
 You'll generate this key during Docker setup. Come back and add it then.
 
-### DMARC Record
+### DMARC record
 
 ```
 Type: TXT
@@ -144,7 +144,7 @@ Name: _dmarc.sl.example.com
 Value: v=DMARC1; p=quarantine; pct=100; adkim=s; aspf=s
 ```
 
-### PTR Record (Reverse DNS)
+### PTR record (reverse DNS)
 
 Set this in your hosting provider's panel, not your DNS. It maps your IP back to your domain. Most providers have a "Reverse DNS" or "rDNS" field in the server settings.
 
@@ -156,7 +156,7 @@ Set this in your hosting provider's panel, not your DNS. It maps your IP back to
 
 ![Cloudflare DNS panel showing all configured records](/images/self-hosting-simplelogin/sl-dns-records.png)
 
-### Verify Everything
+### verify everything
 
 Don't move on until these pass:
 
@@ -180,7 +180,7 @@ dig -x 203.0.113.50 +short
 
 ## why Brevo? IP reputation is everything
 
-Why not send directly from Postfix? You can. Gmail, Outlook, and Yahoo will just spam-folder it — or reject it outright.
+Why not send directly from Postfix? You can. Gmail, Outlook, and Yahoo will just spam-folder it, or reject it outright.
 
 Email deliverability depends on IP reputation. A fresh VPS IP has none. To the big providers, that looks identical to a spammer on a throwaway server. Building reputation takes weeks of careful warm-up. For a personal alias service sending 10 emails a day, it's not worth it.
 
@@ -203,7 +203,7 @@ Save the SMTP key. You'll need it for both the SimpleLogin env file and Postfix 
 
 SSH into your server. Let's build this.
 
-### Create the Network and Directories
+### create the network and directories
 
 ```bash
 docker network create sl-network
@@ -213,7 +213,7 @@ mkdir -p /sl/db
 mkdir -p /sl/upload
 ```
 
-### Environment File
+### environment file
 
 Create `/sl/simplelogin.env`:
 
@@ -258,7 +258,7 @@ openssl rand -hex 32
 openssl rand -hex 16
 ```
 
-### Generate DKIM Keys
+### generate DKIM keys
 
 ```bash
 openssl genrsa -out /sl/dkim.key 1024
@@ -270,7 +270,7 @@ cat /sl/dkim.pub.key | sed '1d;$d' | tr -d '\n'
 
 Copy that output. Go back to your DNS and paste it as the `p=` value in your DKIM TXT record.
 
-### Start PostgreSQL
+### start PostgreSQL
 
 ```bash
 docker run -d \
@@ -284,7 +284,7 @@ docker run -d \
   postgres:16
 ```
 
-### Initialize the Database
+### initialize the database
 
 ```bash
 docker run --rm \
@@ -306,7 +306,7 @@ docker run --rm \
   python init_app.py
 ```
 
-### Start the Application Containers
+### start the application containers
 
 ```bash
 # Web app
@@ -352,13 +352,13 @@ docker run -d \
 
 ![Docker containers running healthily](/images/self-hosting-simplelogin/sl-docker-ps.png)
 
-Four containers. All running. But we're not done — Postfix is the piece that actually handles SMTP.
+Four containers. All running. But we're not done. Postfix is the piece that actually handles SMTP.
 
 ## the Postfix config (and the TLS trap)
 
 This is where I lost two hours. The setup itself is straightforward. The bug that follows is not.
 
-### Install Postfix
+### install Postfix
 
 ```bash
 apt-get update && apt-get install -y postfix postfix-pgsql libsasl2-modules
@@ -366,7 +366,7 @@ apt-get update && apt-get install -y postfix postfix-pgsql libsasl2-modules
 
 Choose "Internet Site" when prompted. Set the system mail name to your domain.
 
-### Main Configuration
+### main configuration
 
 Replace `/etc/postfix/main.cf` with:
 
@@ -415,7 +415,7 @@ virtual_alias_maps = pgsql:/etc/postfix/pgsql-transport-maps.cf
 transport_maps = pgsql:/etc/postfix/pgsql-transport-maps.cf
 ```
 
-### The TLS Trap
+### the TLS trap
 
 Here's what happened. Everything looked right. Containers running. Postfix installed. DNS verified. Sent a test email to my alias.
 
@@ -461,7 +461,7 @@ systemctl restart postfix
 
 Two hours. Two lines. Classic.
 
-### PostgreSQL Lookup Files
+### PostgreSQL lookup files
 
 These let Postfix query SimpleLogin's database to know which domains and addresses to accept.
 
@@ -489,7 +489,7 @@ query = SELECT 'smtp:127.0.0.1:20381' FROM alias WHERE email='%s' AND enabled=tr
   UNION SELECT 'smtp:127.0.0.1:20381' WHERE split_part('%s', '@', 2) = 'sl.example.com' LIMIT 1;
 ```
 
-### SASL Authentication for Brevo
+### SASL authentication for Brevo
 
 Create `/etc/postfix/sasl_passwd`:
 
@@ -504,7 +504,7 @@ chmod 600 /etc/postfix/sasl_passwd
 postmap /etc/postfix/sasl_passwd
 ```
 
-### Expose PostgreSQL Port
+### expose PostgreSQL port
 
 Postfix runs on the host but needs to reach the Postgres container. Modify the sl-db container to expose the port:
 
@@ -524,7 +524,7 @@ docker run -d \
   postgres:16
 ```
 
-### Start Postfix
+### start Postfix
 
 ```bash
 systemctl restart postfix
@@ -639,7 +639,7 @@ Here's what the full flow looks like in practice. Send a test email to your alia
 
 ![Sending a test email to the SimpleLogin alias](/images/self-hosting-simplelogin/sl-inbound-test.png)
 
-It arrives in your mailbox, forwarded through SimpleLogin. Check the headers — mailed by Brevo's relay, signed by your domain:
+It arrives in your mailbox, forwarded through SimpleLogin. Check the headers: mailed by Brevo's relay, signed by your domain:
 
 ![Forwarded email showing Brevo relay and domain signature in headers](/images/self-hosting-simplelogin/sl-forwarded-headers.png)
 
@@ -657,7 +657,7 @@ SimpleLogin's dashboard confirms the reply went through:
 
 ### browser extension bonus
 
-SimpleLogin also ships a browser extension. Visit any site, click the icon, and create an alias on the fly — no need to open the dashboard:
+SimpleLogin also ships a browser extension. Visit any site, click the icon, and create an alias on the fly, no need to open the dashboard:
 
 ![SimpleLogin browser extension creating an alias on a website](/images/self-hosting-simplelogin/sl-browser-extension.png)
 

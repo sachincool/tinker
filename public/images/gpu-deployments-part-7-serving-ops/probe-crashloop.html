@@ -1,0 +1,35 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#e6ddcc;display:flex;justify-content:center;padding:48px;font-family:ui-monospace,'SF Mono',Menlo,monospace}
+.fig{width:980px;background:#1c1f24;border:1px solid #34343a;border-radius:10px;overflow:hidden;box-shadow:0 1px 0 #cfc4b0}
+.bar{background:#2a2d33;padding:11px 16px;display:flex;align-items:center;gap:8px}
+.dot{width:12px;height:12px;border-radius:50%}
+.tt{color:#8a8f98;font-size:12px;margin-left:12px;letter-spacing:.02em}
+.body{padding:22px 26px 26px;font-size:13.5px;line-height:1.7;color:#c8ccd2;white-space:pre;overflow-x:auto}
+.p{color:#7fb069}
+.cmd{color:#eef0f2}
+.o{color:#9aa0a8}
+.amber{color:#e8a04a}
+.rust{color:#e8795a}
+.cmt{color:#6a7078}
+</style></head><body>
+<div class="fig">
+  <div class="bar"><span class="dot" style="background:#e06c5a"></span><span class="dot" style="background:#e3b341"></span><span class="dot" style="background:#57a75b"></span><span class="tt">on-call, the model isn't crashing</span></div>
+<div class="body"><span class="p">$</span> <span class="cmd">kubectl get pods -l app=vllm-llama3-70b</span>
+<span class="o">NAME                               READY   STATUS             RESTARTS      AGE</span>
+<span class="o">vllm-llama3-70b-6d9c7f8b4d-2xk9p   0/1     </span><span class="rust">CrashLoopBackOff</span><span class="o">   4 (38s ago)   6m21s</span>
+<span class="o">vllm-llama3-70b-6d9c7f8b4d-l7wqz   0/1     </span><span class="rust">CrashLoopBackOff</span><span class="o">   4 (12s ago)   6m21s</span>
+
+<span class="p">$</span> <span class="cmd">kubectl describe pod vllm-llama3-70b-6d9c7f8b4d-2xk9p</span>
+<span class="o">    Last State:     Terminated</span>
+<span class="o">      Reason:       Error</span>
+<span class="o">      Exit Code:    </span><span class="amber">137</span><span class="cmt">          # 128 + SIGKILL(9), the kubelet killed it, not a segfault</span>
+<span class="o">Events:</span>
+<span class="o">  Type     Reason     Age   From     Message</span>
+<span class="o">  ----     ------     ----  ----     -------</span>
+<span class="o">  Warning  </span><span class="rust">Unhealthy</span><span class="o">  3m    kubelet  </span><span class="rust">Liveness probe failed</span><span class="o">: Get "http://10.0.3.14:8000/health":</span>
+<span class="o">                                    dial tcp 10.0.3.14:8000: connect: connection refused</span>
+<span class="o">  Normal   Killing    3m    kubelet  Container vllm failed liveness probe, will be restarted</span>
+<span class="cmt">  # the probe fired while the weights were still loading. the fix is a startupProbe.</span></div>
+</div>
+</body></html>

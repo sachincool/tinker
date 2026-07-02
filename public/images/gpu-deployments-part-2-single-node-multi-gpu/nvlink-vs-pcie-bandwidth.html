@@ -1,0 +1,32 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#e6ddcc;display:flex;justify-content:center;padding:48px;font-family:Georgia,'Times New Roman',serif}
+.fig{width:1000px;background:#f4efe6;border:1px solid #cfc4b0;padding:40px 46px 38px}
+.eyebrow{font:600 12px/1 ui-monospace,Menlo,monospace;letter-spacing:.2em;text-transform:uppercase;color:#bf4a2e}
+.title{font-size:31px;color:#22201c;margin:11px 0 5px;letter-spacing:-.01em}
+.sub{font-size:15px;color:#6f6a60;font-style:italic;margin-bottom:30px}
+.row{display:grid;grid-template-columns:200px 1fr;align-items:center;margin-bottom:15px;gap:16px}
+.lab{font-family:ui-monospace,Menlo,monospace;font-size:13px;color:#33302a;text-align:right;line-height:1.3}
+.lab span{display:block;color:#9a9488;font-size:11px;margin-top:2px}
+.track{position:relative;height:34px}
+.bar{height:100%;display:flex;align-items:center;justify-content:flex-end;padding-right:12px;font-family:ui-monospace,Menlo,monospace;font-weight:600;font-size:14px;border-radius:2px}
+.pcie{background:#d8cdb8;color:#5a5348}
+.nvl{background:#e0b6a2;color:#7a3a26}
+.focal{background:#bf4a2e;color:#fbeee7}
+.foot{margin-top:20px;border-top:1px solid #d9d0c0;padding-top:14px;font-size:14px;color:#4a463d;font-style:italic;line-height:1.5}
+.foot b{font-style:normal;color:#bf4a2e;font-family:ui-monospace,Menlo,monospace;font-weight:600}
+.axis{font:600 10px/1 ui-monospace,Menlo,monospace;color:#b8ad98;text-transform:uppercase;letter-spacing:.12em;text-align:right;margin-top:4px}
+</style></head><body>
+<div class="fig">
+  <div class="eyebrow">GPU-to-GPU · bidirectional, per GPU</div>
+  <div class="title">Why tensor parallelism wants NVLink</div>
+  <div class="sub">Bandwidth per GPU across the interconnects you'll actually meet in a box.</div>
+  <div class="row"><div class="lab">PCIe Gen4 x16<span>cheap boxes, older cards</span></div><div class="track"><div class="bar pcie" style="width:3.6%">64</div></div></div>
+  <div class="row"><div class="lab">PCIe Gen5 x16<span>current PCIe cards</span></div><div class="track"><div class="bar pcie" style="width:7.1%">128</div></div></div>
+  <div class="row"><div class="lab">NVLink 3 · A100<span>Ampere</span></div><div class="track"><div class="bar nvl" style="width:33.3%">600</div></div></div>
+  <div class="row"><div class="lab">NVLink 4 · H100 / H200<span>Hopper · the workhorse</span></div><div class="track"><div class="bar focal" style="width:50%">900 GB/s</div></div></div>
+  <div class="row"><div class="lab">NVLink 5 · B200<span>Blackwell</span></div><div class="track"><div class="bar nvl" style="width:100%">1,800</div></div></div>
+  <div class="axis">GB/s →</div>
+  <div class="foot">NVLink 4 is roughly <b>7× PCIe Gen5</b> and <b>14× PCIe Gen4</b>. That gap is the whole reason a split model keeps up with itself on an NVSwitch box and crawls on a PCIe one.</div>
+</div>
+</body></html>

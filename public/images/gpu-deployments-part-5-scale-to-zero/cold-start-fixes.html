@@ -1,0 +1,47 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#e6ddcc;display:flex;justify-content:center;padding:48px;font-family:Georgia,'Times New Roman',serif}
+.fig{width:1040px;background:#f4efe6;border:1px solid #cfc4b0;padding:40px 46px 36px}
+.eyebrow{font:600 12px/1 ui-monospace,Menlo,monospace;letter-spacing:.2em;text-transform:uppercase;color:#bf4a2e}
+.title{font-size:31px;color:#22201c;margin:11px 0 5px;letter-spacing:-.01em}
+.sub{font-size:15px;color:#6f6a60;font-style:italic;margin-bottom:26px}
+.cols{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px}
+.card{border:1px solid #d9d0c0;background:#faf6ee;padding:18px 18px 16px}
+.ch{font-family:ui-monospace,Menlo,monospace;font-size:13px;font-weight:600;color:#22201c}
+.ct{font-size:11.5px;color:#bf4a2e;font-style:italic;margin-top:2px;margin-bottom:14px}
+.fx{font-size:13px;color:#33302a;padding:8px 0 8px 16px;border-top:1px solid #e2d9c9;position:relative;line-height:1.35}
+.fx:first-of-type{border-top:none}
+.fx:before{content:"·";position:absolute;left:2px;color:#bf4a2e;font-weight:700}
+.fx.frontier{color:#8a4a34}
+.fx.frontier:before{content:"★";font-size:9px;top:10px}
+.banner{margin-top:22px;border-top:1px solid #e0cabc;padding-top:14px;text-align:center;font-size:14px;color:#8a4a34;font-style:italic}
+.banner b{font-style:normal;font-family:ui-monospace,Menlo,monospace;font-weight:600;font-size:13px}
+</style></head><body>
+<div class="fig">
+  <div class="eyebrow">The fix menu · one column per stage</div>
+  <div class="title">What kills each part of the cold start</div>
+  <div class="sub">Snapshots are the only trick in the last column, which is why they're the frontier.</div>
+  <div class="cols">
+    <div class="card">
+      <div class="ch">image pull</div><div class="ct">minutes → seconds</div>
+      <div class="fx">SOCI / stargz / Nydus lazy pull</div>
+      <div class="fx">pre-bake image into the node</div>
+      <div class="fx">P2P in-cluster mirror (Spegel)</div>
+      <div class="fx">slim the image (15 GB → 5 GB)</div>
+    </div>
+    <div class="card">
+      <div class="ch">model load</div><div class="ct">minutes → tens of seconds</div>
+      <div class="fx">NVIDIA Run:ai Model Streamer</div>
+      <div class="fx">CoreWeave tensorizer</div>
+      <div class="fx">local NVMe / shared PVC cache</div>
+      <div class="fx">stream from object store, don't copy</div>
+    </div>
+    <div class="card">
+      <div class="ch">warmup</div><div class="ct">tens of seconds → seconds</div>
+      <div class="fx frontier">GPU memory snapshots (the frontier, skips load + warmup both)</div>
+      <div class="fx">limit captured CUDA graph sizes</div>
+    </div>
+  </div>
+  <div class="banner"><b>attack all three</b>: whichever stage you leave alone becomes the whole wait.</div>
+</div>
+</body></html>

@@ -23,9 +23,9 @@ The Ivanti CVEs are not a unique event. They're the most recent member of a clas
 - **Fortinet FortiOS SSL VPN**: CVE-2024-21762. Out-of-bounds write in February 2024, exploited in the wild before patches were widely deployed.
 - **Palo Alto Networks GlobalProtect**: CVE-2024-3400. Command injection in April 2024, exploited in a campaign Palo Alto Networks Unit 42 named Operation MidnightEclipse (Volexity tracks the actor as UTA0218).
 
-![A wide editorial system diagram on deep navy ground. Center: a large rectangular box labeled 'YOUR VPN APPLIANCE — internet-facing HTTPS portal' with five sub-labels (login UI, session manager, tunnel termination, admin panel, OS). Five red curved arrows from the outside converge on it, each labeled with a real 2023-2024 CVE: CVE-2023-46805 (Ivanti), CVE-2024-21887 (Ivanti), CVE-2024-20353 (Cisco), CVE-2023-4966 (CitrixBleed), CVE-2024-3400 (Palo Alto). Behind the appliance, a smaller cluster of internal services labeled 'prod database', 'admin panel', 'engineer SSH'. The cluster is all reachable once the appliance is compromised. The whole assembly sits inside a coral-tinted boundary labeled 'the attack surface you can't shrink'. A small inset on the right shows the mesh alternative as a dotted hexagon of peers with no central appliance, captioned 'no concentrator, no portal, no inbound port'.](/images/lazy-security-part-6-network-plane/vpn-appliance-attack-surface.png)
+![A wide editorial system diagram on deep navy ground. Center: a large rectangular box labeled 'YOUR VPN APPLIANCE: internet-facing HTTPS portal' with five sub-labels (login UI, session manager, tunnel termination, admin panel, OS). Five red curved arrows from the outside converge on it, each labeled with a real 2023-2024 CVE: CVE-2023-46805 (Ivanti), CVE-2024-21887 (Ivanti), CVE-2024-20353 (Cisco), CVE-2023-4966 (CitrixBleed), CVE-2024-3400 (Palo Alto). Behind the appliance, a smaller cluster of internal services labeled 'prod database', 'admin panel', 'engineer SSH'. The cluster is all reachable once the appliance is compromised. The whole assembly sits inside a coral-tinted boundary labeled 'the attack surface you can't shrink'. A small inset on the right shows the mesh alternative as a dotted hexagon of peers with no central appliance, captioned 'no concentrator, no portal, no inbound port'.](/images/lazy-security-part-6-network-plane/vpn-appliance-attack-surface.png)
 
-*Fig. 1 — five vendors, twelve months, the same shape of vulnerability. The mesh alternative is the small diagram on the right.*
+*Fig. 1 · five vendors, twelve months, the same shape of vulnerability. The mesh alternative is the small diagram on the right.*
 
 Five different vendors. Five different products. Five different attacker campaigns. The common shape is a publicly reachable HTTPS portal that handles authentication and tunnel termination. Every one of them has had a pre-authentication remote code execution in the last twelve months. That isn't a coincidence; it's an architecture.
 
@@ -39,7 +39,7 @@ Replace `ssh user@bastion.yourorg.com` with `tailscale ssh user@prod-db.your-tai
 
 ![A hand-drawn napkin showing a Tailscale ACL annotated with marker arrows and red callouts. The center of the napkin has a 20-line ACL in HuJSON (JSON with comments), with tagOwners, groups, and acls sections. Red arrows point from the 'group:engineers' line to a sketch of three engineer laptop icons, from 'tag:prod-db' to a sketched database cylinder with a 'prod' label, and from the comment '// only platform can reach prod databases' to a small underline beneath the matching ACL rule. A red callout reads 'twenty lines of declarative-policy → entire access plane'. Bottom strip mirrors Parts 1/3/4 chevron pattern with colored dots: 'one ACL → one SSO group → one git diff → entire blast radius'.](/images/lazy-security-part-6-network-plane/tailscale-acl-napkin.png)
 
-*Fig. 2 — twenty lines of HuJSON beats two hundred lines of iptables, and you can `git diff` the change.*
+*Fig. 2 · twenty lines of HuJSON beats two hundred lines of iptables, and you can `git diff` the change.*
 
 The ACL itself, in HuJSON (JSON with comments, native to Tailscale):
 
@@ -147,7 +147,7 @@ For 15 engineers, the network-in-front-of-everything bill:
 
 ![An animated horizontal bar chart in a dark editorial palette comparing the annual access-plane cost for a 15-engineer team across four configurations. Top bar: legacy SSL VPN appliance (Pulse Secure / Ivanti / GlobalProtect at small-business pricing) at roughly $600/year plus the CVE risk; subtitle 'plus appliance ops time'. Middle-top bar (accented, brighter cyan, coral tip): Tailscale Standard at $1,080/year (15 × $6/mo × 12); subtitle 'recommended default'. Middle-bottom bar: Tailscale Free + Cloudflare Zero Trust Free at $0; subtitle 'works up to 6 users / 50 seats'. Bottom bar: self-hosted Headscale + WireGuard at $60/year (just a small VPS); subtitle 'for the air-gapped or contract-bound case'. Annotation strip notes the appliance bar's true cost is dominated by patch/CVE response and is undercounted at $600.](/images/lazy-security-part-6-network-plane/access-plane-cost-stack.gif)
 
-*Fig. 3 — the bottom two bars are not an emergency, the top bar is.*
+*Fig. 3 · the bottom two bars are not an emergency, the top bar is.*
 
 Net cost: $90/month for the access plane covering most of the surface, with optional fallbacks at near-zero cost. For comparison, the median per-seat price of a legacy SSL VPN appliance (Pulse Secure / Ivanti, GlobalProtect, AnyConnect) at small-business pricing is around $40/seat/year, or roughly the same number, without the CVE risk and without the iptables ruleset.
 

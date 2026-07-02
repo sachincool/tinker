@@ -1,0 +1,39 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#e6ddcc;display:flex;justify-content:center;padding:48px;font-family:Georgia,'Times New Roman',serif}
+.fig{width:1000px;background:#f4efe6;border:1px solid #cfc4b0;padding:40px 46px 40px}
+.eyebrow{font:600 12px/1 ui-monospace,Menlo,monospace;letter-spacing:.2em;text-transform:uppercase;color:#bf4a2e}
+.title{font-size:31px;color:#22201c;margin:11px 0 5px;letter-spacing:-.01em}
+.sub{font-size:15px;color:#6f6a60;font-style:italic;margin-bottom:26px}
+.wrap{display:grid;grid-template-columns:26px 1fr;gap:10px}
+.yax{writing-mode:vertical-rl;transform:rotate(180deg);text-align:center;font:600 11px/1 ui-monospace,Menlo,monospace;letter-spacing:.12em;text-transform:uppercase;color:#9a9488}
+.plot{position:relative;height:440px;border-left:1.5px solid #c3b8a4;border-bottom:1.5px solid #c3b8a4;background:linear-gradient(#faf6ee,#faf6ee)}
+.plot:before,.plot:after{content:"";position:absolute;background:#e2d9c9}
+.plot:before{left:50%;top:0;bottom:0;width:1px}
+.plot:after{top:50%;left:0;right:0;height:1px}
+.pt{position:absolute;transform:translate(-50%,-50%);text-align:center;width:210px}
+.dot{width:15px;height:15px;border-radius:50%;margin:0 auto 8px;background:#b8ad98}
+.pt .nm{font-family:ui-monospace,Menlo,monospace;font-size:15px;font-weight:600;color:#22201c}
+.pt .ds{font-size:12.5px;color:#6f6a60;font-style:italic;line-height:1.4;margin-top:3px}
+.focal .dot{background:#bf4a2e;width:19px;height:19px}
+.focal .nm{color:#bf4a2e}
+.dim{opacity:.5}
+.dim .nm{text-decoration:line-through}
+.xax{text-align:center;font:600 11px/1 ui-monospace,Menlo,monospace;letter-spacing:.12em;text-transform:uppercase;color:#9a9488;margin-top:12px;margin-left:36px}
+</style></head><body>
+<div class="fig">
+  <div class="eyebrow">Single-node serving</div>
+  <div class="title">Choosing an inference engine</div>
+  <div class="sub">Start at vLLM. Move only when a profiled bottleneck points somewhere specific.</div>
+  <div class="wrap">
+    <div class="yax">raw performance on NVIDIA →</div>
+    <div class="plot">
+      <div class="pt focal" style="left:30%;top:32%"><div class="dot"></div><div class="nm">vLLM</div><div class="ds">broad model + hardware coverage, sane defaults, fastest to stand up</div></div>
+      <div class="pt" style="left:78%;top:14%"><div class="dot"></div><div class="nm">TensorRT-LLM</div><div class="ds">max throughput on NVIDIA, but you compile an engine per model</div></div>
+      <div class="pt" style="left:52%;top:40%"><div class="dot"></div><div class="nm">SGLang</div><div class="ds">RadixAttention · wins on shared-prefix, RAG, agents, MoE</div></div>
+      <div class="pt dim" style="left:22%;top:80%"><div class="dot"></div><div class="nm">TGI</div><div class="ds">maintenance mode · HuggingFace now points you elsewhere</div></div>
+    </div>
+  </div>
+  <div class="xax">ease of operations →</div>
+</div>
+</body></html>

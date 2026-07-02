@@ -1,0 +1,37 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#e6ddcc;display:flex;justify-content:center;padding:48px;font-family:Georgia,'Times New Roman',serif}
+.fig{width:1040px;background:#f4efe6;border:1px solid #cfc4b0;padding:40px 46px 36px}
+.eyebrow{font:600 12px/1 ui-monospace,Menlo,monospace;letter-spacing:.2em;text-transform:uppercase;color:#bf4a2e}
+.title{font-size:31px;color:#22201c;margin:11px 0 5px;letter-spacing:-.01em}
+.sub{font-size:15px;color:#6f6a60;font-style:italic;margin-bottom:24px}
+table{width:100%;border-collapse:collapse}
+th,td{text-align:left;padding:14px 16px;border-bottom:1px solid #e2d9c9}
+thead th{font:600 11px/1.3 ui-monospace,Menlo,monospace;letter-spacing:.1em;text-transform:uppercase;color:#9a9488;border-bottom:1px solid #d9d0c0}
+.mech{font-family:ui-monospace,Menlo,monospace;font-size:13.5px;font-weight:600;color:#22201c}
+.mech small{display:block;font-family:Georgia,serif;font-weight:400;font-size:12px;color:#9a9488;margin-top:2px;font-style:italic}
+.cell{font-size:13.5px}
+.yes{color:#3d6b4f;font-weight:600}
+.no{color:#bf4a2e;font-weight:600}
+.weak{color:#b07d2e;font-weight:600}
+.q{font-size:12.5px;color:#6f6a60}
+.wall td{background:#eef2ec}
+.foot{margin-top:18px;border-top:1px solid #d9d0c0;padding-top:14px;font-size:14px;color:#4a463d;font-style:italic;line-height:1.5}
+.foot b{font-style:normal;font-family:ui-monospace,Menlo,monospace;font-weight:600;color:#bf4a2e}
+</style></head><body>
+<div class="fig">
+  <div class="eyebrow">Multi-tenancy · the real boundary</div>
+  <div class="title">What actually isolates two tenants on a GPU</div>
+  <div class="sub">The namespace isn't on this table, because it isolates the API, not the silicon.</div>
+  <table>
+    <thead><tr><th>sharing mechanism</th><th>memory isolation</th><th>fault isolation</th><th>compute QoS</th></tr></thead>
+    <tbody>
+      <tr class="wall"><td class="mech">whole GPU<small>exclusive device</small></td><td class="cell yes">yes</td><td class="cell yes">yes</td><td class="q">full device</td></tr>
+      <tr class="wall"><td class="mech">MIG<small>hardware partition</small></td><td class="cell yes">yes · hardware</td><td class="cell yes">yes · contained</td><td class="q">guaranteed per slice</td></tr>
+      <tr><td class="mech">MPS<small>multi-process service</small></td><td class="cell no">no · soft caps only</td><td class="cell weak">weak · shared daemon</td><td class="q">soft % cap</td></tr>
+      <tr><td class="mech">time-slicing<small>round-robin turns</small></td><td class="cell no">none</td><td class="cell no">none</td><td class="q">equal time-share only</td></tr>
+    </tbody>
+  </table>
+  <div class="foot">Only the two shaded rows give a real memory wall. <b>MPS caps are software; time-slicing has nothing.</b> If tenants don't trust each other, that narrows your safe options to MIG or a whole card.</div>
+</div>
+</body></html>
