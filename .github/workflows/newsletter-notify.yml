@@ -121,9 +121,9 @@ jobs:
             const tags = (data.tags || []).map(t => `\`${t}\``).join(" ");
 
             const subject = `New Post: ${title}`;
+            // The "Modern" email template renders the subject as the email's
+            // heading, so a `# ${title}` here would print the title twice.
             const body = [
-              `# ${title}`,
-              "",
               excerpt,
               "",
               tags ? `**Tags:** ${tags}` : "",
