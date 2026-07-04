@@ -21,6 +21,13 @@ function formatDate(date: string) {
 
 const TECH_STACK = ["kubernetes", "terraform", "aws", "next.js", "typescript", "postgres"];
 
+const IMPACT = [
+  { label: "Daily active users", value: "4M+" },
+  { label: "Peak throughput", value: "1M/min" },
+  { label: "Uptime on 95% spot", value: "99.99%" },
+  { label: "Cloud spend trimmed", value: "$200K" },
+];
+
 const CURRENTLY = [
   "antenna building",
   "hardware hacking",
@@ -233,6 +240,20 @@ export default function HomePageContent({ latestPosts, tilCount, blogCount }: Ho
             More about me &rarr;
           </Link>
         </p>
+
+        {/* Impact — real numbers, same set as the resume */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-8 pt-4">
+          {IMPACT.map((stat) => (
+            <div key={stat.label} className="space-y-1">
+              <p className="font-serif text-3xl md:text-4xl leading-none text-foreground">
+                {stat.value}
+              </p>
+              <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+                {stat.label}
+              </p>
+            </div>
+          ))}
+        </div>
 
         {/* What I work in */}
         <div className="pt-2">

@@ -119,21 +119,26 @@ jobs:
             const title = data.title || slug;
             const excerpt = data.excerpt || content.substring(0, 200) + "...";
             const tags = (data.tags || []).map(t => `\`${t}\``).join(" ");
+            const seriesLine = (data.series && data.seriesPart)
+              ? `*${data.series}, part ${data.seriesPart}.*`
+              : null;
+            const tagsLine = tags ? `*Filed under ${tags}.*` : null;
 
-            const subject = `New Post: ${title}`;
-            // The "Modern" email template renders the subject as the email's
-            // heading, so a `# ${title}` here would print the title twice.
+            // Subject is the bare post title; the "Modern" template renders it as
+            // the email's H1, so the body opens on the excerpt (never repeat the
+            // title) and the rust tint carries the styling. Buttondown appends the
+            // unsubscribe footer, so we don't add one.
+            const subject = title;
             const body = [
+              seriesLine,
               excerpt,
-              "",
-              tags ? `**Tags:** ${tags}` : "",
-              "",
-              `**[Read the full post →](${postUrl})**`,
-              "",
+              // The post title is the clickable link (the "blog name"), not a
+              // generic "read more" — the whole headline goes to the post.
+              `**[${title} →](${postUrl})**`,
+              tagsLine,
               "---",
-              "",
-              "*You're receiving this because you subscribed at [harshit.cloud](https://harshit.cloud). Reply to this email if you have thoughts!*",
-            ].filter(line => line !== undefined).join("\n");
+              "*You subscribed at [harshit.cloud](https://harshit.cloud). Reply if you want to argue with me about it; unsubscribe below if it stops landing.*",
+            ].filter(Boolean).join("\n\n");
 
             console.log(`Sending newsletter for: ${title}`);
             console.log(`  URL: ${postUrl}`);

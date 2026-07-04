@@ -153,9 +153,9 @@ const skillCategories = [
 ];
 
 const stats = [
-  { label: "Years in production", value: "7+" },
   { label: "Daily active users", value: "4M+" },
-  { label: "Uptime SLA held", value: "99.99%" },
+  { label: "Peak throughput", value: "1M/min" },
+  { label: "Uptime on 95% spot", value: "99.99%" },
   { label: "Cloud spend trimmed", value: "$200K" },
 ];
 
