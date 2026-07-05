@@ -12,6 +12,7 @@ const navLinks = [
   { href: "/tags", label: "Tags" },
   { href: "/about", label: "About" },
   { href: "/lab", label: "Lab" },
+  { href: "/dog-eared", label: "Dog-eared" },
   { href: "https://k8s.org.in", label: "Infra & AI consulting" },
 ];
 
