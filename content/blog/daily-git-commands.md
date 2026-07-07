@@ -135,27 +135,29 @@ git branch --merged main | grep -v '\*\|main\|master' | xargs -n1 git branch -d
 
 Works only if your team uses merge commits. Most don't. GitHub's "Squash and merge" creates a brand-new commit on `main` with a different SHA, so `git branch --merged` never catches your local branch. Its commits aren't in main's history at all.
 
-The workaround: after `gfa`, any branch whose tracked remote was deleted shows as `[gone]`. Those are your merged-and-deleted PRs.
+The workaround: after `gfa`, any branch whose tracked remote was deleted shows as `[gone]`. Those are *usually* your merged-and-deleted PRs.
 
-```zsh
-# git-gone: delete local branches whose remote tracking branch is gone
-git-gone() {
-  git fetch --prune
-  local gone
-  gone=$(git for-each-ref --format '%(refname:short) %(upstream:track)' refs/heads \
-         | awk '$2 == "[gone]" {print $1}')
-  if [ -z "$gone" ]; then
-    echo "No gone branches"
-    return
-  fi
-  echo "$gone"
-  echo -n "Delete these? [y/N] "
-  read -r confirm
-  [[ "$confirm" == "y" ]] && echo "$gone" | xargs -r git branch -D
-}
+Usually, not always. `[gone]` only means the remote tracking branch is gone. Nearly always that's a squash-merged PR whose branch GitHub auto-deleted. But it can also be a branch you pushed, someone deleted server-side, and you never merged. So don't force-delete every `[gone]` branch with `git branch -D`. I once watched one show `[gone]` while it still held 26 unmerged commits; a force-delete there loses them for good.
+
+So check each `[gone]` branch for patch-equivalence against the base *before* deleting. Squash-merges get caught, genuinely unmerged work gets kept. This lives in my `~/.gitconfig` as `git gone`:
+
+```bash
+# ~/.gitconfig, under [alias]  →  run as: git gone
+gone = "!f() { \
+    git fetch --all --prune; \
+    base=$(git rev-parse --abbrev-ref origin/HEAD 2>/dev/null); base=${base:-origin/main}; \
+    for b in $(git for-each-ref --format='%(refname:short) %(upstream:track)' refs/heads \
+               | awk '$2==\"[gone]\"{print $1}'); do \
+      if [ -z \"$(git cherry \"$base\" \"$b\" | grep '^+')\" ]; then git branch -D \"$b\"; \
+      else echo \"kept $b (commits not in $base)\"; fi; \
+    done; }; f"
 ```
 
-Or install [`git-trim`](https://github.com/foriequal0/git-trim) (`brew install git-trim`), which is smarter. It detects patch-equivalent commits, so it catches squash-merges even when the upstream tracking ref isn't `[gone]`.
+One command does the whole ritual: the `git fetch --all --prune` prunes the dead remote refs, then the loop deletes the merged local branches in the same pass. No separate `gfa` first.
+
+`git cherry` compares by patch-id, not SHA. A squash-merged branch shows every commit as `-` (an equivalent already exists in the base) and gets deleted; a branch with real unpushed work shows `+` lines and stays. The `-D` is only reached after patch-equivalence is proven, so it never eats unmerged work.
+
+Or install [`git-trim`](https://github.com/foriequal0/git-trim) (`brew install git-trim`), which does the same classification and more. It catches squash-merges even when the tracking ref isn't `[gone]`, and skips diverged branches by default.
 
 ```bash
 git trim                # dry-run
