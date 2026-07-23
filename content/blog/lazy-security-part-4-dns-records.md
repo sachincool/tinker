@@ -2,7 +2,7 @@
 title: "Lazy SRE's guide to secure systems, part 4: the four DNS records"
 date: "2026-04-26"
 tags: ["security", "devsecops", "lazy-sre", "dns", "email", "dmarc"]
-excerpt: "Four DNS records that close the entire phishing impersonation class. SPF, DKIM, DMARC, CAA, two monitors, one afternoon."
+excerpt: "Four DNS records that close the entire phishing-impersonation class: SPF, DKIM, DMARC, and CAA, plus two monitors, set up correctly in one afternoon."
 featured: false
 series: "Lazy Security"
 seriesPart: 4

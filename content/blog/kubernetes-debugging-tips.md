@@ -2,7 +2,7 @@
 title: "Five Kubernetes debugging tricks that saved my production"
 date: "2024-12-15"
 tags: ["kubernetes", "devops", "debugging", "production"]
-excerpt: "Hard-learned lessons from debugging Kubernetes issues at 3 AM. These tricks will save you hours of frustration."
+excerpt: "Five Kubernetes debugging tricks from real 3 AM pages: kubectl logs --previous, ephemeral debug containers, scheduler events, and fixes that saved production."
 featured: true
 ---
 
@@ -75,5 +75,7 @@ Pipe to `less` because the output is longer than your terminal and the events at
 ---
 
 The pattern across all five is the same. Kubernetes is unusually good at telling you what went wrong, in plain prose, in a place you have to know to look. The flag is always `--previous`. The answer is always in `events`. The container is always the wrong one by default. Memorise the five commands above and most pages stop being mysteries and start being typing exercises.
+
+Most pages resolve with these five. The ones that don't — a control plane quietly falling over, a CNI dropping packets under load, a cluster that's "healthy" by every dashboard except the one metric users actually feel — are usually why teams bring in outside help. That's the kind of Kubernetes debugging I take on as [independent infrastructure consulting](https://k8s.org.in).
 
 Next time the alert fires at 03:47, the first thing you type is `kubectl logs <pod> --previous -c <container>`. The second thing is `kubectl describe pod <pod> | less`. If the answer isn't in those two outputs, you actually have a problem.

@@ -9,13 +9,21 @@ export async function generateMetadata(): Promise<Metadata> {
   const headersList = await headers();
   const hostname = headersList.get('host') || '';
   const baseUrl = getCurrentDomain(hostname);
+  const isMainDomain = hostname === 'harshit.cloud' || hostname === 'www.harshit.cloud';
+
+  const title = isMainDomain
+    ? `Blog | ${siteConfig.author.name}`
+    : 'Blog — Kubernetes, SRE & DevOps Deep Dives | Infra Magician';
+  const description = isMainDomain
+    ? 'Deep dives into web development, infrastructure chaos, and the art of tinkering with technology.'
+    : 'Kubernetes debugging war stories, GPU infrastructure deployments, Terraform patterns, and DevOps deep dives from the SRE trenches.';
 
   return {
-    title: `Blog | ${siteConfig.author.name}`,
-    description: 'Deep dives into web development, infrastructure chaos, and the art of tinkering with technology.',
+    title,
+    description,
     openGraph: {
-      title: `Blog | ${siteConfig.author.name}`,
-      description: 'Deep dives into web development, infrastructure chaos, and the art of tinkering with technology.',
+      title,
+      description,
       type: 'website',
       url: `${baseUrl}/blog`,
       siteName: siteConfig.title,
@@ -30,8 +38,8 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     twitter: {
       card: 'summary_large_image',
-      title: `Blog | ${siteConfig.author.name}`,
-      description: 'Deep dives into web development, infrastructure chaos, and the art of tinkering with technology.',
+      title,
+      description,
       images: [`${baseUrl}/blog/opengraph-image`],
     },
     alternates: {

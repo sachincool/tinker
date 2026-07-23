@@ -3,7 +3,7 @@ title: "AWS cost optimization: how we cut our bill by 60%"
 date: "2024-12-05"
 updatedAt: "2026-06-18"
 tags: ["aws", "cloud", "cost-optimization", "finops", "infrastructure"]
-excerpt: "Our AWS bill hit $50k/month. Here's exactly how we reduced it to $20k without sacrificing performance or reliability."
+excerpt: "Our AWS bill hit $50k/month. Here's exactly how EC2 rightsizing, Reserved Instances, S3 lifecycle rules, and CloudWatch retention cut it to $20k in six weeks."
 featured: false
 faqs:
   - question: "What is the fastest way to cut an AWS bill?"
@@ -378,5 +378,7 @@ The CFO gets the forecasted-overshoot alert. The on-call gets the 80%-of-actual 
 | **Total** | **$50,000** | **$20,000** | **60%** |
 
 Six weeks of part-time work, no architecture rewrites, no migrations, no vendor changes. Mostly Terraform diffs and one Python script.
+
+If your bill needs the same kind of audit and six weeks of part-time work isn't realistic given your calendar, this is exactly the engagement I take on through [independent infra consulting](https://k8s.org.in): rightsizing, cost audits, and the unglamorous cleanup work most teams keep deferring.
 
 The line from the postmortem the CFO actually circulated was the part I keep coming back to: *"The bill didn't grow because we scaled. The bill grew because nobody was looking."*

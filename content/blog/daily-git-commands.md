@@ -2,7 +2,7 @@
 title: "The git commands I actually run every day"
 date: "2026-05-20"
 tags: ["git", "shell", "zsh", "productivity", "devops"]
-excerpt: "Ten years of git, distilled to the daily eight, an fzf branch picker, and the weekly pruning ritual."
+excerpt: "Ten years of git distilled into eight daily aliases: gst, glola, gd, gcam, an fzf branch picker, and the weekly branch-pruning ritual that keeps repos sane."
 featured: true
 ---
 

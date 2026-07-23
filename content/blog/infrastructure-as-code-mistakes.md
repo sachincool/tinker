@@ -2,7 +2,7 @@
 title: "Infrastructure as code: mistakes I made so you don't have to"
 date: "2024-11-28"
 tags: ["terraform", "iac", "devops", "infrastructure"]
-excerpt: "Learning Terraform the hard way. Here are the mistakes that cost me sleep, money, and a bit of my sanity."
+excerpt: "Terraform mistakes I made so you don't have to: hardcoded AMIs, lost local state, a 2000-line main.tf, an unpinned provider, and a stray terraform destroy."
 featured: true
 ---
 

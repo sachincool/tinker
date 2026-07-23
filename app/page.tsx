@@ -13,16 +13,20 @@ export async function generateMetadata(): Promise<Metadata> {
 
   const description = isMainDomain
     ? 'Harshit Luthra. Senior SRE and Infrastructure Wizard. Deep dives into Kubernetes, multi-cloud platforms, observability, and production war stories from the trenches.'
-    : "Infra Magician's digital garden: production stories, DevOps deep dives, Kubernetes debugging, and infrastructure tinkering from a senior SRE.";
+    : 'SRE war stories, Kubernetes debugging deep dives, GPU infra deployments, and DevOps tooling notes from an infrastructure wizard who keeps breaking (and fixing) production.';
+
+  const title = isMainDomain
+    ? `${siteConfig.author.name} · Infra Magician`
+    : 'Infra Magician — SRE War Stories, Kubernetes Debugging & DevOps Deep Dives';
 
   return {
-    title: isMainDomain ? `${siteConfig.author.name} · Infra Magician` : siteConfig.title,
+    title,
     description,
     alternates: {
       canonical: `${baseUrl}/`,
     },
     openGraph: {
-      title: isMainDomain ? `${siteConfig.author.name} · Infra Magician` : siteConfig.title,
+      title,
       description,
       type: 'website',
       url: `${baseUrl}/`,
@@ -39,7 +43,7 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     twitter: {
       card: 'summary_large_image',
-      title: isMainDomain ? `${siteConfig.author.name} · Infra Magician` : siteConfig.title,
+      title,
       description,
       creator: '@exploit_sh',
       site: '@exploit_sh',
