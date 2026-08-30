@@ -12,7 +12,7 @@ import { Comments } from "@/components/blog/comments";
 import { ShareButton } from "@/components/blog/share-button";
 import { MarkdownContent } from "@/components/blog/markdown-content";
 import { ImageLightbox } from "@/components/blog/image-lightbox";
-import { getPostBySlug, getAllPosts, stripFirstImageBlock } from "@/lib/posts";
+import { getPostBySlug, getAllPosts, getRelatedPosts, stripFirstImageBlock } from "@/lib/posts";
 import { SeriesNav } from "@/components/blog/series-nav";
 import { NewsletterForm } from "@/components/blog/newsletter-form";
 import { notFound } from "next/navigation";
@@ -155,7 +155,8 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
     },
     keywords: post.tags.join(', '),
     articleSection: 'Technology',
-    articleBody: post.excerpt,
+    // No articleBody: it was set to the 155-char excerpt, which contradicts
+    // wordCount. `description` already carries the summary.
     wordCount: stats.words,
     inLanguage: 'en-US',
     proficiencyLevel: 'Expert',
@@ -192,6 +193,8 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
         }));
       })()
     : null;
+
+  const relatedPosts = getRelatedPosts(post);
 
   // Breadcrumb structured data
   const breadcrumbJsonLd = {
@@ -341,36 +344,35 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
 
             <Comments slug={slug} shareButton={<ShareButton title={post.title} excerpt={post.excerpt} />} />
 
-            {(() => {
-              const relatedPosts = getAllPosts('blog')
-                .filter(p => p.slug !== post.slug && p.tags.some(tag => post.tags.includes(tag)))
-                .slice(0, 2);
-              if (relatedPosts.length === 0) return null;
-              return (
-                <section className="mt-16 pt-10 border-t border-border/60">
-                  <h2 className="text-2xl font-semibold mb-6 tracking-tight">Related posts</h2>
-                  <div className="grid gap-4">
-                    {relatedPosts.map((relatedPost) => (
-                      <Card key={relatedPost.slug} className="border-border/60 hover:border-border">
-                        <CardHeader className="space-y-2">
-                          <CardTitle className="text-lg">
-                            <Link
-                              href={`/blog/${relatedPost.slug}`}
-                              className="hover:text-primary transition-colors"
-                            >
-                              {relatedPost.title}
-                            </Link>
-                          </CardTitle>
-                          <p className="text-sm text-muted-foreground line-clamp-2">
-                            {relatedPost.excerpt}
-                          </p>
-                        </CardHeader>
-                      </Card>
-                    ))}
-                  </div>
-                </section>
-              );
-            })()}
+            {relatedPosts.length > 0 && (
+              <section className="mt-16 pt-10 border-t border-border/60">
+                <h2 className="text-2xl font-semibold mb-6 tracking-tight">Related reading</h2>
+                <div className="grid gap-4">
+                  {relatedPosts.map((relatedPost) => (
+                    <Card key={`${relatedPost.type}/${relatedPost.slug}`} className="border-border/60 hover:border-border">
+                      <CardHeader className="space-y-2">
+                        <CardTitle className="text-lg">
+                          <Link
+                            href={`/${relatedPost.type}/${relatedPost.slug}`}
+                            className="hover:text-primary transition-colors"
+                          >
+                            {relatedPost.type === 'til' && (
+                              <span className="mr-2 align-middle text-[10px] font-mono uppercase tracking-[0.18em] text-muted-foreground">
+                                TIL
+                              </span>
+                            )}
+                            {relatedPost.title}
+                          </Link>
+                        </CardTitle>
+                        <p className="text-sm text-muted-foreground line-clamp-2">
+                          {relatedPost.excerpt}
+                        </p>
+                      </CardHeader>
+                    </Card>
+                  ))}
+                </div>
+              </section>
+            )}
 
             <NewsletterForm
               title="Enjoyed this post?"

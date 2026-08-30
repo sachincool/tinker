@@ -178,6 +178,24 @@ export function getAllPosts(type: 'blog' | 'til' = 'blog'): Post[] {
   }
 }
 
+// Related posts ranked by how many tags they actually share, newest first as
+// the tiebreak. Spans blog and TIL deliberately: the old per-page filters were
+// same-type only and unranked (a plain .slice), so a TIL could never surface
+// the deep-dive it belongs with, and a post's "related" list was just its two
+// most recent tag-sharers rather than its two closest.
+export function getRelatedPosts(post: Post, limit = 4): Post[] {
+  const tags = new Set(post.tags);
+  return [...getAllPosts('blog'), ...getAllPosts('til')]
+    .filter((p) => !(p.type === post.type && p.slug === post.slug))
+    .map((p) => ({ post: p, score: p.tags.reduce((n, t) => n + (tags.has(t) ? 1 : 0), 0) }))
+    .filter(({ score }) => score > 0)
+    .sort((a, b) =>
+      b.score - a.score || new Date(b.post.date).getTime() - new Date(a.post.date).getTime()
+    )
+    .slice(0, limit)
+    .map(({ post: p }) => p);
+}
+
 export function getPostsByTag(tag: string): Post[] {
   const blogPosts = getAllPosts('blog');
   const tilPosts = getAllPosts('til');
