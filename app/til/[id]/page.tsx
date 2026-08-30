@@ -4,7 +4,7 @@ import { ViewCounter } from "@/components/blog/view-counter";
 import { ReadingProgress } from "@/components/blog/reading-progress";
 
 import { MarkdownContent } from "@/components/blog/markdown-content";
-import { getPostBySlug, getAllPosts } from "@/lib/posts";
+import { getPostBySlug, getAllPosts, getRelatedPosts } from "@/lib/posts";
 import { notFound } from "next/navigation";
 import readingTime from "reading-time";
 import type { Metadata } from "next";
@@ -47,7 +47,7 @@ export async function generateMetadata({
       description: til.excerpt || til.title,
       type: "article",
       publishedTime: til.date,
-      modifiedTime: til.date,
+      modifiedTime: til.updatedAt ?? til.date,
       url: tilUrl,
       siteName: siteConfig.title,
       locale: "en_US",
@@ -101,7 +101,7 @@ export default async function TILPost({ params }: { params: Promise<{ id: string
     description: til.excerpt || til.title,
     image: `${baseUrl}/til/${id}/opengraph-image`,
     datePublished: til.date,
-    dateModified: til.date,
+    dateModified: til.updatedAt ?? til.date,
     author: {
       "@type": "Person",
       name: siteConfig.author.name,
@@ -120,7 +120,6 @@ export default async function TILPost({ params }: { params: Promise<{ id: string
       "@id": tilUrl,
     },
     keywords: til.tags.join(", "),
-    articleBody: til.excerpt || til.title,
     wordCount: stats.words,
     inLanguage: "en-US",
   };
@@ -151,9 +150,7 @@ export default async function TILPost({ params }: { params: Promise<{ id: string
     ],
   };
 
-  const relatedTils = getAllPosts("til")
-    .filter((p) => p.slug !== til.slug && p.tags.some((tag) => til.tags.includes(tag)))
-    .slice(0, 3);
+  const relatedTils = getRelatedPosts(til, 4);
 
   return (
     <>
