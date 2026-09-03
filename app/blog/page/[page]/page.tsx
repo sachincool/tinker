@@ -43,8 +43,12 @@ export async function generateMetadata({
   const baseUrl = getCurrentDomain(hostname);
 
   return {
-    title: `Blog · Page ${pageNum} | ${siteConfig.author.name}`,
-    description: `Blog posts by ${siteConfig.author.name}, page ${pageNum} of ${totalPages}.`,
+    // "Blog · Page 2 | Harshit Luthra" was 30 chars of no keyword, with a
+    // 42-char description Google would have rewritten anyway.
+    title: `Blog archive, page ${pageNum} of ${totalPages} · Kubernetes and SRE`,
+    description:
+      `Page ${pageNum} of ${totalPages} in the archive: Kubernetes debugging, GPU infrastructure, ` +
+      `supply-chain security, observability and CI/CD write-ups, newest first.`,
     alternates: {
       canonical: pageNum === 1 ? `${baseUrl}/blog` : `${baseUrl}/blog/page/${pageNum}`,
     },

@@ -1,5 +1,6 @@
 ---
 title: "Seven visual tools, one diagram"
+seoTitle: "Seven visual tools tested on one technical diagram"
 date: "2026-05-15"
 tags: ["claude-code", "ai-tooling", "blogging", "design"]
 excerpt: "Excalidraw is fast, but everything I make in it looks the same. Seven tools that promise visuals with attitude, one diagram, three I'd keep."

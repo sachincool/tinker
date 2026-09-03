@@ -12,12 +12,12 @@ export async function generateMetadata(): Promise<Metadata> {
   const isMainDomain = hostname === 'harshit.cloud' || hostname === 'www.harshit.cloud';
 
   const description = isMainDomain
-    ? 'Harshit Luthra. Senior SRE and Infrastructure Wizard. Deep dives into Kubernetes, multi-cloud platforms, observability, and production war stories from the trenches.'
-    : 'SRE war stories, Kubernetes debugging deep dives, GPU infra deployments, and DevOps tooling notes from an infrastructure wizard who keeps breaking (and fixing) production.';
+    ? 'Harshit Luthra, Senior SRE. Deep dives into Kubernetes, GPU infrastructure, observability, and the production war stories that came out of running them.'
+    : 'SRE war stories, Kubernetes debugging, GPU infrastructure deployments, and DevOps tooling notes from someone who keeps breaking and fixing production.';
 
   const title = isMainDomain
-    ? `${siteConfig.author.name} · Infra Magician`
-    : 'Infra Magician — SRE War Stories, Kubernetes Debugging & DevOps Deep Dives';
+    ? `${siteConfig.author.name} · SRE notes on Kubernetes and infra`
+    : 'Infra Magician — Kubernetes, SRE and DevOps deep dives';
 
   return {
     title,
