@@ -325,6 +325,7 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
                     src={post.heroImage}
                     alt={post.heroAlt || post.title}
                     className="block w-full h-auto"
+                    eager
                   />
                 </div>
               </figure>

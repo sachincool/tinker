@@ -4,7 +4,8 @@ import { ArrowLeft, Network } from "lucide-react";
 import Link from "next/link";
 import GraphView from "@/components/blog/graph-view-lazy";
 import AnimatedCounter from "@/components/animations/animated-counter";
-import { getAllPosts, getAllTags, extractInternalRefs } from "@/lib/posts";
+import { getAllPosts, getAllTags, getPostsByTag, extractInternalRefs } from "@/lib/posts";
+import { getTagHub, isIndexableTag } from "@/lib/tag-meta";
 import type { Metadata } from "next";
 import { siteConfig, getCurrentDomain } from "@/lib/site-config";
 import { headers } from "next/headers";
@@ -68,6 +69,46 @@ export default function GraphPage() {
   const blogNodes = blogPosts.map(toGraphNode);
   const tilNodes = tilPosts.map(toGraphNode);
 
+  // The visible clusters in the graph are the hub tags. Derive them from the
+  // same data the graph draws from so the prose can't drift from the picture.
+  const clusters = allTags
+    .map((tag) => ({ tag, count: getPostsByTag(tag).length, hub: getTagHub(tag) }))
+    .filter((t) => isIndexableTag(t.tag, t.count))
+    .sort((a, b) => b.count - a.count || a.tag.localeCompare(b.tag));
+
+  const edgeCount = [...blogNodes, ...tilNodes].reduce(
+    (n, node) => n + node.tags.length + node.related.length,
+    0
+  );
+
+  const faqs = [
+    {
+      question: "What does this knowledge graph show?",
+      answer:
+        `Every blog post (${blogPosts.length}), TIL note (${tilPosts.length}) and tag (${allTags.length}) on this site as a node, with an edge wherever two of them are connected. A post connects to each of its tags, and to any other post it links to in its body. There are roughly ${edgeCount} edges in total.`,
+    },
+    {
+      question: "How do I read the clusters?",
+      answer:
+        "A cluster is a tag with enough posts to pull them together in the force layout. The dense ones are the topics with real depth here: GPU infrastructure on Kubernetes, the Lazy Security series, observability, and the command-line notes. A post sitting between two clusters shares tags with both.",
+    },
+    {
+      question: "What do the node colours mean?",
+      answer:
+        "Blue nodes are blog posts, green nodes are TIL notes, and purple nodes are tags. Node size scales with how many edges a node has, so the biggest purple circles are the tags carrying the most posts.",
+    },
+  ];
+
+  const faqJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqs.map((f) => ({
+      "@type": "Question",
+      name: f.question,
+      acceptedAnswer: { "@type": "Answer", text: f.answer },
+    })),
+  };
+
   return (
     <div className="space-y-8">
       {/* Back button */}
@@ -85,10 +126,13 @@ export default function GraphPage() {
           Knowledge graph
         </div>
         <h1 className="font-serif text-4xl md:text-5xl leading-[1.1] tracking-tight">
-          Content Graph
+          The knowledge graph
         </h1>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-          Explore the connections between posts, TILs, and tags. Click and drag nodes to rearrange the graph.
+          Every post, TIL note, and tag on this site drawn as one graph. A post connects
+          to each tag it carries and to every other post it links to in its body, so the
+          dense areas are the topics with real depth rather than the ones written most
+          recently. Drag a node to pull its cluster apart; double-click to open it.
         </p>
       </div>
 
@@ -137,6 +181,39 @@ export default function GraphPage() {
         </CardContent>
       </Card>
 
+      {/* Clusters — the prose half of the graph, and the crawl path to the tag hubs */}
+      <Card>
+        <CardHeader>
+          <CardTitle>What the clusters are</CardTitle>
+          <CardDescription>
+            {clusters.length} tags carry enough posts to form a visible cluster. Each one
+            has a hub page with the full list.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <ul className="space-y-3">
+            {clusters.map(({ tag, count, hub }) => (
+              <li key={tag} className="text-sm leading-relaxed">
+                <Link href={`/tags/${tag}`} className="font-medium text-primary hover:underline">
+                  #{tag}
+                </Link>
+                <span className="text-muted-foreground">
+                  {" "}— {count} post{count === 1 ? "" : "s"}
+                  {hub ? `. ${hub.intro.split(". ")[0]}.` : "."}
+                </span>
+              </li>
+            ))}
+          </ul>
+          <p className="text-sm text-muted-foreground">
+            The rest of the tags are still browsable from{" "}
+            <Link href="/tags" className="text-primary hover:underline">
+              the full topic index
+            </Link>
+            ; they carry one or two posts each and sit at the edge of the graph.
+          </p>
+        </CardContent>
+      </Card>
+
       {/* Instructions */}
       <Card>
         <CardHeader>
@@ -171,6 +248,26 @@ export default function GraphPage() {
           </ul>
         </CardContent>
       </Card>
+
+      {/* FAQ */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Questions about the graph</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          {faqs.map((faq) => (
+            <div key={faq.question} className="space-y-1.5">
+              <h2 className="text-base font-medium">{faq.question}</h2>
+              <p className="text-sm text-muted-foreground leading-relaxed">{faq.answer}</p>
+            </div>
+          ))}
+        </CardContent>
+      </Card>
+
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
     </div>
   );
 }

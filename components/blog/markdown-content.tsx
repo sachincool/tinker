@@ -3,6 +3,7 @@
 import React from "react";
 import { CodeBlock } from "./code-block";
 import { ImageLightbox } from "./image-lightbox";
+import { PostImage } from "./post-image";
 import { Info, AlertCircle } from "lucide-react";
 
 interface MarkdownContentProps {
@@ -35,12 +36,11 @@ function renderInlineRich(text: string): React.ReactNode[] {
       const imageMatch = part.match(/^!\[([^\]]*)\]\(([^)]+)\)$/);
       if (imageMatch) {
         collector.push(
-          <img
+          <PostImage
             key={key++}
             src={imageMatch[2]}
             alt={imageMatch[1]}
-            loading="lazy"
-            className="inline-block max-w-full rounded"
+            className="inline-block max-w-full h-auto rounded"
           />
         );
         continue;
@@ -360,7 +360,7 @@ export function MarkdownContent({ content }: MarkdownContentProps) {
                 <ImageLightbox
                   src={src}
                   alt={alt}
-                  className="w-full"
+                  className="w-full h-auto"
                 />
               </div>
               {alt && (
