@@ -1,5 +1,6 @@
 ---
 title: "Your model isn't crashing, your probe is"
+seoTitle: "vLLM CrashLoopBackOff: your probe, not your model"
 date: "2026-07-23"
 tags: ["gpu", "kubernetes", "vllm", "kserve", "reliability"]
 excerpt: "A model server that takes five minutes to load and a liveness probe that gives it ten seconds is a crash loop waiting to happen. Probes, drains, and safe rollouts."

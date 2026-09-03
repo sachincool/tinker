@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { getPostsByTag, getAllTags } from "@/lib/posts";
-import { getTagMeta } from "@/lib/tag-meta";
+import { getTagMeta, getTagHub, isIndexableTag } from "@/lib/tag-meta";
 import type { Metadata } from "next";
 import { siteConfig, getCurrentDomain } from "@/lib/site-config";
 import { headers } from "next/headers";
@@ -22,6 +22,7 @@ export async function generateMetadata({
   const tag = decodeURIComponent(tagParam);
   const posts = getPostsByTag(tag);
   const meta = getTagMeta(tag);
+  const hub = getTagHub(tag);
 
   const headersList = await headers();
   const hostname = headersList.get('host') || '';
@@ -44,24 +45,36 @@ export async function generateMetadata({
     .filter(Boolean)
     .join(' · ');
 
-  // Prefer the hand-written tag description when available; it's the cleanest meta line.
-  const description = meta?.description
+  // Hub tags carry a hand-written, keyword-front-loaded meta line sized for the
+  // SERP snippet window. Everything else falls back to the generated one.
+  const description = hub?.metaDescription ?? (meta?.description
     ? count
       ? `${meta.description} ${breakdown}.${titlePreview ? ` Featuring: ${titlePreview}.` : ''}`
       : meta.description
     : count
       ? `Explore ${breakdown} on #${tag}: DevOps, Kubernetes, infrastructure, and production war stories from the Infra Magician's digital garden.${titlePreview ? ` Featuring: ${titlePreview}.` : ''}`
-      : `Articles, notes, and tutorials on #${tag} from the Infra Magician's digital garden: DevOps, Kubernetes, infrastructure, and production engineering insights.`;
+      : `Articles, notes, and tutorials on #${tag} from the Infra Magician's digital garden: DevOps, Kubernetes, infrastructure, and production engineering insights.`);
 
   const trimmed = description.length > 158
     ? description.slice(0, description.lastIndexOf(' ', 155)).replace(/[,;:.\s]+$/, '') + '…'
     : description;
 
+  // `#tagname` was a 9-character title on 107 URLs. Hub tags get a real one;
+  // the thin tags get a descriptive fallback and are kept out of the index.
+  const title = hub
+    ? `${hub.seoTitle.replace('{n}', String(count))} · ${siteConfig.title}`
+    : `#${tag} — ${count} post${count === 1 ? '' : 's'} · ${siteConfig.title}`;
+
   return {
-    title: `#${tag}`,
+    title,
     description: trimmed,
+    // Thin tag pages stay browsable and keep passing link equity, but they
+    // stop competing in the index with the posts they link to.
+    robots: isIndexableTag(tag, count)
+      ? undefined
+      : { index: false, follow: true },
     openGraph: {
-      title: `#${tag} · ${siteConfig.title}`,
+      title,
       description: trimmed,
       type: 'website',
       url: tagUrl,
@@ -77,7 +90,7 @@ export async function generateMetadata({
     },
     twitter: {
       card: 'summary_large_image',
-      title: `#${tag} · ${siteConfig.title}`,
+      title,
       description: trimmed,
       images: [`${baseUrl}/tags/opengraph-image`],
     },
@@ -96,12 +109,31 @@ export default async function TagPage({ params }: { params: Promise<{ tag: strin
 
   const posts = getPostsByTag(tag);
   const meta = getTagMeta(tag);
+  const hub = getTagHub(tag);
 
   const blogPosts = posts.filter(p => p.type === "blog");
   const tilPosts = posts.filter(p => p.type === "til");
 
-  const allTags = getAllTags();
-  const relatedTags = allTags.filter(t => t !== tag).slice(0, 8);
+  // Related tags used to be the first eight tags alphabetically, which linked
+  // #akamai from every page on the site. Rank by how often a tag actually
+  // co-occurs with this one, and send the links to hubs where a hub exists —
+  // that's where the crawl budget is worth spending.
+  const cooccurrence = new Map<string, number>();
+  for (const post of posts) {
+    for (const other of post.tags) {
+      if (other === tag) continue;
+      cooccurrence.set(other, (cooccurrence.get(other) ?? 0) + 1);
+    }
+  }
+  const relatedTags = Array.from(cooccurrence.entries())
+    .sort((a, b) =>
+      Number(isIndexableTag(b[0], getPostsByTag(b[0]).length)) -
+        Number(isIndexableTag(a[0], getPostsByTag(a[0]).length)) ||
+      b[1] - a[1] ||
+      a[0].localeCompare(b[0])
+    )
+    .slice(0, 8)
+    .map(([t]) => t);
 
   const counts: string[] = [];
   if (blogPosts.length) counts.push(`${blogPosts.length} blog post${blogPosts.length === 1 ? "" : "s"}`);
@@ -116,8 +148,8 @@ export default async function TagPage({ params }: { params: Promise<{ tag: strin
   const collectionJsonLd = {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
-    name: `#${tag}`,
-    description: meta?.description || `Posts tagged #${tag}`,
+    name: hub ? hub.seoTitle.replace('{n}', String(posts.length)) : `#${tag}`,
+    description: hub?.metaDescription || meta?.description || `Posts tagged #${tag}`,
     url: tagUrl,
     isPartOf: { "@type": "WebSite", name: siteConfig.title, url: baseUrl },
     mainEntity: {
@@ -132,11 +164,25 @@ export default async function TagPage({ params }: { params: Promise<{ tag: strin
     },
   };
 
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: baseUrl },
+      { "@type": "ListItem", position: 2, name: "Tags", item: `${baseUrl}/tags` },
+      { "@type": "ListItem", position: 3, name: `#${tag}`, item: tagUrl },
+    ],
+  };
+
   return (
     <div className="space-y-12">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
       <Button variant="ghost" asChild className="-ml-3">
         <Link href="/tags">
@@ -156,6 +202,12 @@ export default async function TagPage({ params }: { params: Promise<{ tag: strin
           <p className="text-sm text-muted-foreground">{countLine}.</p>
         )}
       </header>
+
+      {hub && (
+        <section className="max-w-2xl -mt-6">
+          <p className="text-base leading-relaxed text-muted-foreground">{hub.intro}</p>
+        </section>
+      )}
 
       {blogPosts.length > 0 && (
         <section className="space-y-5">

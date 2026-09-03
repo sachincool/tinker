@@ -1,5 +1,6 @@
 ---
 title: "Lazy SRE's guide to secure systems, part 2: the actions you didn't pin"
+seoTitle: "Lazy Security part 2: the GitHub Actions you didn't pin"
 date: "2026-04-12"
 tags: ["security", "lazy-sre", "github-actions", "supply-chain", "ci-cd", "devsecops"]
 excerpt: "Hardening GitHub Actions for small teams: SHA pinning against tag rewrites, OIDC over long-lived secrets, dependency cooldowns, and the trigger to never touch."

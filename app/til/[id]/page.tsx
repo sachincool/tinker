@@ -34,16 +34,19 @@ export async function generateMetadata({
   const hostname = headersList.get("host") || "";
   const baseUrl = getCurrentDomain(hostname);
   const tilUrl = `${baseUrl}/til/${id}`;
+  // The "TIL: " prefix costs five chars of the SERP window; an explicit
+  // seoTitle is assumed to already say what it needs to.
+  const seoTitle = til.seoTitle ?? `TIL: ${til.title}`;
 
   return {
-    title: `TIL: ${til.title}`,
+    title: seoTitle,
     description: til.excerpt || til.title,
     keywords: til.tags,
     authors: [{ name: siteConfig.author.name, url: baseUrl }],
     creator: siteConfig.author.name,
     publisher: siteConfig.author.name,
     openGraph: {
-      title: til.title,
+      title: seoTitle,
       description: til.excerpt || til.title,
       type: "article",
       publishedTime: til.date,

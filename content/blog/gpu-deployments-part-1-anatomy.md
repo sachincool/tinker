@@ -1,5 +1,6 @@
 ---
 title: "The dozen layers under a GPU pod"
+seoTitle: "GPU pod anatomy: the dozen layers under Kubernetes"
 date: "2026-07-02"
 tags: ["gpu", "kubernetes", "mlops", "nvidia", "infrastructure"]
 excerpt: "A GPU pod sits on a dozen layers from silicon to scheduler, and each one fails its own way. Drivers, the container toolkit, MIG, DCGM, and the metrics that lie to you."

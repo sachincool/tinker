@@ -1,5 +1,6 @@
 ---
 title: "Scaling GPU inference to zero and back"
+seoTitle: "Scale GPU inference to zero without a cold-start hit"
 date: "2026-07-16"
 tags: ["gpu", "autoscaling", "kubernetes", "scale-to-zero", "inference"]
 excerpt: "Idle GPUs at six dollars an hour are a bonfire. Scaling to zero saves the money, but the first user back waits minutes unless you kill the cold start."

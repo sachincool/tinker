@@ -2,6 +2,7 @@ import { getAllPosts, getAllTags, getPostsByTag } from '@/lib/posts';
 import { MetadataRoute } from 'next';
 import { headers } from 'next/headers';
 import { getCurrentDomain } from '@/lib/site-config';
+import { isIndexableTag } from '@/lib/tag-meta';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const headersList = await headers();
@@ -104,13 +105,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }));
 
+  // Only hub tags ship in the sitemap. The thin ones (91 of 107 tags carried
+  // one or two posts) were 68% of the URLs here and are now noindex,follow —
+  // still crawlable through /tags, just not submitted as index candidates.
+  //
   // Tag lastModified is the newest post date carrying that tag — a stable
   // signal that the tag page actually changed, vs. a new-Date-on-every-deploy
   // false positive.
   const tagPages: MetadataRoute.Sitemap = allTags
     .map(tag => {
       const posts = getPostsByTag(tag);
-      if (posts.length === 0) return null;
+      if (!isIndexableTag(tag, posts.length)) return null;
       const newest = posts.reduce((max, p) => (p.date > max ? p.date : max), posts[0].date);
       return {
         url: `${baseUrl}/tags/${tag}`,

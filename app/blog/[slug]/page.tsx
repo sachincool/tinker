@@ -44,16 +44,17 @@ export async function generateMetadata({
   const hostname = headersList.get('host') || '';
   const baseUrl = getCurrentDomain(hostname);
   const postUrl = `${baseUrl}/blog/${slug}`;
+  const seoTitle = post.seoTitle ?? post.title;
 
   return {
-    title: post.title,
+    title: seoTitle,
     description: post.excerpt,
     keywords: post.tags,
     authors: [{ name: siteConfig.author.name, url: baseUrl }],
     creator: siteConfig.author.name,
     publisher: siteConfig.author.name,
     openGraph: {
-      title: post.title,
+      title: seoTitle,
       description: post.excerpt,
       type: 'article',
       publishedTime: post.date,
@@ -74,7 +75,7 @@ export async function generateMetadata({
     },
     twitter: {
       card: 'summary_large_image',
-      title: post.title,
+      title: seoTitle,
       description: post.excerpt,
       creator: '@exploit_sh',
       site: '@exploit_sh',

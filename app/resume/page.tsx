@@ -13,13 +13,13 @@ export async function generateMetadata(): Promise<Metadata> {
     "Resume of Harshit Luthra, Senior SRE and infrastructure engineer specializing in Kubernetes, multi-cloud (AWS/GCP/Azure), observability, and cost optimization.";
 
   return {
-    title: `Resume | ${siteConfig.author.name}`,
+    title: 'Resume — Harshit Luthra, Senior SRE and infra engineer',
     description,
     alternates: {
       canonical: resumeUrl,
     },
     openGraph: {
-      title: `Resume | ${siteConfig.author.name}`,
+      title: 'Resume — Harshit Luthra, Senior SRE and infra engineer',
       description,
       type: "profile",
       url: resumeUrl,
@@ -36,7 +36,7 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     twitter: {
       card: "summary_large_image",
-      title: `Resume | ${siteConfig.author.name}`,
+      title: 'Resume — Harshit Luthra, Senior SRE and infra engineer',
       description,
       creator: "@exploit_sh",
       site: "@exploit_sh",

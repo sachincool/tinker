@@ -9,11 +9,11 @@ export async function generateMetadata(): Promise<Metadata> {
   const baseUrl = getCurrentDomain(hostname);
 
   return {
-    title: `About | ${siteConfig.author.name}`,
-    description: 'Harshit Luthra - Infrastructure Wizard, Chaos Engineer, and Professional Server Whisperer. Learn about the person behind the blog.',
+    title: 'About Harshit Luthra — Senior SRE and infra engineer',
+    description: 'Harshit Luthra is a Senior SRE and infrastructure engineer working on Kubernetes, GPU platforms, and observability. The background, the work, and contact links.',
     openGraph: {
-      title: `About | ${siteConfig.author.name}`,
-      description: 'Harshit Luthra - Infrastructure Wizard, Chaos Engineer, and Professional Server Whisperer.',
+      title: 'About Harshit Luthra — Senior SRE and infra engineer',
+      description: 'Harshit Luthra, Senior SRE and infrastructure engineer: Kubernetes, GPU platforms, observability, and the production stories behind the writing.',
       type: 'profile',
       url: `${baseUrl}/about`,
       siteName: siteConfig.title,
@@ -28,8 +28,8 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     twitter: {
       card: 'summary_large_image',
-      title: `About | ${siteConfig.author.name}`,
-      description: 'Harshit Luthra - Infrastructure Wizard, Chaos Engineer, and Professional Server Whisperer.',
+      title: 'About Harshit Luthra — Senior SRE and infra engineer',
+      description: 'Harshit Luthra, Senior SRE and infrastructure engineer: Kubernetes, GPU platforms, observability, and the production stories behind the writing.',
       creator: '@exploit_sh',
       images: [`${baseUrl}/about/opengraph-image`],
     },

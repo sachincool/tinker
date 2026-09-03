@@ -1,5 +1,6 @@
 ---
 title: "How I took down 30% of production with one TLS fingerprinting rule"
+seoTitle: "How one TLS fingerprinting rule took down 30% of prod"
 date: "2025-10-14"
 tags: ["sre", "tls", "networking", "monitoring", "production-incidents"]
 excerpt: "Deployed a TLS fingerprinting rule that seemed reasonable. Blocked every Chrome 119 user on Windows. The incident report was not fun to write."

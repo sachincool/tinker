@@ -1,5 +1,6 @@
 ---
 title: "One box, eight GPUs, and the wires between them"
+seoTitle: "One node, eight GPUs: NVLink and NCCL in practice"
 date: "2026-07-04"
 tags: ["gpu", "nvlink", "nccl", "vllm", "infrastructure"]
 excerpt: "Eight GPUs in one server behave like a small network. NVLink vs PCIe, reading nvidia-smi topo -m, NCCL transports, the ACS trap, and fitting a 70B model."

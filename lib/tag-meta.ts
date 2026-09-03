@@ -174,3 +174,157 @@ export const TAG_META: Record<string, TagMeta> = {
 export function getTagMeta(tag: string): TagMeta | null {
   return TAG_META[tag.toLowerCase()] ?? null;
 }
+
+// ---------------------------------------------------------------------------
+// Tag hubs
+//
+// 107 tags, 91 of which carry one or two posts. Those thin pages were 68% of
+// the sitemap and near-duplicates of each other — index bloat that competes
+// with the posts it links to. A tag has to carry HUB_TAG_MIN_POSTS before it
+// is indexed and listed in the sitemap; below that it stays browsable and
+// still passes link equity (noindex, follow).
+// ---------------------------------------------------------------------------
+
+export const HUB_TAG_MIN_POSTS = 3;
+
+// `devsecops` carries exactly the same six posts as `lazy-sre`. Two indexable
+// pages listing an identical set is a duplicate, so the generic term defers to
+// the series hub. Drop from here if a post ever tags one without the other.
+const DUPLICATE_TAGS = new Set(['devsecops']);
+
+export interface TagHub {
+  // `<title>` lead. `{n}` is replaced with the live post count at render time.
+  // Kept short so the rendered title lands inside Google's ~60-char window
+  // once ` · Infra Magician` is appended.
+  seoTitle: string;
+  metaDescription: string;
+  // 60–120 words, written from the posts the tag actually carries. Deliberately
+  // not templated — a one-sentence stencil with the tag name swapped in is
+  // doorway content, and Google treats it that way.
+  intro: string;
+}
+
+export const TAG_HUBS: Record<string, TagHub> = {
+  devops: {
+    seoTitle: 'DevOps: {n} notes on CI/CD, Docker and git',
+    metaDescription:
+      'DevOps write-ups from production: GitHub Actions vs GitLab CI, Docker hardening, Terraform mistakes, kubectl tricks, and the git commands worth memorising.',
+    intro:
+      "Twelve posts and notes that sit where development stops and operations starts. The CI/CD comparison came from running GitHub Actions and GitLab CI side by side across fifty microservices; the Terraform post is a list of mistakes paid for in pages. There's Docker hardening, a Prometheus and Grafana stack that isn't a hello-world dashboard, a fifteen-minute migration off Netlify, and the short kubectl and git notes that turned into muscle memory. The security-flavoured half of the same job lives under lazy-sre.",
+  },
+  security: {
+    seoTitle: 'Security: {n} posts on defaults that hold',
+    metaDescription:
+      'Ten security posts: the Lazy Security series on supply chain, GitHub Actions, DNS and dev laptops, plus WAF false positives and GPU multi-tenancy incidents.',
+    intro:
+      "Ten posts about threat models, default-deny, and the configuration that makes the wrong thing impossible. Six of them are the Lazy Security series: the dependencies you didn't read, the actions you didn't pin, the unsexy list, four DNS records, the dev laptop as perimeter, and the network in front of everything. The rest are incidents — a WAF that decided browser extensions looked like attack vectors, two tenants sharing a GPU with no wall between them — plus the Docker baseline and a self-hosted alias server. Practical controls and dated incidents, no vendor slides.",
+  },
+  kubernetes: {
+    seoTitle: 'Kubernetes: {n} posts on debugging at 3am',
+    metaDescription:
+      'Kubernetes posts from production: crash loops and exit codes, probe configs, GPU scheduling, scale-to-zero, kubectl JSONPath, and a log-store benchmark.',
+    intro:
+      'Ten posts on Kubernetes as it actually behaves at 3am. Six come from the GPUs in production series: the dozen layers under a GPU pod, scaling past one box, scale-to-zero, inference routing, the probe that kills a healthy model server, and multi-tenancy on a shared card. The rest are the debugging tricks that saved a production cluster, a benchmarked VictoriaLogs against Loki comparison, and two short kubectl notes — JSONPath queries and kubectl neat. Exit codes, probe configs, scheduler behaviour, and the YAML that explains why.',
+  },
+  gpu: {
+    seoTitle: 'GPU infrastructure: {n} Kubernetes posts',
+    metaDescription:
+      'The GPUs in production series: driver and device-plugin layers, NVLink and NCCL, InfiniBand fabrics, scale-to-zero, routing, probes, and multi-tenancy.',
+    intro:
+      'The GPUs in production series, eight parts, written while running LLM inference on Kubernetes. It starts at the dozen layers under a single GPU pod — driver, container toolkit, device plugin, scheduler — then works outward: NVLink and NCCL inside one box, InfiniBand and gang scheduling across many, what a green GPU dashboard hides, scaling to zero without a five-minute cold start, routing that beats a bigger card, the probe that crash-loops a healthy model server, and two tenants sharing one GPU with no wall between them.',
+  },
+  'lazy-sre': {
+    seoTitle: 'Lazy SRE: {n} parts on security that ships',
+    metaDescription:
+      'The Lazy Security series in six parts: dependency cooldowns, SHA-pinned Actions, identity and audit logs, four DNS records, the dev laptop, and the network plane.',
+    intro:
+      "The Lazy Security series: six parts on the security work a small team will actually execute. The premise is that the configuration which makes the wrong thing impossible beats the runbook that only discourages it. Part 1 is npm and the dependencies you didn't read. Part 2 is SHA pinning, dependency cooldowns, and pull_request_target. Part 3 is the unsexy list — identity, audit logs, the PAT you forgot. Part 4 is SPF, DKIM, DMARC and CAA. Part 5 treats the dev laptop as the perimeter, and part 6 is the network in front of everything.",
+  },
+  infrastructure: {
+    seoTitle: 'Infrastructure: {n} posts on the deep stack',
+    metaDescription:
+      'Five infrastructure posts: cutting an AWS bill by 60%, Terraform mistakes paid for in pages, and the first three parts of the GPUs in production series.',
+    intro:
+      'Five posts about the layer you only think about when it breaks. The AWS cost post walks a fifty-thousand-dollar monthly bill down, CloudWatch ingestion levers included. The Terraform post is a list of infrastructure-as-code mistakes paid for in pages and money. The other three are the opening chapters of the GPUs in production series — the dozen layers under a GPU pod, eight GPUs and the wires between them, and what changes the moment a model no longer fits inside one box.',
+  },
+  productivity: {
+    seoTitle: 'Productivity: {n} notes on shell and git',
+    metaDescription:
+      'Five notes on doing the same job with fewer keystrokes: daily git commands, interactive rebase, jq, kubectl neat, and a zsh function that pre-types the command.',
+    intro:
+      "Five notes about doing the same job with fewer keystrokes. The git post is the set of commands that survived years of daily use, not the full manual; interactive rebase gets a note of its own. jq earns its keep the day you stop piping JSON through grep. kubectl neat strips the forty lines of managed-fields clutter Kubernetes staples onto every object. And there's a single zsh function that answers a question inline and knows when to pre-type the command instead of explaining it.",
+  },
+  docker: {
+    seoTitle: 'Docker: {n} posts on images and hardening',
+    metaDescription:
+      'Four Docker posts: rootless container hardening, a full Compose deployment with a TLS trap, the .dockerignore cache gotcha, and finding where volume data lives.',
+    intro:
+      "Four posts on the gap between a Dockerfile and a running process. The hardening post is the baseline: stop running as root, drop capabilities, and set the rest of the defaults once. SimpleLogin is a full Compose deployment with Postfix and a TLS trust trap that eats an afternoon. The two short notes cover the .dockerignore gotcha that silently busts your build cache, and how to find where a volume's data actually lives on disk when the container insists the directory is empty.",
+  },
+  vllm: {
+    seoTitle: 'vLLM: {n} posts on serving LLMs in prod',
+    metaDescription:
+      'vLLM posts from a production GPU fleet: tensor parallelism and the interconnect, queue-time metrics, KV-cache-aware routing, and probes that stop crash loops.',
+    intro:
+      'Four posts on running vLLM in production, all from the GPUs in production series. Inside one box, tensor parallelism only goes as fast as the interconnect underneath it. On the dashboard, the metrics that matter are queue time and KV-cache utilisation, not GPU utilisation. In front of the fleet, a router that reads the KV cache beats a round-robin load balancer. And at the pod level, a liveness probe that fires while weights are still loading will crash-loop a server that was never broken.',
+  },
+  observability: {
+    seoTitle: 'Observability: {n} posts on metrics and logs',
+    metaDescription:
+      'Four observability posts: a production Prometheus and Grafana stack, a benchmarked VictoriaLogs vs Loki comparison, GPU queue metrics, and a cardinality save.',
+    intro:
+      'Four posts about asking a system a question and getting a true answer. The Prometheus and Grafana guide builds a stack that survives contact with production. The VictoriaLogs versus Loki comparison is benchmarked — ingest, query latency, storage and CPU, with the methodology written down. The GPU observability part explains why a green dashboard hides a queue. And the JA4 note is a cardinality story: a fingerprint format that splits cleanly is the difference between a usable label and a metrics bill.',
+  },
+  debugging: {
+    seoTitle: 'Debugging: {n} posts on the real root cause',
+    metaDescription:
+      'Debugging write-ups from production: Kubernetes crash loops and stuck pods, a WAF false positive triggered by browser extensions, and Docker volume archaeology.',
+    intro:
+      'Posts about the gap between the symptom and the cause. The Kubernetes set covers stuck pods, crash loops, and the networking failures that present as application bugs. The Akamai post is a WAF false positive: a browser extension rewriting request headers into something the edge scored as an attack, and the hour it took to prove that. The Docker volume note is the shortest of the group and the one most often needed — finding where the data physically lives when the container insists the directory is empty.',
+  },
+  shell: {
+    seoTitle: 'Shell: {n} posts on zsh, bash and the CLI',
+    metaDescription:
+      'Command-line notes: the git commands worth memorising, bash parameter expansion instead of sed and awk, and a zsh function that answers questions inline.',
+    intro:
+      'Notes on the command line as a working surface. The git post is the daily set — the ten or so commands that survived, plus the aliases worth having. Bash parameter expansion does most of what people reach for sed and awk to do, in-process and without spawning a subshell. And there is a single zsh function that turns a question into an answer inline, with the useful twist that it pre-types a command into the prompt rather than explaining it, so you never leave the terminal.',
+  },
+  inference: {
+    seoTitle: 'LLM inference: {n} posts on serving at scale',
+    metaDescription:
+      'Three posts on serving LLM inference on Kubernetes: the metrics that actually signal health, scale-to-zero cold starts, and KV-cache-aware request routing.',
+    intro:
+      'Three posts on serving LLM inference rather than training it. The observability part explains why GPU utilisation is a bad health metric and what to watch instead — time to first token, queue depth, KV-cache pressure. Scale-to-zero covers the money argument for idling a GPU fleet and the cold-start work that makes it survivable in front of real users. And the routing part makes the case that the cheapest speedup available is usually the load balancer, not a bigger card.',
+  },
+  monitoring: {
+    seoTitle: 'Monitoring: {n} posts on Prometheus alerts',
+    metaDescription:
+      'Monitoring from production: a Prometheus and Grafana stack worth keeping, a TLS fingerprinting rule that took down 30% of traffic, and metrics cardinality.',
+    intro:
+      'Posts about what to watch and what it costs to watch it. The Prometheus and Grafana guide is the stack end to end, with the dashboards and alerts that earn their place and the ones that do not. The JA4 incident runs the other direction: a TLS fingerprinting rule that took down thirty percent of production, reconstructed from the timeline. The short JA4 note is the follow-up on metrics cardinality, and why a fingerprint that splits into parts is far cheaper to label than one that does not.',
+  },
+  'supply-chain': {
+    seoTitle: 'Supply chain: {n} posts on dependency risk',
+    metaDescription:
+      'Supply-chain security in practice: npm postinstall and cooldowns, the trivy-action tag rewrite and SHA pinning, plus provenance and audit logs that survive both.',
+    intro:
+      'Three posts on the code you shipped but did not write. Part 1 of the Lazy Security series is npm: postinstall scripts, dependency cooldowns, and the install-time defences that refuse malware before bytes hit disk. Part 2 is the same problem one level up — the trivy-action tag rewrite, org-level SHA pinning enforcement, and why a version tag is a name lookup rather than a pin. Part 3 names what partially mitigates the class that survives both: provenance, attestation, and audit logs you can actually read.',
+  },
+  devsecops: {
+    seoTitle: 'DevSecOps: {n} posts on shifting left',
+    metaDescription:
+      'DevSecOps in practice: the six-part Lazy Security series on dependency cooldowns, pinned Actions, identity hygiene, DNS records, laptops, and the network plane.',
+    intro:
+      'The six parts of the Lazy Security series, filed under the name the job usually gets. Each one picks a single class of failure and names the configuration that closes it: dependency cooldowns and install-time scanning, SHA-pinned workflows and OIDC instead of long-lived cloud keys, identity and audit logs, four DNS records that end the impersonation class, a dev laptop treated as the perimeter, and a network plane where the default is deny. The order is deliberate — earlier parts gate the later ones.',
+  },
+};
+
+export function getTagHub(tag: string): TagHub | null {
+  return TAG_HUBS[tag.toLowerCase()] ?? null;
+}
+
+// A tag page earns indexing once it carries enough posts to be a topic hub and
+// isn't a duplicate listing of another tag. Everything else is noindex, follow.
+export function isIndexableTag(tag: string, postCount: number): boolean {
+  return postCount >= HUB_TAG_MIN_POSTS && !DUPLICATE_TAGS.has(tag.toLowerCase());
+}

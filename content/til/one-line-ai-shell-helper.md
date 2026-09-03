@@ -1,5 +1,6 @@
 ---
 title: "A single zsh function for one-line AI answers that knows when to pre-type the command"
+seoTitle: "A zsh function for one-line AI answers in your shell"
 date: "2026-05-20"
 tags: ["zsh", "shell", "ai", "cli", "productivity"]
 excerpt: "Asking a chat UI for a one-line command is too much friction. A 15-line zsh function and a `print -z` trick fix it, with one oh-my-zsh footgun along the way."

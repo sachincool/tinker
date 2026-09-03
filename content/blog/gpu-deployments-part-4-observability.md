@@ -1,5 +1,6 @@
 ---
 title: "What a green GPU dashboard hides"
+seoTitle: "GPU observability: the metrics a green dashboard hides"
 date: "2026-07-11"
 tags: ["gpu", "observability", "vllm", "prometheus", "inference"]
 excerpt: "The GPU dashboard says 92% busy and users are waiting eight seconds for the first token. Monitoring an LLM server means watching the queue, not the silicon."

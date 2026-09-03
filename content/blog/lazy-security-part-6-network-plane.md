@@ -1,5 +1,6 @@
 ---
 title: "Lazy SRE's guide to secure systems, part 6: the network in front of everything"
+seoTitle: "Lazy Security part 6: the network in front of it all"
 date: "2026-05-10"
 tags: ["security", "devsecops", "lazy-sre", "network", "vpn", "tailscale"]
 excerpt: "Ivanti made everyone re-read their VPN architecture in January 2024. Tailscale, Cloudflare Tunnel, and WireGuard in one afternoon."

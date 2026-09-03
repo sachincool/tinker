@@ -61,13 +61,13 @@ export async function generateMetadata(): Promise<Metadata> {
   const hostname = headersList.get("host") || "";
   const baseUrl = getCurrentDomain(hostname);
   const description =
-    "The short shelf of engineering writing I keep rereading, and why each piece earned its folded corner.";
+    "A short shelf of engineering writing worth rereading: ECR pipelines on EKS, AWS cost work, LLM scaling on Kubernetes, CoreDNS ndots, and why each one earned it.";
 
   return {
-    title: `Dog-eared | ${siteConfig.author.name}`,
+    title: "Dog-eared — infrastructure writing worth re-reading",
     description,
     openGraph: {
-      title: `Dog-eared | ${siteConfig.author.name}`,
+      title: "Dog-eared — infrastructure writing worth re-reading",
       description,
       type: "website",
       url: `${baseUrl}/dog-eared`,
@@ -75,7 +75,7 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     twitter: {
       card: "summary_large_image",
-      title: `Dog-eared | ${siteConfig.author.name}`,
+      title: "Dog-eared — infrastructure writing worth re-reading",
       description,
     },
     alternates: {
@@ -94,7 +94,7 @@ export default async function DogEaredPage() {
     "@type": "CollectionPage",
     name: `${siteConfig.title} · Dog-eared`,
     description:
-      "The short shelf of engineering writing I keep rereading, and why each piece earned its folded corner.",
+      "A short shelf of engineering writing worth rereading: ECR pipelines on EKS, AWS cost work, LLM scaling on Kubernetes, CoreDNS ndots, and why each one earned it.",
     url: `${baseUrl}/dog-eared`,
     isPartOf: { "@type": "WebSite", name: siteConfig.title, url: baseUrl },
     mainEntity: {

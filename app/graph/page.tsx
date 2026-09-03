@@ -15,11 +15,11 @@ export async function generateMetadata(): Promise<Metadata> {
   const baseUrl = getCurrentDomain(hostname);
 
   return {
-    title: `Knowledge Graph | ${siteConfig.author.name}`,
-    description: 'Explore the interactive knowledge graph showing connections between blog posts, TILs, and tags.',
+    title: 'Interactive knowledge graph of infra posts and tags',
+    description: 'An interactive map of every post, TIL, and tag on the site. Edges are shared tags and direct in-body links, so the clusters show where the topics actually run.',
     openGraph: {
-      title: `Knowledge Graph | ${siteConfig.author.name}`,
-      description: 'Explore the interactive knowledge graph showing connections between blog posts, TILs, and tags.',
+      title: 'Interactive knowledge graph of infra posts and tags',
+      description: 'An interactive map of every post, TIL, and tag on the site. Edges are shared tags and direct in-body links, so the clusters show where the topics actually run.',
       type: 'website',
       url: `${baseUrl}/graph`,
       siteName: siteConfig.title,
@@ -34,8 +34,8 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     twitter: {
       card: 'summary_large_image',
-      title: `Knowledge Graph | ${siteConfig.author.name}`,
-      description: 'Explore the interactive knowledge graph showing connections between blog posts, TILs, and tags.',
+      title: 'Interactive knowledge graph of infra posts and tags',
+      description: 'An interactive map of every post, TIL, and tag on the site. Edges are shared tags and direct in-body links, so the clusters show where the topics actually run.',
       images: [`${baseUrl}/og-image.png`],
     },
     alternates: {

@@ -1,5 +1,6 @@
 ---
 title: "Delivery impersonation: the social engineering vector that just works"
+seoTitle: "Delivery impersonation: social engineering that works"
 date: "2025-10-17"
 tags: ["social-engineering", "cybersecurity", "opsec", "privacy-risk", "pretexting", "security-awareness"]
 excerpt: "Someone called pretending to deliver a Diwali bakery hamper. They got my full address in 20 seconds. Why this pretext works and what to ask back."
