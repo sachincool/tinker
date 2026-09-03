@@ -210,21 +210,21 @@ export const TAG_HUBS: Record<string, TagHub> = {
     metaDescription:
       'DevOps write-ups from production: GitHub Actions vs GitLab CI, Docker hardening, Terraform mistakes, kubectl tricks, and the git commands worth memorising.',
     intro:
-      "Twelve posts and notes that sit where development stops and operations starts. The CI/CD comparison came from running GitHub Actions and GitLab CI side by side across fifty microservices; the Terraform post is a list of mistakes paid for in pages. There's Docker hardening, a Prometheus and Grafana stack that isn't a hello-world dashboard, a fifteen-minute migration off Netlify, and the short kubectl and git notes that turned into muscle memory. The security-flavoured half of the same job lives under lazy-sre.",
+      "Posts and notes that sit where development stops and operations starts. The CI/CD comparison came from running GitHub Actions and GitLab CI side by side across fifty microservices; the Terraform post is a list of mistakes paid for in pages. There's Docker hardening, a Prometheus and Grafana stack that isn't a hello-world dashboard, a fifteen-minute migration off Netlify, and the short kubectl and git notes that turned into muscle memory. The security-flavoured half of the same job lives under lazy-sre.",
   },
   security: {
     seoTitle: 'Security: {n} posts on defaults that hold',
     metaDescription:
-      'Ten security posts: the Lazy Security series on supply chain, GitHub Actions, DNS and dev laptops, plus WAF false positives and GPU multi-tenancy incidents.',
+      'Security posts: the Lazy Security series on supply chain, GitHub Actions, DNS and dev laptops, plus WAF false positives and GPU multi-tenancy incidents.',
     intro:
-      "Ten posts about threat models, default-deny, and the configuration that makes the wrong thing impossible. Six of them are the Lazy Security series: the dependencies you didn't read, the actions you didn't pin, the unsexy list, four DNS records, the dev laptop as perimeter, and the network in front of everything. The rest are incidents — a WAF that decided browser extensions looked like attack vectors, two tenants sharing a GPU with no wall between them — plus the Docker baseline and a self-hosted alias server. Practical controls and dated incidents, no vendor slides.",
+      "Posts about threat models, default-deny, and the configuration that makes the wrong thing impossible. Six of them are the Lazy Security series: the dependencies you didn't read, the actions you didn't pin, the unsexy list, four DNS records, the dev laptop as perimeter, and the network in front of everything. The rest are incidents — a WAF that decided browser extensions looked like attack vectors, two tenants sharing a GPU with no wall between them — plus the Docker baseline and a self-hosted alias server. Practical controls and dated incidents, no vendor slides.",
   },
   kubernetes: {
     seoTitle: 'Kubernetes: {n} posts on debugging at 3am',
     metaDescription:
       'Kubernetes posts from production: crash loops and exit codes, probe configs, GPU scheduling, scale-to-zero, kubectl JSONPath, and a log-store benchmark.',
     intro:
-      'Ten posts on Kubernetes as it actually behaves at 3am. Six come from the GPUs in production series: the dozen layers under a GPU pod, scaling past one box, scale-to-zero, inference routing, the probe that kills a healthy model server, and multi-tenancy on a shared card. The rest are the debugging tricks that saved a production cluster, a benchmarked VictoriaLogs against Loki comparison, and two short kubectl notes — JSONPath queries and kubectl neat. Exit codes, probe configs, scheduler behaviour, and the YAML that explains why.',
+      'Posts on Kubernetes as it actually behaves at 3am. Six come from the GPUs in production series: the dozen layers under a GPU pod, scaling past one box, scale-to-zero, inference routing, the probe that kills a healthy model server, and multi-tenancy on a shared card. The rest are the debugging tricks that saved a production cluster, a benchmarked VictoriaLogs against Loki comparison, and two short kubectl notes — JSONPath queries and kubectl neat. Exit codes, probe configs, scheduler behaviour, and the YAML that explains why.',
   },
   gpu: {
     seoTitle: 'GPU infrastructure: {n} Kubernetes posts',
@@ -257,9 +257,9 @@ export const TAG_HUBS: Record<string, TagHub> = {
   docker: {
     seoTitle: 'Docker: {n} posts on images and hardening',
     metaDescription:
-      'Four Docker posts: rootless container hardening, a full Compose deployment with a TLS trap, the .dockerignore cache gotcha, and finding where volume data lives.',
+      'Docker posts: rootless container hardening, the build cache, a full Compose deployment with a TLS trap, the .dockerignore cache gotcha, and finding where volume data lives.',
     intro:
-      "Four posts on the gap between a Dockerfile and a running process. The hardening post is the baseline: stop running as root, drop capabilities, and set the rest of the defaults once. SimpleLogin is a full Compose deployment with Postfix and a TLS trust trap that eats an afternoon. The two short notes cover the .dockerignore gotcha that silently busts your build cache, and how to find where a volume's data actually lives on disk when the container insists the directory is empty.",
+      "Posts on the gap between a Dockerfile and a running process. The hardening post is the baseline: stop running as root, drop capabilities, and set the rest of the defaults once. SimpleLogin is a full Compose deployment with Postfix and a TLS trust trap that eats an afternoon. The two short notes cover the .dockerignore gotcha that silently busts your build cache, and how to find where a volume's data actually lives on disk when the container insists the directory is empty.",
   },
   vllm: {
     seoTitle: 'vLLM: {n} posts on serving LLMs in prod',
@@ -271,9 +271,9 @@ export const TAG_HUBS: Record<string, TagHub> = {
   observability: {
     seoTitle: 'Observability: {n} posts on metrics and logs',
     metaDescription:
-      'Four observability posts: a production Prometheus and Grafana stack, a benchmarked VictoriaLogs vs Loki comparison, GPU queue metrics, and a cardinality save.',
+      'Observability posts: a production Prometheus and Grafana stack, a benchmarked VictoriaLogs vs Loki comparison, GPU queue metrics, and a cardinality save.',
     intro:
-      'Four posts about asking a system a question and getting a true answer. The Prometheus and Grafana guide builds a stack that survives contact with production. The VictoriaLogs versus Loki comparison is benchmarked — ingest, query latency, storage and CPU, with the methodology written down. The GPU observability part explains why a green dashboard hides a queue. And the JA4 note is a cardinality story: a fingerprint format that splits cleanly is the difference between a usable label and a metrics bill.',
+      'Posts about asking a system a question and getting a true answer. The Prometheus and Grafana guide builds a stack that survives contact with production. The VictoriaLogs versus Loki comparison is benchmarked — ingest, query latency, storage and CPU, with the methodology written down. The GPU observability part explains why a green dashboard hides a queue. And the JA4 note is a cardinality story: a fingerprint format that splits cleanly is the difference between a usable label and a metrics bill.',
   },
   debugging: {
     seoTitle: 'Debugging: {n} posts on the real root cause',
@@ -309,6 +309,34 @@ export const TAG_HUBS: Record<string, TagHub> = {
       'Supply-chain security in practice: npm postinstall and cooldowns, the trivy-action tag rewrite and SHA pinning, plus provenance and audit logs that survive both.',
     intro:
       'Three posts on the code you shipped but did not write. Part 1 of the Lazy Security series is npm: postinstall scripts, dependency cooldowns, and the install-time defences that refuse malware before bytes hit disk. Part 2 is the same problem one level up — the trivy-action tag rewrite, org-level SHA pinning enforcement, and why a version tag is a name lookup rather than a pin. Part 3 names what partially mitigates the class that survives both: provenance, attestation, and audit logs you can actually read.',
+  },
+  containers: {
+    seoTitle: 'Containers: {n} posts on images and runtime',
+    metaDescription:
+      'Container posts from production: rootless hardening, BuildKit cache mounts and CI cache export, volume archaeology, and reading a crash loop by its exit code.',
+    intro:
+      'Posts about what happens between a Dockerfile and a running process, and then between that process and the scheduler. Hardening is the baseline: not root, dropped capabilities, defaults set once. The build cache post is the other end of the same file, where instruction order and an exported cache decide whether CI rebuilds everything on every commit. Then there is the crash-loop triage, which is mostly about reading an exit code correctly, and a short note on finding where a volume\'s data physically lives when the container says the directory is empty.',
+  },
+  sre: {
+    seoTitle: 'SRE: {n} posts on budgets, probes and pages',
+    metaDescription:
+      'Site reliability work in practice: error-budget burn-rate alerts, a TLS fingerprinting rule that took down 30% of traffic, and crash-loop triage by exit code.',
+    intro:
+      'Posts about the part of the job that is measured in pages rather than features. The burn-rate alerting post is the argument for paging on the error budget instead of the CPU graph, with the two-window rule that stops an alert firing for an hour after the incident ended. The JA4 post is the incident that argument exists for: one fingerprinting rule, thirty percent of production, reconstructed from the timeline. The crash-loop triage is the 3am version, five causes separated by an exit code and a reason field.',
+  },
+  prometheus: {
+    seoTitle: 'Prometheus: {n} posts on metrics and alerts',
+    metaDescription:
+      'Prometheus in production: a Grafana stack worth keeping, multi-window burn-rate alerts on the error budget, and the queue metrics that predict a bad experience.',
+    intro:
+      'Posts on Prometheus as the thing that decides whether anyone gets woken up. The Grafana guide is the stack end to end, dashboards and alerts included. The burn-rate post replaces threshold alerts with recording rules over the error budget, plus the absent_over_time alert that covers the case where the exporter itself disappears and every other alert goes quiet. The GPU observability part is the same reasoning applied to model serving, where utilisation is the misleading metric and queue time is the honest one.',
+  },
+  'ci-cd': {
+    seoTitle: 'CI/CD: {n} posts on pipelines that hold up',
+    metaDescription:
+      'CI/CD from production: GitHub Actions vs GitLab CI across 50 services, SHA-pinned workflows and dependency cooldowns, and Docker build caching that survives the runner.',
+    intro:
+      'Posts about the pipeline as a thing that is both a bottleneck and an attack surface. The comparison post came from running GitHub Actions and GitLab CI side by side across fifty microservices, with the decision matrix that came out of it. Part 2 of the Lazy Security series is the security half: SHA pinning against tag rewrites, dependency cooldowns, and the trigger never to touch. The build cache post is the speed half, and the reason a build that caches on your laptop rebuilds everything on a fresh runner.',
   },
   devsecops: {
     seoTitle: 'DevSecOps: {n} posts on shifting left',

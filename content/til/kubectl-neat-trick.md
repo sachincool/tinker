@@ -49,3 +49,5 @@ Now `kgn pod my-pod` gives you clean output instantly.
 
 Saves the copy-paste-and-strip routine every time I pull a Kubernetes config.
 
+The reason this matters beyond tidiness: when you are reading a pod's status to work out why it is crash-looping, forty lines of `managedFields` between you and `lastState.terminated.exitCode` is forty lines of noise. See [CrashLoopBackOff: five causes and how to tell them apart](/blog/kubernetes-crashloopbackoff-triage) for what to do with the field once you can see it, and [kubectl JSONPath](/til/kubectl-jsonpath-queries) for pulling it out without `neat` at all.
+

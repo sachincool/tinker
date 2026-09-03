@@ -83,7 +83,7 @@ Tail latency is the whole game here. Alerting on average TTFT is how you find ou
 
 ## tracing a single slow request
 
-Aggregate metrics tell you the fleet is unhealthy. They don't tell you why *this* request took nine seconds. For that you want per-request tracing, and the ecosystem has standardized on OpenTelemetry's GenAI semantic conventions: spans carry `gen_ai.*` attributes (the model, input and output token counts, the request parameters) so a single request's journey through the gateway, the queue, prefill, and decode is one connected trace. When a specific user reports a slow response, a trace tells you whether it sat in a queue, hit a cache miss, or just asked for a 4,000-token essay. The metrics say the kitchen is slow; the trace shows you which order got lost.
+Aggregate metrics tell you the fleet is unhealthy. They don't tell you why *this* request took nine seconds. For that you want per-request tracing, and the ecosystem has standardized on OpenTelemetry's GenAI semantic conventions: spans carry `gen_ai.*` attributes (the model, input and output token counts, the request parameters) so a single request's journey through the gateway, the queue, prefill, and decode is one connected trace. When a specific user reports a slow response, a trace tells you whether it sat in a queue, hit a cache miss, or just asked for a 4,000-token essay. The metrics say the kitchen is slow; the trace shows you which order got lost. Which of these should wake someone is a separate decision, and worth making on the error budget rather than a utilisation threshold: [alert on the error budget, not the CPU graph](/blog/prometheus-burn-rate-alerts).
 
 ## proving it before prod
 

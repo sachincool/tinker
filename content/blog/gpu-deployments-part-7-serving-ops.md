@@ -21,7 +21,7 @@ Here's the tell, and once you've seen it once you never miss it again:
 
 *Fig. 1 · the diagnosis is in two lines: exit code 137 (killed by the kubelet, not a segfault) and "Liveness probe failed ... connection refused" during load. The model was fine. The probe shot it.*
 
-vLLM binds its HTTP port almost immediately, but `/health` on `:8000` only returns 200 once the weights are loaded and the engine is warm. For a 70B on a cold pull that's several minutes. A default liveness probe with a small `initialDelaySeconds` starts checking during that window, gets a connection refused, decides the container is dead, and the kubelet kills it. It never finishes loading, so it never passes, so it loops forever. The exit code is 137 (128 + SIGKILL) which is the kubelet's fingerprint, not an application crash.
+vLLM binds its HTTP port almost immediately, but `/health` on `:8000` only returns 200 once the weights are loaded and the engine is warm. For a 70B on a cold pull that's several minutes. A default liveness probe with a small `initialDelaySeconds` starts checking during that window, gets a connection refused, decides the container is dead, and the kubelet kills it. It never finishes loading, so it never passes, so it loops forever. The exit code is 137 (128 + SIGKILL) which is the kubelet's fingerprint, not an application crash. That same code turns up for four other reasons outside model serving, and separating them is a two-command job: [CrashLoopBackOff: five causes and how to tell them apart](/blog/kubernetes-crashloopbackoff-triage).
 
 The fix is a `startupProbe`. It holds the liveness and readiness probes off entirely until it succeeds, and its `failureThreshold × periodSeconds` is your total load budget:
 

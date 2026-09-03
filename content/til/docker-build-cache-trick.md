@@ -35,5 +35,18 @@ npm-debug.log
 
 Build time went from 5 minutes to 30 seconds.
 
+## how to tell it worked
+
+The first lines of build output say how much context was sent to the daemon, and that number is the whole diagnosis:
+
+```text
+ => [internal] load .dockerignore                             0.0s
+ => => transferring context: 2.31kB                           0.0s
+```
+
+Kilobytes is healthy. Hundreds of megabytes means the file is missing, or the pattern you wrote does not match what you think it matches. `.dockerignore` uses Go's `filepath.Match` rules, not `.gitignore` rules, and the difference bites in one specific place: `**/` for recursive matching is supported, but a bare directory name like `node_modules` only matches at the root. Nested copies need `**/node_modules`.
+
 Treat `.dockerignore` like `.gitignore`. Be aggressive about what you exclude.
+
+The longer version of this, including why the same Dockerfile caches on your laptop and rebuilds everything on a CI runner, is in [why your Docker build caches locally and never in CI](/blog/docker-build-cache-buildkit). More under [Docker](/tags/docker) and [containers](/tags/containers).
 

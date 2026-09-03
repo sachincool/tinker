@@ -344,6 +344,24 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
               <MarkdownContent content={post.heroImage ? stripFirstImageBlock(post.content) : post.content} />
             </div>
 
+            {/* The FAQPage JSON-LD above described questions that appeared
+                nowhere on the page. Google requires the Q&A to be visible to
+                the reader, and an answer nobody can read is no use to an AI
+                summariser either. */}
+            {post.faqs && post.faqs.length > 0 && (
+              <section className="mt-16 pt-10 border-t border-border/60">
+                <h2 className="text-2xl font-semibold mb-6 tracking-tight">Questions people ask</h2>
+                <div className="space-y-6">
+                  {post.faqs.map(({ question, answer }) => (
+                    <div key={question} className="space-y-2">
+                      <h3 className="text-lg font-medium tracking-tight">{question}</h3>
+                      <p className="text-muted-foreground leading-relaxed">{answer}</p>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
+
             <Comments slug={slug} shareButton={<ShareButton title={post.title} excerpt={post.excerpt} />} />
 
             {relatedPosts.length > 0 && (
