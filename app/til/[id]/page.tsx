@@ -267,7 +267,7 @@ export default async function TILPost({ params }: { params: Promise<{ id: string
                     </div>
                     <h3 className="font-serif text-lg leading-tight">
                       <Link
-                        href={`/til/${relatedTil.slug}`}
+                        href={`/${relatedTil.type}/${relatedTil.slug}`}
                         className="hover:text-primary transition-colors"
                       >
                         {relatedTil.title}
