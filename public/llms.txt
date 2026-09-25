@@ -13,8 +13,11 @@ Author: Harshit Luthra. GitHub: https://github.com/sachincool. Twitter/X: https:
 - [AWS cost optimization](https://harshit.cloud/blog/aws-cost-optimization-tricks): How a $50k/month AWS bill came down to $20k, including the CloudWatch levers that cut ingestion and storage.
 - [Self-hosting SimpleLogin](https://harshit.cloud/blog/self-hosting-simplelogin): Bidirectional email aliases on Docker + Postfix + Brevo for about $3/month, with the TLS CA trap that eats most people's afternoon.
 - [Kubernetes debugging](https://harshit.cloud/blog/kubernetes-debugging-tips): Field-tested debugging moves for stuck pods, crash loops, and networking failures.
+- [CrashLoopBackOff triage](https://harshit.cloud/blog/kubernetes-crashloopbackoff-triage): Five causes of a Kubernetes crash loop, separated by exit code and last termination reason before you read any application log.
 - [Prometheus + Grafana monitoring guide](https://harshit.cloud/blog/prometheus-grafana-monitoring-guide): A working monitoring stack, not a hello-world dashboard.
+- [Error-budget burn-rate alerting](https://harshit.cloud/blog/prometheus-burn-rate-alerts): Multi-window burn-rate alerts in PromQL, why the short window matters, and the absent_over_time alert that covers a dead exporter.
 - [Docker security hardening](https://harshit.cloud/blog/docker-security-hardening): Stop running containers as root, and the rest of the baseline.
+- [Docker build cache in CI](https://harshit.cloud/blog/docker-build-cache-buildkit): Why a build caches locally and rebuilds on a fresh runner: instruction order, .dockerignore, BuildKit cache mounts, and exporting the cache.
 - [Infrastructure as code mistakes](https://harshit.cloud/blog/infrastructure-as-code-mistakes): Terraform mistakes paid for in pages and money.
 - [JA4 TLS fingerprinting incident](https://harshit.cloud/blog/ja4-fingerprinting-network-security): How one fingerprinting rule took down 30% of production.
 - [Lazy Security series](https://harshit.cloud/blog/lazy-security-part-1-supply-chain): Six parts on the security work that actually pays off — supply chain, GitHub Actions, DNS, dev laptops, the network plane.
@@ -23,7 +26,17 @@ Author: Harshit Luthra. GitHub: https://github.com/sachincool. Twitter/X: https:
 
 - [Today I Learned](https://harshit.cloud/til): Short, dated notes from day-to-day infrastructure work.
 - [About](https://harshit.cloud/about): Background and contact.
-- [Tags](https://harshit.cloud/tags): Posts grouped by topic.
+- [Tags](https://harshit.cloud/tags): Every topic, A to Z.
+- [Knowledge graph](https://harshit.cloud/graph): Posts, TILs, and tags drawn as one graph, with the topic clusters listed in prose.
+
+## Topic hubs
+
+Tags carrying three or more posts have a hub page with a written introduction and the full list. Tags below that threshold are noindex and exist for browsing only.
+
+- [Kubernetes](https://harshit.cloud/tags/kubernetes) · [DevOps](https://harshit.cloud/tags/devops) · [security](https://harshit.cloud/tags/security) · [GPU infrastructure](https://harshit.cloud/tags/gpu) · [Lazy SRE](https://harshit.cloud/tags/lazy-sre)
+- [infrastructure](https://harshit.cloud/tags/infrastructure) · [productivity](https://harshit.cloud/tags/productivity) · [Docker](https://harshit.cloud/tags/docker) · [observability](https://harshit.cloud/tags/observability) · [debugging](https://harshit.cloud/tags/debugging)
+- [containers](https://harshit.cloud/tags/containers) · [vLLM](https://harshit.cloud/tags/vllm) · [SRE](https://harshit.cloud/tags/sre) · [monitoring](https://harshit.cloud/tags/monitoring) · [shell](https://harshit.cloud/tags/shell)
+- [CI/CD](https://harshit.cloud/tags/ci-cd) · [Prometheus](https://harshit.cloud/tags/prometheus) · [LLM inference](https://harshit.cloud/tags/inference) · [supply chain](https://harshit.cloud/tags/supply-chain)
 
 ## Feeds
 

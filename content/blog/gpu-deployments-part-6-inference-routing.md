@@ -1,5 +1,6 @@
 ---
 title: "The cheapest speedup is your load balancer"
+seoTitle: "LLM inference routing: KV-cache-aware load balancing"
 date: "2026-07-18"
 tags: ["gpu", "inference", "routing", "vllm", "kubernetes"]
 excerpt: "Same GPUs, same model, same replica count. Swap round-robin for prefix-cache-aware routing and the fleet gets 2.3x faster. The router was throwing the cache away."

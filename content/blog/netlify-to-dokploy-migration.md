@@ -1,5 +1,6 @@
 ---
 title: "When Netlify killed my free tier: a 15-minute migration to Dokploy"
+seoTitle: "Netlify to Dokploy: a 15-minute migration off free tier"
 date: "2025-10-24"
 tags: ["devops", "hosting", "cost-optimization", "self-hosting", "dokploy"]
 excerpt: "Netlify suspended five free-tier sites of mine one Tuesday night. The 15-minute migration to Dokploy on a €3/month VPS that bought everything back."

@@ -1,5 +1,6 @@
 ---
 title: "Bash parameter expansion: string manipulation without sed and awk"
+seoTitle: "Bash parameter expansion: skip sed and awk entirely"
 date: "2024-12-17"
 tags: ["bash", "shell", "linux", "scripting"]
 excerpt: "Bash has built-in string manipulation that's faster than spawning sed or awk. The patterns that replaced 80% of my pipeline calls, with a cheat sheet."

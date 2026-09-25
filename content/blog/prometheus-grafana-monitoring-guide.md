@@ -422,5 +422,7 @@ If you only monitor four things, monitor Google's golden signals: latency, traff
 
 ## what to add next
 
-Add exporters for the data stores you actually use: MySQL, Redis, Postgres, whichever queue you're on. Wire Alertmanager to Slack and PagerDuty so the alerts land somewhere a human reads. Write a one-line runbook link in every alert annotation so the page tells the on-call what to do. Back up the Prometheus data directory; the whole point of long retention is gone if a disk failure wipes it. A dashboard you never look at is graphs heating the data center.
+Add exporters for the data stores you actually use: MySQL, Redis, Postgres, whichever queue you're on. Wire Alertmanager to Slack and PagerDuty so the alerts land somewhere a human reads. Write a one-line runbook link in every alert annotation so the page tells the on-call what to do. Back up the Prometheus data directory; the whole point of long retention is gone if a disk failure wipes it. And when you get to the alerting half, what the alert measures matters more than how many you have. [Alert on the error budget, not the CPU graph](/blog/prometheus-burn-rate-alerts) replaces threshold rules with multi-window burn-rate alerts, which page for the symptom, once, and stop when the incident does. More under [Prometheus](/tags/prometheus) and [monitoring](/tags/monitoring).
+
+A dashboard you never look at is graphs heating the data center.
 

@@ -1,5 +1,6 @@
 ---
 title: "Docker volume debugging: finding where your data actually lives"
+seoTitle: "Docker volume debugging: where your data actually lives"
 date: "2024-12-14"
 tags: ["docker", "debugging", "containers", "devops"]
 excerpt: "Volume mounts that look right but won't persist data. The five-command inspection sequence that always tells me which mount is actually being read."

@@ -149,6 +149,8 @@ Loki is the right pick when label-based queries dominate and full-text is rare, 
 
 For us, on this workload, the resource economics decided it. The freed memory per node became real infrastructure savings within a quarter. 12 seconds turned into 900 milliseconds with no tuning, and that's the number I keep quoting six months later.
 
+Whichever store you land on, the logs are only half of it. The metrics side of the same stack, and the alerting rules that decide what a human actually sees, are in [Prometheus and Grafana: from zero to production monitoring](/blog/prometheus-grafana-monitoring-guide) and [alert on the error budget, not the CPU graph](/blog/prometheus-burn-rate-alerts). More under [observability](/tags/observability) and [Kubernetes](/tags/kubernetes).
+
 ## resources
 
 - [Loki Documentation](https://grafana.com/docs/loki/latest/)

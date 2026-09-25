@@ -1,5 +1,6 @@
 ---
 title: "Scaling GPUs past one box"
+seoTitle: "Multi-node GPU training: InfiniBand and gang scheduling"
 date: "2026-07-09"
 tags: ["gpu", "distributed-training", "infiniband", "kubernetes", "infrastructure"]
 excerpt: "Past one node the network becomes the machine. InfiniBand vs RoCE, gang scheduling, FSDP and Megatron, and why a 16k-GPU cluster fails every three hours."

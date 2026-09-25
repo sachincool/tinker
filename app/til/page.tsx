@@ -10,11 +10,11 @@ export async function generateMetadata(): Promise<Metadata> {
   const baseUrl = getCurrentDomain(hostname);
 
   return {
-    title: `Today I Learned | ${siteConfig.author.name}`,
-    description: 'Quick insights, code snippets, and daily learnings from the trenches of DevOps and infrastructure.',
+    title: 'Today I Learned — DevOps and Kubernetes field notes',
+    description: 'Short dated notes from day-to-day infrastructure work: kubectl and jq one-liners, Docker cache traps, bash parameter expansion, and git rebase workflows.',
     openGraph: {
-      title: `Today I Learned | ${siteConfig.author.name}`,
-      description: 'Quick insights, code snippets, and daily learnings from the trenches of DevOps and infrastructure.',
+      title: 'Today I Learned — DevOps and Kubernetes field notes',
+      description: 'Short dated notes from day-to-day infrastructure work: kubectl and jq one-liners, Docker cache traps, bash parameter expansion, and git rebase workflows.',
       type: 'website',
       url: `${baseUrl}/til`,
       siteName: siteConfig.title,
@@ -29,8 +29,8 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     twitter: {
       card: 'summary_large_image',
-      title: `Today I Learned | ${siteConfig.author.name}`,
-      description: 'Quick insights, code snippets, and daily learnings from the trenches of DevOps and infrastructure.',
+      title: 'Today I Learned — DevOps and Kubernetes field notes',
+      description: 'Short dated notes from day-to-day infrastructure work: kubectl and jq one-liners, Docker cache traps, bash parameter expansion, and git rebase workflows.',
       images: [`${baseUrl}/til/opengraph-image`],
     },
     alternates: {
@@ -49,7 +49,7 @@ export default async function TILPage() {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
     name: `${siteConfig.title} · Today I Learned`,
-    description: "Quick insights, code snippets, and daily learnings from the trenches of DevOps and infrastructure.",
+    description: "Short dated notes from day-to-day infrastructure work: kubectl and jq one-liners, Docker cache traps, bash parameter expansion, and git rebase workflows.",
     url: `${baseUrl}/til`,
     isPartOf: { "@type": "WebSite", name: siteConfig.title, url: baseUrl },
     mainEntity: {

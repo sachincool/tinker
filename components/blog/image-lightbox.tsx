@@ -2,14 +2,18 @@
 
 import React, { useEffect, useState } from "react";
 import { X } from "lucide-react";
+import { PostImage } from "./post-image";
 
 interface ImageLightboxProps {
   src: string;
   alt: string;
   className?: string;
+  // The post hero is the LCP element on every article page. Lazy-loading it
+  // costs a round trip the browser could have started from the HTML.
+  eager?: boolean;
 }
 
-export function ImageLightbox({ src, alt, className }: ImageLightboxProps) {
+export function ImageLightbox({ src, alt, className, eager }: ImageLightboxProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   // Close on Escape while the lightbox is open
@@ -25,11 +29,12 @@ export function ImageLightbox({ src, alt, className }: ImageLightboxProps) {
   return (
     <>
       {/* Clickable image */}
-      <img
+      <PostImage
         src={src}
         alt={alt}
         className={`${className} cursor-pointer`}
-        loading="lazy"
+        loading={eager ? "eager" : "lazy"}
+        fetchPriority={eager ? "high" : undefined}
         role="button"
         tabIndex={0}
         onClick={() => setIsOpen(true)}
@@ -64,9 +69,10 @@ export function ImageLightbox({ src, alt, className }: ImageLightboxProps) {
             className="relative max-w-7xl max-h-[90vh] w-full animate-in fade-in zoom-in-95 duration-200"
             onClick={(e) => e.stopPropagation()}
           >
-            <img
+            <PostImage
               src={src}
               alt={alt}
+              loading="eager"
               className="w-full h-full object-contain rounded-lg shadow-2xl"
             />
 

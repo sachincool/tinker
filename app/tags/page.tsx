@@ -11,11 +11,11 @@ export async function generateMetadata(): Promise<Metadata> {
   const baseUrl = getCurrentDomain(hostname);
 
   return {
-    title: `Tags | ${siteConfig.author.name}`,
-    description: 'Every tag used across the writing: blog posts and TILs, alphabetized.',
+    title: 'All topics: Kubernetes, DevOps, security and SRE tags',
+    description: 'Every topic across the blog and TIL notes, from Kubernetes and GPU infrastructure to supply-chain security, observability, Docker, and command-line tooling.',
     openGraph: {
-      title: `Tags | ${siteConfig.author.name}`,
-      description: 'Every tag used across the writing: blog posts and TILs, alphabetized.',
+      title: 'All topics: Kubernetes, DevOps, security and SRE tags',
+      description: 'Every topic across the blog and TIL notes, from Kubernetes and GPU infrastructure to supply-chain security, observability, Docker, and command-line tooling.',
       type: 'website',
       url: `${baseUrl}/tags`,
       siteName: siteConfig.title,
@@ -30,8 +30,8 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     twitter: {
       card: 'summary_large_image',
-      title: `Tags | ${siteConfig.author.name}`,
-      description: 'Every tag used across the writing.',
+      title: 'All topics: Kubernetes, DevOps, security and SRE tags',
+      description: 'Every topic across the blog and TIL notes: Kubernetes, GPU infrastructure, supply-chain security, observability, Docker, and command-line tooling.',
       images: [`${baseUrl}/tags/opengraph-image`],
     },
     alternates: {

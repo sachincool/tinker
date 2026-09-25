@@ -1,5 +1,6 @@
 ---
 title: "Lazy SRE's guide to secure systems, part 1: the dependencies you didn't read"
+seoTitle: "Lazy Security part 1: the dependencies you didn't read"
 date: "2026-04-05"
 tags: ["security", "lazy-sre", "supply-chain", "npm", "devsecops"]
 excerpt: "Startup-grade defense against npm supply-chain attacks, for Future You at 3am. Chainjacking, postinstall scripts, smallest install, most leverage."

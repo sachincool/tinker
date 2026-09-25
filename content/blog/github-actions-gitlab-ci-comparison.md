@@ -247,4 +247,6 @@ cd $CI_PROJECT_NAME
 
 Most scripts translate directly. The win is collapsing a few of them into marketplace actions you no longer have to maintain.
 
+Two things are worth doing on either platform before you argue about syntax. Pin your actions by SHA and put a cooldown in front of version bumps, which is [part 2 of the Lazy Security series](/blog/lazy-security-part-2-github-actions). And export the build cache so a fresh runner is not a cold build, which is [why your Docker build caches locally and never in CI](/blog/docker-build-cache-buildkit). Both are collected under [ci-cd](/tags/ci-cd).
+
 Starting fresh, pick whichever platform already hosts your code. The integration tax of running CI on the other vendor outweighs every syntax preference in this post. Whichever one you pick, the only investment that pays back is making the pipeline fast. A slow CI is worse than no CI; it just costs more to ignore.

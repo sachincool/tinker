@@ -10,6 +10,11 @@ export interface PostFaq {
 export interface Post {
   slug: string;
   title: string;
+  // Optional `<title>`/OG override. The H1 keeps `title` — several editorial
+  // headlines run past the ~62 chars Google shows, and a few of the short ones
+  // carry no keyword at all. This lets the SERP line differ from the headline
+  // without rewriting the post.
+  seoTitle?: string;
   date: string;
   updatedAt?: string;
   tags: string[];
@@ -123,6 +128,7 @@ export function getPostBySlug(slug: string, type: 'blog' | 'til' = 'blog'): Post
     const post: Post = {
       slug,
       title,
+      seoTitle: typeof data.seoTitle === "string" && data.seoTitle.trim() ? data.seoTitle.trim() : undefined,
       date,
       updatedAt: data.updatedAt || data.lastModified || undefined,
       tags: data.tags || [],

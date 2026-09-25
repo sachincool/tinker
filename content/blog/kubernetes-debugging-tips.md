@@ -78,4 +78,6 @@ The pattern across all five is the same. Kubernetes is unusually good at telling
 
 Most pages resolve with these five. The ones that don't — a control plane quietly falling over, a CNI dropping packets under load, a cluster that's "healthy" by every dashboard except the one metric users actually feel — are usually why teams bring in outside help. That's the kind of Kubernetes debugging I take on as [independent infrastructure consulting](https://k8s.org.in).
 
+The two commands in this post classify most of what you will meet. The full decision tree for the crash-loop case, where the exit code and the last termination reason narrow five causes to one before you read any application output, is in [CrashLoopBackOff: five causes and how to tell them apart](/blog/kubernetes-crashloopbackoff-triage). The rest of the cluster writing is collected under [Kubernetes](/tags/kubernetes) and [debugging](/tags/debugging).
+
 Next time the alert fires at 03:47, the first thing you type is `kubectl logs <pod> --previous -c <container>`. The second thing is `kubectl describe pod <pod> | less`. If the answer isn't in those two outputs, you actually have a problem.

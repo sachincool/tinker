@@ -1,5 +1,6 @@
 ---
 title: "Self-hosting SimpleLogin: own your email aliases for $3 a month"
+seoTitle: "Self-hosting SimpleLogin: email aliases for $3 a month"
 date: "2026-02-07"
 updatedAt: "2026-06-18"
 tags: ["self-hosting", "docker", "security", "devops", "email"]

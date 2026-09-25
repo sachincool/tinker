@@ -1,5 +1,6 @@
 ---
 title: "Lazy SRE's guide to secure systems, part 5: the dev laptop is the perimeter"
+seoTitle: "Lazy Security part 5: the dev laptop is the perimeter"
 date: "2026-05-03"
 tags: ["security", "devsecops", "lazy-sre", "endpoint", "mdm", "macos"]
 excerpt: "Snowflake taught everyone what happens when an infostealer runs on a contractor's personal Mac. The laptop is the perimeter."

@@ -1,5 +1,6 @@
 ---
 title: "How I took down 30% of production with one TLS fingerprinting rule"
+seoTitle: "How one TLS fingerprinting rule took down 30% of prod"
 date: "2025-10-14"
 tags: ["sre", "tls", "networking", "monitoring", "production-incidents"]
 excerpt: "Deployed a TLS fingerprinting rule that seemed reasonable. Blocked every Chrome 119 user on Windows. The incident report was not fun to write."
@@ -243,3 +244,5 @@ It's not about security. It's about observability: understanding your traffic co
 Adding JA4 fingerprints to your logs and metrics gives you another dimension to slice your data. When something weird happens, you can answer "what client type is doing this?" faster.
 
 Just don't rate limit or block based on it alone. That way lies incidents and awkward conversations with your VP of Engineering.
+
+The other half of the lesson is what gets a pager attached. Traffic composition belongs on a dashboard. The thing that wakes someone should be the error budget burning, not a metric moving, and the PromQL for that is in [alert on the error budget, not the CPU graph](/blog/prometheus-burn-rate-alerts). More incident write-ups under [SRE](/tags/sre) and [monitoring](/tags/monitoring).

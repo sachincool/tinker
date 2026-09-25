@@ -434,4 +434,6 @@ Six months after the audit, the same scanner came back with vulnerabilities down
 
 The change none of those metrics capture is the cultural one. The CI gate caught seven Dockerfiles in the next quarter that would have shipped a `USER root` or a mounted Docker socket. Each of them was added by someone who'd read this exact post in our wiki and still missed something. The point of the gate isn't that engineers are careless. It's that the wrong defaults will outlast any number of training sessions.
 
+The other file this all lives in is the build. Instruction order and an exported cache decide whether CI rebuilds the whole image on every commit, and the same `.dockerignore` that keeps your build fast is what keeps `.env` out of a layer someone can read: [why your Docker build caches locally and never in CI](/blog/docker-build-cache-buildkit). More under [Docker](/tags/docker) and [containers](/tags/containers).
+
 The auditor who wrote *one RCE and you own the cluster* came back the next year. The line in this year's summary read *no findings rated critical*. I keep both of them in the same Slack channel. They're more useful together.

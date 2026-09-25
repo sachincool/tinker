@@ -1,5 +1,6 @@
 ---
 title: "Two tenants, one GPU, and no wall between them"
+seoTitle: "GPU multi-tenancy on Kubernetes: isolation that holds"
 date: "2026-07-25"
 tags: ["gpu", "kubernetes", "multi-tenancy", "security", "mig"]
 excerpt: "A Kubernetes namespace isolates the API, not the silicon. Under time-slicing two teams share a physical GPU with no memory wall. Quotas, isolation, and locking the endpoint."

@@ -34,16 +34,19 @@ export async function generateMetadata({
   const hostname = headersList.get("host") || "";
   const baseUrl = getCurrentDomain(hostname);
   const tilUrl = `${baseUrl}/til/${id}`;
+  // The "TIL: " prefix costs five chars of the SERP window; an explicit
+  // seoTitle is assumed to already say what it needs to.
+  const seoTitle = til.seoTitle ?? `TIL: ${til.title}`;
 
   return {
-    title: `TIL: ${til.title}`,
+    title: seoTitle,
     description: til.excerpt || til.title,
     keywords: til.tags,
     authors: [{ name: siteConfig.author.name, url: baseUrl }],
     creator: siteConfig.author.name,
     publisher: siteConfig.author.name,
     openGraph: {
-      title: til.title,
+      title: seoTitle,
       description: til.excerpt || til.title,
       type: "article",
       publishedTime: til.date,
@@ -264,7 +267,7 @@ export default async function TILPost({ params }: { params: Promise<{ id: string
                     </div>
                     <h3 className="font-serif text-lg leading-tight">
                       <Link
-                        href={`/til/${relatedTil.slug}`}
+                        href={`/${relatedTil.type}/${relatedTil.slug}`}
                         className="hover:text-primary transition-colors"
                       >
                         {relatedTil.title}

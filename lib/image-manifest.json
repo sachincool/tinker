@@ -1,0 +1,967 @@
+{
+  "/images/akamai-browser-extensions-blocking/akamai_repo_ip.png": [
+    1508,
+    954,
+    1
+  ],
+  "/images/akamai-browser-extensions-blocking/akamai_repo_ip.webp": [
+    1508,
+    954,
+    0
+  ],
+  "/images/akamai-browser-extensions-blocking/extensions_2.png": [
+    1336,
+    1604,
+    1
+  ],
+  "/images/akamai-browser-extensions-blocking/extensions_2.webp": [
+    1336,
+    1604,
+    0
+  ],
+  "/images/akamai-browser-extensions-blocking/extensions.png": [
+    722,
+    1162,
+    1
+  ],
+  "/images/akamai-browser-extensions-blocking/extensions.webp": [
+    722,
+    1162,
+    0
+  ],
+  "/images/akamai-browser-extensions-blocking/indigo_access_denied.png": [
+    1498,
+    570,
+    1
+  ],
+  "/images/akamai-browser-extensions-blocking/indigo_access_denied.webp": [
+    1498,
+    570,
+    0
+  ],
+  "/images/akamai-browser-extensions-blocking/mmt_access_denied.png": [
+    1338,
+    554,
+    1
+  ],
+  "/images/akamai-browser-extensions-blocking/mmt_access_denied.webp": [
+    1338,
+    554,
+    0
+  ],
+  "/images/akamai-browser-extensions-blocking/my_ip.png": [
+    840,
+    1210,
+    1
+  ],
+  "/images/akamai-browser-extensions-blocking/my_ip.webp": [
+    840,
+    1210,
+    0
+  ],
+  "/images/aws-cost-optimization-tricks/hero.gif": [
+    900,
+    600,
+    0
+  ],
+  "/images/bypassing-claude-code-mdm-managed-settings/hero.png": [
+    1304,
+    920,
+    1
+  ],
+  "/images/bypassing-claude-code-mdm-managed-settings/hero.webp": [
+    1304,
+    920,
+    0
+  ],
+  "/images/daily-git-commands/hero.png": [
+    2400,
+    1260,
+    1
+  ],
+  "/images/daily-git-commands/hero.webp": [
+    2048,
+    1075,
+    0
+  ],
+  "/images/delivery-social-engineering/server-rack.webp": [
+    1600,
+    1200,
+    0
+  ],
+  "/images/docker-security-hardening/hero.png": [
+    3200,
+    1800,
+    1
+  ],
+  "/images/docker-security-hardening/hero.webp": [
+    2048,
+    1152,
+    0
+  ],
+  "/images/favorite-shows-sitcoms-detective/hero.jpg": [
+    1920,
+    1280,
+    1
+  ],
+  "/images/favorite-shows-sitcoms-detective/hero.webp": [
+    1920,
+    1280,
+    0
+  ],
+  "/images/github-actions-gitlab-ci-comparison/hero.png": [
+    3200,
+    1800,
+    1
+  ],
+  "/images/github-actions-gitlab-ci-comparison/hero.webp": [
+    2048,
+    1152,
+    0
+  ],
+  "/images/gpu-deployments-part-1-anatomy/gpu-sharing-three-ways.png": [
+    2240,
+    1054,
+    1
+  ],
+  "/images/gpu-deployments-part-1-anatomy/gpu-sharing-three-ways.webp": [
+    2048,
+    964,
+    0
+  ],
+  "/images/gpu-deployments-part-1-anatomy/gpu-stack-layers.png": [
+    2240,
+    1720,
+    1
+  ],
+  "/images/gpu-deployments-part-1-anatomy/gpu-stack-layers.webp": [
+    2048,
+    1573,
+    0
+  ],
+  "/images/gpu-deployments-part-1-anatomy/gpu-util-vs-mfu.png": [
+    2000,
+    920,
+    1
+  ],
+  "/images/gpu-deployments-part-1-anatomy/gpu-util-vs-mfu.webp": [
+    2000,
+    920,
+    0
+  ],
+  "/images/gpu-deployments-part-1-anatomy/xid-decision-flow.png": [
+    2160,
+    1158,
+    1
+  ],
+  "/images/gpu-deployments-part-1-anatomy/xid-decision-flow.webp": [
+    2048,
+    1098,
+    0
+  ],
+  "/images/gpu-deployments-part-2-single-node-multi-gpu/inference-engine-quadrant.png": [
+    2000,
+    1302,
+    1
+  ],
+  "/images/gpu-deployments-part-2-single-node-multi-gpu/inference-engine-quadrant.webp": [
+    2000,
+    1302,
+    0
+  ],
+  "/images/gpu-deployments-part-2-single-node-multi-gpu/intra-node-topology.png": [
+    2160,
+    1446,
+    1
+  ],
+  "/images/gpu-deployments-part-2-single-node-multi-gpu/intra-node-topology.webp": [
+    2048,
+    1371,
+    0
+  ],
+  "/images/gpu-deployments-part-2-single-node-multi-gpu/nvlink-vs-pcie-bandwidth.png": [
+    2000,
+    1044,
+    1
+  ],
+  "/images/gpu-deployments-part-2-single-node-multi-gpu/nvlink-vs-pcie-bandwidth.webp": [
+    2000,
+    1044,
+    0
+  ],
+  "/images/gpu-deployments-part-3-scaling-out/3d-parallelism.png": [
+    2080,
+    1128,
+    1
+  ],
+  "/images/gpu-deployments-part-3-scaling-out/3d-parallelism.webp": [
+    2048,
+    1111,
+    0
+  ],
+  "/images/gpu-deployments-part-3-scaling-out/disaggregated-prefill-decode.png": [
+    2080,
+    824,
+    1
+  ],
+  "/images/gpu-deployments-part-3-scaling-out/disaggregated-prefill-decode.webp": [
+    2048,
+    811,
+    0
+  ],
+  "/images/gpu-deployments-part-3-scaling-out/gang-scheduling.png": [
+    2000,
+    1002,
+    1
+  ],
+  "/images/gpu-deployments-part-3-scaling-out/gang-scheduling.webp": [
+    2000,
+    1002,
+    0
+  ],
+  "/images/gpu-deployments-part-3-scaling-out/gpu-cost-comparison.png": [
+    2000,
+    1180,
+    1
+  ],
+  "/images/gpu-deployments-part-3-scaling-out/gpu-cost-comparison.webp": [
+    2000,
+    1180,
+    0
+  ],
+  "/images/gpu-deployments-part-3-scaling-out/llama3-failure-breakdown.png": [
+    2000,
+    1044,
+    1
+  ],
+  "/images/gpu-deployments-part-3-scaling-out/llama3-failure-breakdown.webp": [
+    2000,
+    1044,
+    0
+  ],
+  "/images/gpu-deployments-part-3-scaling-out/rail-optimized-fabric.png": [
+    2160,
+    1242,
+    1
+  ],
+  "/images/gpu-deployments-part-3-scaling-out/rail-optimized-fabric.webp": [
+    2048,
+    1178,
+    0
+  ],
+  "/images/gpu-deployments-part-4-observability/bottleneck-diagnosis.png": [
+    2120,
+    974,
+    1
+  ],
+  "/images/gpu-deployments-part-4-observability/bottleneck-diagnosis.webp": [
+    2048,
+    941,
+    0
+  ],
+  "/images/gpu-deployments-part-4-observability/healthy-vs-drowning.png": [
+    2000,
+    1020,
+    1
+  ],
+  "/images/gpu-deployments-part-4-observability/healthy-vs-drowning.webp": [
+    2000,
+    1020,
+    0
+  ],
+  "/images/gpu-deployments-part-4-observability/request-latency-anatomy.png": [
+    2080,
+    888,
+    1
+  ],
+  "/images/gpu-deployments-part-4-observability/request-latency-anatomy.webp": [
+    2048,
+    874,
+    0
+  ],
+  "/images/gpu-deployments-part-5-scale-to-zero/cold-start-budget.png": [
+    2080,
+    882,
+    1
+  ],
+  "/images/gpu-deployments-part-5-scale-to-zero/cold-start-budget.webp": [
+    2048,
+    868,
+    0
+  ],
+  "/images/gpu-deployments-part-5-scale-to-zero/cold-start-fixes.png": [
+    2080,
+    914,
+    1
+  ],
+  "/images/gpu-deployments-part-5-scale-to-zero/cold-start-fixes.webp": [
+    2048,
+    900,
+    0
+  ],
+  "/images/gpu-deployments-part-5-scale-to-zero/scale-to-zero-lifecycle.png": [
+    2080,
+    912,
+    1
+  ],
+  "/images/gpu-deployments-part-5-scale-to-zero/scale-to-zero-lifecycle.webp": [
+    2048,
+    898,
+    0
+  ],
+  "/images/gpu-deployments-part-6-inference-routing/inference-gateway-arch.png": [
+    2080,
+    1162,
+    1
+  ],
+  "/images/gpu-deployments-part-6-inference-routing/inference-gateway-arch.webp": [
+    2048,
+    1144,
+    0
+  ],
+  "/images/gpu-deployments-part-6-inference-routing/routing-benchmark.png": [
+    2000,
+    1182,
+    1
+  ],
+  "/images/gpu-deployments-part-6-inference-routing/routing-benchmark.webp": [
+    2000,
+    1182,
+    0
+  ],
+  "/images/gpu-deployments-part-6-inference-routing/routing-contrast.png": [
+    2160,
+    1348,
+    1
+  ],
+  "/images/gpu-deployments-part-6-inference-routing/routing-contrast.webp": [
+    2048,
+    1278,
+    0
+  ],
+  "/images/gpu-deployments-part-7-serving-ops/graceful-drain.png": [
+    2120,
+    974,
+    1
+  ],
+  "/images/gpu-deployments-part-7-serving-ops/graceful-drain.webp": [
+    2048,
+    941,
+    0
+  ],
+  "/images/gpu-deployments-part-7-serving-ops/probe-crashloop.png": [
+    1960,
+    906,
+    1
+  ],
+  "/images/gpu-deployments-part-7-serving-ops/probe-crashloop.webp": [
+    1960,
+    906,
+    0
+  ],
+  "/images/gpu-deployments-part-8-multi-tenancy-security/isolation-matrix.png": [
+    2080,
+    1090,
+    1
+  ],
+  "/images/gpu-deployments-part-8-multi-tenancy-security/isolation-matrix.webp": [
+    2048,
+    1073,
+    0
+  ],
+  "/images/gpu-deployments-part-8-multi-tenancy-security/same-gpu-two-namespaces.png": [
+    2000,
+    644,
+    1
+  ],
+  "/images/gpu-deployments-part-8-multi-tenancy-security/same-gpu-two-namespaces.webp": [
+    2000,
+    644,
+    0
+  ],
+  "/images/infrastructure-as-code-mistakes/hero.png": [
+    1600,
+    720,
+    1
+  ],
+  "/images/infrastructure-as-code-mistakes/hero.webp": [
+    1600,
+    720,
+    0
+  ],
+  "/images/ja4-fingerprinting-network-security/hero.png": [
+    3200,
+    1800,
+    1
+  ],
+  "/images/ja4-fingerprinting-network-security/hero.webp": [
+    2048,
+    1152,
+    0
+  ],
+  "/images/kubernetes-debugging-tips/hero.png": [
+    3200,
+    1800,
+    1
+  ],
+  "/images/kubernetes-debugging-tips/hero.webp": [
+    2048,
+    1152,
+    0
+  ],
+  "/images/lab-qr.png": [
+    518,
+    518,
+    1
+  ],
+  "/images/lab-qr.webp": [
+    518,
+    518,
+    0
+  ],
+  "/images/lazy-security-part-1-supply-chain/chainjacking-timeline.png": [
+    3200,
+    1800,
+    1
+  ],
+  "/images/lazy-security-part-1-supply-chain/chainjacking-timeline.webp": [
+    2048,
+    1152,
+    0
+  ],
+  "/images/lazy-security-part-1-supply-chain/dependency-tree-contrast.png": [
+    6920,
+    3440,
+    1
+  ],
+  "/images/lazy-security-part-1-supply-chain/dependency-tree-contrast.webp": [
+    2048,
+    1018,
+    0
+  ],
+  "/images/lazy-security-part-1-supply-chain/safe-chain-flow.png": [
+    1600,
+    900,
+    1
+  ],
+  "/images/lazy-security-part-1-supply-chain/safe-chain-flow.webp": [
+    1600,
+    900,
+    0
+  ],
+  "/images/lazy-security-part-2-github-actions/cooldown-window.gif": [
+    1600,
+    900,
+    0
+  ],
+  "/images/lazy-security-part-2-github-actions/pull-request-target-contrast.png": [
+    5800,
+    3208,
+    1
+  ],
+  "/images/lazy-security-part-2-github-actions/pull-request-target-contrast.webp": [
+    2048,
+    1133,
+    0
+  ],
+  "/images/lazy-security-part-2-github-actions/trivy-action-timeline.png": [
+    3200,
+    1800,
+    1
+  ],
+  "/images/lazy-security-part-2-github-actions/trivy-action-timeline.webp": [
+    2048,
+    1152,
+    0
+  ],
+  "/images/lazy-security-part-3-unsexy-list/access-plane-contrast.png": [
+    6394,
+    3240,
+    1
+  ],
+  "/images/lazy-security-part-3-unsexy-list/access-plane-contrast.webp": [
+    2048,
+    1038,
+    0
+  ],
+  "/images/lazy-security-part-3-unsexy-list/credentials-in-the-wild.png": [
+    3200,
+    1800,
+    1
+  ],
+  "/images/lazy-security-part-3-unsexy-list/credentials-in-the-wild.webp": [
+    2048,
+    1152,
+    0
+  ],
+  "/images/lazy-security-part-3-unsexy-list/scim-revocation-window.gif": [
+    1600,
+    900,
+    0
+  ],
+  "/images/lazy-security-part-4-dns-records/bec-losses.gif": [
+    1600,
+    900,
+    0
+  ],
+  "/images/lazy-security-part-4-dns-records/dns-records-napkin.png": [
+    6080,
+    3688,
+    1
+  ],
+  "/images/lazy-security-part-4-dns-records/dns-records-napkin.webp": [
+    2048,
+    1242,
+    0
+  ],
+  "/images/lazy-security-part-4-dns-records/subdomailing-timeline.png": [
+    3200,
+    1800,
+    1
+  ],
+  "/images/lazy-security-part-4-dns-records/subdomailing-timeline.webp": [
+    2048,
+    1152,
+    0
+  ],
+  "/images/lazy-security-part-5-dev-laptops/endpoint-cost-stack.gif": [
+    1600,
+    900,
+    0
+  ],
+  "/images/lazy-security-part-5-dev-laptops/personal-vs-corp-laptop.png": [
+    3200,
+    1800,
+    1
+  ],
+  "/images/lazy-security-part-5-dev-laptops/personal-vs-corp-laptop.webp": [
+    2048,
+    1152,
+    0
+  ],
+  "/images/lazy-security-part-5-dev-laptops/whats-on-your-laptop.png": [
+    6480,
+    3676,
+    1
+  ],
+  "/images/lazy-security-part-5-dev-laptops/whats-on-your-laptop.webp": [
+    2048,
+    1162,
+    0
+  ],
+  "/images/lazy-security-part-6-network-plane/access-plane-cost-stack.gif": [
+    1600,
+    900,
+    0
+  ],
+  "/images/lazy-security-part-6-network-plane/tailscale-acl-napkin.png": [
+    6192,
+    3896,
+    1
+  ],
+  "/images/lazy-security-part-6-network-plane/tailscale-acl-napkin.webp": [
+    2048,
+    1289,
+    0
+  ],
+  "/images/lazy-security-part-6-network-plane/vpn-appliance-attack-surface.png": [
+    3200,
+    1800,
+    1
+  ],
+  "/images/lazy-security-part-6-network-plane/vpn-appliance-attack-surface.webp": [
+    2048,
+    1152,
+    0
+  ],
+  "/images/netlify-to-dokploy-migration/dokploy_email.png": [
+    1972,
+    160,
+    1
+  ],
+  "/images/netlify-to-dokploy-migration/dokploy_email.webp": [
+    1972,
+    160,
+    0
+  ],
+  "/images/netlify-to-dokploy-migration/dokploy_git.png": [
+    1972,
+    854,
+    1
+  ],
+  "/images/netlify-to-dokploy-migration/dokploy_git.webp": [
+    1972,
+    854,
+    0
+  ],
+  "/images/netlify-to-dokploy-migration/dokploy_hetzner.png": [
+    2172,
+    1460,
+    1
+  ],
+  "/images/netlify-to-dokploy-migration/dokploy_hetzner.webp": [
+    2048,
+    1377,
+    0
+  ],
+  "/images/netlify-to-dokploy-migration/dokploy_migration.png": [
+    1950,
+    1024,
+    1
+  ],
+  "/images/netlify-to-dokploy-migration/dokploy_migration.webp": [
+    1950,
+    1024,
+    0
+  ],
+  "/images/netlify-to-dokploy-migration/dokploy_netlify.png": [
+    788,
+    1062,
+    1
+  ],
+  "/images/netlify-to-dokploy-migration/dokploy_netlify.webp": [
+    788,
+    1062,
+    0
+  ],
+  "/images/netlify-to-dokploy-migration/dokploy_projects.png": [
+    1502,
+    1452,
+    1
+  ],
+  "/images/netlify-to-dokploy-migration/dokploy_projects.webp": [
+    1502,
+    1452,
+    0
+  ],
+  "/images/netlify-to-dokploy-migration/dokploy_upgrade_netlify.webp": [
+    2660,
+    1606,
+    0
+  ],
+  "/images/newsletter-wizard.webp": [
+    800,
+    800,
+    0
+  ],
+  "/images/prometheus-grafana-monitoring-guide/hero.png": [
+    3200,
+    1800,
+    1
+  ],
+  "/images/prometheus-grafana-monitoring-guide/hero.webp": [
+    2048,
+    1152,
+    0
+  ],
+  "/images/self-hosting-simplelogin/hero.png": [
+    3200,
+    1800,
+    1
+  ],
+  "/images/self-hosting-simplelogin/hero.webp": [
+    2048,
+    1152,
+    0
+  ],
+  "/images/self-hosting-simplelogin/sl-brevo-smtp.png": [
+    533,
+    564,
+    1
+  ],
+  "/images/self-hosting-simplelogin/sl-brevo-smtp.webp": [
+    533,
+    564,
+    0
+  ],
+  "/images/self-hosting-simplelogin/sl-browser-extension.png": [
+    483,
+    198,
+    1
+  ],
+  "/images/self-hosting-simplelogin/sl-browser-extension.webp": [
+    483,
+    198,
+    0
+  ],
+  "/images/self-hosting-simplelogin/sl-dashboard-aliases.png": [
+    1227,
+    645,
+    1
+  ],
+  "/images/self-hosting-simplelogin/sl-dashboard-aliases.webp": [
+    1227,
+    645,
+    0
+  ],
+  "/images/self-hosting-simplelogin/sl-dns-records.png": [
+    1272,
+    694,
+    1
+  ],
+  "/images/self-hosting-simplelogin/sl-dns-records.webp": [
+    1272,
+    694,
+    0
+  ],
+  "/images/self-hosting-simplelogin/sl-docker-ps.png": [
+    2978,
+    294,
+    1
+  ],
+  "/images/self-hosting-simplelogin/sl-docker-ps.webp": [
+    2048,
+    202,
+    0
+  ],
+  "/images/self-hosting-simplelogin/sl-extension-aliases.png": [
+    454,
+    546,
+    1
+  ],
+  "/images/self-hosting-simplelogin/sl-extension-aliases.webp": [
+    454,
+    546,
+    0
+  ],
+  "/images/self-hosting-simplelogin/sl-forwarded-headers.png": [
+    863,
+    394,
+    1
+  ],
+  "/images/self-hosting-simplelogin/sl-forwarded-headers.webp": [
+    863,
+    394,
+    0
+  ],
+  "/images/self-hosting-simplelogin/sl-inbound-test.png": [
+    404,
+    375,
+    1
+  ],
+  "/images/self-hosting-simplelogin/sl-inbound-test.webp": [
+    404,
+    375,
+    0
+  ],
+  "/images/self-hosting-simplelogin/sl-reply-confirmed.png": [
+    609,
+    221,
+    1
+  ],
+  "/images/self-hosting-simplelogin/sl-reply-confirmed.webp": [
+    609,
+    221,
+    0
+  ],
+  "/images/self-hosting-simplelogin/sl-reply-from-alias.png": [
+    905,
+    463,
+    1
+  ],
+  "/images/self-hosting-simplelogin/sl-reply-from-alias.webp": [
+    905,
+    463,
+    0
+  ],
+  "/images/self-hosting-simplelogin/sl-reply-headers.png": [
+    933,
+    534,
+    1
+  ],
+  "/images/self-hosting-simplelogin/sl-reply-headers.webp": [
+    933,
+    534,
+    0
+  ],
+  "/images/seven-visual-tools-one-diagram/trial-1-cocoon.png": [
+    1400,
+    900,
+    1
+  ],
+  "/images/seven-visual-tools-one-diagram/trial-1-cocoon.webp": [
+    1400,
+    900,
+    0
+  ],
+  "/images/seven-visual-tools-one-diagram/trial-2-diagram-design.png": [
+    1400,
+    1100,
+    1
+  ],
+  "/images/seven-visual-tools-one-diagram/trial-2-diagram-design.webp": [
+    1400,
+    1100,
+    0
+  ],
+  "/images/seven-visual-tools-one-diagram/trial-3-infographic-gif.gif": [
+    800,
+    480,
+    1
+  ],
+  "/images/seven-visual-tools-one-diagram/trial-3-infographic-gif.webp": [
+    800,
+    480,
+    0
+  ],
+  "/images/seven-visual-tools-one-diagram/trial-4-cyberpunk.png": [
+    1200,
+    900,
+    1
+  ],
+  "/images/seven-visual-tools-one-diagram/trial-4-cyberpunk.webp": [
+    1200,
+    900,
+    0
+  ],
+  "/images/seven-visual-tools-one-diagram/trial-4b-flux-illustration.png": [
+    1024,
+    1024,
+    1
+  ],
+  "/images/seven-visual-tools-one-diagram/trial-4b-flux-illustration.webp": [
+    1024,
+    1024,
+    0
+  ],
+  "/images/seven-visual-tools-one-diagram/trial-4b-ingress-flow-animated.png": [
+    1500,
+    800,
+    1
+  ],
+  "/images/seven-visual-tools-one-diagram/trial-4b-ingress-flow-animated.webp": [
+    1500,
+    800,
+    0
+  ],
+  "/images/seven-visual-tools-one-diagram/trial-4b-ingress-flow-blog.png": [
+    900,
+    650,
+    1
+  ],
+  "/images/seven-visual-tools-one-diagram/trial-4b-ingress-flow-blog.webp": [
+    900,
+    650,
+    0
+  ],
+  "/images/seven-visual-tools-one-diagram/trial-5-flux-cover.png": [
+    1200,
+    624,
+    1
+  ],
+  "/images/seven-visual-tools-one-diagram/trial-5-flux-cover.webp": [
+    1200,
+    624,
+    0
+  ],
+  "/images/seven-visual-tools-one-diagram/trial-7-excalidraw-handrolled.png": [
+    2800,
+    1800,
+    1
+  ],
+  "/images/seven-visual-tools-one-diagram/trial-7-excalidraw-handrolled.webp": [
+    2048,
+    1317,
+    0
+  ],
+  "/images/seven-visual-tools-one-diagram/trial-7-excalidraw.png": [
+    2800,
+    1700,
+    1
+  ],
+  "/images/seven-visual-tools-one-diagram/trial-7-excalidraw.webp": [
+    2048,
+    1243,
+    0
+  ],
+  "/images/victorialogs-vs-loki/hero.png": [
+    1280,
+    720,
+    0
+  ],
+  "/images/victorialogs-vs-loki/hero.webp": [
+    1200,
+    800,
+    0
+  ],
+  "/images/victorialogs-vs-loki/victorialogs-loki-cpu-memory-loki.png": [
+    1920,
+    480,
+    1
+  ],
+  "/images/victorialogs-vs-loki/victorialogs-loki-cpu-memory-loki.webp": [
+    1920,
+    480,
+    0
+  ],
+  "/images/victorialogs-vs-loki/victorialogs-loki-footprint-loki.png": [
+    1399,
+    685,
+    1
+  ],
+  "/images/victorialogs-vs-loki/victorialogs-loki-footprint-loki.webp": [
+    1399,
+    685,
+    0
+  ],
+  "/images/victorialogs-vs-loki/victorialogs-loki-footprint-victoria.png": [
+    1413,
+    715,
+    1
+  ],
+  "/images/victorialogs-vs-loki/victorialogs-loki-footprint-victoria.webp": [
+    1413,
+    715,
+    0
+  ],
+  "/images/victorialogs-vs-loki/victorialogs-loki-loadtest-loki.png": [
+    2560,
+    470,
+    1
+  ],
+  "/images/victorialogs-vs-loki/victorialogs-loki-loadtest-loki.webp": [
+    2048,
+    376,
+    0
+  ],
+  "/images/victorialogs-vs-loki/victorialogs-loki-loadtest-victoria.png": [
+    2560,
+    544,
+    1
+  ],
+  "/images/victorialogs-vs-loki/victorialogs-loki-loadtest-victoria.webp": [
+    2048,
+    435,
+    0
+  ],
+  "/images/victorialogs-vs-loki/victorialogs-loki-performance-victoria.png": [
+    1920,
+    1094,
+    1
+  ],
+  "/images/victorialogs-vs-loki/victorialogs-loki-performance-victoria.webp": [
+    1920,
+    1094,
+    0
+  ],
+  "/images/victorialogs-vs-loki/victorialogs-loki-throttling-loki.png": [
+    1920,
+    1110,
+    1
+  ],
+  "/images/victorialogs-vs-loki/victorialogs-loki-throttling-loki.webp": [
+    1920,
+    1110,
+    0
+  ],
+  "/images/workspace-setup.webp": [
+    1600,
+    1200,
+    0
+  ],
+  "/logo/infra-magician-clean.webp": [
+    512,
+    512,
+    0
+  ]
+}

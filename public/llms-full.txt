@@ -30,9 +30,25 @@ Bidirectional email aliases on a ~$3/month VPS using Docker (PostgreSQL, app, em
 URL: https://harshit.cloud/blog/kubernetes-debugging-tips
 Field-tested steps for stuck pods, crash loops, OOM kills, and networking failures, with the commands and the order to run them in.
 
+### CrashLoopBackOff triage
+URL: https://harshit.cloud/blog/kubernetes-crashloopbackoff-triage
+CrashLoopBackOff is the waiting state, not the failure. The post separates five causes using two commands (kubectl describe pod for the last termination reason and exit code, kubectl logs --previous for what the dead instance printed): exit 1 or 2 is an application error with logs; exit 137 with reason OOMKilled is the memory limit; exit 137 with reason Error plus a probe-failure event is a liveness probe killing a healthy container, fixed with a startupProbe rather than a larger initialDelaySeconds; exit 126 or 127 or StartError means the process never launched; exit 0 means the workload belongs in a Job. Ends with a single jsonpath command that prints reason and exit code for every container.
+
+### Error-budget burn-rate alerting
+URL: https://harshit.cloud/blog/prometheus-burn-rate-alerts
+Replaces threshold alerts (HighCPUOnNode and friends) with multi-window, multi-burn-rate alerts on the SLO error budget. Recording rules compute the 5xx-to-total ratio over 5m, 30m, 1h, 6h and 3d. Burn rate is that ratio divided by the budget, so a 99.9% SLO serving 1.44% errors is burning at 14.4x. Three tiers from the Google SRE Workbook: 14.4 over 1h/5m and 6 over 6h/30m both page, 1 over 3d/6h opens a ticket. The short window (long divided by 12) is what stops an alert firing for an hour after recovery, and it replaces the "for" clause, which resets on a single dipped evaluation. Includes the absent_over_time alert that covers the case where the exporter disappears and every ratio alert goes silent.
+
+### Docker build cache in CI
+URL: https://harshit.cloud/blog/docker-build-cache-buildkit
+Why the same Dockerfile caches locally and rebuilds everything on a CI runner: the layer cache lives in the local store, and a runner starts empty. Covers cache invalidation cascading forward (copy lockfiles before source), .dockerignore as the thing that decides whether COPY . . can ever hit the cache, BuildKit cache mounts (RUN --mount=type=cache, with sharing=locked for apt) which keep package caches out of the layer, and exporting the cache with --cache-to and --cache-from using type=gha or type=registry. mode=max is required to cache the builder stage of a multi-stage build, and the GitHub Actions cache is capped at 10 GB per repository. Ends on ARG placement, which invalidates everything downstream of its first use.
+
 ### Lazy Security (6-part series)
 URLs: /blog/lazy-security-part-1-supply-chain through part-6-network-plane
 The security work that actually moves risk: supply chain, GitHub Actions hardening, the unglamorous checklist, DNS records, developer laptops, and the network plane.
+
+## Topic hubs
+
+Twenty tags carry three or more posts and have a written hub page: kubernetes, devops, security, gpu, lazy-sre, devsecops, infrastructure, productivity, docker, observability, debugging, containers, vllm, sre, monitoring, shell, ci-cd, prometheus, inference, supply-chain. Each lives at https://harshit.cloud/tags/<tag>. Tags with fewer than three posts are noindex and exist only for browsing.
 
 ## Feeds
 RSS: https://harshit.cloud/rss.xml — Atom: https://harshit.cloud/atom.xml — JSON: https://harshit.cloud/rss.json
