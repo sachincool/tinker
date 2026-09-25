@@ -2,7 +2,8 @@
 title: "VictoriaLogs vs Loki: real-world benchmarking results"
 date: "2025-11-19"
 tags: ["kubernetes", "logging", "observability", "victorialogs", "loki", "benchmarking"]
-excerpt: "500 GB of logs, 7 days, same hardware. VictoriaLogs vs Loki: 94% lower query latencies, 37% smaller storage, half the CPU and RAM."
+seoTitle: "VictoriaLogs vs Loki: benchmark on 500 GB, same hardware"
+excerpt: "VictoriaLogs vs Loki, benchmarked on 500 GB of logs over 7 days on identical nodes: 94% lower query latency, 37% less storage, under half the CPU and RAM."
 featured: true
 ---
 

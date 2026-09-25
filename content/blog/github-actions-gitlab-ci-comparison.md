@@ -1,9 +1,10 @@
 ---
 title: "GitHub Actions vs GitLab CI: a practical comparison"
+seoTitle: "GitHub Actions vs GitLab CI: speed, cost, Docker compared"
 date: "2024-12-20"
 updatedAt: "2026-06-18"
 tags: ["ci-cd", "github", "gitlab", "devops", "automation"]
-excerpt: "Two years running GitHub Actions and GitLab CI across 50 microservices side by side. Here's the CI/CD comparison data and which one I'd reach for and when."
+excerpt: "GitHub Actions vs GitLab CI after two years running both across 50 microservices: build times, free-tier minutes, Docker support, debugging, and which to pick."
 featured: true
 faqs:
   - question: "Is GitHub Actions or GitLab CI better?"

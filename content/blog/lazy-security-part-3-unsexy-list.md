@@ -1,5 +1,6 @@
 ---
 title: "Lazy SRE's guide to secure systems, part 3: the unsexy list"
+seoTitle: "Lazy Security part 3: the unsexy DevSecOps controls"
 date: "2026-04-19"
 tags: ["security", "devsecops", "lazy-sre", "identity", "supply-chain", "audit-logs"]
 excerpt: "Identity, network access, default credentials, attestation, and audit logs: the unsexy DevSecOps controls that close most of the gap Parts 1 and 2 left open."

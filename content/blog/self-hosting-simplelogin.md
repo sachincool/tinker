@@ -1,10 +1,10 @@
 ---
 title: "Self-hosting SimpleLogin: own your email aliases for $3 a month"
-seoTitle: "Self-hosting SimpleLogin: email aliases for $3 a month"
+seoTitle: "SimpleLogin self-hosted: Docker setup for $3 a month"
 date: "2026-02-07"
 updatedAt: "2026-06-18"
 tags: ["self-hosting", "docker", "security", "devops", "email"]
-excerpt: "Self-hosted SimpleLogin with Docker, Postfix, and Brevo for $3/month. The TLS gotcha that ate two hours of my Sunday, written down so you skip it."
+excerpt: "How to self-host SimpleLogin with Docker, Postfix and Brevo on a $3/month VPS. DNS, reply-from-alias, and the TLS gotcha that ate two hours of my Sunday."
 featured: true
 faqs:
   - question: "How much does it cost to self-host SimpleLogin?"
