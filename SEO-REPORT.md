@@ -249,3 +249,27 @@ Sitemap: **157 URLs → 73.** Tag URLs: **107 → 19.**
    serves one size to every viewport. Real `srcset` breakpoints would help
    mobile further. This is a larger change to a custom markdown renderer and
    was out of proportion to the remaining win.
+
+## 2026-09-25 wave: merged and deployed
+
+The 2026-08-30 audit branch (`seo/audit-2026-08-30`) had never reached `main`. It is merged now (merge `0d5cafa`), along with one follow-up commit (`45330d8`):
+
+- **Title/description rewrites for three queries with high impressions and low CTR in GSC.** The title (`seoTitle`) and excerpt now lead with the searcher's wording: "victorialogs vs loki", "simplelogin self hosted" and "github actions vs gitlab ci". Every number in them was already in the post body.
+- **Lazy Security part 3** got a `seoTitle` so the series matches parts 1, 2, 4, 5 and 6. With the merge in, all effective titles are 60 characters or less.
+- Hub meta descriptions (/blog, /til, /tags, /about, /graph) came in with the merge. None were flagged after deploy.
+
+Live verification, Googlebot UA:
+
+| | Before | After |
+|---|---|---|
+| Sitemap URLs | 157 (107 /tags/*) | 73 (19 hub tags) |
+| Median words | 131 | 724 |
+| Pages flagged | 150/157 | 36/73 |
+| TITLE_LONG | 13 | 0 |
+| DESC_SHORT | 18* | 5 (post excerpts, 124–137 chars) |
+| THIN | 113 | 24 |
+| Broken internal refs | n/a | 0 of 412 |
+
+\* The "before" crawl ran before crawl.mjs was fixed. That version flagged any description containing an apostrophe as short, so the 18 is inflated by some unknown amount.
+
+Thin tag pages like /tags/npm serve `noindex, follow` and are no longer in the sitemap. What's left: 11 TITLE_SHORT (mostly hubs and tags) and 24 THIN (the home page, /tags, /about, some TILs and hub tags). I left these on purpose; padding them would be filler. `seo/agent-readable-2026-09-06` was not touched.
