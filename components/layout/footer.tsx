@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Github, Twitter, Linkedin, Rss } from "lucide-react";
 import { NewsletterForm } from "@/components/blog/newsletter-form";
+import { HMark } from "@/components/ui/h-mark";
 import { siteConfig } from "@/lib/site-config";
 
 const eyebrow =
@@ -38,8 +39,8 @@ export function Footer() {
               href="/"
               className="inline-block font-serif text-2xl text-foreground transition-colors hover:text-primary"
             >
-              harshit.cloud{" "}
-              <span className="text-muted-foreground" aria-hidden="true">ツ</span>
+              <HMark className="h-[1.05em] align-[-0.1em] [stroke-width:1.9]" />
+              <span className="sr-only">h</span>arshit.cloud
             </Link>
             <p className="text-sm text-muted-foreground">Senior SRE</p>
           </div>

@@ -39,6 +39,45 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(url, 301);
   }
 
+  // Markdown twin of every post, per RFC 8288. Two ways in: an explicit
+  // `.md` suffix, or `Accept: text/markdown` on the normal URL. Both land on
+  // the /md/* route handler, which serves the MDX source directly.
+  const post = request.nextUrl.pathname.match(/^\/(blog|til)\/([^/]+?)(\.md)?$/);
+  if (post) {
+    const [, type, slug, mdSuffix] = post;
+    const wantsMarkdown =
+      Boolean(mdSuffix) ||
+      /\btext\/markdown\b/i.test(request.headers.get('accept') || '');
+
+    if (wantsMarkdown) {
+      const url = request.nextUrl.clone();
+      url.pathname = `/md/${type}/${slug}`;
+      const md = NextResponse.rewrite(url);
+      md.headers.set('Vary', 'Accept');
+      return md;
+    }
+
+    // HTML response: advertise the alternate representation so an agent can
+    // find it without guessing the URL scheme. The `.md` URL is the durable
+    // way in; Accept negotiation above is the convenience.
+    //
+    // Note: Next overwrites Vary with its own RSC value on page responses, so
+    // the HTML variant ships without `Vary: Accept` and it cannot be set from
+    // here or from next.config headers(). Harmless in practice — this
+    // middleware runs per request at the origin, so negotiation is always
+    // applied correctly there, and no browser sends `Accept: text/markdown`.
+    const html = NextResponse.next();
+    html.headers.set(
+      'Link',
+      `</${type}/${slug}.md>; rel="alternate"; type="text/markdown"`
+    );
+    html.headers.set(
+      'Onion-Location',
+      `http://${siteConfig.onion}${request.nextUrl.pathname}${request.nextUrl.search}`
+    );
+    return html;
+  }
+
   // Advertise the v3 onion mirror. Tor Browser reads Onion-Location (only over
   // HTTPS) and offers the .onion equivalent of whatever page you're on.
   const res = NextResponse.next();
