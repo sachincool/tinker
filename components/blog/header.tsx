@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
+import { HMark } from "@/components/ui/h-mark";
 import { Sheet, SheetClose, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { SearchDialog } from "@/components/blog/search-dialog";
 import {
@@ -65,8 +66,8 @@ export function Header() {
             </div>
             <div className="flex flex-col">
               <span className="font-bold text-lg leading-none">
-                harshit.cloud{" "}
-                <span className="font-normal text-muted-foreground" aria-hidden="true">ツ</span>
+                <HMark className="h-[1.1em] align-[-0.15em]" />
+                <span className="sr-only">h</span>arshit.cloud
               </span>
               <span className="text-xs text-muted-foreground leading-none mt-0.5">Senior SRE</span>
             </div>
