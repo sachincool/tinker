@@ -91,7 +91,18 @@ export function Footer() {
 
         {/* Bottom line */}
         <div className="mt-16 flex flex-col items-start gap-2 border-t border-border/60 pt-6 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
-          <p>© {new Date().getFullYear()} Harshit Luthra</p>
+          {/* Apple Developer org verification: legal entity name + registered address must be on the site */}
+          <p>
+            © {new Date().getFullYear()} LOCAL HOST (partnership firm) · 8195/2,
+            B-34, Haibowal Main Road, Durgapuri, Haibowal Kalan, Ludhiana, Punjab
+            141001, India ·{" "}
+            <a
+              href={`mailto:${siteConfig.author.email}`}
+              className="transition-colors hover:text-foreground"
+            >
+              {siteConfig.author.email}
+            </a>
+          </p>
           <p className="font-mono">
             also on the dark web:{" "}
             <a
